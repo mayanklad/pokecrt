@@ -7,7 +7,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/mayanklad/pokecrt/internal/query"
+	"github.com/mayanklad/pokecrt/internal/catalog"
 )
 
 const rootHelp = `PokéCRT — offline Pokémon terminal artwork
@@ -32,7 +32,7 @@ Run 'pokecrt print --help' for print options.
 // It does not resolve data paths or initialize trainer storage.
 func Run(args []string, stdout, stderr io.Writer, version, datasetID string) int {
 	if len(args) > 0 && args[0] == "print" {
-		return runPrint(args[1:], stdout, stderr, query.CryptoIndex)
+		return runPrint(args[1:], stdout, stderr, catalog.CryptoIndex)
 	}
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		return invocationError(stderr, fmt.Errorf("unknown command %q", args[0]))

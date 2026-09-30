@@ -4,9 +4,42 @@ import (
 	"bytes"
 	"image/color"
 	"image/png"
+	"slices"
 	"strings"
 	"testing"
 )
+
+func TestInheritedQualityGate(t *testing.T) {
+	for _, tc := range []struct {
+		name, snapshot string
+		valid          bool
+	}{
+		{"audited old generation", `{"001":{"idx":"001","slug":{"eng":"bulbasaur"},"gen-8":{"forms":{"$":{"is_prev_gen_icon":true}}}}}`, true},
+		{"provisional", `{"001":{"idx":"001","slug":{"eng":"bulbasaur"},"gen-8":{"forms":{"$":{"is_unofficial_icon":true}}}}}`, false},
+		{"wrong species", `{"001":{"idx":"002","slug":{"eng":"bulbasaur"},"gen-8":{"forms":{"$":{}}}}}`, false},
+		{"wrong slug", `{"001":{"idx":"001","slug":{"eng":"other"},"gen-8":{"forms":{"$":{}}}}}`, false},
+		{"missing appearance", `{"001":{"idx":"001","slug":{"eng":"bulbasaur"},"gen-8":{"forms":{}}}}`, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			lock, cache, m := variantFixture(t)
+			m.RulesVersion = "d06b-gen1-1"
+			fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/upstreams/msikma-pokemon.json", []byte(tc.snapshot))
+			bundle, err := buildBundle(lock, cache, m)
+			if !tc.valid {
+				if err == nil {
+					t.Fatal("accepted unverified/provisional source")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.Contains(strings.Join(bundle.Coverage.SourceQualityFlags, " "), "Retained previous-generation source artwork: #001/standard") {
+				t.Fatal("lost retained-generation provenance")
+			}
+		})
+	}
+}
 
 func TestPinnedGen8FemaleLayout(t *testing.T) {
 	for _, tc := range []struct {
@@ -70,5 +103,33 @@ func TestFemaleLayoutCannotBeReusedForOtherIdentities(t *testing.T) {
 		if _, err := assetSourcePath(a); err == nil {
 			t.Fatalf("accepted wrong layout identity: %+v", a)
 		}
+	}
+}
+
+func TestExactDocumentedSourceNameCorrection(t *testing.T) {
+	lock, cache, m := variantFixture(t)
+	editManifest(t, &lock, cache, func(source *sourceManifest) { source.Pokemon[0].Name = "Fixture Bulbasaur" })
+	m.RulesVersion = "d06b-gen1-1"
+	if _, _, err := normalizeCatalog(lock, cache, m); err == nil {
+		t.Fatal("silently accepted different source name")
+	}
+	m.SourceNameOverrides = []sourceNameOverride{{SpeciesID: 1, SourceName: "Fixture Bulbasaur", CanonicalName: "Bulbasaur", Reason: "Fixture pinned-source spelling difference"}}
+	if err := validateMappings(&m); err != nil {
+		t.Fatal(err)
+	}
+	species, _, err := normalizeCatalog(lock, cache, m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if species[0].Name != "Bulbasaur" || !slices.Contains(species[0].Aliases, "fixture bulbasaur") {
+		t.Fatalf("lost canonical name or source alias: %+v", species[0])
+	}
+	m.SourceNameOverrides[0].SourceName = "Stale correction"
+	if _, _, err := normalizeCatalog(lock, cache, m); err == nil {
+		t.Fatal("accepted stale correction")
+	}
+	m.SourceNameOverrides = append(m.SourceNameOverrides, m.SourceNameOverrides[0])
+	if err := validateMappings(&m); err == nil {
+		t.Fatal("accepted duplicate correction")
 	}
 }

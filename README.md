@@ -34,7 +34,7 @@ PokéCRT is an unofficial fan project. The owner has approved attributed release
 with bundled sprites under the [release policy](docs/release-policy.md).
 Original PokéCRT code is MIT licensed; Pokémon artwork retains its respective
 owners' rights. No rights-holder permission or endorsement is claimed. See
-[licensing scope](LICENSING.md), [source audit](tools/dataset/source-audit.md),
+[licensing scope](LICENSING.md), [source audit](tools/dataset/README.md),
 and [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Prepare a source checkout
@@ -80,7 +80,7 @@ go run ./tools/dataset \
 ## Build and verify
 
 ```bash
-gofmt -w cmd/pokecrt internal/cli internal/query
+gofmt -w cmd/pokecrt internal/cli internal/catalog
 go test ./...
 go vet ./...
 go build -o ./bin/pokecrt ./cmd/pokecrt
@@ -172,7 +172,7 @@ support for another platform.
 
 - [Implementation progress](docs/progress.md)
 - [Release candidate checklist](docs/release-v0.1.md)
-- [Dataset source audit](tools/dataset/source-audit.md)
+- [Dataset generation and audit](tools/dataset/README.md)
 - [Generated coverage](tools/dataset/coverage.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 - [Code and artwork licensing](LICENSING.md)
@@ -197,3 +197,7 @@ go run ./tools/render-preview --name pyroar --gender male
 go run ./tools/render-preview --name pyroar --gender female
 go run ./tools/render-preview --name meowstic --gender female --palette shiny
 ```
+
+Routine dataset inventory is derived automatically from pinned inputs. The mapping
+configuration contains selection policy and reviewed exceptions; see the
+[dataset guide](tools/dataset/README.md).

@@ -39,5 +39,5 @@ References:
 - https://github.com/darknesspwnsu/pokesprite-v2/blob/32ab52ea6b61871da34d9a3c61c7760c65a37af7/readme.md
 - https://github.com/darknesspwnsu/pokesprite-v2/blob/32ab52ea6b61871da34d9a3c61c7760c65a37af7/contributors.md
 - https://msikma.github.io/pokesprite/index.html
-- tools/dataset/source-audit.md
+- tools/dataset/README.md
 - THIRD_PARTY_NOTICES.md

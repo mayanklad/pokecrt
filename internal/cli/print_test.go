@@ -10,14 +10,13 @@ import (
 	"testing"
 
 	"github.com/mayanklad/pokecrt/internal/catalog"
-	"github.com/mayanklad/pokecrt/internal/query"
 	"github.com/mayanklad/pokecrt/internal/render"
 	"github.com/mayanklad/pokecrt/internal/sprite"
 )
 
 func TestNamedPrintBytes(t *testing.T) {
 	species, _ := catalog.ByName("charizard")
-	key, _ := query.StandardKey(species)
+	key, _ := catalog.StandardKey(species)
 	pixels, err := sprite.Decode(key)
 	if err != nil {
 		t.Fatal(err)

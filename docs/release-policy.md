@@ -42,7 +42,7 @@ Metadata source: PokeAPI/pokeapi, revision
 bc92d3b6029ef1abe9e7ad424c400b338f3c11fe. Its BSD-3-Clause notice is retained in
 THIRD_PARTY_NOTICES.md.
 
-Records: tools/dataset/sources.json, mappings.json, source-audit.md,
+Records: tools/dataset/sources.json, mappings.json, README.md,
 coverage.json, coverage.md, LICENSING.md, and THIRD_PARTY_NOTICES.md.
 
 ## Package requirements

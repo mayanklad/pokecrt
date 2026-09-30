@@ -1,14 +1,17 @@
-package query
+package catalog_test
 
 import (
 	"errors"
 	"testing"
+
+	"github.com/mayanklad/pokecrt/internal/catalog"
+	"github.com/mayanklad/pokecrt/internal/sprite"
 )
 
 func TestStandardCandidateBoundaries(t *testing.T) {
 	for _, test := range []struct{ index, want int }{{0, 1}, {24, 25}, {150, 151}, {152, 172}, {189, 866}} {
 		index, want := test.index, test.want
-		species, key, err := ChooseStandard(func(n int) (int, error) {
+		species, key, err := chooseStandard(func(n int) (int, error) {
 			if n != 190 {
 				t.Fatalf("candidate count=%d; want 190", n)
 			}
@@ -25,21 +28,25 @@ func TestStandardCandidateBoundaries(t *testing.T) {
 
 func TestSelectorFailures(t *testing.T) {
 	failure := errors.New("entropy unavailable")
-	_, _, err := ChooseStandard(func(int) (int, error) { return 0, failure })
+	_, _, err := chooseStandard(func(int) (int, error) { return 0, failure })
 	if !errors.Is(err, failure) {
 		t.Fatalf("got %v", err)
 	}
 	for _, index := range []int{-1, 190} {
-		_, _, err := ChooseStandard(func(int) (int, error) { return index, nil })
+		_, _, err := chooseStandard(func(int) (int, error) { return index, nil })
 		if err == nil {
 			t.Fatal("accepted out-of-range selector")
 		}
 	}
-	if _, err := CryptoIndex(0); err == nil {
+	if _, err := catalog.CryptoIndex(0); err == nil {
 		t.Fatal("accepted empty range")
 	}
-	value, err := CryptoIndex(1)
+	value, err := catalog.CryptoIndex(1)
 	if err != nil || value != 0 {
 		t.Fatalf("singleton selection: %d, %v", value, err)
 	}
+}
+
+func chooseStandard(selectIndex catalog.IndexSelector) (catalog.Species, catalog.VariantKey, error) {
+	return catalog.ChooseStandard(selectIndex, func(k catalog.VariantKey) bool { _, ok := sprite.Lookup(k); return ok })
 }

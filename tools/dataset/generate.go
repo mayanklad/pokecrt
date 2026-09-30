@@ -129,6 +129,11 @@ func normalizePNG(data []byte) ([]byte, image.Rectangle, image.Point, error) {
 
 func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generatedBundle, error) {
 	bundle := generatedBundle{Files: make(map[string][]byte)}
+	var err error
+	mappings, err = deriveMappings(lock, cache, mappings)
+	if err != nil {
+		return bundle, err
+	}
 	if err := validateMappings(&mappings); err != nil {
 		return bundle, err
 	}
@@ -150,7 +155,7 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	previousFemale := make(map[int]bool)
 	var inherited inheritedInventory
 	previousIcons := make(map[string]bool)
-	if mappings.RulesVersion == "d06b-gen1-1" {
+	if mappings.RulesVersion == "d06b-gen1-1" || mappings.RulesVersion == "d06-auto-1" {
 		inherited, err = loadInheritedInventory(lock, cache)
 		if err != nil {
 			return bundle, err

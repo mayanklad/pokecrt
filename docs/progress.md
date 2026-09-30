@@ -3,8 +3,8 @@
 Specification revision/date: 30 September 2026, including approved section 25
 Current release target: v0.2 — Complete public engine
 Last published milestone: v0.1
-Current increment: D06b Gen1 inventory and complete connected evolution families
-Current source commit: 562f475bbb05c6934c86811fbbfbb9c50ff38e5f
+Current increment: D06 automatic inventory and structure refactor
+Current source commit: d1fa800a080e71a3240f652cac56387daeb8acf6
 Commit note: verified baseline before this increment; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -18,7 +18,7 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 ## Dataset
 
 Development dataset ID:
-`2ff16a208d58b1805c0e0b2f580a45478f208e694d99ec7a808f98a89512428d`
+`7dde4f05adbf7424e7e34ef497fa1b73fe8b0c459fc03804f8eaa1c8c3144ad8`
 
 - 192 catalog species: all original 151 plus full evolution-family closure and existing gen-6 families
 - 275 metadata forms; 265 collectible forms; 534 exact regular/shiny assets
@@ -38,7 +38,11 @@ Development dataset ID:
 - Assistant full tests/vet and generation checks passed; all 450 new sprites inspected
 - Tests cover family completeness, baby stages, source quality gates, name aliases,
   uniform species boundaries, missing artwork, and installed-binary behavior
-- Owner terminal verification and commit remain pending
+- Routine species/form/asset entries are derived automatically; only policy and exceptions are maintained
+- Provenance modules/tests and dataset documentation consolidated
+- Static selection moved into catalog with injected sprite availability
+- Inventory and PNG bytes match the prior batch; rules change dataset identity
+- Owner verification and commit remain pending
 
 Storage schema version: none.
 

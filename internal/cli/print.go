@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/mayanklad/pokecrt/internal/catalog"
-	"github.com/mayanklad/pokecrt/internal/query"
 	"github.com/mayanklad/pokecrt/internal/render"
 	"github.com/mayanklad/pokecrt/internal/sprite"
 )
@@ -87,7 +86,7 @@ func parsePrintFlags(args []string) (printOptions, error) {
 	return options, nil
 }
 
-func runPrint(args []string, stdout, stderr io.Writer, selectIndex query.IndexSelector) int {
+func runPrint(args []string, stdout, stderr io.Writer, selectIndex catalog.IndexSelector) int {
 	options, err := parsePrintFlags(args)
 	if err != nil {
 		return invocationError(stderr, err)
@@ -103,12 +102,12 @@ func runPrint(args []string, stdout, stderr io.Writer, selectIndex query.IndexSe
 		if !ok {
 			return invocationError(stderr, fmt.Errorf("unknown species %q", options.name))
 		}
-		key, ok = query.StandardKey(species)
+		key, ok = catalog.StandardKey(species)
 		if !ok {
 			return operationalError(stderr, fmt.Errorf("standard artwork unavailable for %s", species.Name))
 		}
 	} else {
-		species, key, err = query.ChooseStandard(selectIndex)
+		species, key, err = catalog.ChooseStandard(selectIndex, func(key catalog.VariantKey) bool { _, ok := sprite.Lookup(key); return ok })
 		if err != nil {
 			return operationalError(stderr, err)
 		}

@@ -22,6 +22,8 @@ type sourceNameOverride struct {
 }
 
 type mappingConfig struct {
+	Selection           *inventorySelection  `json:"selection,omitempty"`
+	FormOverrides       []formMapping        `json:"form_overrides,omitempty"`
 	SourceNameOverrides []sourceNameOverride `json:"source_name_overrides,omitempty"`
 	RulesVersion        string               `json:"rules_version"`
 	CatalogSpecies      []int                `json:"catalog_species"`
@@ -99,6 +101,7 @@ type sourceSpecies struct {
 
 type sourceForm struct {
 	ID            string  `json:"id"`
+	Label         string  `json:"label"`
 	Slug          string  `json:"file_slug"`
 	CanonicalForm *string `json:"canonical_form"`
 	HasRegular    *bool   `json:"has_regular"`
@@ -122,7 +125,13 @@ func readMappings(filename string) (mappingConfig, error) {
 	if err := decoder.Decode(&extra); err != io.EOF {
 		return mappings, fmt.Errorf("mappings must contain exactly one JSON document")
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if mappings.Selection != nil {
+		if err := validateSelection(mappings); err != nil {
+			return mappings, err
+		}
+		return mappings, nil
+	}
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && mappings.RulesVersion != "d06-auto-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
