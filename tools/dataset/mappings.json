@@ -1,0 +1,17 @@
+{
+  "rules_version": "d02b-1",
+  "catalog_species": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "source_standard_form": "base",
+  "standard_form_reason": "The pinned source uses base for these nine species' standard appearance. Full appearance normalization is scheduled for D06.",
+  "assets": [
+    {"species_id": 1, "source_id": "pokesprite", "path": "pokemon/regular/bulbasaur.png", "source_slug": "bulbasaur", "reason": "Audited initial standard regular sprite without a distinct visual gender."},
+    {"species_id": 6, "source_id": "pokesprite", "path": "pokemon/regular/charizard.png", "source_slug": "charizard", "reason": "Audited initial standard regular sprite without a distinct visual gender."},
+    {"species_id": 7, "source_id": "pokesprite", "path": "pokemon/regular/squirtle.png", "source_slug": "squirtle", "reason": "Audited initial standard regular sprite without a distinct visual gender."}
+  ],
+  "exclusions": [
+    "Other species are outside this minimal D02 catalog; expanded coverage is scheduled for D06.",
+    "Six catalog species have no selected bundled asset in D02; they remain metadata entries with unavailable artwork.",
+    "Alternate forms, shiny palettes, distinct visual genders, and orientation duplicates are not included in this initial inventory.",
+    "Generated source icons are not accepted. Other edited or unofficial candidates require further audit before inclusion."
+  ]
+}

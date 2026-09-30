@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/mayanklad/pokecrt/internal/catalog"
 	"github.com/mayanklad/pokecrt/internal/cli"
 )
 
@@ -19,6 +20,6 @@ func main() {
 		os.Stdout,
 		os.Stderr,
 		version,
-		"unbundled",
+		catalog.DatasetID,
 	))
 }

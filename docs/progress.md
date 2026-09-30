@@ -2,53 +2,55 @@
 
 Specification revision/date: 30 September 2026
 Current release target: v0.1 — Basic printer
-Last completed development step: D02a — Pinned source inputs and verification
-Current source commit: 7c7c67b18e265ca25315105ccf66c8348904ee33
-Commit reference note: D01 baseline; D02a is verified and awaiting commit.
+Last verified development step: D02b — Normalized catalog and asset generation
+Current source commit: 08595f1591efffad8f77a56e2e71ae231f11552c
+Commit reference note: D02a baseline; D02b is verified locally and awaiting commit.
 
-Implemented runtime commands/flags:
+Implemented runtime commands:
 - Root help
 - --help / -h
-- --version
+- --version with generated dataset identity
 
-Implemented D02a increment:
-- Source lock for 16 inputs with full revisions, sizes, SHA-256, terms, and attribution
-- Developer-only --fetch / --check with explicit --sources and --cache paths
-- Offline cache verification and rejection of corrupt or mismatched downloads
-- Source audit record; downloaded inputs remain excluded from Git
+Implemented developer tooling:
+- Pinned downloads and SHA-256 verification
+- Catalog and asset normalization
+- Deterministic generation
+- Offline generated-output drift checks
+- Coverage reports and third-party notices
 
-Dataset ID and coverage report: unbundled; normalization and generated coverage pending D02b
+Dataset ID:
+5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4
+
+Coverage:
+- 9 catalog species
+- 3 eligible species and standard regular sprites
+- 0 shiny sprites
+- 0 distinct visual gender slots
+- 3 exact eligible variants
+- Reports: tools/dataset/coverage.json and coverage.md
+
 Storage schema version: none
 
-Checks run and results:
-- D01 committed source reviewed through read-only GitHub access
-- D01 root/help/version behavior and duplicate-version exit status 2 verified
-- D01 and D02a unit tests and vet passed locally using Go 1.27.1 linux/amd64
-- All 16 pinned input checksums calculated from actual downloaded bytes
-- Bulbasaur, Charizard, and Squirtle PNGs decoded and inspected for dimensions, transparent bounds, and binary alpha
-- Local application build passed with -buildvcs=false because the verification mirror lacks repository metadata
-- Real fetch into an empty cache and offline cached verification passed
-- User's D02a formatting, tests, vet, and application build passed
-- User's fetch/check and offline check each reported: Verified 16 pinned inputs.
-- User's Git status showed only expected README, progress, and tools changes
+Verification:
+- User formatting, tests, vet, and build passed
+- Generation and offline drift checks passed
+- Version output matches the generated dataset ID
+- Local reproducibility and malformed-input tests passed
 
-Known issues/blockers:
-- No runtime printer or trainer features implemented yet
-- Source-image copyrights are separate from repository code licenses; the source-image redistribution verification gate remains open
-- Generated artwork must be classified explicitly, never silently treated as original sprites
-- Source alias, visual gender, palette, and form normalization remain incomplete
+Known limitations:
+- Renderer and print command are not implemented yet
+- Six catalog species have no selected artwork
+- Full coverage, forms, palettes, and visual genders remain scheduled for D06
+- Source-image redistribution gate remains open under specification section 13
+- Generated PNGs remain local pending that gate
 
-Next development step:
-- Commit and push the verified D02a increment
-- Review the committed source through read-only GitHub access
-- Implement D02b: normalized catalog, mapping records, embedded assets and manifest, dataset ID, deterministic coverage, and generated-output drift checks
+Next development step: D03 — Transparent half-block rendering
 
-Explicit approved deviations:
-- The specification is maintained locally and excluded from Git history
-- D02 is split into D02a input pinning/verification and D02b normalization/bundling for separate provenance and generation review
+Approved deviations:
+- Specification remains local and excluded from Git history
+- D02 split into input verification and normalization/bundling
 
-Collaboration workflow:
-- Provide complete changed files directly in chat or as individual files; no ZIP archives
-- The user applies repository changes, runs checks, creates commits, and pushes
+Workflow:
+- Complete files in chat or individual files; no ZIPs
+- User applies changes, verifies, commits, and pushes
 - Assistant GitHub operations remain read-only
-- Advance to the next implementation increment after user verification

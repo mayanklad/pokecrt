@@ -22,17 +22,24 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags := flag.NewFlagSet("dataset", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	fetch := flags.Bool("fetch", false, "Download and verify pinned source inputs")
-	check := flags.Bool("check", false, "Verify cached source inputs without downloading")
+	generate := flags.Bool("generate", false, "Generate normalized catalog, assets, and coverage")
+	check := flags.Bool("check", false, "Verify pinned inputs and, with mappings/out, generated output drift")
 	sourcesPath := flags.String("sources", "", "Explicit source lock file path")
 	cachePath := flags.String("cache", "", "Explicit download cache directory")
+	mappingsPath := flags.String("mappings", "", "Explicit normalization mapping file path")
+	outPath := flags.String("out", "", "Explicit project output root")
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return 0
 		}
 		return 2
 	}
-	if flags.NArg() != 0 || (!*fetch && !*check) || *sourcesPath == "" || *cachePath == "" {
-		fmt.Fprintln(stderr, "Usage: go run ./tools/dataset --sources <file> --cache <dir> --fetch|--check")
+	if flags.NArg() != 0 || (!*fetch && !*generate && !*check) || *sourcesPath == "" || *cachePath == "" {
+		fmt.Fprintln(stderr, "Usage: go run ./tools/dataset --sources <file> --cache <dir> [--mappings <file> --out <root>] --fetch|--generate|--check")
+		return 2
+	}
+	if (*mappingsPath == "") != (*outPath == "") || (*generate && *mappingsPath == "") || (*mappingsPath != "" && !*generate && !*check) {
+		fmt.Fprintln(stderr, "dataset: --mappings and --out must be provided together for --generate or generated --check")
 		return 2
 	}
 	lock, err := readLock(*sourcesPath)
@@ -45,6 +52,28 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if err != nil {
 		fmt.Fprintf(stderr, "dataset: %v\n", err)
 		return 1
+	}
+	if *mappingsPath != "" {
+		mappings, err := readMappings(*mappingsPath)
+		if err != nil {
+			fmt.Fprintf(stderr, "dataset: %v\n", err)
+			return 1
+		}
+		bundle, err := buildBundle(lock, *cachePath, mappings)
+		if err == nil && *generate {
+			err = writeBundle(bundle, *outPath)
+		}
+		if err == nil && *check {
+			err = checkBundle(bundle, *outPath)
+		}
+		if err != nil {
+			fmt.Fprintf(stderr, "dataset: %v\n", err)
+			return 1
+		}
+		if _, err := fmt.Fprintf(stdout, "Dataset: %s\nCatalog species: %d\nStandard regular sprites: %d\n", bundle.DatasetID, bundle.Coverage.CatalogSpecies, bundle.Coverage.StandardRegularSprites); err != nil {
+			fmt.Fprintf(stderr, "dataset: write output: %v\n", err)
+			return 1
+		}
 	}
 	if _, err := fmt.Fprintf(stdout, "Verified %d pinned inputs.\n", count); err != nil {
 		fmt.Fprintf(stderr, "dataset: write output: %v\n", err)
