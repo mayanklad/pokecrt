@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strings"
 )
 
 // Selection describes development scope, not a manually enumerated catalog.
@@ -15,8 +16,11 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2") || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
+	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3") || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
+	}
+	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" {
+		return fmt.Errorf("source-only exclusions require automatic rules v3")
 	}
 	if len(m.CatalogSpecies)+len(m.Forms)+len(m.Assets)+len(m.Exclusions) != 0 {
 		return fmt.Errorf("automatic selection cannot contain maintained catalog, forms, assets or exclusions")
@@ -193,12 +197,21 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if m.RulesVersion == "d06-auto-2" && !foundFormTable {
+	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3") && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
 	}
 	inherited, err := loadInheritedInventory(lock, cache)
 	if err != nil {
 		return m, err
+	}
+	excluded := map[string]sourceFormExclusion{}
+	usedExclusions := map[string]bool{}
+	for _, e := range m.SourceFormExclusions {
+		key := fmt.Sprintf("%d/%s", e.SpeciesID, e.SourceFormID)
+		if _, ok := excluded[key]; ok || strings.TrimSpace(e.Reason) == "" || !slugValid(e.SourceFormID) || !slices.Contains(ids, e.SpeciesID) {
+			return m, fmt.Errorf("invalid or duplicate source exclusion %s", key)
+		}
+		excluded[key] = e
 	}
 	overrides := map[string]formMapping{}
 	used := map[string]bool{}
@@ -222,6 +235,21 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 		gendered := slices.Contains(m.Selection.VisualGenderSpecies, id)
 		for _, sf := range sp.Forms {
 			if sf.CanonicalForm != nil {
+				continue
+			}
+			exclusionKey := fmt.Sprintf("%d/%s", id, sf.ID)
+			if exclusion, ok := excluded[exclusionKey]; ok {
+				if sf.ID == sp.DefaultForm {
+					return m, fmt.Errorf("cannot exclude a standard metadata identity %s", exclusionKey)
+				}
+				sourceID := fmt.Sprintf("%03d", id)
+				entry, hasSpecies := inherited[sourceID]
+				flags, hasForm := entry.Gen8.Forms[sf.ID]
+				if names[sp.Slug+"-"+sf.ID] != 0 || !hasSpecies || !hasForm || entry.ID != sourceID || entry.Slug.English != sp.Slug || !flags.Unofficial {
+					return m, fmt.Errorf("source exclusion lacks verified unofficial template evidence %s", exclusionKey)
+				}
+				usedExclusions[exclusionKey] = true
+				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: %s", id, sf.ID, exclusion.Reason))
 				continue
 			}
 			formID, name := sf.ID, sf.Label
@@ -291,6 +319,11 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 					m.Assets = append(m.Assets, female)
 				}
 			}
+		}
+	}
+	for key := range excluded {
+		if !usedExclusions[key] {
+			return m, fmt.Errorf("unused source exclusion %s", key)
 		}
 	}
 	for key := range overrides {

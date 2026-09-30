@@ -1,9 +1,10 @@
 {
-  "rules_version": "d06-auto-2",
+  "rules_version": "d06-auto-3",
   "selection": {
     "generations": [
       1,
-      2
+      2,
+      3
     ],
     "family_seeds": [
       667,
@@ -78,6 +79,18 @@
       "source_name": "Sirfetch'd",
       "canonical_name": "Sirfetch’d",
       "reason": "Pinned artwork and PokéAPI English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
+    }
+  ],
+  "source_form_exclusions": [
+    {
+      "species_id": 327,
+      "source_form_id": "blank",
+      "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pokémon collectible form."
+    },
+    {
+      "species_id": 327,
+      "source_form_id": "filled",
+      "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pokémon collectible form."
     }
   ]
 }

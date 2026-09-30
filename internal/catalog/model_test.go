@@ -51,8 +51,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 413 {
-		t.Fatalf("form count=%d; want 413 in the current mapping", count)
+	if count != 585 {
+		t.Fatalf("form count=%d; want 585 in the current mapping", count)
 	}
 }
 
@@ -92,10 +92,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGen1AndGen2EvolutionFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 251; id++ {
+func TestGenerationsOneThroughThreeFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 386; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1/Gen2 species %d", id)
+			t.Fatalf("missing Gen1–Gen3 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -129,5 +129,26 @@ func TestUnownFormsAndDudunsparceDefault(t *testing.T) {
 	d, ok := ByNumber(982)
 	if !ok || len(d.Forms) != 2 || d.Forms[0].ID != "standard" {
 		t.Fatalf("Dudunsparce default: %+v", d.Forms)
+	}
+}
+
+func TestCastformTypesAndDeoxysAlias(t *testing.T) {
+	castform, _ := ByNumber(351)
+	expected := map[string]string{"standard": "normal", "sunny": "fire", "rainy": "water", "snowy": "ice"}
+	if len(castform.Forms) != 4 {
+		t.Fatalf("Castform forms: %+v", castform.Forms)
+	}
+	for _, f := range castform.Forms {
+		if len(f.Types) != 1 || f.Types[0] != expected[f.ID] {
+			t.Fatalf("Castform typing: %+v", f)
+		}
+	}
+	deoxys, _ := ByNumber(386)
+	if len(deoxys.Forms) != 4 || len(deoxys.Forms[0].SourceAliases) != 1 || deoxys.Forms[0].SourceAliases[0] != "normal" {
+		t.Fatalf("Deoxys forms/alias: %+v", deoxys.Forms)
+	}
+	spinda, _ := ByNumber(327)
+	if len(spinda.Forms) != 1 {
+		t.Fatal("Spinda templates became Pokémon forms")
 	}
 }

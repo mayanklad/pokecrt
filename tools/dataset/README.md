@@ -7,7 +7,7 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 and 2 and the Litleo/Espurr family seeds.
+The current policy selects generations 1 through 3 and the Litleo/Espurr family seeds.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
 branches. The sorted species list therefore comes from data, not a National total.
@@ -44,8 +44,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 293 catalog species, 413 metadata forms,
-284 printable species, 391 collectible forms, and 786 assets. Twenty-two appearances
+The current coverage is 434 catalog species, 585 metadata forms,
+425 printable species, 563 collectible forms, and 1,130 assets. Twenty-two appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -94,7 +94,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-2 expansion changes that ID and adds 252 exact images. No trainer database exists, so no storage migration applies.
+Generation-3 expansion changes that ID and adds 344 exact images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -125,14 +125,30 @@ The pinned manifest contains 1,025 species and 1,594 source form records;
 Those source totals are audit observations, never completion denominators.
 Earlier batches reviewed starter forms, species #010–#024, Raticate Totem alias
 folding, Pyroar/Meowstic genders, then generation-1 evolution-family closure.
-The previous generation-1 batch inspected all 450 added sprites. The generation-2
-batch inspects 252 new sprites in 126 regular/shiny pairs.
+The previous generation-1 batch inspected all 450 added sprites. Generation 2 added 252 sprites; the generation-3 batch inspects 344 new sprites
+in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-2`. It requires the pinned metadata form table.
+Current rules version: `d06-auto-3`. It requires the pinned metadata form table.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated/unaudited artwork remains unavailable. No new source provider or
 visual-gender scope is accepted by this batch.
 
-Maximum cropped artwork dimensions in this batch are 52 columns by 54 source
+Maximum cropped artwork dimensions in this batch are 58 columns by 54 source
 pixel rows (up to 27 half-block terminal rows). Narrow terminals may wrap.
+
+
+## Excluded source templates
+
+`source_form_exclusions` records Spinda's `blank` and `filled` pattern templates.
+These identities have no exact PokéAPI variety/form match and are marked
+unofficial in the pinned inherited inventory. They are retained in coverage
+exclusion reasons, not promoted to Pokémon forms or folded into false aliases.
+A source exclusion requires a reason and matching species/slug/appearance evidence.
+It cannot hide a standard identity, an exact metadata form, or official artwork.
+Duplicate, unused, aliased, or already claimed exclusions fail validation.
+
+Castform standard/sunny/rainy/snowy types are Normal/Fire/Water/Ice from exact
+metadata varieties. Deoxys `normal` is a source alias of standard; attack,
+defense, and speed remain separate forms. Orientation files are not added.
+No new source provider or visual-gender audit scope is introduced by this batch.

@@ -96,7 +96,7 @@ func verifyFemaleProvenance(lock sourceLock, cache string, a assetMapping) (bool
 func validateSourceNames(m mappingConfig) error {
 	seen := map[int]bool{}
 	for _, name := range m.SourceNameOverrides {
-		if m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2") || !slices.Contains(m.CatalogSpecies, name.SpeciesID) || seen[name.SpeciesID] || strings.TrimSpace(name.SourceName) == "" || strings.TrimSpace(name.CanonicalName) == "" || name.SourceName == name.CanonicalName || strings.TrimSpace(name.Reason) == "" {
+		if m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3") || !slices.Contains(m.CatalogSpecies, name.SpeciesID) || seen[name.SpeciesID] || strings.TrimSpace(name.SourceName) == "" || strings.TrimSpace(name.CanonicalName) == "" || name.SourceName == name.CanonicalName || strings.TrimSpace(name.Reason) == "" {
 			return fmt.Errorf("invalid or duplicate source-name correction for #%03d", name.SpeciesID)
 		}
 		seen[name.SpeciesID] = true

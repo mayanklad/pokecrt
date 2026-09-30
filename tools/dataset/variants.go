@@ -24,7 +24,7 @@ func assetIdentity(a assetMapping) string {
 }
 
 func validateMappings(m *mappingConfig) error {
-	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2") {
+	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3") {
 		return fmt.Errorf("unsupported mapping rules %q", m.RulesVersion)
 	}
 	if m.SourceStandardForm != "base" || strings.TrimSpace(m.StandardFormReason) == "" || len(m.CatalogSpecies) == 0 {
@@ -59,7 +59,7 @@ func validateMappings(m *mappingConfig) error {
 		}
 		identity := assetIdentity(*a)
 		expectedPath, layoutErr := assetSourcePath(*a)
-		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2")) || a.Path != expectedPath || seen[identity] {
+		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3")) || a.Path != expectedPath || seen[identity] {
 			return fmt.Errorf("invalid or duplicate asset mapping %s", identity)
 		}
 		seen[identity] = true
@@ -209,6 +209,19 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 			}
 		}
 		result = append(result, normalizedForm{ID: mapping.ID, Name: mapping.Name, Types: types, DefaultGender: mapping.DefaultGender, Genders: mapping.Genders, SourceFormID: form.ID, SourceAliases: mapping.SourceAliases})
+	}
+	for _, exclusion := range m.SourceFormExclusions {
+		if exclusion.SpeciesID != id {
+			continue
+		}
+		form, err := sourceFormByID(source, exclusion.SourceFormID)
+		if err != nil {
+			return nil, err
+		}
+		if form.CanonicalForm != nil || form.ID == source.DefaultForm || claimed[form.ID] {
+			return nil, fmt.Errorf("invalid or already claimed source exclusion #%03d/%s", id, form.ID)
+		}
+		claimed[form.ID] = true
 	}
 	if !hasStandard {
 		return nil, fmt.Errorf("missing standard form mapping #%03d", id)

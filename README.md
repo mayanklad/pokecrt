@@ -8,17 +8,17 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-The development catalog contains all generation-1 and generation-2 species, their complete
+The development catalog contains all generation-1 through generation-3 species, their complete
 connected evolution families (including later-generation relatives), and the
-existing Pyroar/Meowstic families: 293 species and 413 metadata forms.
+existing Pyroar/Meowstic families: 434 species and 585 metadata forms.
 
-Audited artwork covers 284 species and 391 collectible forms, with 786 exact
+Audited artwork covers 425 species and 563 collectible forms, with 1,130 exact
 regular/shiny assets. Nine catalog species currently have metadata but no
 audited standard artwork. Twenty-two form appearances are explicitly excluded pending source
 quality/provider review. Printing never substitutes another appearance.
 
 Pyroar and Meowstic retain distinct male/female regular and shiny slots within
-one standard form. There are 286 standard regular artwork slots across 284
+one standard form. There are 427 standard regular artwork slots across 425
 eligible species; random printing samples species uniformly, not artwork slots.
 Other visual-gender combinations and wider inventory remain pending.
 
@@ -201,3 +201,7 @@ go run ./tools/render-preview --name meowstic --gender female --palette shiny
 Routine dataset inventory is derived automatically from pinned inputs. The mapping
 configuration contains selection policy and reviewed exceptions; see the
 [dataset guide](tools/dataset/README.md).
+
+Spinda’s unofficial blank/filled pattern templates are excluded source records,
+not collectible forms. Castform weather typings and Deoxys aliases come from
+pinned metadata and source identities.

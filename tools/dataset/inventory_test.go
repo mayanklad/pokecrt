@@ -144,3 +144,57 @@ func TestMetadataFormResolutionAndDefaultIdentity(t *testing.T) {
 		t.Fatal("accepted source/metadata default mismatch")
 	}
 }
+
+func TestSourceTemplatesRequireEvidenceAndDoNotBecomeForms(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		unofficial   bool
+		metadataForm bool
+		exclusion    string
+		valid        bool
+	}{
+		{"verified unofficial template", true, false, "blank", true},
+		{"official form cannot be hidden", false, false, "blank", false},
+		{"metadata form cannot be hidden", true, true, "blank", false},
+		{"unused exclusion rejected", true, false, "absent", false},
+		{"standard exclusion rejected", true, false, "base", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			lock, cache, m := automaticFixture(t)
+			m.RulesVersion = "d06-auto-3"
+			table := "identifier,pokemon_id\nbulbasaur,1\n"
+			if tc.metadataForm {
+				table += "bulbasaur-blank,1\n"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte(table))
+			unofficial := "false"
+			if tc.unofficial {
+				unofficial = "true"
+			}
+			fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/upstreams/msikma-pokemon.json", []byte(`{"001":{"idx":"001","slug":{"eng":"bulbasaur"},"gen-8":{"forms":{"$":{},"mega":{},"blank":{"is_unofficial_icon":`+unofficial+`}}}}}`))
+			editManifest(t, &lock, cache, func(s *sourceManifest) {
+				yes, no := true, false
+				s.Pokemon[0].Forms = append(s.Pokemon[0].Forms, sourceForm{ID: "blank", Label: "Blank", Slug: "bulbasaur-blank", HasRegular: &yes, HasShiny: &yes, IsGenerated: &no, Source: "msikma/pokesprite"})
+			})
+			m.SourceFormExclusions = []sourceFormExclusion{{SpeciesID: 1, SourceFormID: tc.exclusion, Reason: "Fixture source template is unofficial and has no metadata form"}}
+			resolved, e := deriveMappings(lock, cache, m)
+			if !tc.valid {
+				if e == nil {
+					t.Fatal("accepted unsupported exclusion")
+				}
+				return
+			}
+			if e != nil {
+				t.Fatal(e)
+			}
+			for _, f := range resolved.Forms {
+				if f.SourceFormID == "blank" {
+					t.Fatal("template became a collectible form")
+				}
+			}
+			if !strings.Contains(strings.Join(resolved.Exclusions, "\n"), "#001/blank") {
+				t.Fatal("excluded source record vanished from coverage reasons")
+			}
+		})
+	}
+}
