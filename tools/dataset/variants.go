@@ -55,7 +55,7 @@ func validateMappings(m *mappingConfig) error {
 			}
 		}
 		identity := assetIdentity(*a)
-		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || a.Path != "pokemon/"+a.Palette+"/"+a.SourceSlug+".png" || seen[identity] {
+		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || a.Path != "pokemon/"+a.Palette+"/"+a.SourceSlug+".png" || seen[identity] {
 			return fmt.Errorf("invalid or duplicate asset mapping %s", identity)
 		}
 		seen[identity] = true

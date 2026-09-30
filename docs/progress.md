@@ -3,9 +3,9 @@
 Specification revision/date: 30 September 2026, including approved section 25
 Current release target: v0.2 — Complete public engine
 Last completed milestone: v0.1 published
-Current increment: D06a — explicit form/variant normalization, prepared for owner verification
-Current source commit: b978f71e355a58e69dfcb47cbc3122c5a995d4f0
-Commit note: verified baseline before this D06a increment; update on the next increment.
+Current increment: separate source-ID/cache naming cleanup, prepared for owner verification
+Current source commit: d00c8a389f6a20360188eeca8499bd9ad6bd9538
+Commit note: verified D06a baseline before this naming cleanup; update on the next increment.
 Release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 Publication verified: normal release with Linux amd64 archive and SHA256SUMS attached.
 
@@ -20,7 +20,7 @@ Publication verified: normal release with Linux amd64 archive and SHA256SUMS att
 ## Dataset
 
 Development dataset ID:
-`44c9b62228d8ba8593cc10060fe74e5ebadb14591a79dd1373552a0e40909a03`
+`3d5af3be715de18bf313b0b00c87c14fabcee8c510d96f0a6fa4ac526303e47e`
 
 Published v0.1 dataset ID:
 `5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
@@ -51,7 +51,9 @@ Storage schema version: none.
 - Assistant D06a generation/check, full tests, and vet passed
 - Fixtures cover form typing, aliases, real shiny differences, visual gender pairs,
   invalid mappings, and folding source gender identities into one collectible form
-- Owner verification and commit of D06a remain pending
+- D06a committed by owner; naming cleanup generation/check, tests, and vet passed
+- Source ID/cache folder now pokesprite-v2; all pinned inputs and sprite bytes unchanged
+- Owner verification and commit of the naming cleanup remain pending
 
 ## Next
 

@@ -33,21 +33,21 @@ func fixtureDataset(t *testing.T) (sourceLock, string, mappingConfig) {
 	cache := t.TempDir()
 	lock := sourceLock{SchemaVersion: 1, Sources: []source{
 		{ID: "pokeapi", Repository: "example/metadata", Revision: strings.Repeat("a", 40), Terms: "Fixture metadata terms", Attribution: "Fixture"},
-		{ID: "pokesprite", Repository: "example/artwork", Revision: strings.Repeat("b", 40), Terms: "Fixture artwork terms", Attribution: "Fixture"},
+		{ID: "pokesprite-v2", Repository: "example/artwork", Revision: strings.Repeat("b", 40), Terms: "Fixture artwork terms", Attribution: "Fixture"},
 	}}
 	inputs := map[string][]byte{
-		"pokeapi/data/v2/csv/generations.csv":           []byte("id,identifier\n1,generation-i\n"),
-		"pokeapi/data/v2/csv/pokemon_colors.csv":        []byte("id,identifier\n5,green\n"),
-		"pokeapi/data/v2/csv/types.csv":                 []byte("id,identifier\n12,grass\n4,poison\n"),
-		"pokeapi/data/v2/csv/pokemon_species.csv":       []byte("id,identifier,generation_id,evolves_from_species_id,color_id,is_baby,is_legendary,is_mythical,has_gender_differences\n1,bulbasaur,1,,5,0,0,0,0\n2,ivysaur,1,1,5,0,0,0,0\n3,venusaur,1,2,5,0,0,0,1\n"),
-		"pokeapi/data/v2/csv/pokemon_species_names.csv": []byte("pokemon_species_id,local_language_id,name\n1,9,Bulbasaur\n2,9,Ivysaur\n3,9,Venusaur\n"),
-		"pokeapi/data/v2/csv/pokemon.csv":               []byte("id,species_id,is_default\n1,1,1\n2,2,1\n3,3,1\n"),
-		"pokeapi/data/v2/csv/pokemon_types.csv":         []byte("pokemon_id,type_id,slot\n1,12,1\n1,4,2\n2,12,1\n2,4,2\n3,12,1\n3,4,2\n"),
-		"pokeapi/LICENSE.md":                            []byte("Fixture metadata notice\n"),
-		"pokesprite/license.md":                         []byte("Fixture code notice\n"),
-		"pokesprite/contributors.md":                    []byte("Fixture credits\n"),
-		"pokesprite/pokemon/regular/bulbasaur.png":      encodeFixturePNG(t, false),
-		"pokesprite/sources/generated/asset-index.json": []byte(`{"_meta":{"generated_at":"excluded from identity"},"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false}}}`),
+		"pokeapi/data/v2/csv/generations.csv":              []byte("id,identifier\n1,generation-i\n"),
+		"pokeapi/data/v2/csv/pokemon_colors.csv":           []byte("id,identifier\n5,green\n"),
+		"pokeapi/data/v2/csv/types.csv":                    []byte("id,identifier\n12,grass\n4,poison\n"),
+		"pokeapi/data/v2/csv/pokemon_species.csv":          []byte("id,identifier,generation_id,evolves_from_species_id,color_id,is_baby,is_legendary,is_mythical,has_gender_differences\n1,bulbasaur,1,,5,0,0,0,0\n2,ivysaur,1,1,5,0,0,0,0\n3,venusaur,1,2,5,0,0,0,1\n"),
+		"pokeapi/data/v2/csv/pokemon_species_names.csv":    []byte("pokemon_species_id,local_language_id,name\n1,9,Bulbasaur\n2,9,Ivysaur\n3,9,Venusaur\n"),
+		"pokeapi/data/v2/csv/pokemon.csv":                  []byte("id,species_id,is_default\n1,1,1\n2,2,1\n3,3,1\n"),
+		"pokeapi/data/v2/csv/pokemon_types.csv":            []byte("pokemon_id,type_id,slot\n1,12,1\n1,4,2\n2,12,1\n2,4,2\n3,12,1\n3,4,2\n"),
+		"pokeapi/LICENSE.md":                               []byte("Fixture metadata notice\n"),
+		"pokesprite-v2/license.md":                         []byte("Fixture code notice\n"),
+		"pokesprite-v2/contributors.md":                    []byte("Fixture credits\n"),
+		"pokesprite-v2/pokemon/regular/bulbasaur.png":      encodeFixturePNG(t, false),
+		"pokesprite-v2/sources/generated/asset-index.json": []byte(`{"_meta":{"generated_at":"excluded from identity"},"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false}}}`),
 	}
 	manifest := sourceManifest{}
 	for i, name := range []string{"Bulbasaur", "Ivysaur", "Venusaur"} {
@@ -59,12 +59,12 @@ func fixtureDataset(t *testing.T) (sourceLock, string, mappingConfig) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	inputs["pokesprite/data/pokemon.json"] = manifestJSON
+	inputs["pokesprite-v2/data/pokemon.json"] = manifestJSON
 	for path, data := range inputs {
 		parts := strings.SplitN(path, "/", 2)
 		fixtureInput(t, &lock, cache, parts[0], parts[1], data)
 	}
-	mappings := mappingConfig{RulesVersion: "d02b-1", CatalogSpecies: []int{1, 2, 3}, SourceStandardForm: "base", StandardFormReason: "Fixture base-to-standard mapping", Assets: []assetMapping{{SpeciesID: 1, SourceID: "pokesprite", Path: "pokemon/regular/bulbasaur.png", SourceSlug: "bulbasaur", Reason: "Fixture regular asset"}}, Exclusions: []string{"Fixture excludes other appearances"}}
+	mappings := mappingConfig{RulesVersion: "d02b-1", CatalogSpecies: []int{1, 2, 3}, SourceStandardForm: "base", StandardFormReason: "Fixture base-to-standard mapping", Assets: []assetMapping{{SpeciesID: 1, SourceID: "pokesprite-v2", Path: "pokemon/regular/bulbasaur.png", SourceSlug: "bulbasaur", Reason: "Fixture regular asset"}}, Exclusions: []string{"Fixture excludes other appearances"}}
 	return lock, cache, mappings
 }
 
@@ -140,7 +140,7 @@ func TestGenerationIsDeterministicAndChecksDoNotOverwrite(t *testing.T) {
 	if first.DatasetID != second.DatasetID || !reflect.DeepEqual(first.Files, second.Files) {
 		t.Fatal("repeated generation changed identity or outputs")
 	}
-	fixtureInput(t, &lock, cache, "pokesprite", "sources/generated/asset-index.json", []byte(`{"_meta":{"generated_at":"different informational timestamp"},"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false}}}`))
+	fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/generated/asset-index.json", []byte(`{"_meta":{"generated_at":"different informational timestamp"},"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false}}}`))
 	withoutTimestampDrift, err := buildBundle(lock, cache, mappings)
 	if err != nil || withoutTimestampDrift.DatasetID != first.DatasetID {
 		t.Fatalf("informational timestamp changed dataset identity: %v", err)
@@ -197,13 +197,13 @@ func TestGenerationRejectsBadSourceData(t *testing.T) {
 			fixtureInput(t, l, c, "pokeapi", filename, bytes.Replace(data, []byte("1,bulbasaur,1,,"), []byte("1,bulbasaur,1,3,"), 1))
 		}},
 		{"generated provenance", func(t *testing.T, l *sourceLock, c string, _ *mappingConfig) {
-			fixtureInput(t, l, c, "pokesprite", "sources/generated/asset-index.json", []byte(`{"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":true}}}`))
+			fixtureInput(t, l, c, "pokesprite-v2", "sources/generated/asset-index.json", []byte(`{"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":true}}}`))
 		}},
 		{"invalid PNG", func(t *testing.T, l *sourceLock, c string, _ *mappingConfig) {
-			fixtureInput(t, l, c, "pokesprite", "pokemon/regular/bulbasaur.png", []byte("not a PNG"))
+			fixtureInput(t, l, c, "pokesprite-v2", "pokemon/regular/bulbasaur.png", []byte("not a PNG"))
 		}},
 		{"ambiguous alias", func(t *testing.T, l *sourceLock, c string, _ *mappingConfig) {
-			data, _, _, err := readInput(*l, c, "pokesprite", "data/pokemon.json")
+			data, _, _, err := readInput(*l, c, "pokesprite-v2", "data/pokemon.json")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -216,10 +216,10 @@ func TestGenerationRejectsBadSourceData(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			fixtureInput(t, l, c, "pokesprite", "data/pokemon.json", data)
+			fixtureInput(t, l, c, "pokesprite-v2", "data/pokemon.json", data)
 		}},
 		{"missing exact asset", func(t *testing.T, _ *sourceLock, c string, _ *mappingConfig) {
-			if err := os.Remove(filepath.Join(c, "pokesprite/pokemon/regular/bulbasaur.png")); err != nil {
+			if err := os.Remove(filepath.Join(c, "pokesprite-v2/pokemon/regular/bulbasaur.png")); err != nil {
 				t.Fatal(err)
 			}
 		}},

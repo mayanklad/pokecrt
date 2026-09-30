@@ -382,7 +382,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 		}
 		typeSlots[id][slot] = types[typeID]
 	}
-	data, _, _, err := readInput(lock, cache, "pokesprite", "data/pokemon.json")
+	data, _, _, err := readInput(lock, cache, "pokesprite-v2", "data/pokemon.json")
 	if err != nil {
 		return nil, nil, err
 	}

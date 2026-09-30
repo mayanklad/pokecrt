@@ -63,3 +63,11 @@ D02 is split for separate source and generation review. D02b adds normalization,
 mapping records, generated catalog, embedded PNGs/manifest, dataset ID,
 deterministic coverage, and generated drift checks. Full form/palette/gender
 expansion remains D06.
+
+## Source identifier
+
+The direct artwork source ID is `pokesprite-v2`, matching its cache directory
+`.cache/dataset/pokesprite-v2/`. This replaces the initial generic `pokesprite`
+label. Repository, revision, input hashes, and inherited `msikma/pokesprite`
+provenance remain unchanged. An existing verified cache can be moved to the new
+folder before running generation; a fresh cache can be fetched normally.

@@ -16,7 +16,7 @@
   "assets": [
     {
       "species_id": 1,
-      "source_id": "pokesprite",
+      "source_id": "pokesprite-v2",
       "path": "pokemon/regular/bulbasaur.png",
       "source_slug": "bulbasaur",
       "reason": "Audited initial standard regular sprite without a distinct visual gender.",
@@ -27,7 +27,7 @@
     },
     {
       "species_id": 6,
-      "source_id": "pokesprite",
+      "source_id": "pokesprite-v2",
       "path": "pokemon/regular/charizard.png",
       "source_slug": "charizard",
       "reason": "Audited initial standard regular sprite without a distinct visual gender.",
@@ -38,7 +38,7 @@
     },
     {
       "species_id": 7,
-      "source_id": "pokesprite",
+      "source_id": "pokesprite-v2",
       "path": "pokemon/regular/squirtle.png",
       "source_slug": "squirtle",
       "reason": "Audited initial standard regular sprite without a distinct visual gender.",

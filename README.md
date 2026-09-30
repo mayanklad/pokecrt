@@ -44,7 +44,9 @@ go run ./tools/dataset \
 
 Only this explicit developer `--fetch` step downloads sources. Inputs have pinned
 revisions, sizes, and SHA-256 hashes. Valid cached inputs are reused; corrupt
-inputs fail visibly. Downloads stay in the ignored `.cache/dataset` directory.
+inputs fail visibly. Downloads stay in the ignored `.cache/dataset` directory. Artwork inputs use
+the source ID and cache folder `pokesprite-v2`; inherited `msikma/pokesprite`
+provenance identifies the original artwork provider and is preserved.
 With verified inputs already cached, omit `--fetch` to generate offline.
 
 For an intentional dataset/schema update, use `--generate --check` instead of

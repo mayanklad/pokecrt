@@ -28,7 +28,7 @@ func variantFixture(t *testing.T) (sourceLock, string, mappingConfig) {
 
 func editManifest(t *testing.T, lock *sourceLock, cache string, edit func(*sourceManifest)) {
 	t.Helper()
-	data, _, _, err := readInput(*lock, cache, "pokesprite", "data/pokemon.json")
+	data, _, _, err := readInput(*lock, cache, "pokesprite-v2", "data/pokemon.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func editManifest(t *testing.T, lock *sourceLock, cache string, edit func(*sourc
 	if err != nil {
 		t.Fatal(err)
 	}
-	fixtureInput(t, lock, cache, "pokesprite", "data/pokemon.json", data)
+	fixtureInput(t, lock, cache, "pokesprite-v2", "data/pokemon.json", data)
 }
 
 func TestFormTypingAndSourceOnlyAliases(t *testing.T) {
@@ -89,9 +89,9 @@ func TestMappedShinyNeedsRealDifferentPixels(t *testing.T) {
 	lock, cache, m := variantFixture(t)
 	yes := true
 	editManifest(t, &lock, cache, func(manifest *sourceManifest) { manifest.Pokemon[0].Forms[0].HasShiny = &yes })
-	fixtureInput(t, &lock, cache, "pokesprite", "sources/generated/asset-index.json", []byte(`{"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false},"shiny":{"source":"msikma/pokesprite","is_generated":false}}}`))
+	fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/generated/asset-index.json", []byte(`{"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false},"shiny":{"source":"msikma/pokesprite","is_generated":false}}}`))
 	data := encodeFixturePNG(t, false)
-	fixtureInput(t, &lock, cache, "pokesprite", "pokemon/shiny/bulbasaur.png", data)
+	fixtureInput(t, &lock, cache, "pokesprite-v2", "pokemon/shiny/bulbasaur.png", data)
 	shiny := m.Assets[0]
 	shiny.Palette = "shiny"
 	shiny.Path = "pokemon/shiny/bulbasaur.png"
@@ -109,7 +109,7 @@ func TestMappedShinyNeedsRealDifferentPixels(t *testing.T) {
 	if err := png.Encode(&different, decoded); err != nil {
 		t.Fatal(err)
 	}
-	fixtureInput(t, &lock, cache, "pokesprite", shiny.Path, different.Bytes())
+	fixtureInput(t, &lock, cache, "pokesprite-v2", shiny.Path, different.Bytes())
 	bundle, err := buildBundle(lock, cache, m)
 	if err != nil {
 		t.Fatal(err)
@@ -192,7 +192,7 @@ func TestSourceGenderFormFoldsIntoOneCollectibleForm(t *testing.T) {
 	female.SourceSlug = "bulbasaur-female"
 	female.Path = "pokemon/regular/bulbasaur-female.png"
 	m.Assets = append(m.Assets, female)
-	fixtureInput(t, &lock, cache, "pokesprite", "sources/generated/asset-index.json", []byte(`{"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false}},"bulbasaur-female":{"regular":{"source":"msikma/pokesprite","is_generated":false}}}`))
+	fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/generated/asset-index.json", []byte(`{"bulbasaur":{"regular":{"source":"msikma/pokesprite","is_generated":false}},"bulbasaur-female":{"regular":{"source":"msikma/pokesprite","is_generated":false}}}`))
 	pixels, err := png.Decode(bytes.NewReader(encodeFixturePNG(t, false)))
 	if err != nil {
 		t.Fatal(err)
@@ -202,7 +202,7 @@ func TestSourceGenderFormFoldsIntoOneCollectibleForm(t *testing.T) {
 	if err := png.Encode(&data, pixels); err != nil {
 		t.Fatal(err)
 	}
-	fixtureInput(t, &lock, cache, "pokesprite", female.Path, data.Bytes())
+	fixtureInput(t, &lock, cache, "pokesprite-v2", female.Path, data.Bytes())
 	bundle, err := buildBundle(lock, cache, m)
 	if err != nil {
 		t.Fatal(err)

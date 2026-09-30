@@ -51,7 +51,7 @@
       ]
     },
     {
-      "id": "pokesprite",
+      "id": "pokesprite-v2",
       "repository": "darknesspwnsu/pokesprite-v2",
       "revision": "32ab52ea6b61871da34d9a3c61c7760c65a37af7",
       "terms": "MIT applies to code and non-image material. README excludes sprite images from MIT and identifies Nintendo/Creatures Inc./GAME FREAK Inc. copyright. contributors.md invites project reuse; this is not a license from the underlying image rights holders.",
