@@ -1,65 +1,54 @@
-# v0.1 release candidate
+# v0.1 — Basic offline printer
 
-Status: unpublished; release checks remain open.
+Publication status: prepared; the repository owner has not yet confirmed
+creation of the tag or GitHub release.
 
-## Implemented
+## Release notes
 
-- Offline named and uniform random standard regular printing
-- Compact and sprite output
-- Truecolor half blocks, transparency, and natural source-pixel scale
-- NO_COLOR, piped ANSI, quiet broken pipes, and strict invocation errors
-- Root and print help, version, and generated dataset identity
+PokéCRT v0.1 prints Pokémon artwork offline in a Linux terminal.
 
-Coverage: 9 catalog species; 3 standard regular assets (Bulbasaur, Charizard,
-Squirtle); no shiny or distinct visual gender assets.
+- Print a named Pokémon or choose uniformly among available species.
+- Choose compact output (sprite plus number/name) or sprite-only output.
+- Truecolor half blocks preserve source-pixel scale and terminal-background transparency.
+- NO_COLOR disables ANSI colors; colors otherwise survive piping.
+- Help/version, strict invocation errors, and quiet broken-pipe handling.
+- No trainer setup, network access, source checkout, or runtime data files required.
 
-Dataset ID: `5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
+Coverage: 9 catalog species; 3 standard regular sprites: Bulbasaur, Charizard,
+Squirtle. Six catalog species have no selected artwork. No shiny or distinct
+visual gender artwork is included. Missing artwork fails without substitution.
 
-Supported release target: Linux amd64. No trainer storage or state migration is
-introduced. Filters, public catalog listing, forms, shiny/gender selection,
-trainers, encounters, achievements, and TUI are not part of v0.1.
+Not implemented: metadata filters, form/gender/shiny selectors, public list,
+trainer profiles, encounters, achievements, and TUI. Supported target: Linux
+amd64. No trainer storage or state migration is introduced.
 
-## Before publication
+Dataset ID:
+`5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
 
-- [x] Owner selected MIT for original PokéCRT code; LICENSE is prepared.
-- [ ] Complete specification section 13 source-image redistribution review.
-- [ ] Run generation drift checks, tests, and vet on the final source.
-- [ ] Review all three colored sprites in a real Linux terminal, including a
-      nonblack background and a narrow terminal; confirm no stale colors.
-- [ ] Check installed output with NO_COLOR unset, empty, and nonempty.
-- [ ] Build the archive from the final tagged source and verify SHA256SUMS.
-- [ ] Extract and run the included executable outside the checkout, with no
-      development cache or trainer directory and network unavailable.
-- [ ] Verify version, dataset ID, executable mode, notices, and coverage notes.
+PokéCRT is an unofficial fan project. Original code is MIT licensed. Pokémon
+artwork retains its respective owners' rights. PokéSprite v2 and inherited
+artwork provenance are credited in the included notices. The owner has approved
+attributed fan-project distribution; underlying rights-holder clearance and
+endorsement are not claimed.
 
-v0.1 has no filter or catalog command to include in its smoke test. Those checks
-apply once the corresponding features land.
+## Verification record
 
-## Archive smoke commands
+- [x] MIT code license committed.
+- [x] Owner approved the project-wide fan-project policy and section 13 amendment.
+- [x] Pinned generation checks, tests, vet, and Linux build passed on the candidate.
+- [x] All three sprites visually reviewed on a light terminal background.
+- [x] NO_COLOR and piped ANSI checked; closed-pipe integration test passed.
+- [x] Extracted v0.1 candidate ran outside the checkout with matching dataset ID.
+- [x] User's unshare -Urn check rendered Charizard with network isolated.
+- [x] Candidate archive checksum passed.
+- [ ] Final policy/notice changes regenerated, tested, and committed by owner.
+- [ ] Final tag created and pushed by owner.
+- [ ] Fresh archive built from the clean final tag; checksum and extraction checked.
+- [ ] GitHub release published by owner with archive and SHA256SUMS.
 
-These commands prepare and test a local candidate. Public distribution remains
-pending the artwork review and final smoke checks:
+The screenshot run reused an existing candidate archive. The final archive must
+be rebuilt after committing the policy, notices, and build-preparation changes.
+Generated PNGs are ignored and prepared locally from verified pinned inputs.
 
-```bash
-sh scripts/package.sh v0.1
-(cd dist && sha256sum -c SHA256SUMS)
-smoke_dir=$(mktemp -d)
-tar -xzf dist/pokecrt_v0.1_linux_amd64.tar.gz -C "$smoke_dir"
-(
-  cd "$smoke_dir"
-  ./pokecrt --help
-  ./pokecrt --version
-  ./pokecrt print --help
-  ./pokecrt print
-  ./pokecrt print --name charizard
-  ./pokecrt print --name squirtle --output sprite
-  NO_COLOR=1 ./pokecrt print --name bulbasaur
-)
-```
-
-Repeat the extracted-binary checks with network unavailable. The binary should
-work with only its embedded data. Keep the temporary directory until review is
-complete, then remove it manually.
-
-Tagging and GitHub release publication are performed by the repository owner
-after the gates pass. No release has been created by the assistant.
+Narrow-terminal wrapping is expected at natural size; no destructive resizing
+is performed. v0.1 has no filter or catalog command to include in its smoke test.

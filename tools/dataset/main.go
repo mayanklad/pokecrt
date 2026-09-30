@@ -22,6 +22,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags := flag.NewFlagSet("dataset", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	fetch := flags.Bool("fetch", false, "Download and verify pinned source inputs")
+	prepare := flags.Bool("prepare-assets", false, "Verify generated metadata and materialize ignored sprite assets")
 	generate := flags.Bool("generate", false, "Generate normalized catalog, assets, and coverage")
 	check := flags.Bool("check", false, "Verify pinned inputs and, with mappings/out, generated output drift")
 	sourcesPath := flags.String("sources", "", "Explicit source lock file path")
@@ -34,12 +35,12 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		}
 		return 2
 	}
-	if flags.NArg() != 0 || (!*fetch && !*generate && !*check) || *sourcesPath == "" || *cachePath == "" {
-		fmt.Fprintln(stderr, "Usage: go run ./tools/dataset --sources <file> --cache <dir> [--mappings <file> --out <root>] --fetch|--generate|--check")
+	if flags.NArg() != 0 || (!*fetch && !*generate && !*prepare && !*check) || *sourcesPath == "" || *cachePath == "" {
+		fmt.Fprintln(stderr, "Usage: go run ./tools/dataset --sources <file> --cache <dir> [--mappings <file> --out <root>] --fetch|--generate|--prepare-assets|--check")
 		return 2
 	}
-	if (*mappingsPath == "") != (*outPath == "") || (*generate && *mappingsPath == "") || (*mappingsPath != "" && !*generate && !*check) {
-		fmt.Fprintln(stderr, "dataset: --mappings and --out must be provided together for --generate or generated --check")
+	if (*mappingsPath == "") != (*outPath == "") || ((*generate || *prepare) && *mappingsPath == "") || (*mappingsPath != "" && !*generate && !*prepare && !*check) {
+		fmt.Fprintln(stderr, "dataset: --mappings and --out must be provided together for --generate, --prepare-assets or generated --check")
 		return 2
 	}
 	lock, err := readLock(*sourcesPath)
@@ -62,6 +63,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		bundle, err := buildBundle(lock, *cachePath, mappings)
 		if err == nil && *generate {
 			err = writeBundle(bundle, *outPath)
+		}
+		if err == nil && *prepare {
+			err = prepareAssets(bundle, *outPath)
 		}
 		if err == nil && *check {
 			err = checkBundle(bundle, *outPath)

@@ -253,3 +253,41 @@ func TestEvolutionStageBranchingAndMissingReference(t *testing.T) {
 		t.Fatal("missing evolution reference accepted")
 	}
 }
+
+func TestPrepareAssetsFreshCheckoutAndDrift(t *testing.T) {
+	root := t.TempDir()
+	bundle := generatedBundle{Files: map[string][]byte{
+		"internal/catalog/generated.go":      []byte("metadata"),
+		"internal/sprite/assets/fixture.png": []byte("image"),
+	}}
+	metadata := filepath.Join(root, "internal/catalog/generated.go")
+	if err := os.MkdirAll(filepath.Dir(metadata), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(metadata, []byte("drift"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	asset := filepath.Join(root, "internal/sprite/assets/fixture.png")
+	if err := prepareAssets(bundle, root); err == nil {
+		t.Fatal("accepted metadata drift")
+	}
+	if _, err := os.Stat(asset); !os.IsNotExist(err) {
+		t.Fatal("wrote sprite before metadata verification")
+	}
+	if err := os.WriteFile(metadata, []byte("metadata"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := prepareAssets(bundle, root); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkBundle(bundle, root); err != nil {
+		t.Fatal(err)
+	}
+	extra := filepath.Join(root, "internal/sprite/assets/unexpected.png")
+	if err := os.WriteFile(extra, []byte("unexpected"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := prepareAssets(bundle, root); err == nil {
+		t.Fatal("accepted unexpected sprite")
+	}
+}

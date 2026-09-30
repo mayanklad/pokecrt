@@ -24,11 +24,16 @@ nongenerated provenance record. That verifies their identity and recorded
 provenance, not ownership or redistribution clearance. Cropping transparent
 margins does not change this distinction.
 
-The specification's section 13 redistribution gate remains unresolved. Generated
-PNGs stay local. A local test candidate can be built, but the public release
-must not claim that these images are MIT licensed or that rights have been
-cleared. Complete the gate with a documented applicable permission/terms basis
-or a vetted replacement input before publication.
+On 30 September 2026, the owner approved attributed fan-project releases with
+bundled sprites. The project-wide policy is recorded in docs/release-policy.md
+and applies to v0.1 and subsequent releases. Source PNGs are downloaded and generated during build preparation, excluded
+from Git, and embedded into compiled binaries.
+
+This decision does not establish an underlying rights-holder grant. Pokémon
+artwork remains under its respective owners' rights and is not licensed under
+PokéCRT's MIT code license. PokéCRT is unofficial and is not affiliated with or
+endorsed by Nintendo, Creatures Inc., GAME FREAK Inc., or The Pokémon Company.
+Preserve source provenance, credits, and notices in distributed packages.
 
 References:
 - https://github.com/darknesspwnsu/pokesprite-v2/blob/32ab52ea6b61871da34d9a3c61c7760c65a37af7/readme.md

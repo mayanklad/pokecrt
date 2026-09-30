@@ -16,23 +16,26 @@ The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
 natural-size output; sprites are not resized automatically.
 
-A public release is pending. Image redistribution review remains open. Original PokéCRT code is licensed
-under MIT; that license does not cover third-party Pokémon artwork. Generated PNGs stay local until
-that review is complete. See [source audit](tools/dataset/source-audit.md) and
-[third-party notices](THIRD_PARTY_NOTICES.md).
+PokéCRT is an unofficial fan project. The owner has approved attributed releases
+with bundled sprites under the [release policy](docs/release-policy.md).
+Original PokéCRT code is MIT licensed; Pokémon artwork retains its respective
+owners' rights. No rights-holder permission or endorsement is claimed. See
+[licensing scope](LICENSING.md), [source audit](tools/dataset/source-audit.md),
+and [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Prepare a source checkout
 
 Use Go 1.27.0 or newer. Development verification currently uses Go 1.27.1.
-Run from the repository root. A fresh checkout needs local PNG generation before
-building because the executable embeds those files.
+Run from the repository root. PNGs are generated locally and excluded from Git.
+Prepare them before compiling or testing a fresh checkout; Go embeds their bytes
+into the executable. Pinned inputs and hashes make preparation reproducible.
 
 ```bash
 go run ./tools/dataset \
   --sources tools/dataset/sources.json \
   --cache .cache/dataset \
   --mappings tools/dataset/mappings.json \
-  --out . --fetch --generate --check
+  --out . --fetch --prepare-assets --check
 ```
 
 Only this explicit developer `--fetch` step downloads sources. Inputs have pinned
@@ -133,14 +136,16 @@ sh scripts/package.sh v0.1
 (cd dist && sha256sum -c SHA256SUMS)
 ```
 
-The script checks generated drift, tests, and vet; builds Linux amd64 with CGO
+The script prepares ignored sprites from verified cached inputs, rejects generated
+metadata drift, runs tests and vet; builds Linux amd64 with CGO
 disabled, trimmed paths, and the requested version; and packages the executable,
 README, LICENSE, licensing scope, third-party notices, and coverage notes. It writes
 `dist/pokecrt_v0.1_linux_amd64.tar.gz` and `dist/SHA256SUMS`. An existing archive
 is not overwritten. It never downloads sources or publishes anything.
 
-Before distribution, complete image-rights review and the
-[release checklist](docs/release-v0.1.md). Cross-compilation alone does not prove
+Before distribution, complete the
+[release checklist](docs/release-v0.1.md) and preserve the approved fan-project
+policy and third-party notices. Cross-compilation alone does not prove
 support for another platform.
 
 ## Project documents

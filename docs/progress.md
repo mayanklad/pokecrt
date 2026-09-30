@@ -1,84 +1,72 @@
 # Implementation progress
 
 Specification revision/date: 30 September 2026
+Specification amendment: docs/release-policy.md, approved by owner
 Current release target: v0.1 — Basic printer
-Current development step: v0.1 release preparation — D06 paused
-Current source commit: 959e4f66b89d69d73a2ca116ade08c459983d9c7
-Commit reference note: D05 baseline. Release licensing/documentation changes await user application. No release is published.
+Current development step: final v0.1 publication preparation; D06 paused
+Current source commit: c3e184fe4a0bc9b867feee1cf81b6ad0b020a0b1
+Commit reference note: baseline before final policy/notices/build-preparation commit.
+Publication status: final tag and GitHub release are not yet confirmed.
 
 Implemented runtime commands:
-- Root help
-- --help / -h
-- --version with generated dataset identity
+- Root help, --help / -h, --version with dataset identity
 - print --help / -h
-- print with exact canonical species name or generated alias
-- print with uniform random eligible species selection
-- compact (default) and sprite output
+- Named or uniformly random standard regular printing
+- Compact (default) and sprite-only output
 
 Implemented developer tooling:
 - Pinned downloads and SHA-256 verification
-- Catalog and asset normalization with deterministic transparent-margin cropping
-- Deterministic generation and offline generated-output drift checks
-- Coverage reports and third-party notices
-- Local sprite preview via tools/render-preview
-- Local executable installation via scripts/install.sh
-- Linux amd64 candidate packaging and checksums via scripts/package.sh
-- Release checklist in docs/release-v0.1.md
+- Deterministic catalog/assets/notices/coverage generation and offline drift checks
+- Local render preview, installation, and Linux amd64 archive/checksum packaging
 
-Implemented rendering:
-- Truecolor half blocks at source-pixel scale
-- Transparent halves use the terminal's default background
-- Odd heights, nonzero image origins, and color resets
-- Monochrome block output when color is disabled
-- Partial-alpha rejection without returning partial output
-- Preview honors nonempty NO_COLOR and preserves ANSI through pipes otherwise
+Rendering:
+- Truecolor source-pixel half blocks and terminal-default transparency
+- Odd-height handling and color resets
+- Nonempty NO_COLOR suppresses ANSI; pipes otherwise preserve colors
+- Partial alpha is rejected; failed rendering returns no partial artwork
 
 Dataset ID:
 5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4
 
 Coverage:
 - 9 catalog species
-- 3 eligible species and standard regular sprites
-- 0 shiny sprites
-- 0 distinct visual gender slots
-- 3 exact eligible variants
-- Reports: tools/dataset/coverage.json and coverage.md
-- Explicit Git ignore exceptions allow these reports to be committed
+- 3 eligible species, standard regular sprites, and exact variants
+- 0 shiny sprites and distinct visual gender slots
+- Six catalog species lack artwork
+- Coverage reports: tools/dataset/coverage.json and coverage.md
 
 Storage schema version: none
 
 Verification:
-- D02b user formatting, tests, vet, build, generation, and drift checks passed
-- D03 assistant mirror tests and vet passed
-- D03 preview build and piped ANSI/NO_COLOR checks passed
-- D03 committed; user real-terminal review is not recorded here
-- D04 assistant mirror tests, vet, and build passed
-- D04 exact output, selector boundaries, failures, NO_COLOR, and no-state tests passed
-- D04 user formatting, tests, vet, build, printing, and error statuses passed
-- D05 assistant tests and vet passed
-- D05 installed-binary tests verify version, piped ANSI, NO_COLOR, closed pipes, and no trainer state
-- D05 installer smoke check passed
-- D05 packaging refuses a missing LICENSE; temporary fixture archive verification passed
-- Real local v0.1 candidate archive, checksum, Linux amd64 executable, version, and extracted-binary checks passed in the assistant mirror
-- User visual/network-disabled checks remain pending; this environment does not permit an isolated network namespace
+- User generation checks, tests, vet, and build passed
+- Candidate checksums and matching v0.1/dataset metadata verified
+- User screenshots show all three colored sprites on a light background
+- Monochrome NO_COLOR output and network-isolated unshare printing verified
+- Assistant installed-binary tests cover pipe handling and no trainer state
+- Assistant tests, vet, and race suite passed after build-preparation changes
+- Final policy/notices/build-preparation commit, clean tag rebuild, and publication remain pending
+
+Distribution decision:
+- Owner selected MIT for original code
+- Owner approved attributed fan-project bundles on 30 September 2026
+- Underlying image rights remain unresolved; no clearance or endorsement is claimed
+- Generated PNGs remain outside Git; pinned preparation and Go embedding support offline binaries
+- Package preserves licensing scope, provenance, notices, coverage, and policy
 
 Known limitations:
-- Public filters, forms, genders, and shiny selectors await D06
-- Six catalog species have no selected artwork
-- Full coverage, forms, palettes, and visual genders remain scheduled for D06
-- Source-image redistribution gate remains open under specification section 13
-- Generated PNGs remain local pending that gate
-- Owner selected MIT for original code; LICENSE and LICENSING.md are prepared
-- Public v0.1 tag/release remains unpublished
+- Public filters/selectors await D07; inventory expansion remains D06
+- Trainers, encounters, achievements, and TUI are not implemented
+- Initial verified platform is Linux amd64
 
-Next development step: complete v0.1 release checks; D06 stays unapplied
-Release work: resolve code/image licensing and complete v0.1 smoke checks before publication
+Next: publish v0.1, then resume D06 from this baseline.
+D06a files previously supplied have not been applied.
 
 Approved deviations:
-- Specification remains local and excluded from Git history
+- Specification stays local and excluded from Git history
 - D02 split into input verification and normalization/bundling
+- Section 13 amended by the owner-approved fan-project release policy
 
 Workflow:
-- Complete files in chat or individual files; no ZIPs
-- User applies changes, verifies, commits, and pushes
+- Complete files in chat or individual downloads; no ZIPs
+- User applies changes, tests, commits, pushes, tags, and publishes
 - Assistant GitHub operations remain read-only

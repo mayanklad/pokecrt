@@ -40,3 +40,8 @@ go.work.sum
 # Committed dataset inventory reports
 !/tools/dataset/coverage.json
 !/tools/dataset/coverage.md
+
+# Generated sprites are prepared locally and embedded at compile time
+/internal/sprite/assets/*.png
+/docs/specification.md
+/specification.md
