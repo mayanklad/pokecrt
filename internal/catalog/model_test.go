@@ -26,3 +26,32 @@ func TestExactSpeciesLookupAndIndependentCopies(t *testing.T) {
 		}
 	}
 }
+
+func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
+	species, ok := ByNumber(6)
+	if !ok || len(species.Forms) != 4 {
+		t.Fatalf("Charizard forms: %+v", species.Forms)
+	}
+	var standard, megaX Form
+	for _, form := range species.Forms {
+		switch form.ID {
+		case "standard":
+			standard = form
+		case "mega-x":
+			megaX = form
+		}
+	}
+	if len(standard.Types) != 2 || standard.Types[1] != "flying" || len(megaX.Types) != 2 || megaX.Types[1] != "dragon" {
+		t.Fatalf("standard=%+v mega-x=%+v", standard, megaX)
+	}
+	if standard.DefaultGender != "default" || len(standard.Genders) != 1 {
+		t.Fatalf("fabricated gender identity: %+v", standard)
+	}
+	count := 0
+	for _, species := range All() {
+		count += len(species.Forms)
+	}
+	if count != 16 {
+		t.Fatalf("form count=%d; want 16 in the current mapping", count)
+	}
+}

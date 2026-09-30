@@ -52,3 +52,10 @@ Generated PNGs are ignored and prepared locally from verified pinned inputs.
 
 Narrow-terminal wrapping is expected at natural size; no destructive resizing
 is performed. v0.1 has no filter or catalog command to include in its smoke test.
+
+## Publication record
+
+Published 30 September 2026 as a normal release, with Linux amd64 archive and
+SHA256SUMS attached. Release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
+Source: `b978f71e355a58e69dfcb47cbc3122c5a995d4f0`.
+The checklist above records the preparation history; publication is complete.

@@ -20,15 +20,42 @@ type mappingConfig struct {
 	SourceStandardForm string         `json:"source_standard_form"`
 	StandardFormReason string         `json:"standard_form_reason"`
 	Assets             []assetMapping `json:"assets"`
+	Forms              []formMapping  `json:"forms,omitempty"`
 	Exclusions         []string       `json:"exclusions"`
 }
 
 type assetMapping struct {
-	SpeciesID  int    `json:"species_id"`
-	SourceID   string `json:"source_id"`
-	Path       string `json:"path"`
-	SourceSlug string `json:"source_slug"`
-	Reason     string `json:"reason"`
+	SpeciesID    int    `json:"species_id"`
+	SourceID     string `json:"source_id"`
+	Path         string `json:"path"`
+	SourceSlug   string `json:"source_slug"`
+	Reason       string `json:"reason"`
+	FormID       string `json:"form_id,omitempty"`
+	SourceFormID string `json:"source_form_id,omitempty"`
+	Gender       string `json:"gender,omitempty"`
+	Palette      string `json:"palette,omitempty"`
+}
+
+type formMapping struct {
+	SpeciesID     int      `json:"species_id"`
+	ID            string   `json:"id"`
+	Name          string   `json:"name"`
+	SourceFormID  string   `json:"source_form_id"`
+	PokemonID     int      `json:"pokemon_id"`
+	DefaultGender string   `json:"default_gender"`
+	Genders       []string `json:"genders"`
+	SourceAliases []string `json:"source_aliases,omitempty"`
+	Reason        string   `json:"reason"`
+}
+
+type normalizedForm struct {
+	ID            string
+	Name          string
+	Types         []string
+	DefaultGender string
+	Genders       []string
+	SourceFormID  string
+	SourceAliases []string
 }
 
 type normalizedSpecies struct {
@@ -45,6 +72,7 @@ type normalizedSpecies struct {
 	EvolvesFrom int
 	EvolvesTo   []int
 	Types       []string
+	Forms       []normalizedForm
 }
 
 type sourceManifest struct {
@@ -65,6 +93,7 @@ type sourceForm struct {
 	Slug          string  `json:"file_slug"`
 	CanonicalForm *string `json:"canonical_form"`
 	HasRegular    *bool   `json:"has_regular"`
+	HasShiny      *bool   `json:"has_shiny"`
 	IsGenerated   *bool   `json:"is_generated"`
 	Source        string  `json:"source"`
 }
@@ -84,8 +113,8 @@ func readMappings(filename string) (mappingConfig, error) {
 	if err := decoder.Decode(&extra); err != io.EOF {
 		return mappings, fmt.Errorf("mappings must contain exactly one JSON document")
 	}
-	if mappings.RulesVersion != "d02b-1" || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
-		return mappings, fmt.Errorf("mappings require d02b-1 rules, base-to-standard reason, and species IDs")
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
 	for i, id := range mappings.CatalogSpecies {
@@ -93,11 +122,8 @@ func readMappings(filename string) (mappingConfig, error) {
 			return mappings, fmt.Errorf("invalid or duplicate mapped species ID %d", id)
 		}
 	}
-	sort.Slice(mappings.Assets, func(i, j int) bool { return mappings.Assets[i].SpeciesID < mappings.Assets[j].SpeciesID })
-	for i, asset := range mappings.Assets {
-		if !slices.Contains(mappings.CatalogSpecies, asset.SpeciesID) || asset.SourceID != "pokesprite" || asset.Path == "" || asset.SourceSlug == "" || strings.TrimSpace(asset.Reason) == "" || (i > 0 && asset.SpeciesID == mappings.Assets[i-1].SpeciesID) {
-			return mappings, fmt.Errorf("invalid or duplicate standard asset mapping for #%03d", asset.SpeciesID)
-		}
+	if err := validateMappings(&mappings); err != nil {
+		return mappings, err
 	}
 	return mappings, nil
 }
@@ -306,6 +332,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 		names[id] = row["name"]
 	}
 	defaults := make(map[int]int)
+	varietyOwners := make(map[int]int)
 	pokemonRows, err := readTable(lock, cache, "pokemon.csv", "id", "species_id", "is_default")
 	if err != nil {
 		return nil, nil, err
@@ -315,18 +342,19 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 		if err != nil {
 			return nil, nil, err
 		}
-		if !isDefault {
-			continue
-		}
+
 		id, err := integer(row, "id", false)
 		if err != nil {
 			return nil, nil, err
 		}
 		speciesID, err := integer(row, "species_id", false)
-		if err != nil || defaults[speciesID] != 0 || speciesRows[speciesID] == nil {
+		if err != nil || speciesRows[speciesID] == nil || varietyOwners[id] != 0 || (isDefault && defaults[speciesID] != 0) {
 			return nil, nil, fmt.Errorf("invalid or duplicate default Pokemon variety")
 		}
-		defaults[speciesID] = id
+		varietyOwners[id] = speciesID
+		if isDefault {
+			defaults[speciesID] = id
+		}
 	}
 	typeSlots := make(map[int]map[int]string)
 	typeRows, err := readTable(lock, cache, "pokemon_types.csv", "pokemon_id", "type_id", "slot")
@@ -396,16 +424,8 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 		if err != nil {
 			return nil, nil, err
 		}
-		visualDifferences, err := sourceBool(row, "has_gender_differences")
-		if err != nil {
+		if _, err := sourceBool(row, "has_gender_differences"); err != nil {
 			return nil, nil, err
-		}
-		if visualDifferences {
-			for _, asset := range mappings.Assets {
-				if asset.SpeciesID == id {
-					return nil, nil, fmt.Errorf("#%03d requires explicit visual-gender asset normalization; the initial rule only supports default artwork", id)
-				}
-			}
 		}
 		sourceSpecies := sourceSpeciesByID[id]
 		if sourceSpecies.Slug != row["identifier"] || sourceSpecies.Name != names[id] || sourceSpecies.DefaultForm != mappings.SourceStandardForm {
@@ -444,7 +464,11 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			}
 			aliasOwners[alias] = id
 		}
-		result = append(result, normalizedSpecies{ID: id, Name: names[id], Slug: row["identifier"], Aliases: aliases, Generation: generation, Color: colors[color], Stage: stages[id], Baby: baby, Legendary: legendary, Mythical: mythical, EvolvesFrom: parents[id], EvolvesTo: relations, Types: selectedTypes})
+		forms, err := normalizeForms(id, sourceSpecies, mappings, defaults[id], varietyOwners, typeSlots)
+		if err != nil {
+			return nil, nil, err
+		}
+		result = append(result, normalizedSpecies{ID: id, Name: names[id], Slug: row["identifier"], Aliases: aliases, Generation: generation, Color: colors[color], Stage: stages[id], Baby: baby, Legendary: legendary, Mythical: mythical, EvolvesFrom: parents[id], EvolvesTo: relations, Types: selectedTypes, Forms: forms})
 	}
 	return result, sourceSpeciesByID, nil
 }

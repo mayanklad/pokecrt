@@ -3,14 +3,18 @@
 Offline Pokémon terminal artwork, written in Go. Print one named or randomly
 selected Pokémon with truecolor Unicode half blocks at the original pixel scale.
 
+Published release: [v0.1](https://github.com/mayanklad/pokecrt/releases/tag/v0.1).
+The current development branch targets v0.2.
+
 ## Current coverage
 
 This development build prints standard regular Bulbasaur, Charizard, and
-Squirtle. The catalog contains nine starter-family species; six have no selected
+Squirtle. The development catalog contains nine starter-family species and 16 metadata
+forms with form-specific typing; six species have no selected
 artwork. Random printing chooses uniformly among the three available species.
 Missing artwork produces an error instead of substituting another appearance.
 
-Public filters, alternate forms, shiny palettes, visual gender selectors, catalog
+Public filters, alternate-form printing, shiny palettes, visual gender selectors, catalog
 listing, trainers, encounters, achievements, and the TUI are not implemented yet.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -42,6 +46,10 @@ Only this explicit developer `--fetch` step downloads sources. Inputs have pinne
 revisions, sizes, and SHA-256 hashes. Valid cached inputs are reused; corrupt
 inputs fail visibly. Downloads stay in the ignored `.cache/dataset` directory.
 With verified inputs already cached, omit `--fetch` to generate offline.
+
+For an intentional dataset/schema update, use `--generate --check` instead of
+`--prepare-assets --check`. Preparation verifies committed metadata; generation
+updates it. Review generated changes before committing.
 
 Generation owns catalog and manifest Go files, cropped PNGs, coverage reports,
 and notices. Do not edit them manually. Cropping removes fully transparent

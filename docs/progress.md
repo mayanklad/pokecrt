@@ -1,72 +1,70 @@
 # Implementation progress
 
-Specification revision/date: 30 September 2026
-Specification amendment: docs/release-policy.md, approved by owner
-Current release target: v0.1 — Basic printer
-Current development step: final v0.1 publication preparation; D06 paused
-Current source commit: c3e184fe4a0bc9b867feee1cf81b6ad0b020a0b1
-Commit reference note: baseline before final policy/notices/build-preparation commit.
-Publication status: final tag and GitHub release are not yet confirmed.
+Specification revision/date: 30 September 2026, including approved section 25
+Current release target: v0.2 — Complete public engine
+Last completed milestone: v0.1 published
+Current increment: D06a — explicit form/variant normalization, prepared for owner verification
+Current source commit: b978f71e355a58e69dfcb47cbc3122c5a995d4f0
+Commit note: verified baseline before this D06a increment; update on the next increment.
+Release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
+Publication verified: normal release with Linux amd64 archive and SHA256SUMS attached.
 
-Implemented runtime commands:
-- Root help, --help / -h, --version with dataset identity
-- print --help / -h
-- Named or uniformly random standard regular printing
-- Compact (default) and sprite-only output
+## Runtime
 
-Implemented developer tooling:
-- Pinned downloads and SHA-256 verification
-- Deterministic catalog/assets/notices/coverage generation and offline drift checks
-- Local render preview, installation, and Linux amd64 archive/checksum packaging
+- Root/help/version and named or uniformly random standard regular printing
+- Compact and sprite output, truecolor half blocks, transparency, and natural size
+- Nonempty NO_COLOR, preserved piped colors, quiet broken pipes
+- No trainer storage, runtime network, or source-tree dependency
+- Public selectors remain unchanged; alternate selectors arrive in D07
 
-Rendering:
-- Truecolor source-pixel half blocks and terminal-default transparency
-- Odd-height handling and color resets
-- Nonempty NO_COLOR suppresses ANSI; pipes otherwise preserve colors
-- Partial alpha is rejected; failed rendering returns no partial artwork
+## Dataset
 
-Dataset ID:
-5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4
+Development dataset ID:
+`44c9b62228d8ba8593cc10060fe74e5ebadb14591a79dd1373552a0e40909a03`
 
-Coverage:
-- 9 catalog species
-- 3 eligible species, standard regular sprites, and exact variants
-- 0 shiny sprites and distinct visual gender slots
-- Six catalog species lack artwork
-- Coverage reports: tools/dataset/coverage.json and coverage.md
+Published v0.1 dataset ID:
+`5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
 
-Storage schema version: none
+- 9 catalog species and 16 metadata forms with exact PokéAPI variety typing
+- 3 eligible species, collectible forms, standard regular sprites, and exact variants
+- 0 shiny assets and distinct visual gender slots
+- 13 missing regular form/gender appearances; no artwork added in D06a
+- Same 16 pinned source inputs; reports in tools/dataset/coverage.json and coverage.md
+- Direct artwork source: pinned PokéSprite-v2; inherited provenance preserved separately
 
-Verification:
-- User generation checks, tests, vet, and build passed
-- Candidate checksums and matching v0.1/dataset metadata verified
-- User screenshots show all three colored sprites on a light background
-- Monochrome NO_COLOR output and network-isolated unshare printing verified
-- Assistant installed-binary tests cover pipe handling and no trainer state
-- Assistant tests, vet, and race suite passed after build-preparation changes
-- Final policy/notices/build-preparation commit, clean tag rebuild, and publication remain pending
+## Developer tooling
 
-Distribution decision:
-- Owner selected MIT for original code
-- Owner approved attributed fan-project bundles on 30 September 2026
-- Underlying image rights remain unresolved; no clearance or endorsement is claimed
-- Generated PNGs remain outside Git; pinned preparation and Go embedding support offline binaries
-- Package preserves licensing scope, provenance, notices, coverage, and policy
+- Explicit form ownership, source identities/aliases, genders, and palette mappings
+- Reject wrong typing ownership, undeclared forms, duplicate variant identities,
+  generated/aliased candidates, shiny fallback, and unsupported gender pairs
+- Deterministic catalog, manifest, coverage, and notices generation
+- Ignored PNG preparation checks committed generated metadata before writing assets
+- Source locks/mappings/reports are tracked; downloaded/generated PNGs stay outside Git
+- Installed binaries embed assets and remain offline
 
-Known limitations:
-- Public filters/selectors await D07; inventory expansion remains D06
-- Trainers, encounters, achievements, and TUI are not implemented
-- Initial verified platform is Linux amd64
+Storage schema version: none.
 
-Next: publish v0.1, then resume D06 from this baseline.
-D06a files previously supplied have not been applied.
+## Verification
 
-Approved deviations:
-- Specification stays local and excluded from Git history
-- D02 split into input verification and normalization/bundling
-- Section 13 amended by the owner-approved fan-project release policy
+- Published v0.1 source and release metadata reconciled using read-only GitHub access
+- Prior owner tests, vet, race tests, build, checksums, and extracted offline smoke passed
+- Assistant D06a generation/check, full tests, and vet passed
+- Fixtures cover form typing, aliases, real shiny differences, visual gender pairs,
+  invalid mappings, and folding source gender identities into one collectible form
+- Owner verification and commit of D06a remain pending
 
-Workflow:
-- Complete files in chat or individual downloads; no ZIPs
-- User applies changes, tests, commits, pushes, tags, and publishes
-- Assistant GitHub operations remain read-only
+## Next
+
+Complete D06b wider inventory/source audit, then D07 filters and appearance selectors.
+D06 as a whole is not complete; no v0.2 release is ready yet.
+Trainers, encounters, achievements, and TUI remain future milestones.
+
+## Approved decisions and workflow
+
+- Specification remains local and excluded from Git history
+- D06 split into schema/validation (D06a) and wider inventory (D06b) to review independently
+- Owner-approved attributed fan distribution; MIT applies to original code, not artwork
+- Licensing scope, source terms, attribution, coverage, and release policy are preserved
+- User applies files, tests, commits, pushes, tags, and publishes
+- Assistant GitHub access remains strictly read-only
+- Complete files or individual links; no ZIP bundles

@@ -12,6 +12,7 @@ import (
 	"image/png"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 )
 
@@ -39,21 +40,32 @@ type missingAsset struct {
 	Reason    string `json:"reason"`
 }
 
+type missingVariant struct {
+	SpeciesID int    `json:"species_id"`
+	Name      string `json:"name"`
+	FormID    string `json:"form_id"`
+	Gender    string `json:"gender"`
+	Palette   string `json:"palette"`
+	Reason    string `json:"reason"`
+}
+
 type coverageReport struct {
-	DatasetID                 string         `json:"dataset_id"`
-	RulesVersion              string         `json:"rules_version"`
-	CatalogSpecies            int            `json:"catalog_species"`
-	EligibleSpecies           int            `json:"eligible_species"`
-	StandardRegularSprites    int            `json:"standard_regular_sprites"`
-	ShinySprites              int            `json:"shiny_sprites"`
-	CollectibleForms          int            `json:"collectible_forms"`
-	DistinctVisualGenderSlots int            `json:"distinct_visual_gender_slots"`
-	ExactEligibleVariants     int            `json:"exact_eligible_variants"`
-	MaxSpriteWidth            int            `json:"max_sprite_width"`
-	MaxSpriteHeight           int            `json:"max_sprite_height"`
-	Missing                   []missingAsset `json:"missing_standard_regular_assets"`
-	Exclusions                []string       `json:"exclusions"`
-	SourceQualityFlags        []string       `json:"source_quality_flags"`
+	DatasetID                 string           `json:"dataset_id"`
+	RulesVersion              string           `json:"rules_version"`
+	CatalogSpecies            int              `json:"catalog_species"`
+	CatalogForms              int              `json:"catalog_forms"`
+	MissingVariants           []missingVariant `json:"missing_regular_variants"`
+	EligibleSpecies           int              `json:"eligible_species"`
+	StandardRegularSprites    int              `json:"standard_regular_sprites"`
+	ShinySprites              int              `json:"shiny_sprites"`
+	CollectibleForms          int              `json:"collectible_forms"`
+	DistinctVisualGenderSlots int              `json:"distinct_visual_gender_slots"`
+	ExactEligibleVariants     int              `json:"exact_eligible_variants"`
+	MaxSpriteWidth            int              `json:"max_sprite_width"`
+	MaxSpriteHeight           int              `json:"max_sprite_height"`
+	Missing                   []missingAsset   `json:"missing_standard_regular_assets"`
+	Exclusions                []string         `json:"exclusions"`
+	SourceQualityFlags        []string         `json:"source_quality_flags"`
 }
 
 type generatedBundle struct {
@@ -117,6 +129,9 @@ func normalizePNG(data []byte) ([]byte, image.Rectangle, image.Point, error) {
 
 func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generatedBundle, error) {
 	bundle := generatedBundle{Files: make(map[string][]byte)}
+	if err := validateMappings(&mappings); err != nil {
+		return bundle, err
+	}
 	species, sourceSpecies, err := normalizeCatalog(lock, cache, mappings)
 	if err != nil {
 		return bundle, err
@@ -139,19 +154,24 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 		if err := json.Unmarshal(index[mapping.SourceSlug], &slots); err != nil {
 			return bundle, fmt.Errorf("missing or invalid provenance for %s: %w", mapping.SourceSlug, err)
 		}
-		var selected *sourceForm
-		for i := range sourceSpecies[mapping.SpeciesID].Forms {
-			form := sourceSpecies[mapping.SpeciesID].Forms[i]
-			if form.ID == mappings.SourceStandardForm {
-				if selected != nil {
-					return bundle, fmt.Errorf("duplicate standard form for #%03d", mapping.SpeciesID)
-				}
-				selected = &form
-			}
+		form, ok := findNormalizedForm(species, mapping.SpeciesID, mapping.FormID)
+		if !ok || !slices.Contains(form.Genders, mapping.Gender) {
+			return bundle, fmt.Errorf("asset maps an undeclared appearance %s", assetIdentity(mapping))
 		}
-		provenance, ok := slots["regular"]
-		if selected == nil || selected.Slug != mapping.SourceSlug || mapping.Path != "pokemon/regular/"+mapping.SourceSlug+".png" || selected.CanonicalForm != nil || selected.HasRegular == nil || !*selected.HasRegular || selected.IsGenerated == nil || *selected.IsGenerated || !ok || provenance.IsGenerated == nil || *provenance.IsGenerated || provenance.Source != "msikma/pokesprite" || selected.Source != provenance.Source {
-			return bundle, fmt.Errorf("unverified, generated, aliased, or mismatched standard asset for #%03d", mapping.SpeciesID)
+		selected, err := sourceFormByID(sourceSpecies[mapping.SpeciesID], mapping.SourceFormID)
+		if err != nil {
+			return bundle, err
+		}
+		available := selected.HasRegular
+		if mapping.Palette == "shiny" {
+			available = selected.HasShiny
+		}
+		provenance, ok := slots[mapping.Palette]
+		if selected.Slug != mapping.SourceSlug || selected.CanonicalForm != nil || available == nil || !*available || selected.IsGenerated == nil || *selected.IsGenerated || !ok || provenance.IsGenerated == nil || *provenance.IsGenerated || provenance.Source != "msikma/pokesprite" || selected.Source != provenance.Source {
+			return bundle, fmt.Errorf("unverified, generated, aliased, or mismatched asset %s", assetIdentity(mapping))
+		}
+		if mapping.Gender == "default" && selected.ID != form.SourceFormID {
+			return bundle, fmt.Errorf("default asset uses a different source form %s", assetIdentity(mapping))
 		}
 		data, source, file, err := readInput(lock, cache, mapping.SourceID, mapping.Path)
 		if err != nil {
@@ -162,13 +182,18 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 			return bundle, fmt.Errorf("normalize #%03d: %w", mapping.SpeciesID, err)
 		}
 		hash := digest(cropped)
-		if seenHashes[hash] {
+		if mapping.Palette == "regular" && seenHashes[hash] {
 			return bundle, fmt.Errorf("duplicate normalized asset; review collectible identity mappings")
 		}
-		seenHashes[hash] = true
-		assetPath := fmt.Sprintf("assets/%04d-standard-default-regular.png", mapping.SpeciesID)
-		assets = append(assets, normalizedAsset{SpeciesID: mapping.SpeciesID, FormID: "standard", Gender: "default", Palette: "regular", Path: assetPath, SHA256: hash, SourceSHA256: file.SHA256, SourceURL: "https://raw.githubusercontent.com/" + source.Repository + "/" + source.Revision + "/" + file.Path, SourceProvider: provenance.Source, SourceWidth: originalSize.X, SourceHeight: originalSize.Y, CropX: bounds.Min.X, CropY: bounds.Min.Y, Width: bounds.Dx(), Height: bounds.Dy()})
+		if mapping.Palette == "regular" {
+			seenHashes[hash] = true
+		}
+		assetPath := fmt.Sprintf("assets/%04d-%s-%s-%s.png", mapping.SpeciesID, mapping.FormID, mapping.Gender, mapping.Palette)
+		assets = append(assets, normalizedAsset{SpeciesID: mapping.SpeciesID, FormID: mapping.FormID, Gender: mapping.Gender, Palette: mapping.Palette, Path: assetPath, SHA256: hash, SourceSHA256: file.SHA256, SourceURL: "https://raw.githubusercontent.com/" + source.Repository + "/" + source.Revision + "/" + file.Path, SourceProvider: provenance.Source, SourceWidth: originalSize.X, SourceHeight: originalSize.Y, CropX: bounds.Min.X, CropY: bounds.Min.Y, Width: bounds.Dx(), Height: bounds.Dy()})
 		bundle.Files["internal/sprite/"+assetPath] = cropped
+	}
+	if err := validateVariantInventory(species, assets); err != nil {
+		return bundle, err
 	}
 	identity, err := json.Marshal(struct {
 		Mappings mappingConfig
@@ -209,7 +234,11 @@ func catalogSource(species []normalizedSpecies, datasetID string) ([]byte, error
 	fmt.Fprintln(&output, "// Code generated by tools/dataset; DO NOT EDIT.\npackage catalog")
 	fmt.Fprintf(&output, "\nconst DatasetID = %q\n\nvar generatedSpecies = []Species{\n", datasetID)
 	for _, s := range species {
-		fmt.Fprintf(&output, "{ID:%d, Name:%q, Slug:%q, Aliases:%#v, Generation:%d, Color:%q, Stage:%d, Baby:%t, Legendary:%t, Mythical:%t, EvolvesFrom:%d, EvolvesTo:%#v, Forms:[]Form{{ID:\"standard\", Name:\"Standard\", Types:%#v, DefaultGender:\"default\", Genders:[]string{\"default\"}}}},\n", s.ID, s.Name, s.Slug, s.Aliases, s.Generation, s.Color, s.Stage, s.Baby, s.Legendary, s.Mythical, s.EvolvesFrom, s.EvolvesTo, s.Types)
+		fmt.Fprintf(&output, "{ID:%d,Name:%q,Slug:%q,Aliases:%#v,Generation:%d,Color:%q,Stage:%d,Baby:%t,Legendary:%t,Mythical:%t,EvolvesFrom:%d,EvolvesTo:%#v,Forms:[]Form{", s.ID, s.Name, s.Slug, s.Aliases, s.Generation, s.Color, s.Stage, s.Baby, s.Legendary, s.Mythical, s.EvolvesFrom, s.EvolvesTo)
+		for _, f := range s.Forms {
+			fmt.Fprintf(&output, "{ID:%q,Name:%q,Types:%#v,DefaultGender:%q,Genders:%#v,SourceAliases:%#v},", f.ID, f.Name, f.Types, f.DefaultGender, f.Genders, f.SourceAliases)
+		}
+		fmt.Fprintln(&output, "}},")
 	}
 	fmt.Fprintln(&output, "}\n\nvar generatedAliases = map[string]int{")
 	for i, s := range species {
@@ -233,16 +262,43 @@ func spriteSource(assets []normalizedAsset, datasetID string) ([]byte, error) {
 }
 
 func makeCoverage(species []normalizedSpecies, assets []normalizedAsset, mappings mappingConfig, datasetID string) coverageReport {
-	coverage := coverageReport{DatasetID: datasetID, RulesVersion: mappings.RulesVersion, CatalogSpecies: len(species), EligibleSpecies: len(assets), StandardRegularSprites: len(assets), CollectibleForms: len(assets), ExactEligibleVariants: len(assets), Missing: []missingAsset{}, Exclusions: mappings.Exclusions, SourceQualityFlags: []string{"Only the three explicitly mapped, inherited regular asset candidates were audited for this increment.", "Generated candidate images and shiny fallback behavior are excluded from this inventory.", "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed."}}
-	available := make(map[int]bool)
+	coverage := coverageReport{DatasetID: datasetID, RulesVersion: mappings.RulesVersion, CatalogSpecies: len(species), ExactEligibleVariants: len(assets), Missing: []missingAsset{}, MissingVariants: []missingVariant{}, Exclusions: mappings.Exclusions, SourceQualityFlags: []string{"Only explicitly mapped inherited artwork with matching source provenance is accepted.", "Generated candidates, source-only aliases, shiny fallbacks, and shiny-only collectibles are rejected.", "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed."}}
+	eligible := map[int]bool{}
+	forms := map[string]bool{}
+	genders := map[string]bool{}
+	available := map[string]bool{}
 	for _, asset := range assets {
-		available[asset.SpeciesID] = true
+		key := fmt.Sprintf("%d/%s/%s/%s", asset.SpeciesID, asset.FormID, asset.Gender, asset.Palette)
+		available[key] = true
+		if asset.Palette == "regular" {
+			eligible[asset.SpeciesID] = true
+			forms[fmt.Sprintf("%d/%s", asset.SpeciesID, asset.FormID)] = true
+			if asset.FormID == "standard" {
+				coverage.StandardRegularSprites++
+			}
+			if asset.Gender != "default" {
+				genders[fmt.Sprintf("%d/%s/%s", asset.SpeciesID, asset.FormID, asset.Gender)] = true
+			}
+		} else {
+			coverage.ShinySprites++
+		}
 		coverage.MaxSpriteWidth = max(coverage.MaxSpriteWidth, asset.Width)
 		coverage.MaxSpriteHeight = max(coverage.MaxSpriteHeight, asset.Height)
 	}
+	coverage.EligibleSpecies = len(eligible)
+	coverage.CollectibleForms = len(forms)
+	coverage.DistinctVisualGenderSlots = len(genders)
 	for _, s := range species {
-		if !available[s.ID] {
-			coverage.Missing = append(coverage.Missing, missingAsset{SpeciesID: s.ID, Name: s.Name, Reason: "No standard regular asset selected in this initial mapping; no fallback applied."})
+		coverage.CatalogForms += len(s.Forms)
+		for _, f := range s.Forms {
+			if f.ID == "standard" && !available[fmt.Sprintf("%d/%s/%s/regular", s.ID, f.ID, f.DefaultGender)] {
+				coverage.Missing = append(coverage.Missing, missingAsset{SpeciesID: s.ID, Name: s.Name, Reason: "No standard regular default asset is mapped; no fallback applied."})
+			}
+			for _, gender := range f.Genders {
+				if !available[fmt.Sprintf("%d/%s/%s/regular", s.ID, f.ID, gender)] {
+					coverage.MissingVariants = append(coverage.MissingVariants, missingVariant{SpeciesID: s.ID, Name: s.Name, FormID: f.ID, Gender: gender, Palette: "regular", Reason: "No audited asset is mapped for this exact appearance."})
+				}
+			}
 		}
 	}
 	return coverage
@@ -256,13 +312,17 @@ func coverageMarkdown(coverage coverageReport) []byte {
 	for _, item := range []struct {
 		name  string
 		count int
-	}{{"Catalog species", coverage.CatalogSpecies}, {"Eligible encounter species", coverage.EligibleSpecies}, {"Standard regular sprites", coverage.StandardRegularSprites}, {"Shiny sprites", coverage.ShinySprites}, {"Collectible forms", coverage.CollectibleForms}, {"Distinct visual gender slots", coverage.DistinctVisualGenderSlots}, {"Exact eligible variants", coverage.ExactEligibleVariants}} {
+	}{{"Catalog species", coverage.CatalogSpecies}, {"Catalog forms", coverage.CatalogForms}, {"Eligible encounter species", coverage.EligibleSpecies}, {"Standard regular sprites", coverage.StandardRegularSprites}, {"Shiny sprites", coverage.ShinySprites}, {"Collectible forms", coverage.CollectibleForms}, {"Distinct visual gender slots", coverage.DistinctVisualGenderSlots}, {"Exact eligible variants", coverage.ExactEligibleVariants}} {
 		fmt.Fprintf(&output, "| %s | %d |\n", item.name, item.count)
 	}
 	fmt.Fprintf(&output, "\nMaximum cropped dimensions: %d × %d source pixels.\n", coverage.MaxSpriteWidth, coverage.MaxSpriteHeight)
 	fmt.Fprintln(&output, "\n## Missing standard regular artwork\n\n| Number | Species | Reason |\n| --- | --- | --- |")
 	for _, missing := range coverage.Missing {
 		fmt.Fprintf(&output, "| #%03d | %s | %s |\n", missing.SpeciesID, missing.Name, missing.Reason)
+	}
+	fmt.Fprintln(&output, "\n## Missing regular appearances\n\n| Number | Species | Form | Gender | Reason |\n| --- | --- | --- | --- | --- |")
+	for _, missing := range coverage.MissingVariants {
+		fmt.Fprintf(&output, "| #%03d | %s | %s | %s | %s |\n", missing.SpeciesID, missing.Name, missing.FormID, missing.Gender, missing.Reason)
 	}
 	fmt.Fprint(&output, "\n## Exclusions\n\n")
 	for _, note := range coverage.Exclusions {

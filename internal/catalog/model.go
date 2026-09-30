@@ -36,6 +36,8 @@ type Form struct {
 	Types         []string
 	DefaultGender string
 	Genders       []string
+	// SourceAliases document upstream identities; they are not public selectors.
+	SourceAliases []string
 }
 
 // All returns an independent copy in ascending National number order.
@@ -72,6 +74,7 @@ func cloneSpecies(species Species) Species {
 	for i := range species.Forms {
 		species.Forms[i].Types = slices.Clone(species.Forms[i].Types)
 		species.Forms[i].Genders = slices.Clone(species.Forms[i].Genders)
+		species.Forms[i].SourceAliases = slices.Clone(species.Forms[i].SourceAliases)
 	}
 	return species
 }

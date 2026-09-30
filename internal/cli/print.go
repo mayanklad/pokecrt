@@ -24,7 +24,7 @@ Options:
   --output     compact (default) or sprite
   --help, -h   Show this help
 
-This increment supports standard regular artwork. More selectors arrive in D06.
+This increment supports standard regular artwork. More selectors arrive in D07.
 `
 
 type printOptions struct {

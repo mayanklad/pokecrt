@@ -1,17 +1,251 @@
 {
-  "rules_version": "d02b-1",
-  "catalog_species": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "rules_version": "d06a-1",
+  "catalog_species": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
   "source_standard_form": "base",
-  "standard_form_reason": "The pinned source uses base for these nine species' standard appearance. Full appearance normalization is scheduled for D06.",
+  "standard_form_reason": "The source base identity maps to standard. Every other source form has an explicit owning Pok\u00e9API variety; no alias or orientation creates a new appearance.",
   "assets": [
-    {"species_id": 1, "source_id": "pokesprite", "path": "pokemon/regular/bulbasaur.png", "source_slug": "bulbasaur", "reason": "Audited initial standard regular sprite without a distinct visual gender."},
-    {"species_id": 6, "source_id": "pokesprite", "path": "pokemon/regular/charizard.png", "source_slug": "charizard", "reason": "Audited initial standard regular sprite without a distinct visual gender."},
-    {"species_id": 7, "source_id": "pokesprite", "path": "pokemon/regular/squirtle.png", "source_slug": "squirtle", "reason": "Audited initial standard regular sprite without a distinct visual gender."}
+    {
+      "species_id": 1,
+      "source_id": "pokesprite",
+      "path": "pokemon/regular/bulbasaur.png",
+      "source_slug": "bulbasaur",
+      "reason": "Audited initial standard regular sprite without a distinct visual gender.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite",
+      "path": "pokemon/regular/charizard.png",
+      "source_slug": "charizard",
+      "reason": "Audited initial standard regular sprite without a distinct visual gender.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 7,
+      "source_id": "pokesprite",
+      "path": "pokemon/regular/squirtle.png",
+      "source_slug": "squirtle",
+      "reason": "Audited initial standard regular sprite without a distinct visual gender.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    }
   ],
   "exclusions": [
-    "Other species are outside this minimal D02 catalog; expanded coverage is scheduled for D06.",
-    "Six catalog species have no selected bundled asset in D02; they remain metadata entries with unavailable artwork.",
-    "Alternate forms, shiny palettes, distinct visual genders, and orientation duplicates are not included in this initial inventory.",
-    "Generated source icons are not accepted. Other edited or unofficial candidates require further audit before inclusion."
+    "This D06a schema increment maps all 16 forms of the current nine species; wider species coverage remains D06b.",
+    "Only three previously audited standard regular PNGs are included. Other forms and palettes remain metadata with unavailable artwork.",
+    "Visual gender pairs require different audited regular assets; biological gender differences alone do not create visual slots.",
+    "Generated artwork, source-only aliases, orientation duplicates, and shiny fallbacks are not accepted."
+  ],
+  "forms": [
+    {
+      "species_id": 1,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 1,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 2,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 2,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 3,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 3,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 3,
+      "id": "gmax",
+      "name": "Gigantamax",
+      "source_form_id": "gmax",
+      "pokemon_id": 10195,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 3,
+      "id": "mega",
+      "name": "Mega",
+      "source_form_id": "mega",
+      "pokemon_id": 10033,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 4,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 4,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 5,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 5,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 6,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 6,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 6,
+      "id": "gmax",
+      "name": "Gigantamax",
+      "source_form_id": "gmax",
+      "pokemon_id": 10196,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 6,
+      "id": "mega-x",
+      "name": "Mega X",
+      "source_form_id": "mega-x",
+      "pokemon_id": 10034,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 6,
+      "id": "mega-y",
+      "name": "Mega Y",
+      "source_form_id": "mega-y",
+      "pokemon_id": 10035,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 7,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 7,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 8,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 8,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 9,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 9,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 9,
+      "id": "gmax",
+      "name": "Gigantamax",
+      "source_form_id": "gmax",
+      "pokemon_id": 10197,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 9,
+      "id": "mega",
+      "name": "Mega",
+      "source_form_id": "mega",
+      "pokemon_id": 10036,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    }
   ]
 }
