@@ -9,7 +9,7 @@ public selectors follow in D07.
 
 ## Mapping contract
 
-`d06a-1` requires an explicit form record with species owner, canonical ID,
+`d06a-1` and `d06b-gender-1` require an explicit form record with species owner, canonical ID,
 display name, upstream form ID, PokéAPI variety ID, default visual gender,
 declared visual genders, and a reason. Standard maps to the source default and
 PokéAPI's default variety. Alternate typing must come from the same species.
@@ -44,14 +44,21 @@ for each identity must still differ.
 - Exact eligible variants count validated regular and shiny identities.
 - Missing regular appearances report each unavailable form/gender identity.
 
-The current D06b inventory covers species #001–#024 with 72 exact assets:
-36 regular/shiny pairs across 36 collectible forms. There are 24 eligible species,
-24 standard regular sprites, no missing regular appearances within the batch,
-and 0 declared distinct visual gender slots. Raticate Totem records are folded
-into source aliases for Alolan artwork. The source lock has 85 verified inputs.
-This is not full source coverage; the separate-layout visual-gender audit is
-recorded in inventory-audit.md. PNGs remain local and ignored.
+The current inventory has 28 species, 40 forms, 84 exact assets, 42 shiny slots,
+30 standard regular slots, and 4 distinct visual gender slots. It has no missing
+regular appearances within the audited batch and 98 pinned inputs.
+`d06b-gender-1` adds an explicit `source_layout: gen8-female` mapping option.
+Older mapping rule versions remain readable for their original consolidated paths.
+
+The female layout is restricted to the standard/base female identity and exact
+`pokemon-gen8/<palette>/female/<source-slug>.png` path. Require the separately
+pinned `sources/upstreams/msikma-pokemon.json` species ID, English slug, gen-8
+base form (`$`), and true `has_female`. Reject unofficial female or base icons.
+The consolidated base palette/provider audit remains required, in addition to
+actual pinned female PNG decoding and distinct gender and palette pixels.
+Retained previous-generation flags are preserved in coverage quality notes.
+No source identity is inferred from biological gender or arbitrary filenames.
 
 Fixtures test variant normalization without distributing additional source art.
-Runtime standard printing now covers all 24 species; public alternate selectors
+Runtime standard printing now covers all 28 species; public alternate selectors
 remain D07 work.

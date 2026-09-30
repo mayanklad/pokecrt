@@ -73,14 +73,24 @@
           "sha256": "91a3d95de780cccfc88b883b8d796a143961b29fc7c5f9e156200215682bca5a"
         },
         {
-          "path": "readme.md",
-          "size": 13037,
-          "sha256": "91c511155f81a534b3d7b6e94a918fcefd4d5b9b85067216f30c9bdc8440c21a"
+          "path": "pokemon-gen8/regular/female/meowstic.png",
+          "size": 806,
+          "sha256": "e168cb075e07bfd4caa643a7aa71ca2e3fe9aae8c0f93e73b0344558b15eb0cf"
         },
         {
-          "path": "sources/generated/asset-index.json",
-          "size": 295355,
-          "sha256": "67566c90a351c40a1f9bdbf606364be31b91c1797c038e0b5079a51b623b7347"
+          "path": "pokemon-gen8/regular/female/pyroar.png",
+          "size": 466,
+          "sha256": "5a55b85bab2911ad636244e5670cabfdea11e5b4ab281b492335ed9bdb771824"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/meowstic.png",
+          "size": 843,
+          "sha256": "20cf19234d3f7d01e4b5242be565cc0700fd9466f470ee7d3f6bd9d4fcc197f9"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/pyroar.png",
+          "size": 482,
+          "sha256": "1179b9beeba03ac53f7ba8407db04d0cec5352be134cda078632921cdc12a160"
         },
         {
           "path": "pokemon/regular/arbok.png",
@@ -168,6 +178,11 @@
           "sha256": "8fbe1ca6d640941135498c651bdad9b79a851b904d675c7ccdd8ea06a4f5daca"
         },
         {
+          "path": "pokemon/regular/espurr.png",
+          "size": 286,
+          "sha256": "9153fca9e55bc06dd80dea6cc167cf37869d2a169e73fbdefba39ac67046c919"
+        },
+        {
           "path": "pokemon/regular/fearow.png",
           "size": 442,
           "sha256": "70ccb089cfa7a49d57964d0a7863a454f19808c8db23e9d297d7d62658c1d7a8"
@@ -181,6 +196,16 @@
           "path": "pokemon/regular/kakuna.png",
           "size": 241,
           "sha256": "53b371d624b0d767f0a7cdbc267477adfb4a6c87f5ce58cccf550c277e350c0f"
+        },
+        {
+          "path": "pokemon/regular/litleo.png",
+          "size": 384,
+          "sha256": "1879f3788b4ffe4cd641500610d0f8baf8d3d3a975af32bb43de16deee103a4c"
+        },
+        {
+          "path": "pokemon/regular/meowstic.png",
+          "size": 792,
+          "sha256": "e2b02104e881bf162bbe82285b64f21d71be508b017601d001d3c15fa3cdea8d"
         },
         {
           "path": "pokemon/regular/metapod.png",
@@ -206,6 +231,11 @@
           "path": "pokemon/regular/pidgey.png",
           "size": 324,
           "sha256": "76085ac9d001075a906ddbf36ba50b23ca5d8d6c68be75ae7a47c2bedad46d6e"
+        },
+        {
+          "path": "pokemon/regular/pyroar.png",
+          "size": 536,
+          "sha256": "153f834a62129acae463e0ea93d2b7c7730beb1854bf935550cfe6c27d800861"
         },
         {
           "path": "pokemon/regular/raticate-alola.png",
@@ -348,6 +378,11 @@
           "sha256": "e4e0b6770036bdb97133a5948122e7a588f255f7710ea99c81eb47de6a6ef897"
         },
         {
+          "path": "pokemon/shiny/espurr.png",
+          "size": 291,
+          "sha256": "065a1f906660b00c1db02ae45bda421ef70210f4185750c390db542739303020"
+        },
+        {
           "path": "pokemon/shiny/fearow.png",
           "size": 450,
           "sha256": "a2cc2de94992a99795a66396143cf763225a4e6f285bb66a5757c2fff03e74f1"
@@ -361,6 +396,16 @@
           "path": "pokemon/shiny/kakuna.png",
           "size": 243,
           "sha256": "402bb785b7e2b069c21a638966096cb1e2ebd324bd205c689bfc8a987c9289ed"
+        },
+        {
+          "path": "pokemon/shiny/litleo.png",
+          "size": 392,
+          "sha256": "04a864d098c3222a988ca1104ac1b8d631d3a0075111b8213605ed9bacf48372"
+        },
+        {
+          "path": "pokemon/shiny/meowstic.png",
+          "size": 876,
+          "sha256": "e27842b2ea410c42b527dec503094b73e3a854643aa460e7921fd16cb2030d9e"
         },
         {
           "path": "pokemon/shiny/metapod.png",
@@ -386,6 +431,11 @@
           "path": "pokemon/shiny/pidgey.png",
           "size": 329,
           "sha256": "23293cb8199bc71c19296466a50ae1f75ce4c101a0aa446b95cf3bfdc5e9514d"
+        },
+        {
+          "path": "pokemon/shiny/pyroar.png",
+          "size": 560,
+          "sha256": "d09f75cae62f577d46fe64733a70e05fcfdcfc0b3a6e16f0f27f966052b35cbb"
         },
         {
           "path": "pokemon/shiny/raticate-alola.png",
@@ -441,6 +491,21 @@
           "path": "pokemon/shiny/weedle.png",
           "size": 267,
           "sha256": "5b323de8076dda8e1c5c1a0b467ef31608f1a55dc25a725e3aab0c60a752dd02"
+        },
+        {
+          "path": "readme.md",
+          "size": 13037,
+          "sha256": "91c511155f81a534b3d7b6e94a918fcefd4d5b9b85067216f30c9bdc8440c21a"
+        },
+        {
+          "path": "sources/generated/asset-index.json",
+          "size": 295355,
+          "sha256": "67566c90a351c40a1f9bdbf606364be31b91c1797c038e0b5079a51b623b7347"
+        },
+        {
+          "path": "sources/upstreams/msikma-pokemon.json",
+          "size": 525985,
+          "sha256": "b6704e8adab64d8ac8ecb5ec60152f207ab02c937b81946db521799bb635c72f"
         }
       ]
     }

@@ -1,27 +1,29 @@
 {
-  "dataset_id": "814889022ff532a6a2b5df724f7cca5d785c533441109e4ebfb8c454b9e050ff",
-  "rules_version": "d06a-1",
-  "catalog_species": 24,
-  "catalog_forms": 36,
+  "dataset_id": "d4447b6824a65c61e1993585183497e807d5ac6ae29219e5bf89442ad01173f1",
+  "rules_version": "d06b-gender-1",
+  "catalog_species": 28,
+  "catalog_forms": 40,
   "missing_regular_variants": [],
-  "eligible_species": 24,
-  "standard_regular_sprites": 24,
-  "shiny_sprites": 36,
-  "collectible_forms": 36,
-  "distinct_visual_gender_slots": 0,
-  "exact_eligible_variants": 72,
+  "eligible_species": 28,
+  "standard_regular_sprites": 30,
+  "shiny_sprites": 42,
+  "collectible_forms": 40,
+  "distinct_visual_gender_slots": 4,
+  "exact_eligible_variants": 84,
   "max_sprite_width": 49,
   "max_sprite_height": 50,
   "missing_standard_regular_assets": [],
   "exclusions": [
-    "This audited batch covers species #001–#024 and their mapped forms; wider species and visual-gender coverage remain pending.",
-    "Raticate source totem and totem-alola identities share Alolan artwork and are retained only as source aliases.",
-    "Consolidated pokemon/ does not supply every upstream female sprite. Default slots make no biological gender claim; other upstream layouts require explicit pinned provenance mappings before inclusion.",
-    "Generated candidates and shiny fallbacks are rejected."
+    "Current audited species are #001–#024 plus Litleo/Pyroar and Espurr/Meowstic; wider coverage remains pending.",
+    "Raticate Totem records remain source-only aliases.",
+    "Female Pyroar and Meowstic use explicit gen8-female layout with pinned inherited snapshot validation; no orientation or biological gender inference creates variants.",
+    "Generated candidates, unofficial female candidates, and shiny fallbacks are rejected."
   ],
   "source_quality_flags": [
     "Only explicitly mapped inherited artwork with matching source provenance is accepted.",
     "Generated candidates, source-only aliases, shiny fallbacks, and shiny-only collectibles are rejected.",
-    "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed."
+    "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed.",
+    "Explicit gen8-female artwork verified against pinned inherited inventory; unofficial female candidates excluded.",
+    "Female artwork for species #668 retains a previous-generation icon as flagged by the source."
   ]
 }

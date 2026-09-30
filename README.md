@@ -8,20 +8,20 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-This development build prints standard regular artwork for species #001–#024.
-Random printing chooses uniformly among the 24 species, regardless of how many
-alternate forms each species has.
+This development build prints standard regular artwork for species #001–#024,
+Litleo, Pyroar, Espurr, and Meowstic. Random printing chooses uniformly among
+those 28 species, regardless of form or gender inventory size.
 
-The bundle contains 36 collectible forms and 72 exact assets: regular and shiny
-artwork for every mapped form, including Mega, Gigantamax, and Alolan appearances.
-Raticate Totem identities share Alolan artwork and remain source-only aliases.
-Public form/shiny selection arrives in D07; variants can currently be inspected
-through the developer preview tool. Wider species and distinct visual-gender
-coverage remain pending. No artwork fallback is applied.
+The bundle contains 40 collectible forms and 84 exact assets. Pyroar and Meowstic
+have distinct male/female regular and shiny artwork within one standard form;
+their designated default print gender is male. There are 30 standard regular
+artwork slots across 28 species. Raticate Totem identities remain source-only
+aliases of Alolan artwork. Wider inventory coverage remains pending.
 
-Public filters, alternate-form/shiny printing flags, visual gender selectors,
-catalog listing, trainers, encounters, achievements, and the TUI are not
-implemented yet. Published v0.1 retains its original three-sprite coverage.
+Public filters and explicit form/shiny/gender printing flags arrive in D07;
+variants can currently be inspected through the developer preview tool. Catalog
+listing, trainers, encounters, achievements, and the TUI are not implemented yet.
+Published v0.1 retains its original three-sprite coverage.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
 natural-size output; sprites are not resized automatically.
@@ -185,3 +185,11 @@ go run ./tools/render-preview --name venusaur --form gmax --palette regular
 
 The preview tool accepts exact form and palette IDs and an optional visual gender.
 It never records trainer state and fails if the exact asset is unavailable.
+
+Compare genuine visual gender variants in developer previews:
+
+```bash
+go run ./tools/render-preview --name pyroar --gender male
+go run ./tools/render-preview --name pyroar --gender female
+go run ./tools/render-preview --name meowstic --gender female --palette shiny
+```

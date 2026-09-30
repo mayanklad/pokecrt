@@ -146,6 +146,8 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	}
 	var assets []normalizedAsset
 	seenHashes := make(map[string]bool)
+	femaleSources := false
+	previousFemale := make(map[int]bool)
 	for _, mapping := range mappings.Assets {
 		var slots map[string]struct {
 			Source      string `json:"source"`
@@ -172,6 +174,16 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 		}
 		if mapping.Gender == "default" && selected.ID != form.SourceFormID {
 			return bundle, fmt.Errorf("default asset uses a different source form %s", assetIdentity(mapping))
+		}
+		if mapping.SourceLayout == "gen8-female" {
+			previous, err := verifyFemaleProvenance(lock, cache, mapping)
+			if err != nil {
+				return bundle, err
+			}
+			femaleSources = true
+			if previous {
+				previousFemale[mapping.SpeciesID] = true
+			}
 		}
 		data, source, file, err := readInput(lock, cache, mapping.SourceID, mapping.Path)
 		if err != nil {
@@ -215,6 +227,17 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	}
 	bundle.Files["internal/sprite/manifest_generated.go"] = spriteGo
 	bundle.Coverage = makeCoverage(species, assets, mappings, bundle.DatasetID)
+	if femaleSources {
+		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, "Explicit gen8-female artwork verified against pinned inherited inventory; unofficial female candidates excluded.")
+	}
+	previousIDs := make([]int, 0, len(previousFemale))
+	for id := range previousFemale {
+		previousIDs = append(previousIDs, id)
+	}
+	sort.Ints(previousIDs)
+	for _, id := range previousIDs {
+		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, fmt.Sprintf("Female artwork for species #%03d retains a previous-generation icon as flagged by the source.", id))
+	}
 	coverageJSON, err := json.MarshalIndent(bundle.Coverage, "", "  ")
 	if err != nil {
 		return bundle, err

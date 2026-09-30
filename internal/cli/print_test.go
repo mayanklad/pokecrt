@@ -72,7 +72,7 @@ func TestRandomPrintAndFailures(t *testing.T) {
 		want := fmt.Sprintf("#%03d %s\n", species.ID, species.Name)
 		var stdout, stderr bytes.Buffer
 		status := runPrint(nil, &stdout, &stderr, func(n int) (int, error) {
-			if n != 24 {
+			if n != 28 {
 				t.Fatalf("n=%d", n)
 			}
 			return index, nil

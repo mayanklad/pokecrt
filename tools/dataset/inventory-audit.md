@@ -66,3 +66,30 @@ no male/female distinction is fabricated in this batch. Explicit source layout,
 regular/shiny provenance, ownership, and pixel-difference validation must precede
 adding them. This finding is an implementation task, not an exclusion of visual
 genders from v1 scope. Wider inventory and this provenance extension remain D06.
+
+## Visual-gender batch — explicit inherited layout
+
+Baseline: `5953b43f040dbca86933e168db7d07efa4d26a35`.
+Adds Litleo/Pyroar and Espurr/Meowstic with complete evolution-family metadata.
+Pyroar and Meowstic each have one standard form with two visual slots, male and
+female, and exact regular/shiny palettes. Male is the designated default.
+
+The pinned `sources/upstreams/msikma-pokemon.json` snapshot declares their gen-8
+base `has_female` flag. IDs and English slugs agree with normalized ownership.
+The corresponding PNGs are fetched from PokéSprite-v2's explicit
+`pokemon-gen8/<palette>/female/` paths, not from another repository. Base provider
+records and inherited snapshot provenance remain `msikma/pokesprite`.
+Pyroar's snapshot marks its sprite as a retained previous-generation icon;
+Meowstic's does not. Coverage records this quality detail. Unofficial female
+candidates and unofficial base icons are rejected by this layout contract.
+
+Both regular genders differ, and each shiny differs from its exact regular
+counterpart after lossless transparent cropping. Visual inspection of all 12 new
+sprites showed coherent male/female silhouettes and regular/shiny palettes.
+There are 28 species, 40 forms, 84 assets, 4 distinct visual gender slots, and
+98 pinned inputs. Standard regular artwork has 30 slots but only 28 species:
+random printing still samples species, not asset slots. No storage migration.
+
+This completes the initial explicit-layout gender support, not the entire D06
+inventory. Remaining species, alternate layouts, edited candidates, and gender
+combinations still require provenance, ownership, and pixel audits.

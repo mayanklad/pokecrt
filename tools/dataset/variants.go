@@ -24,7 +24,7 @@ func assetIdentity(a assetMapping) string {
 }
 
 func validateMappings(m *mappingConfig) error {
-	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" {
+	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" {
 		return fmt.Errorf("unsupported mapping rules %q", m.RulesVersion)
 	}
 	if m.SourceStandardForm != "base" || strings.TrimSpace(m.StandardFormReason) == "" || len(m.CatalogSpecies) == 0 {
@@ -55,7 +55,8 @@ func validateMappings(m *mappingConfig) error {
 			}
 		}
 		identity := assetIdentity(*a)
-		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || a.Path != "pokemon/"+a.Palette+"/"+a.SourceSlug+".png" || seen[identity] {
+		expectedPath, layoutErr := assetSourcePath(*a)
+		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1") || a.Path != expectedPath || seen[identity] {
 			return fmt.Errorf("invalid or duplicate asset mapping %s", identity)
 		}
 		seen[identity] = true
@@ -67,8 +68,8 @@ func validateMappings(m *mappingConfig) error {
 		}
 		return assetIdentity(a) < assetIdentity(b)
 	})
-	if m.RulesVersion == "d06a-1" && len(m.Forms) == 0 {
-		return fmt.Errorf("d06a-1 requires explicit form mappings")
+	if m.RulesVersion != "d02b-1" && len(m.Forms) == 0 {
+		return fmt.Errorf("explicit rules require form mappings")
 	}
 	seen = map[string]bool{}
 	for i := range m.Forms {
@@ -211,7 +212,7 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 	}
 	// Explicit rules require every source identity to be mapped or folded into a
 	// declared source-only alias; missing entries cannot disappear silently.
-	if m.RulesVersion == "d06a-1" {
+	if m.RulesVersion != "d02b-1" {
 		for _, form := range source.Forms {
 			if !claimed[form.ID] {
 				return nil, fmt.Errorf("unmapped source form #%03d/%s", id, form.ID)

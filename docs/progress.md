@@ -3,9 +3,9 @@
 Specification revision/date: 30 September 2026, including approved section 25
 Current release target: v0.2 — Complete public engine
 Last completed milestone: v0.1 published
-Current increment: D06b second artwork batch and alias/gender audit, prepared for owner verification
-Current source commit: d5a51817a79ad894e59ccf98ed075177a2f91a2a
-Commit note: verified first artwork-batch baseline before this increment; update on the next increment.
+Current increment: D06b explicit visual-gender provenance and artwork batch, prepared for owner verification
+Current source commit: 5953b43f040dbca86933e168db7d07efa4d26a35
+Commit note: verified second artwork-batch baseline before this increment; update on the next increment.
 Release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 Publication verified: normal release with Linux amd64 archive and SHA256SUMS attached.
 
@@ -20,16 +20,16 @@ Publication verified: normal release with Linux amd64 archive and SHA256SUMS att
 ## Dataset
 
 Development dataset ID:
-`814889022ff532a6a2b5df724f7cca5d785c533441109e4ebfb8c454b9e050ff`
+`d4447b6824a65c61e1993585183497e807d5ac6ae29219e5bf89442ad01173f1`
 
 Published v0.1 dataset ID:
 `5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
 
-- 24 catalog species and 36 metadata forms with exact PokéAPI variety typing
-- 24 eligible species and standard regular sprites; 36 collectible forms
-- 36 shiny assets, 72 exact variants, and 0 distinct visual gender slots
-- No missing regular appearances within the current 24-species batch
-- 85 pinned source inputs; reports in tools/dataset/coverage.json and coverage.md
+- 28 catalog species and 40 metadata forms with exact PokéAPI variety typing
+- 28 eligible species, 30 standard regular slots, and 40 collectible forms
+- 42 shiny assets, 84 exact variants, and 4 distinct visual gender slots
+- No missing regular appearances within the current 28-species batch
+- 98 pinned source inputs; reports in tools/dataset/coverage.json and coverage.md
 - Direct artwork source: pinned PokéSprite-v2; inherited provenance preserved separately
 
 ## Developer tooling
@@ -54,14 +54,16 @@ Storage schema version: none.
 - D06a committed by owner; naming cleanup generation/check, tests, and vet passed
 - Source ID/cache folder now pokesprite-v2; all pinned inputs and sprite bytes unchanged
 - Naming cleanup committed by owner
-- Assistant batch generation/check, tests, and vet passed; all 20 newly added sprite pairs visually inspected
+- Assistant batch generation/check, tests, and vet passed; all 12 newly added sprites visually inspected
 - Raticate Totem aliases folded into Alolan identity; no duplicate collectibles
-- Separate-layout female artwork found upstream; explicit provenance support remains pending
+- Female Pyroar/Meowstic validated against pinned inherited gen-8 snapshot
+- Coverage retains Pyroar previous-generation quality flag
+- Generator rejects unverified/unofficial female provenance and wrong layout identities
 - Owner terminal review and commit of this batch remain pending
 
 ## Next
 
-Continue D06b wider inventory and visual-gender audits, then D07 filters and selectors.
+Continue D06b wider inventory and remaining visual-gender audits, then D07 selectors.
 D06 as a whole is not complete; no v0.2 release is ready yet.
 Trainers, encounters, achievements, and TUI remain future milestones.
 

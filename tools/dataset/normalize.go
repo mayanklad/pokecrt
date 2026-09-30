@@ -25,6 +25,7 @@ type mappingConfig struct {
 }
 
 type assetMapping struct {
+	SourceLayout string `json:"source_layout,omitempty"`
 	SpeciesID    int    `json:"species_id"`
 	SourceID     string `json:"source_id"`
 	Path         string `json:"path"`
@@ -113,7 +114,7 @@ func readMappings(filename string) (mappingConfig, error) {
 	if err := decoder.Decode(&extra); err != io.EOF {
 		return mappings, fmt.Errorf("mappings must contain exactly one JSON document")
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)

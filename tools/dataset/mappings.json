@@ -1,5 +1,5 @@
 {
-  "rules_version": "d06a-1",
+  "rules_version": "d06b-gender-1",
   "catalog_species": [
     1,
     2,
@@ -24,7 +24,11 @@
     21,
     22,
     23,
-    24
+    24,
+    667,
+    668,
+    677,
+    678
   ],
   "source_standard_form": "base",
   "standard_form_reason": "The source base identity maps to standard. Every other source form has an explicit owning PokéAPI variety; no alias or orientation creates a new appearance.",
@@ -820,13 +824,149 @@
       "source_form_id": "base",
       "gender": "default",
       "palette": "shiny"
+    },
+    {
+      "species_id": 667,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/litleo.png",
+      "source_slug": "litleo",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 667,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/litleo.png",
+      "source_slug": "litleo",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 668,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/pyroar.png",
+      "source_slug": "pyroar",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "male",
+      "palette": "regular"
+    },
+    {
+      "species_id": 668,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/pyroar.png",
+      "source_slug": "pyroar",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "male",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 668,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon-gen8/regular/female/pyroar.png",
+      "source_slug": "pyroar",
+      "reason": "Female gen-8 layout verified by pinned msikma snapshot; Pyroar retains a previous-generation icon as flagged upstream.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "female",
+      "palette": "regular",
+      "source_layout": "gen8-female"
+    },
+    {
+      "species_id": 668,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon-gen8/shiny/female/pyroar.png",
+      "source_slug": "pyroar",
+      "reason": "Female gen-8 layout verified by pinned msikma snapshot; Pyroar retains a previous-generation icon as flagged upstream.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "female",
+      "palette": "shiny",
+      "source_layout": "gen8-female"
+    },
+    {
+      "species_id": 677,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/espurr.png",
+      "source_slug": "espurr",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 677,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/espurr.png",
+      "source_slug": "espurr",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 678,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/meowstic.png",
+      "source_slug": "meowstic",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "male",
+      "palette": "regular"
+    },
+    {
+      "species_id": 678,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/meowstic.png",
+      "source_slug": "meowstic",
+      "reason": "Exact inherited base artwork; male default designated only for a validated visual pair.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "male",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 678,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon-gen8/regular/female/meowstic.png",
+      "source_slug": "meowstic",
+      "reason": "Female gen-8 layout verified by pinned msikma snapshot; Pyroar retains a previous-generation icon as flagged upstream.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "female",
+      "palette": "regular",
+      "source_layout": "gen8-female"
+    },
+    {
+      "species_id": 678,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon-gen8/shiny/female/meowstic.png",
+      "source_slug": "meowstic",
+      "reason": "Female gen-8 layout verified by pinned msikma snapshot; Pyroar retains a previous-generation icon as flagged upstream.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "female",
+      "palette": "shiny",
+      "source_layout": "gen8-female"
     }
   ],
   "exclusions": [
-    "This audited batch covers species #001–#024 and their mapped forms; wider species and visual-gender coverage remain pending.",
-    "Raticate source totem and totem-alola identities share Alolan artwork and are retained only as source aliases.",
-    "Consolidated pokemon/ does not supply every upstream female sprite. Default slots make no biological gender claim; other upstream layouts require explicit pinned provenance mappings before inclusion.",
-    "Generated candidates and shiny fallbacks are rejected."
+    "Current audited species are #001–#024 plus Litleo/Pyroar and Espurr/Meowstic; wider coverage remains pending.",
+    "Raticate Totem records remain source-only aliases.",
+    "Female Pyroar and Meowstic use explicit gen8-female layout with pinned inherited snapshot validation; no orientation or biological gender inference creates variants.",
+    "Generated candidates, unofficial female candidates, and shiny fallbacks are rejected."
   ],
   "forms": [
     {
@@ -1264,6 +1404,56 @@
         "default"
       ],
       "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 667,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 667,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned base identity and default PokéAPI variety; visual slots verified against inherited gen-8 snapshot and distinct regular pixels."
+    },
+    {
+      "species_id": 668,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 668,
+      "default_gender": "male",
+      "genders": [
+        "male",
+        "female"
+      ],
+      "reason": "Pinned base identity and default PokéAPI variety; visual slots verified against inherited gen-8 snapshot and distinct regular pixels."
+    },
+    {
+      "species_id": 677,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 677,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned base identity and default PokéAPI variety; visual slots verified against inherited gen-8 snapshot and distinct regular pixels."
+    },
+    {
+      "species_id": 678,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 678,
+      "default_gender": "male",
+      "genders": [
+        "male",
+        "female"
+      ],
+      "reason": "Pinned base identity and default PokéAPI variety; visual slots verified against inherited gen-8 snapshot and distinct regular pixels."
     }
   ]
 }
