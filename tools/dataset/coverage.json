@@ -1,0 +1,56 @@
+{
+  "dataset_id": "5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4",
+  "rules_version": "d02b-1",
+  "catalog_species": 9,
+  "eligible_species": 3,
+  "standard_regular_sprites": 3,
+  "shiny_sprites": 0,
+  "collectible_forms": 3,
+  "distinct_visual_gender_slots": 0,
+  "exact_eligible_variants": 3,
+  "max_sprite_width": 44,
+  "max_sprite_height": 39,
+  "missing_standard_regular_assets": [
+    {
+      "species_id": 2,
+      "name": "Ivysaur",
+      "reason": "No standard regular asset selected in this initial mapping; no fallback applied."
+    },
+    {
+      "species_id": 3,
+      "name": "Venusaur",
+      "reason": "No standard regular asset selected in this initial mapping; no fallback applied."
+    },
+    {
+      "species_id": 4,
+      "name": "Charmander",
+      "reason": "No standard regular asset selected in this initial mapping; no fallback applied."
+    },
+    {
+      "species_id": 5,
+      "name": "Charmeleon",
+      "reason": "No standard regular asset selected in this initial mapping; no fallback applied."
+    },
+    {
+      "species_id": 8,
+      "name": "Wartortle",
+      "reason": "No standard regular asset selected in this initial mapping; no fallback applied."
+    },
+    {
+      "species_id": 9,
+      "name": "Blastoise",
+      "reason": "No standard regular asset selected in this initial mapping; no fallback applied."
+    }
+  ],
+  "exclusions": [
+    "Other species are outside this minimal D02 catalog; expanded coverage is scheduled for D06.",
+    "Six catalog species have no selected bundled asset in D02; they remain metadata entries with unavailable artwork.",
+    "Alternate forms, shiny palettes, distinct visual genders, and orientation duplicates are not included in this initial inventory.",
+    "Generated source icons are not accepted. Other edited or unofficial candidates require further audit before inclusion."
+  ],
+  "source_quality_flags": [
+    "Only the three explicitly mapped, inherited regular asset candidates were audited for this increment.",
+    "Generated candidate images and shiny fallback behavior are excluded from this inventory.",
+    "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed."
+  ]
+}

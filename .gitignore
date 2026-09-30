@@ -36,3 +36,7 @@ go.work.sum
 /dist/
 /.cache/dataset/
 /docs/specification-v1.md
+
+# Committed dataset inventory reports
+!/tools/dataset/coverage.json
+!/tools/dataset/coverage.md
