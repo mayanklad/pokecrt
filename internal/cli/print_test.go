@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -67,10 +68,11 @@ func TestNewlyBundledNamedArtwork(t *testing.T) {
 
 func TestRandomPrintAndFailures(t *testing.T) {
 	t.Setenv("NO_COLOR", "1")
-	for index, want := range []string{"#001 Bulbasaur\n", "#002 Ivysaur\n", "#003 Venusaur\n", "#004 Charmander\n", "#005 Charmeleon\n", "#006 Charizard\n", "#007 Squirtle\n", "#008 Wartortle\n", "#009 Blastoise\n"} {
+	for index, species := range catalog.All() {
+		want := fmt.Sprintf("#%03d %s\n", species.ID, species.Name)
 		var stdout, stderr bytes.Buffer
 		status := runPrint(nil, &stdout, &stderr, func(n int) (int, error) {
-			if n != 9 {
+			if n != 24 {
 				t.Fatalf("n=%d", n)
 			}
 			return index, nil

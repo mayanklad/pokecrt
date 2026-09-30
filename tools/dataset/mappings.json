@@ -9,7 +9,22 @@
     6,
     7,
     8,
-    9
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
   ],
   "source_standard_form": "base",
   "standard_form_reason": "The source base identity maps to standard. Every other source form has an explicit owning PokéAPI variety; no alias or orientation creates a new appearance.",
@@ -365,12 +380,453 @@
       "source_form_id": "mega",
       "gender": "default",
       "palette": "shiny"
+    },
+    {
+      "species_id": 10,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/caterpie.png",
+      "source_slug": "caterpie",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 10,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/caterpie.png",
+      "source_slug": "caterpie",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 11,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/metapod.png",
+      "source_slug": "metapod",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 11,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/metapod.png",
+      "source_slug": "metapod",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 12,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/butterfree.png",
+      "source_slug": "butterfree",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 12,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/butterfree.png",
+      "source_slug": "butterfree",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 12,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/butterfree-gmax.png",
+      "source_slug": "butterfree-gmax",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 12,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/butterfree-gmax.png",
+      "source_slug": "butterfree-gmax",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 13,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/weedle.png",
+      "source_slug": "weedle",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 13,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/weedle.png",
+      "source_slug": "weedle",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 14,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/kakuna.png",
+      "source_slug": "kakuna",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 14,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/kakuna.png",
+      "source_slug": "kakuna",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 15,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/beedrill.png",
+      "source_slug": "beedrill",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 15,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/beedrill.png",
+      "source_slug": "beedrill",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 15,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/beedrill-mega.png",
+      "source_slug": "beedrill-mega",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 15,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/beedrill-mega.png",
+      "source_slug": "beedrill-mega",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 16,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/pidgey.png",
+      "source_slug": "pidgey",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 16,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/pidgey.png",
+      "source_slug": "pidgey",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 17,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/pidgeotto.png",
+      "source_slug": "pidgeotto",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 17,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/pidgeotto.png",
+      "source_slug": "pidgeotto",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 18,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/pidgeot.png",
+      "source_slug": "pidgeot",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 18,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/pidgeot.png",
+      "source_slug": "pidgeot",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 18,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/pidgeot-mega.png",
+      "source_slug": "pidgeot-mega",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 18,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/pidgeot-mega.png",
+      "source_slug": "pidgeot-mega",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 19,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/rattata.png",
+      "source_slug": "rattata",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 19,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/rattata.png",
+      "source_slug": "rattata",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 19,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/rattata-alola.png",
+      "source_slug": "rattata-alola",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "alola",
+      "source_form_id": "alola",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 19,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/rattata-alola.png",
+      "source_slug": "rattata-alola",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "alola",
+      "source_form_id": "alola",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 20,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/raticate.png",
+      "source_slug": "raticate",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 20,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/raticate.png",
+      "source_slug": "raticate",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 20,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/raticate-alola.png",
+      "source_slug": "raticate-alola",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "alola",
+      "source_form_id": "alola",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 20,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/raticate-alola.png",
+      "source_slug": "raticate-alola",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "alola",
+      "source_form_id": "alola",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 21,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/spearow.png",
+      "source_slug": "spearow",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 21,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/spearow.png",
+      "source_slug": "spearow",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 22,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/fearow.png",
+      "source_slug": "fearow",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 22,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/fearow.png",
+      "source_slug": "fearow",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 23,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/ekans.png",
+      "source_slug": "ekans",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 23,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/ekans.png",
+      "source_slug": "ekans",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 24,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/arbok.png",
+      "source_slug": "arbok",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 24,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/arbok.png",
+      "source_slug": "arbok",
+      "reason": "Pinned nongenerated palette with exact source provenance; aliases folded and normalized pixels validated.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
     }
   ],
   "exclusions": [
-    "This D06b first inventory batch covers the nine existing starter-family species and all 16 mapped forms; wider species and visual-gender coverage remain pending.",
-    "Only audited nongenerated inherited artwork with exact regular/shiny pairs is included; source-generated candidates and fallback palettes are excluded.",
-    "A default visual slot does not claim biological gender or a complete source gender audit. Distinct visual gender pairs will be added only with explicit validated mappings."
+    "This audited batch covers species #001–#024 and their mapped forms; wider species and visual-gender coverage remain pending.",
+    "Raticate source totem and totem-alola identities share Alolan artwork and are retained only as source aliases.",
+    "Consolidated pokemon/ does not supply every upstream female sprite. Default slots make no biological gender claim; other upstream layouts require explicit pinned provenance mappings before inclusion.",
+    "Generated candidates and shiny fallbacks are rejected."
   ],
   "forms": [
     {
@@ -564,6 +1020,250 @@
         "default"
       ],
       "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
+    },
+    {
+      "species_id": 10,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 10,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 11,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 11,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 12,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 12,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 12,
+      "id": "gmax",
+      "name": "Gigantamax",
+      "source_form_id": "gmax",
+      "pokemon_id": 10198,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 13,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 13,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 14,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 14,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 15,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 15,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 15,
+      "id": "mega",
+      "name": "Mega",
+      "source_form_id": "mega",
+      "pokemon_id": 10090,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 16,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 16,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 17,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 17,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 18,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 18,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 18,
+      "id": "mega",
+      "name": "Mega",
+      "source_form_id": "mega",
+      "pokemon_id": 10073,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 19,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 19,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 19,
+      "id": "alola",
+      "name": "Alolan",
+      "source_form_id": "alola",
+      "pokemon_id": 10091,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 20,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 20,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 20,
+      "id": "alola",
+      "name": "Alolan",
+      "source_form_id": "alola",
+      "pokemon_id": 10092,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible.",
+      "source_aliases": [
+        "totem",
+        "totem-alola"
+      ]
+    },
+    {
+      "species_id": 21,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 21,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 22,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 22,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 23,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 23,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
+    },
+    {
+      "species_id": 24,
+      "id": "standard",
+      "name": "Standard",
+      "source_form_id": "base",
+      "pokemon_id": 24,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source form matched to exact same-species PokéAPI variety; source-only aliases share its file slug and create no new collectible."
     }
   ]
 }

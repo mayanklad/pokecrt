@@ -3,9 +3,9 @@
 Specification revision/date: 30 September 2026, including approved section 25
 Current release target: v0.2 — Complete public engine
 Last completed milestone: v0.1 published
-Current increment: D06b first artwork batch, prepared for owner verification
-Current source commit: 25c6a0ab35e20bb2116fa1814ccfb7ff54611304
-Commit note: verified naming-cleanup baseline before this artwork batch; update on the next increment.
+Current increment: D06b second artwork batch and alias/gender audit, prepared for owner verification
+Current source commit: d5a51817a79ad894e59ccf98ed075177a2f91a2a
+Commit note: verified first artwork-batch baseline before this increment; update on the next increment.
 Release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 Publication verified: normal release with Linux amd64 archive and SHA256SUMS attached.
 
@@ -20,16 +20,16 @@ Publication verified: normal release with Linux amd64 archive and SHA256SUMS att
 ## Dataset
 
 Development dataset ID:
-`235b5b786090f029ade2bc371c05f46056fb0ef8011911e3c629dfc54bb82a73`
+`814889022ff532a6a2b5df724f7cca5d785c533441109e4ebfb8c454b9e050ff`
 
 Published v0.1 dataset ID:
 `5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
 
-- 9 catalog species and 16 metadata forms with exact PokéAPI variety typing
-- 9 eligible species and standard regular sprites; 16 collectible forms
-- 16 shiny assets, 32 exact variants, and 0 distinct visual gender slots
-- No missing regular appearances within the current nine-species batch
-- 45 pinned source inputs; reports in tools/dataset/coverage.json and coverage.md
+- 24 catalog species and 36 metadata forms with exact PokéAPI variety typing
+- 24 eligible species and standard regular sprites; 36 collectible forms
+- 36 shiny assets, 72 exact variants, and 0 distinct visual gender slots
+- No missing regular appearances within the current 24-species batch
+- 85 pinned source inputs; reports in tools/dataset/coverage.json and coverage.md
 - Direct artwork source: pinned PokéSprite-v2; inherited provenance preserved separately
 
 ## Developer tooling
@@ -54,7 +54,9 @@ Storage schema version: none.
 - D06a committed by owner; naming cleanup generation/check, tests, and vet passed
 - Source ID/cache folder now pokesprite-v2; all pinned inputs and sprite bytes unchanged
 - Naming cleanup committed by owner
-- Assistant batch generation/check, tests, and vet passed; all 16 sprite pairs visually inspected
+- Assistant batch generation/check, tests, and vet passed; all 20 newly added sprite pairs visually inspected
+- Raticate Totem aliases folded into Alolan identity; no duplicate collectibles
+- Separate-layout female artwork found upstream; explicit provenance support remains pending
 - Owner terminal review and commit of this batch remain pending
 
 ## Next

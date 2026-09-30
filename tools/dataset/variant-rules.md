@@ -44,13 +44,14 @@ for each identity must still differ.
 - Exact eligible variants count validated regular and shiny identities.
 - Missing regular appearances report each unavailable form/gender identity.
 
-The first D06b inventory batch extends these same nine species to 32 assets:
-16 regular/shiny pairs across all 16 mapped forms. The report has 9 eligible
-species, 9 standard regular sprites, 16 collectible forms, 16 shinies, and no
-missing regular appearances within this batch. Distinct visual gender slots
-remain 0. The source lock has 45 verified inputs. This is not full source coverage.
-No rights clearance is claimed, and PNGs remain local.
+The current D06b inventory covers species #001–#024 with 72 exact assets:
+36 regular/shiny pairs across 36 collectible forms. There are 24 eligible species,
+24 standard regular sprites, no missing regular appearances within the batch,
+and 0 declared distinct visual gender slots. Raticate Totem records are folded
+into source aliases for Alolan artwork. The source lock has 85 verified inputs.
+This is not full source coverage; the separate-layout visual-gender audit is
+recorded in inventory-audit.md. PNGs remain local and ignored.
 
 Fixtures test variant normalization without distributing additional source art.
-Runtime standard printing now covers all nine species; public alternate selectors
+Runtime standard printing now covers all 24 species; public alternate selectors
 remain D07 work.

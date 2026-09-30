@@ -39,3 +39,30 @@ a filename. Full eligibility and themed tags remain part of the D06/D09 work.
 
 No database or identity migration is needed: trainer storage is not implemented.
 The development dataset changes; the published v0.1 bundle and tag remain intact.
+
+## Second batch — species #010–#024 and alias audit
+
+Baseline: `d5a51817a79ad894e59ccf98ed075177a2f91a2a`.
+Adds Caterpie through Arbok, plus Butterfree Gigantamax, Beedrill/Pidgeot Mega,
+and Alolan Rattata/Raticate. Every non-aliased form matches an exact same-species
+PokéAPI variety and retains its own typing. Raticate `totem` and `totem-alola`
+point to the same `alola` identity/file slug in the pinned manifest; they are
+source-only aliases, not two additional collectible forms.
+
+Current totals: 24 species, 36 collectible forms, 36 regular and 36 shiny assets,
+85 pinned inputs, and no missing regular appearances within this batch.
+
+### Visual-gender audit finding
+
+The pinned tree has female artwork in other upstream layouts such as
+`pokemon-gen8/regular/female/` and `pokemon-gen8/shiny/female/`. For example,
+female Pikachu, Pyroar, and Meowstic occur there, while their consolidated
+`data/pokemon.json` records have only a base identity. A biological gender flag
+or the consolidated base record cannot establish those visual slots.
+
+The current flat consolidated-path mapping contract cannot describe these
+alternative-layout images with their own palette-specific provenance. Therefore
+no male/female distinction is fabricated in this batch. Explicit source layout,
+regular/shiny provenance, ownership, and pixel-difference validation must precede
+adding them. This finding is an implementation task, not an exclusion of visual
+genders from v1 scope. Wider inventory and this provenance extension remain D06.

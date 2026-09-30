@@ -6,17 +6,17 @@ import (
 )
 
 func TestStandardCandidateBoundaries(t *testing.T) {
-	for index, want := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9} {
+	for index := range 24 {
 		species, key, err := ChooseStandard(func(n int) (int, error) {
-			if n != 9 {
-				t.Fatalf("candidate count=%d; want 9", n)
+			if n != 24 {
+				t.Fatalf("candidate count=%d; want 24", n)
 			}
 			return index, nil
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
-		if species.ID != want || key.SpeciesID != want || key.FormID != "standard" || key.Palette != "regular" {
+		if species.ID != index+1 || key.SpeciesID != index+1 || key.FormID != "standard" || key.Palette != "regular" {
 			t.Fatalf("unexpected selection: %+v %+v", species, key)
 		}
 	}
@@ -28,7 +28,7 @@ func TestSelectorFailures(t *testing.T) {
 	if !errors.Is(err, failure) {
 		t.Fatalf("got %v", err)
 	}
-	for _, index := range []int{-1, 9} {
+	for _, index := range []int{-1, 24} {
 		_, _, err := ChooseStandard(func(int) (int, error) { return index, nil })
 		if err == nil {
 			t.Fatal("accepted out-of-range selector")

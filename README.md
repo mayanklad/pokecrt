@@ -8,15 +8,16 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-This development build prints standard regular artwork for all nine species in
-the Bulbasaur, Charmander, and Squirtle evolution families. Random printing
-chooses uniformly among those nine species.
+This development build prints standard regular artwork for species #001–#024.
+Random printing chooses uniformly among the 24 species, regardless of how many
+alternate forms each species has.
 
-The bundle contains 16 forms and 32 exact assets: regular and shiny artwork for
-every mapped form, including Mega and Gigantamax appearances. Public form/shiny
-selection arrives in D07; these assets can currently be inspected through the
-developer preview tool. Distinct visual gender slots and wider species coverage
-remain pending. No artwork fallback is applied.
+The bundle contains 36 collectible forms and 72 exact assets: regular and shiny
+artwork for every mapped form, including Mega, Gigantamax, and Alolan appearances.
+Raticate Totem identities share Alolan artwork and remain source-only aliases.
+Public form/shiny selection arrives in D07; variants can currently be inspected
+through the developer preview tool. Wider species and distinct visual-gender
+coverage remain pending. No artwork fallback is applied.
 
 Public filters, alternate-form/shiny printing flags, visual gender selectors,
 catalog listing, trainers, encounters, achievements, and the TUI are not

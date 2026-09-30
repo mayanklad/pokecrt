@@ -51,7 +51,30 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 16 {
-		t.Fatalf("form count=%d; want 16 in the current mapping", count)
+	if count != 36 {
+		t.Fatalf("form count=%d; want 36 in the current mapping", count)
+	}
+}
+
+func TestSourceAliasesDoNotCreateCollectibleForms(t *testing.T) {
+	species, ok := ByNumber(20)
+	if !ok || len(species.Forms) != 2 {
+		t.Fatalf("Raticate forms: %+v", species.Forms)
+	}
+	var alola Form
+	for _, form := range species.Forms {
+		if form.ID == "alola" {
+			alola = form
+		}
+	}
+	if len(alola.SourceAliases) != 2 || alola.SourceAliases[0] != "totem" || alola.SourceAliases[1] != "totem-alola" {
+		t.Fatalf("source aliases: %+v", alola)
+	}
+	alola.SourceAliases[0] = "changed"
+	again, _ := ByNumber(20)
+	for _, form := range again.Forms {
+		if form.ID == "alola" && form.SourceAliases[0] == "changed" {
+			t.Fatal("alias mutation changed catalog")
+		}
 	}
 }
