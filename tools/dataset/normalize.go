@@ -14,14 +14,22 @@ import (
 	"strings"
 )
 
+type sourceNameOverride struct {
+	SpeciesID     int    `json:"species_id"`
+	SourceName    string `json:"source_name"`
+	CanonicalName string `json:"canonical_name"`
+	Reason        string `json:"reason"`
+}
+
 type mappingConfig struct {
-	RulesVersion       string         `json:"rules_version"`
-	CatalogSpecies     []int          `json:"catalog_species"`
-	SourceStandardForm string         `json:"source_standard_form"`
-	StandardFormReason string         `json:"standard_form_reason"`
-	Assets             []assetMapping `json:"assets"`
-	Forms              []formMapping  `json:"forms,omitempty"`
-	Exclusions         []string       `json:"exclusions"`
+	SourceNameOverrides []sourceNameOverride `json:"source_name_overrides,omitempty"`
+	RulesVersion        string               `json:"rules_version"`
+	CatalogSpecies      []int                `json:"catalog_species"`
+	SourceStandardForm  string               `json:"source_standard_form"`
+	StandardFormReason  string               `json:"standard_form_reason"`
+	Assets              []assetMapping       `json:"assets"`
+	Forms               []formMapping        `json:"forms,omitempty"`
+	Exclusions          []string             `json:"exclusions"`
 }
 
 type assetMapping struct {
@@ -114,7 +122,7 @@ func readMappings(filename string) (mappingConfig, error) {
 	if err := decoder.Decode(&extra); err != io.EOF {
 		return mappings, fmt.Errorf("mappings must contain exactly one JSON document")
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
@@ -429,7 +437,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			return nil, nil, err
 		}
 		sourceSpecies := sourceSpeciesByID[id]
-		if sourceSpecies.Slug != row["identifier"] || sourceSpecies.Name != names[id] || sourceSpecies.DefaultForm != mappings.SourceStandardForm {
+		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || sourceSpecies.DefaultForm != mappings.SourceStandardForm {
 			return nil, nil, fmt.Errorf("source identity/default mapping mismatch for #%03d", id)
 		}
 		if defaults[id] == 0 || typeSlots[defaults[id]][1] == "" {
@@ -449,7 +457,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 				return nil, nil, fmt.Errorf("mapped catalog omits related species #%03d; include complete evolution families", related)
 			}
 		}
-		aliases := []string{row["identifier"], strings.ToLower(names[id])}
+		aliases := []string{row["identifier"], strings.ToLower(names[id]), strings.ToLower(sourceSpecies.Name)}
 		for _, alias := range sourceSpecies.Aliases {
 			alias = strings.ToLower(strings.TrimSpace(alias))
 			if alias == "" {

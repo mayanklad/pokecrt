@@ -85,6 +85,7 @@ func TestInstalledBinary(t *testing.T) {
 		args   []string
 		status int
 	}{
+		{[]string{"print", "--name", "annihilape"}, 1},
 		{[]string{"print", "--name", "unknown"}, 2},
 		{[]string{"print", "--output", "full"}, 2},
 		{[]string{"print", "--name", "charizard", "--name", "squirtle"}, 2},

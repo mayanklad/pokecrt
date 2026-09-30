@@ -51,8 +51,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 40 {
-		t.Fatalf("form count=%d; want 40 in the current mapping", count)
+	if count != 275 {
+		t.Fatalf("form count=%d; want 275 in the current mapping", count)
 	}
 }
 
@@ -89,5 +89,29 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 		if f.ID != "standard" || f.DefaultGender != "male" || len(f.Genders) != 2 || f.Genders[0] != "female" || f.Genders[1] != "male" {
 			t.Fatalf("gender slots: %+v", f)
 		}
+	}
+}
+
+func TestGen1EvolutionFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 151; id++ {
+		if _, ok := ByNumber(id); !ok {
+			t.Fatalf("missing Gen1 species %d", id)
+		}
+	}
+	for _, species := range All() {
+		if species.EvolvesFrom != 0 {
+			if _, ok := ByNumber(species.EvolvesFrom); !ok {
+				t.Fatalf("missing parent for %d", species.ID)
+			}
+		}
+		for _, child := range species.EvolvesTo {
+			if _, ok := ByNumber(child); !ok {
+				t.Fatalf("missing child for %d", species.ID)
+			}
+		}
+	}
+	pikachu, _ := ByNumber(25)
+	if pikachu.Stage != 2 || pikachu.EvolvesFrom != 172 {
+		t.Fatalf("baby predecessor ignored: %+v", pikachu)
 	}
 }

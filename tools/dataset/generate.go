@@ -148,6 +148,14 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	seenHashes := make(map[string]bool)
 	femaleSources := false
 	previousFemale := make(map[int]bool)
+	var inherited inheritedInventory
+	previousIcons := make(map[string]bool)
+	if mappings.RulesVersion == "d06b-gen1-1" {
+		inherited, err = loadInheritedInventory(lock, cache)
+		if err != nil {
+			return bundle, err
+		}
+	}
 	for _, mapping := range mappings.Assets {
 		var slots map[string]struct {
 			Source      string `json:"source"`
@@ -174,6 +182,15 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 		}
 		if mapping.Gender == "default" && selected.ID != form.SourceFormID {
 			return bundle, fmt.Errorf("default asset uses a different source form %s", assetIdentity(mapping))
+		}
+		if inherited != nil {
+			previous, err := inherited.verify(mapping, sourceSpecies[mapping.SpeciesID].Slug)
+			if err != nil {
+				return bundle, err
+			}
+			if previous {
+				previousIcons[fmt.Sprintf("#%03d/%s", mapping.SpeciesID, mapping.FormID)] = true
+			}
 		}
 		if mapping.SourceLayout == "gen8-female" {
 			previous, err := verifyFemaleProvenance(lock, cache, mapping)
@@ -237,6 +254,14 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	sort.Ints(previousIDs)
 	for _, id := range previousIDs {
 		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, fmt.Sprintf("Female artwork for species #%03d retains a previous-generation icon as flagged by the source.", id))
+	}
+	previousKeys := make([]string, 0, len(previousIcons))
+	for key := range previousIcons {
+		previousKeys = append(previousKeys, key)
+	}
+	sort.Strings(previousKeys)
+	for _, key := range previousKeys {
+		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, "Retained previous-generation source artwork: "+key)
 	}
 	coverageJSON, err := json.MarshalIndent(bundle.Coverage, "", "  ")
 	if err != nil {

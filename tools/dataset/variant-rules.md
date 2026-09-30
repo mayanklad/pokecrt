@@ -9,7 +9,7 @@ public selectors follow in D07.
 
 ## Mapping contract
 
-`d06a-1` and `d06b-gender-1` require an explicit form record with species owner, canonical ID,
+`d06a-1`, `d06b-gender-1`, and `d06b-gen1-1` require an explicit form record with species owner, canonical ID,
 display name, upstream form ID, PokéAPI variety ID, default visual gender,
 declared visual genders, and a reason. Standard maps to the source default and
 PokéAPI's default variety. Alternate typing must come from the same species.
@@ -44,9 +44,8 @@ for each identity must still differ.
 - Exact eligible variants count validated regular and shiny identities.
 - Missing regular appearances report each unavailable form/gender identity.
 
-The current inventory has 28 species, 40 forms, 84 exact assets, 42 shiny slots,
-30 standard regular slots, and 4 distinct visual gender slots. It has no missing
-regular appearances within the audited batch and 98 pinned inputs.
+The previous gender batch established the explicit female layout described below.
+The current expanded inventory totals are recorded in the Gen1 section.
 `d06b-gender-1` adds an explicit `source_layout: gen8-female` mapping option.
 Older mapping rule versions remain readable for their original consolidated paths.
 
@@ -60,5 +59,24 @@ Retained previous-generation flags are preserved in coverage quality notes.
 No source identity is inferred from biological gender or arbitrary filenames.
 
 Fixtures test variant normalization without distributing additional source art.
-Runtime standard printing now covers all 28 species; public alternate selectors
+Runtime standard printing now covers 190 eligible species; public alternate selectors
 remain D07 work.
+
+## Gen1 family-closure rules
+
+`d06b-gen1-1` requires the pinned inherited snapshot for every included asset,
+with matching species ID/slug and exact gen-8 form flags. Reject provisional
+`is_unofficial_icon` appearances and unknown inherited forms. Retained
+previous-generation flags are recorded in coverage. The inherited provider
+palette check and female-layout checks still apply.
+
+The catalog closes complete evolution families; it does not stop at #151 and
+lose baby predecessors or later branches. All original 151 species are present.
+Current totals are 192 species, 275 metadata forms, 265 collectible forms,
+534 exact assets, 190 eligible species, 192 standard regular slots, 267 shinies,
+4 distinct visual gender slots, and 548 pinned inputs. Ten excluded appearances
+remain catalog metadata with unavailable artwork, including two standard forms.
+
+Name corrections require explicit source/canonical spellings, species owner,
+and a reason. The source spelling is retained as a generated alias. Stale,
+duplicate, or mismatched corrections fail; no runtime fuzzy-name rule is added.

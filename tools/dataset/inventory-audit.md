@@ -93,3 +93,45 @@ random printing still samples species, not asset slots. No storage migration.
 This completes the initial explicit-layout gender support, not the entire D06
 inventory. Remaining species, alternate layouts, edited candidates, and gender
 combinations still require provenance, ownership, and pixel audits.
+
+## Gen1 and complete connected evolution families
+
+Baseline: `562f475bbb05c6934c86811fbbfbb9c50ff38e5f`.
+The full original 151-species set is closed over pinned PokéAPI parent/child
+edges. Including later relatives and the existing two gen-6 families yields
+192 catalog species. This preserves stages, branches, and reference integrity:
+Pikachu has Pichu as its predecessor; later evolutions are not silently dropped.
+
+There are 275 metadata forms, 265 collectible forms, and 534 exact assets.
+190 species have standard artwork; its 192 slots include the existing two
+extra female slots. Random selection remains uniform over 190 species.
+The lock has 548 verified inputs. No additional image provider was accepted.
+All newly accepted images retain inherited `msikma/pokesprite` provenance but
+are downloaded directly from the same pinned PokéSprite-v2 repository.
+
+Excluded appearance identities are recorded individually in mappings/coverage:
+Hisuian Growlithe, Arcanine (including Noble), Voltorb, Electrode (including Noble),
+Spiky-eared Pichu, Kleavor (standard/Noble), and Annihilape. The inherited
+snapshot marks the former appearances provisional; Annihilape has a different
+provider requiring its own audit. They remain metadata with unavailable
+artwork. Their exclusion does not silently change requested identity or typing.
+
+Noble Hisuian states use their exact owning Hisuian PokéAPI variety for typing;
+Spiky-eared Pichu and Noble Kleavor use their documented owning standard variety
+where no separate variety exists. These corrections are explicit, and their
+provisional/pending artwork is not included.
+
+Farfetch'd/Sirfetch'd source names use straight apostrophes while the pinned
+PokéAPI names use curly apostrophes. Exact source-name corrections retain the
+canonical PokéAPI display names and generate both spelling aliases. No guessed
+punctuation normalization is introduced at runtime.
+
+Every accepted regular/shiny pair has different actual normalized pixels;
+regular duplicate checks and source-only alias folding remain enforced. The
+450 new sprites were inspected in contact sheets for coherent appearances,
+regular/shiny palettes, transparent backgrounds, and cropping. Maximum cropped
+dimensions are 52 by 54 source pixels. Real terminal review remains an owner check.
+
+Wider species, remaining visual-gender slots, provisional candidates, and
+other inherited providers remain D06 audit work. No trainer state exists and
+no schema/history migration is needed. The published v0.1 bundle is unchanged.

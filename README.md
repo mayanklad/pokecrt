@@ -8,15 +8,19 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-This development build prints standard regular artwork for species #001–#024,
-Litleo, Pyroar, Espurr, and Meowstic. Random printing chooses uniformly among
-those 28 species, regardless of form or gender inventory size.
+The development catalog contains all original 151 species, their complete
+connected evolution families (including later-generation relatives), and the
+existing Pyroar/Meowstic families: 192 species and 275 metadata forms.
 
-The bundle contains 40 collectible forms and 84 exact assets. Pyroar and Meowstic
-have distinct male/female regular and shiny artwork within one standard form;
-their designated default print gender is male. There are 30 standard regular
-artwork slots across 28 species. Raticate Totem identities remain source-only
-aliases of Alolan artwork. Wider inventory coverage remains pending.
+Audited artwork covers 190 species and 265 collectible forms, with 534 exact
+regular/shiny assets. Kleavor and Annihilape currently have metadata but no
+audited artwork. Ten form appearances are explicitly excluded pending source
+quality/provider review. Printing never substitutes another appearance.
+
+Pyroar and Meowstic retain distinct male/female regular and shiny slots within
+one standard form. There are 192 standard regular artwork slots across 190
+eligible species; random printing samples species uniformly, not artwork slots.
+Other visual-gender combinations and wider inventory remain pending.
 
 Public filters and explicit form/shiny/gender printing flags arrive in D07;
 variants can currently be inspected through the developer preview tool. Catalog

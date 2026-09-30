@@ -3,7 +3,6 @@ package cli
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -68,11 +67,15 @@ func TestNewlyBundledNamedArtwork(t *testing.T) {
 
 func TestRandomPrintAndFailures(t *testing.T) {
 	t.Setenv("NO_COLOR", "1")
-	for index, species := range catalog.All() {
-		want := fmt.Sprintf("#%03d %s\n", species.ID, species.Name)
+	for _, test := range []struct {
+		index int
+		name  string
+	}{{0, "#001 Bulbasaur"}, {24, "#025 Pikachu"}, {150, "#151 Mew"}, {152, "#172 Pichu"}, {189, "#866 Mr. Rime"}} {
+		index := test.index
+		want := test.name + "\n"
 		var stdout, stderr bytes.Buffer
 		status := runPrint(nil, &stdout, &stderr, func(n int) (int, error) {
-			if n != 28 {
+			if n != 190 {
 				t.Fatalf("n=%d", n)
 			}
 			return index, nil
@@ -117,5 +120,13 @@ func TestPrintHelpAndNoState(t *testing.T) {
 		if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
 			t.Fatalf("state path created: %s: %v", path, err)
 		}
+	}
+}
+
+func TestUnauditedArtworkHasNoFallback(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	status := Run([]string{"print", "--name", "annihilape"}, &stdout, &stderr, "dev", catalog.DatasetID)
+	if status != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "artwork unavailable") {
+		t.Fatalf("status=%d stdout=%q stderr=%q", status, stdout.String(), stderr.String())
 	}
 }

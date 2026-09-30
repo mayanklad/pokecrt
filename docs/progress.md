@@ -2,77 +2,56 @@
 
 Specification revision/date: 30 September 2026, including approved section 25
 Current release target: v0.2 — Complete public engine
-Last completed milestone: v0.1 published
-Current increment: D06b explicit visual-gender provenance and artwork batch, prepared for owner verification
-Current source commit: 5953b43f040dbca86933e168db7d07efa4d26a35
-Commit note: verified second artwork-batch baseline before this increment; update on the next increment.
-Release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
-Publication verified: normal release with Linux amd64 archive and SHA256SUMS attached.
+Last published milestone: v0.1
+Current increment: D06b Gen1 inventory and complete connected evolution families
+Current source commit: 562f475bbb05c6934c86811fbbfbb9c50ff38e5f
+Commit note: verified baseline before this increment; owner verification/commit pending.
+Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
 ## Runtime
 
-- Root/help/version and named or uniformly random standard regular printing
-- Compact and sprite output, truecolor half blocks, transparency, and natural size
-- Nonempty NO_COLOR, preserved piped colors, quiet broken pipes
-- No trainer storage, runtime network, or source-tree dependency
-- Public selectors remain unchanged; alternate selectors arrive in D07
+- Root/help/version; named or uniformly random standard regular printing
+- Compact/sprite output, natural-size truecolor half blocks, transparency
+- NO_COLOR, piped colors, quiet broken pipes; no trainer state or runtime downloads
+- No new public flags; explicit form/shiny/gender selectors remain D07
 
 ## Dataset
 
 Development dataset ID:
-`d4447b6824a65c61e1993585183497e807d5ac6ae29219e5bf89442ad01173f1`
+`2ff16a208d58b1805c0e0b2f580a45478f208e694d99ec7a808f98a89512428d`
 
-Published v0.1 dataset ID:
-`5bb40e33703ffd1b07855ba3552cff88edd4f8d2c0d03f2860872aee279803e4`
+- 192 catalog species: all original 151 plus full evolution-family closure and existing gen-6 families
+- 275 metadata forms; 265 collectible forms; 534 exact regular/shiny assets
+- 190 eligible species; 192 standard regular slots; 267 shiny slots
+- 4 distinct visual gender slots across Pyroar/Meowstic, with male defaults
+- 10 excluded form appearances, including standard Kleavor/Annihilape
+- 548 pinned inputs; coverage.json/coverage.md record availability and quality
+- Direct images remain pinned PokéSprite-v2; inherited provider records stay distinct
+- Complete evolution references, aliases, typing, stages, flags, and name corrections
 
-- 28 catalog species and 40 metadata forms with exact PokéAPI variety typing
-- 28 eligible species, 30 standard regular slots, and 40 collectible forms
-- 42 shiny assets, 84 exact variants, and 4 distinct visual gender slots
-- No missing regular appearances within the current 28-species batch
-- 98 pinned source inputs; reports in tools/dataset/coverage.json and coverage.md
-- Direct artwork source: pinned PokéSprite-v2; inherited provenance preserved separately
+## Tooling and verification
 
-## Developer tooling
-
-- Explicit form ownership, source identities/aliases, genders, and palette mappings
-- Reject wrong typing ownership, undeclared forms, duplicate variant identities,
-  generated/aliased candidates, shiny fallback, and unsupported gender pairs
-- Deterministic catalog, manifest, coverage, and notices generation
-- Ignored PNG preparation checks committed generated metadata before writing assets
-- Source locks/mappings/reports are tracked; downloaded/generated PNGs stay outside Git
-- Installed binaries embed assets and remain offline
+- Pinned/hash-verified developer downloads; deterministic generation and ignored asset preparation
+- Exact source/palette provenance; inherited edit/retained-generation flags audited
+- Reject provisional candidates, unknown inherited flags, duplicate pixels, and unsupported layouts
+- Explicit name corrections require exact pinned source/canonical spellings and reasons
+- Assistant full tests/vet and generation checks passed; all 450 new sprites inspected
+- Tests cover family completeness, baby stages, source quality gates, name aliases,
+  uniform species boundaries, missing artwork, and installed-binary behavior
+- Owner terminal verification and commit remain pending
 
 Storage schema version: none.
 
-## Verification
-
-- Published v0.1 source and release metadata reconciled using read-only GitHub access
-- Prior owner tests, vet, race tests, build, checksums, and extracted offline smoke passed
-- Assistant D06a generation/check, full tests, and vet passed
-- Fixtures cover form typing, aliases, real shiny differences, visual gender pairs,
-  invalid mappings, and folding source gender identities into one collectible form
-- D06a committed by owner; naming cleanup generation/check, tests, and vet passed
-- Source ID/cache folder now pokesprite-v2; all pinned inputs and sprite bytes unchanged
-- Naming cleanup committed by owner
-- Assistant batch generation/check, tests, and vet passed; all 12 newly added sprites visually inspected
-- Raticate Totem aliases folded into Alolan identity; no duplicate collectibles
-- Female Pyroar/Meowstic validated against pinned inherited gen-8 snapshot
-- Coverage retains Pyroar previous-generation quality flag
-- Generator rejects unverified/unofficial female provenance and wrong layout identities
-- Owner terminal review and commit of this batch remain pending
-
 ## Next
 
-Continue D06b wider inventory and remaining visual-gender audits, then D07 selectors.
-D06 as a whole is not complete; no v0.2 release is ready yet.
-Trainers, encounters, achievements, and TUI remain future milestones.
+Continue D06 wider inventory, remaining visual genders, and provider/quality audits.
+D06 is not complete; D07 selectors and D08 public listing remain unimplemented.
+Trainers, encounters, achievements, and TUI remain later milestones.
 
-## Approved decisions and workflow
+## Decisions and workflow
 
-- Specification remains local and excluded from Git history
-- D06 split into schema/validation (D06a) and wider inventory (D06b) to review independently
-- Owner-approved attributed fan distribution; MIT applies to original code, not artwork
-- Licensing scope, source terms, attribution, coverage, and release policy are preserved
-- User applies files, tests, commits, pushes, tags, and publishes
+- Section 25 governs ignored build-time PNGs, offline embedding, and distribution policy
+- Source locks/mappings/generated metadata/reports are tracked; image/cache files are ignored
+- Specification remains local and excluded from Git; no ZIP bundles
+- Owner applies files, verifies, commits, pushes, tags, and publishes
 - Assistant GitHub access remains strictly read-only
-- Complete files or individual links; no ZIP bundles
