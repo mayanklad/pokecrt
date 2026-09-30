@@ -2,18 +2,17 @@ package catalog_test
 
 import (
 	"errors"
-	"testing"
-
 	"github.com/mayanklad/pokecrt/internal/catalog"
 	"github.com/mayanklad/pokecrt/internal/sprite"
+	"testing"
 )
 
 func TestStandardCandidateBoundaries(t *testing.T) {
-	for _, test := range []struct{ index, want int }{{0, 1}, {24, 25}, {150, 151}, {152, 172}, {189, 866}} {
+	for _, test := range []struct{ index, want int }{{0, 1}, {24, 25}, {150, 151}, {151, 152}, {250, 251}, {283, 866}} {
 		index, want := test.index, test.want
 		species, key, err := chooseStandard(func(n int) (int, error) {
-			if n != 190 {
-				t.Fatalf("candidate count=%d; want 190", n)
+			if n != 284 {
+				t.Fatalf("candidate count=%d; want 284", n)
 			}
 			return index, nil
 		})
@@ -32,7 +31,7 @@ func TestSelectorFailures(t *testing.T) {
 	if !errors.Is(err, failure) {
 		t.Fatalf("got %v", err)
 	}
-	for _, index := range []int{-1, 190} {
+	for _, index := range []int{-1, 284} {
 		_, _, err := chooseStandard(func(int) (int, error) { return index, nil })
 		if err == nil {
 			t.Fatal("accepted out-of-range selector")

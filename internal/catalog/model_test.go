@@ -51,8 +51,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 275 {
-		t.Fatalf("form count=%d; want 275 in the current mapping", count)
+	if count != 413 {
+		t.Fatalf("form count=%d; want 413 in the current mapping", count)
 	}
 }
 
@@ -92,10 +92,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGen1EvolutionFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 151; id++ {
+func TestGen1AndGen2EvolutionFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 251; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1 species %d", id)
+			t.Fatalf("missing Gen1/Gen2 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -113,5 +113,21 @@ func TestGen1EvolutionFamiliesAreComplete(t *testing.T) {
 	pikachu, _ := ByNumber(25)
 	if pikachu.Stage != 2 || pikachu.EvolvesFrom != 172 {
 		t.Fatalf("baby predecessor ignored: %+v", pikachu)
+	}
+}
+
+func TestUnownFormsAndDudunsparceDefault(t *testing.T) {
+	unown, ok := ByNumber(201)
+	if !ok || len(unown.Forms) != 28 {
+		t.Fatalf("Unown forms: %+v", unown.Forms)
+	}
+	for _, f := range unown.Forms {
+		if len(f.Types) != 1 || f.Types[0] != "psychic" {
+			t.Fatalf("Unown typing: %+v", f)
+		}
+	}
+	d, ok := ByNumber(982)
+	if !ok || len(d.Forms) != 2 || d.Forms[0].ID != "standard" {
+		t.Fatalf("Dudunsparce default: %+v", d.Forms)
 	}
 }

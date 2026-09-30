@@ -12,7 +12,9 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
+	"sync"
 )
 
 type sourceLock struct {
@@ -176,4 +178,122 @@ func fetchFile(ctx context.Context, client *http.Client, url, filename string, f
 		return err
 	}
 	return os.Rename(temporary.Name(), filename)
+}
+
+// updateAssetLock is an explicit developer action. Existing pins are immutable;
+// new paths come only from the derived, quality-gated inventory.
+func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, cache string, m mappingConfig) (sourceLock, error) {
+	resolved, err := deriveMappings(lock, cache, m)
+	if err != nil {
+		return lock, err
+	}
+	index := -1
+	for i, src := range lock.Sources {
+		if src.ID == "pokesprite-v2" {
+			index = i
+		}
+	}
+	if index < 0 {
+		return lock, fmt.Errorf("artwork source missing")
+	}
+	src := lock.Sources[index]
+	existing := map[string]bool{}
+	for _, file := range src.Files {
+		existing[file.Path] = true
+	}
+	var paths []string
+	for _, asset := range resolved.Assets {
+		if !existing[asset.Path] {
+			paths = append(paths, asset.Path)
+			existing[asset.Path] = true
+		}
+	}
+	sort.Strings(paths)
+	type result struct {
+		file sourceFile
+		err  error
+	}
+	results := make([]result, len(paths))
+	jobs := make(chan int)
+	var workers sync.WaitGroup
+	for worker := 0; worker < 8; worker++ {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for i := range jobs {
+				file, e := pinAsset(ctx, client, "https://raw.githubusercontent.com/"+src.Repository+"/"+src.Revision+"/"+paths[i], filepath.Join(cache, src.ID, filepath.FromSlash(paths[i])), paths[i])
+				results[i] = result{file, e}
+			}
+		}()
+	}
+	for i := range paths {
+		jobs <- i
+	}
+	close(jobs)
+	workers.Wait()
+	for i, r := range results {
+		if r.err != nil {
+			return lock, fmt.Errorf("pin %s: %w", paths[i], r.err)
+		}
+	}
+	// Copy the slice so callers' existing lock records cannot be modified.
+	lock.Sources = append([]source(nil), lock.Sources...)
+	lock.Sources[index].Files = append([]sourceFile(nil), src.Files...)
+	for _, r := range results {
+		lock.Sources[index].Files = append(lock.Sources[index].Files, r.file)
+	}
+	sort.Slice(lock.Sources[index].Files, func(i, j int) bool { return lock.Sources[index].Files[i].Path < lock.Sources[index].Files[j].Path })
+	return lock, validateLock(lock)
+}
+
+func pinAsset(ctx context.Context, client *http.Client, url, filename, assetPath string) (sourceFile, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return sourceFile{}, err
+	}
+	response, err := client.Do(req)
+	if err != nil {
+		return sourceFile{}, err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return sourceFile{}, fmt.Errorf("HTTP %d", response.StatusCode)
+	}
+	data, err := io.ReadAll(io.LimitReader(response.Body, (16<<20)+1))
+	if err != nil {
+		return sourceFile{}, err
+	}
+	if len(data) == 0 || len(data) > 16<<20 {
+		return sourceFile{}, fmt.Errorf("invalid asset size")
+	}
+	if _, _, _, err := normalizePNG(data); err != nil {
+		return sourceFile{}, err
+	}
+	file := sourceFile{Path: assetPath, Size: int64(len(data)), SHA256: digest(data)}
+	if err := atomicWrite(filename, data); err != nil {
+		return sourceFile{}, err
+	}
+	return file, nil
+}
+
+func atomicWrite(filename string, data []byte) error {
+	if err := os.MkdirAll(filepath.Dir(filename), 0755); err != nil {
+		return err
+	}
+	f, err := os.CreateTemp(filepath.Dir(filename), ".dataset-*")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(f.Name())
+	if _, err := f.Write(data); err != nil {
+		f.Close()
+		return err
+	}
+	if err := f.Close(); err != nil {
+		return err
+	}
+	if err := os.Chmod(f.Name(), 0644); err != nil {
+		return err
+	}
+	return os.Rename(f.Name(), filename)
 }

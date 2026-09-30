@@ -110,3 +110,37 @@ func TestAutomaticPolicyRejectsMaintainedInventoryAndStaleExceptions(t *testing.
 		t.Fatal("accepted unused exception")
 	}
 }
+
+func TestMetadataFormResolutionAndDefaultIdentity(t *testing.T) {
+	lock, cache, m := automaticFixture(t)
+	m.RulesVersion = "d06-auto-2"
+	if _, e := deriveMappings(lock, cache, m); e == nil {
+		t.Fatal("accepted missing v2 form table")
+	}
+	fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("identifier,pokemon_id\nbulbasaur-cosmetic,1\n"))
+	editManifest(t, &lock, cache, func(s *sourceManifest) { s.Pokemon[0].Forms[1].ID = "cosmetic" })
+	resolved, e := deriveMappings(lock, cache, m)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if resolved.Forms[1].PokemonID != 1 {
+		t.Fatal("cosmetic form did not inherit its exact metadata owner typing")
+	}
+	fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon.csv", []byte("id,identifier,species_id,is_default\n1,bulbasaur-two-segment,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n100,bulbasaur-mega,1,0\n"))
+	editManifest(t, &lock, cache, func(s *sourceManifest) {
+		s.Pokemon[0].DefaultForm = "two-segment"
+		s.Pokemon[0].Forms[0].ID = "two-segment"
+		s.Pokemon[0].Forms = s.Pokemon[0].Forms[:2]
+	})
+	resolved, e = deriveMappings(lock, cache, m)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if resolved.Forms[0].ID != "standard" || resolved.Forms[0].SourceFormID != "two-segment" || resolved.Forms[0].PokemonID != 1 {
+		t.Fatal("non-base default not mapped to standard")
+	}
+	fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon.csv", []byte("id,identifier,species_id,is_default\n1,bulbasaur,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n100,bulbasaur-two-segment,1,0\n"))
+	if _, e := deriveMappings(lock, cache, m); e == nil {
+		t.Fatal("accepted source/metadata default mismatch")
+	}
+}

@@ -8,17 +8,17 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-The development catalog contains all original 151 species, their complete
+The development catalog contains all generation-1 and generation-2 species, their complete
 connected evolution families (including later-generation relatives), and the
-existing Pyroar/Meowstic families: 192 species and 275 metadata forms.
+existing Pyroar/Meowstic families: 293 species and 413 metadata forms.
 
-Audited artwork covers 190 species and 265 collectible forms, with 534 exact
-regular/shiny assets. Kleavor and Annihilape currently have metadata but no
-audited artwork. Ten form appearances are explicitly excluded pending source
+Audited artwork covers 284 species and 391 collectible forms, with 786 exact
+regular/shiny assets. Nine catalog species currently have metadata but no
+audited standard artwork. Twenty-two form appearances are explicitly excluded pending source
 quality/provider review. Printing never substitutes another appearance.
 
 Pyroar and Meowstic retain distinct male/female regular and shiny slots within
-one standard form. There are 192 standard regular artwork slots across 190
+one standard form. There are 286 standard regular artwork slots across 284
 eligible species; random printing samples species uniformly, not artwork slots.
 Other visual-gender combinations and wider inventory remain pending.
 

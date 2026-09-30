@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -21,6 +22,7 @@ func main() {
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags := flag.NewFlagSet("dataset", flag.ContinueOnError)
 	flags.SetOutput(stderr)
+	updateLock := flags.Bool("update-lock", false, "Explicitly discover and pin missing audited artwork at the existing revision")
 	fetch := flags.Bool("fetch", false, "Download and verify pinned source inputs")
 	prepare := flags.Bool("prepare-assets", false, "Verify generated metadata and materialize ignored sprite assets")
 	generate := flags.Bool("generate", false, "Generate normalized catalog, assets, and coverage")
@@ -35,12 +37,16 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		}
 		return 2
 	}
-	if flags.NArg() != 0 || (!*fetch && !*generate && !*prepare && !*check) || *sourcesPath == "" || *cachePath == "" {
-		fmt.Fprintln(stderr, "Usage: go run ./tools/dataset --sources <file> --cache <dir> [--mappings <file> --out <root>] --fetch|--generate|--prepare-assets|--check")
+	if flags.NArg() != 0 || (!*fetch && !*generate && !*prepare && !*check && !*updateLock) || *sourcesPath == "" || *cachePath == "" {
+		fmt.Fprintln(stderr, "Usage: go run ./tools/dataset --sources <file> --cache <dir> [--mappings <file> --out <root>] --fetch|--generate|--prepare-assets|--check|--update-lock")
 		return 2
 	}
-	if (*mappingsPath == "") != (*outPath == "") || ((*generate || *prepare) && *mappingsPath == "") || (*mappingsPath != "" && !*generate && !*prepare && !*check) {
-		fmt.Fprintln(stderr, "dataset: --mappings and --out must be provided together for --generate, --prepare-assets or generated --check")
+	if (*mappingsPath == "") != (*outPath == "") || ((*generate || *prepare || *updateLock) && *mappingsPath == "") || (*mappingsPath != "" && !*generate && !*prepare && !*check && !*updateLock) {
+		fmt.Fprintln(stderr, "dataset: --mappings and --out must be provided together for --generate, --update-lock, --prepare-assets or generated --check")
+		return 2
+	}
+	if *updateLock && (*prepare || !*generate) {
+		fmt.Fprintln(stderr, "dataset: --update-lock requires --generate and cannot be combined with --prepare-assets")
 		return 2
 	}
 	lock, err := readLock(*sourcesPath)
@@ -59,6 +65,31 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		if err != nil {
 			fmt.Fprintf(stderr, "dataset: %v\n", err)
 			return 1
+		}
+		if *updateLock {
+			lock, err = updateAssetLock(ctx, client, lock, *cachePath, mappings)
+			if err != nil {
+				fmt.Fprintf(stderr, "dataset: %v\n", err)
+				return 1
+			}
+			_, e := buildBundle(lock, *cachePath, mappings)
+			if e != nil {
+				fmt.Fprintf(stderr, "dataset: proposed lock failed inventory validation: %v\n", e)
+				return 1
+			}
+			data, e := json.MarshalIndent(lock, "", "  ")
+			if e == nil {
+				e = atomicWrite(*sourcesPath, append(data, '\n'))
+			}
+			if e != nil {
+				fmt.Fprintf(stderr, "dataset: %v\n", e)
+				return 1
+			}
+			count, err = syncInputs(ctx, lock, *cachePath, false, client)
+			if err != nil {
+				fmt.Fprintf(stderr, "dataset: %v\n", err)
+				return 1
+			}
 		}
 		bundle, err := buildBundle(lock, *cachePath, mappings)
 		if err == nil && *generate {

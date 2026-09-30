@@ -1,8 +1,9 @@
 {
-  "rules_version": "d06-auto-1",
+  "rules_version": "d06-auto-2",
   "selection": {
     "generations": [
-      1
+      1,
+      2
     ],
     "family_seeds": [
       667,
@@ -14,7 +15,7 @@
     ]
   },
   "source_standard_form": "base",
-  "standard_form_reason": "The source base identity maps to standard. Every other source form has an explicit owning Pok\u00e9API variety; no alias or orientation creates a new appearance.",
+  "standard_form_reason": "The source-designated default maps to standard and must match its owning default PokéAPI variety. Exact metadata variety/form identifiers resolve other forms; exceptions cannot create aliases or orientation duplicates.",
   "form_overrides": [
     {
       "species_id": 59,
@@ -26,7 +27,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
+      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate PokéAPI variety exists. Provisional artwork is excluded."
     },
     {
       "species_id": 101,
@@ -38,19 +39,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
-    },
-    {
-      "species_id": 172,
-      "id": "spiky-eared",
-      "name": "Spiky Eared",
-      "source_form_id": "spiky-eared",
-      "pokemon_id": 172,
-      "default_gender": "default",
-      "genders": [
-        "default"
-      ],
-      "reason": "Source Spiky-eared cosmetic appearance uses the owning standard Pichu variety typing; no distinct variety exists."
+      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate PokéAPI variety exists. Provisional artwork is excluded."
     },
     {
       "species_id": 900,
@@ -63,20 +52,32 @@
         "default"
       ],
       "reason": "Source Noble visual state uses the owning Kleavor variety typing; its provider artwork remains pending audit."
+    },
+    {
+      "species_id": 249,
+      "id": "shadow",
+      "name": "Shadow",
+      "source_form_id": "shadow",
+      "pokemon_id": 249,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Shadow Lugia is a source cosmetic identity without a same-species PokéAPI variety; use standard Lugia typing. Artwork must independently pass the inherited quality gate."
     }
   ],
   "source_name_overrides": [
     {
       "species_id": 83,
       "source_name": "Farfetch'd",
-      "canonical_name": "Farfetch\u2019d",
-      "reason": "Pinned artwork and Pok\u00e9API English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
+      "canonical_name": "Farfetch’d",
+      "reason": "Pinned artwork and PokéAPI English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
     },
     {
       "species_id": 865,
       "source_name": "Sirfetch'd",
-      "canonical_name": "Sirfetch\u2019d",
-      "reason": "Pinned artwork and Pok\u00e9API English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
+      "canonical_name": "Sirfetch’d",
+      "reason": "Pinned artwork and PokéAPI English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
     }
   ]
 }

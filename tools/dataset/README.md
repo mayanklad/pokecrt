@@ -7,20 +7,24 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generation 1 and the Litleo/Espurr family seeds.
+The current policy selects generations 1 and 2 and the Litleo/Espurr family seeds.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
 branches. The sorted species list therefore comes from data, not a National total.
 
 For every selected source species, canonical forms are read from the pinned
-PokéSprite-v2 manifest. Base becomes standard; display labels come from upstream.
+PokéSprite-v2 manifest. The source-designated default becomes standard; display labels come from upstream.
+A non-base source default must match the exact owning PokéAPI default variety.
 Standard typing uses the owning default PokéAPI variety. Other forms require an
-exact species-slug/form-ID variety match and checked species ownership.
+exact species-slug/form-ID match against pinned varieties or `pokemon_forms.csv`,
+with checked species ownership. Unown’s 28 appearances resolve from that table;
+its standard artwork is A. Pichu’s Spiky-eared identity also resolves there.
 Source canonical pointers are folded into aliases, never extra collectibles.
 Unknown matches fail; the tool does not guess typing from a similar filename.
 
 Four reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode,
-Spiky-eared Pichu, and Noble Kleavor share explicitly identified variety typing.
+Noble Kleavor, and Shadow Lugia share explicitly identified variety typing.
+Shadow Lugia artwork remains excluded by the independent quality gate.
 Two exact name corrections preserve the Farfetch’d/Sirfetch’d apostrophe aliases.
 Unused, redundant, duplicate, and wrong-owner form exceptions fail validation.
 
@@ -40,8 +44,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage remains 192 catalog species, 275 metadata forms,
-190 printable species, 265 collectible forms, and 534 assets. Ten appearances
+The current coverage is 293 catalog species, 413 metadata forms,
+284 printable species, 391 collectible forms, and 786 assets. Twenty-two appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -66,15 +70,31 @@ committed metadata and materializes ignored PNGs for a fresh checkout.
 The installed executable embeds those PNGs and never downloads at runtime.
 
 `sources.json` remains an explicit integrity lock: revisions, sizes, and SHA-256
-values authorize exact bytes. It is not an editable species inventory and is not
-silently rewritten during normal generation. Scope expansion or source refresh
-requires an explicit reviewed lock update for newly required inputs; changing
-selection alone does not authorize an unpinned image. Hash discovery/refresh is
-a separate development action, not a runtime feature or trust bypass.
+values authorize exact bytes. Normal generation never rewrites it or accepts
+unpinned images. For future reviewed artwork scope expansion at the existing
+revision, the developer can explicitly discover missing image pins through code:
+
+```bash
+go run ./tools/dataset \
+  --sources tools/dataset/sources.json \
+  --cache .cache/dataset \
+  --mappings tools/dataset/mappings.json \
+  --out . --update-lock --generate --check
+```
+
+This action requires verified metadata already in the cache. It derives paths
+from the quality-gated inventory, preserves all existing pins, downloads missing
+images from the unchanged revision, decodes them, and measures raw sizes/hashes.
+It validates the entire proposed inventory before atomically saving the lock.
+Eight bounded download workers collect results; sorted records keep output
+stable. Review lock/coverage diffs and images before committing. Failed downloads
+or inventory validation do not save the proposed lock. Metadata source additions
+and revision changes still require separate reviewed pin updates.
+`--update-lock` cannot be used with release asset preparation and requires an
+explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-This refactor changes that ID even though metadata fields and PNG bytes match
-the prior inventory. No trainer database exists, so no storage migration applies.
+Generation-2 expansion changes that ID and adds 252 exact images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -103,7 +123,16 @@ and notices. No rights-holder endorsement or clearance is claimed.
 The pinned manifest contains 1,025 species and 1,594 source form records;
 126 records have canonical pointers and 13 are source-generated candidates.
 Those source totals are audit observations, never completion denominators.
-Earlier batches reviewed starter forms, species #010-#024, Raticate Totem alias
+Earlier batches reviewed starter forms, species #010–#024, Raticate Totem alias
 folding, Pyroar/Meowstic genders, then generation-1 evolution-family closure.
-The previous batch inspected all 450 added sprites. This refactor adds no artwork.
+The previous generation-1 batch inspected all 450 added sprites. The generation-2
+batch inspects 252 new sprites in 126 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
+
+Current rules version: `d06-auto-2`. It requires the pinned metadata form table.
+Dudunsparce’s non-base default maps to standard with exact metadata verification;
+its generated/unaudited artwork remains unavailable. No new source provider or
+visual-gender scope is accepted by this batch.
+
+Maximum cropped artwork dimensions in this batch are 52 columns by 54 source
+pixel rows (up to 27 half-block terminal rows). Narrow terminals may wrap.

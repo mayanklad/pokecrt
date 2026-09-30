@@ -131,7 +131,7 @@ func readMappings(filename string) (mappingConfig, error) {
 		}
 		return mappings, nil
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && mappings.RulesVersion != "d06-auto-1") || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2")) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
@@ -446,7 +446,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			return nil, nil, err
 		}
 		sourceSpecies := sourceSpeciesByID[id]
-		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || sourceSpecies.DefaultForm != mappings.SourceStandardForm {
+		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2") && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
 			return nil, nil, fmt.Errorf("source identity/default mapping mismatch for #%03d", id)
 		}
 		if defaults[id] == 0 || typeSlots[defaults[id]][1] == "" {

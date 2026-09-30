@@ -15,7 +15,7 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if m.RulesVersion != "d06-auto-1" || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
+	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2") || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
 	if len(m.CatalogSpecies)+len(m.Forms)+len(m.Assets)+len(m.Exclusions) != 0 {
@@ -162,6 +162,40 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			defaults[owner] = id
 		}
 	}
+	// Exact metadata form identifiers resolve cosmetic states such as Unown.
+	// Optional only for legacy source locks and small test fixtures.
+	foundFormTable := false
+	for _, src := range lock.Sources {
+		if src.ID != "pokeapi" {
+			continue
+		}
+		for _, file := range src.Files {
+			if file.Path != "data/v2/csv/pokemon_forms.csv" {
+				continue
+			}
+			foundFormTable = true
+			forms, e := readTable(lock, cache, "pokemon_forms.csv", "identifier", "pokemon_id")
+			if e != nil {
+				return m, e
+			}
+			seen := map[string]bool{}
+			for _, row := range forms {
+				key := row["identifier"]
+				id, e := integer(row, "pokemon_id", false)
+				if e != nil || key == "" || seen[key] || owners[id] == 0 {
+					return m, fmt.Errorf("invalid or duplicate metadata form %s", key)
+				}
+				seen[key] = true
+				if existing := names[key]; existing != 0 && existing != id {
+					return m, fmt.Errorf("conflicting variety/form identity %s", key)
+				}
+				names[key] = id
+			}
+		}
+	}
+	if m.RulesVersion == "d06-auto-2" && !foundFormTable {
+		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
+	}
 	inherited, err := loadInheritedInventory(lock, cache)
 	if err != nil {
 		return m, err
@@ -182,7 +216,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 		if !ok {
 			return m, fmt.Errorf("missing source species %d", id)
 		}
-		if sp.DefaultForm != "base" || defaults[id] == 0 {
+		if sp.DefaultForm == "" || defaults[id] == 0 {
 			return m, fmt.Errorf("unresolved standard identity %d", id)
 		}
 		gendered := slices.Contains(m.Selection.VisualGenderSpecies, id)
@@ -192,9 +226,12 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 			formID, name := sf.ID, sf.Label
 			pokemonID := names[sp.Slug+"-"+sf.ID]
-			if sf.ID == "base" {
+			if sf.ID == sp.DefaultForm {
 				formID = "standard"
 				name = "Standard"
+				if sf.ID != "base" && pokemonID != defaults[id] {
+					return m, fmt.Errorf("source default does not match metadata default %d/%s", id, sf.ID)
+				}
 				pokemonID = defaults[id]
 			}
 			f := formMapping{SpeciesID: id, ID: formID, Name: name, SourceFormID: sf.ID, PokemonID: pokemonID, DefaultGender: "default", Genders: []string{"default"}, Reason: "Derived from pinned source identity and exact same-species PokéAPI variety."}

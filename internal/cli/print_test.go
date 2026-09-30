@@ -69,12 +69,12 @@ func TestRandomPrintAndFailures(t *testing.T) {
 	for _, test := range []struct {
 		index int
 		name  string
-	}{{0, "#001 Bulbasaur"}, {24, "#025 Pikachu"}, {150, "#151 Mew"}, {152, "#172 Pichu"}, {189, "#866 Mr. Rime"}} {
+	}{{0, "#001 Bulbasaur"}, {24, "#025 Pikachu"}, {150, "#151 Mew"}, {151, "#152 Chikorita"}, {250, "#251 Celebi"}, {283, "#866 Mr. Rime"}} {
 		index := test.index
 		want := test.name + "\n"
 		var stdout, stderr bytes.Buffer
 		status := runPrint(nil, &stdout, &stderr, func(n int) (int, error) {
-			if n != 190 {
+			if n != 284 {
 				t.Fatalf("n=%d", n)
 			}
 			return index, nil

@@ -5,8 +5,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -130,5 +132,103 @@ func TestDeveloperInvocationRequiresExplicitPaths(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	if status := run(context.Background(), []string{"--check"}, &stdout, &stderr); status != 2 {
 		t.Fatalf("status=%d; stderr=%q", status, stderr.String())
+	}
+}
+
+func TestAssetPinningRequiresRealPNGAndRecordsRawHash(t *testing.T) {
+	data := encodeFixturePNG(t, false)
+	for _, tc := range []struct {
+		name   string
+		status int
+		body   []byte
+		valid  bool
+	}{
+		{"pinned PNG", 200, data, true}, {"not found", 404, data, false}, {"HTML", 200, []byte("<html>error</html>"), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(tc.status); w.Write(tc.body) }))
+			defer server.Close()
+			filename := filepath.Join(t.TempDir(), "asset.png")
+			file, e := pinAsset(context.Background(), server.Client(), server.URL, filename, "pokemon/regular/fixture.png")
+			if !tc.valid {
+				if e == nil {
+					t.Fatal("accepted invalid artwork")
+				}
+				if _, e := os.Stat(filename); !os.IsNotExist(e) {
+					t.Fatal("persisted invalid artwork")
+				}
+				return
+			}
+			if e != nil {
+				t.Fatal(e)
+			}
+			if file.SHA256 != digest(data) || file.Size != int64(len(data)) {
+				t.Fatal("pin does not describe raw bytes")
+			}
+			got, e := os.ReadFile(filename)
+			if e != nil || !bytes.Equal(got, data) {
+				t.Fatal("pin changed input bytes")
+			}
+		})
+	}
+}
+
+func TestExplicitAssetLockUpdatePreservesExistingPins(t *testing.T) {
+	for _, fail := range []bool{false, true} {
+		lock, cache, m := automaticFixture(t)
+		before, _ := json.Marshal(lock)
+		png := encodeFixturePNG(t, false)
+		client := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			if !strings.Contains(r.URL.Path, "/"+strings.Repeat("b", 40)+"/pokemon/") {
+				t.Errorf("request did not retain pinned revision: %s", r.URL)
+			}
+			status := 200
+			if fail {
+				status = 404
+			}
+			return &http.Response{StatusCode: status, Body: io.NopCloser(bytes.NewReader(png)), Header: make(http.Header)}, nil
+		})}
+		updated, e := updateAssetLock(context.Background(), client, lock, cache, m)
+		after, _ := json.Marshal(lock)
+		if !bytes.Equal(before, after) {
+			t.Fatal("mutated caller's original pins")
+		}
+		if fail {
+			if e == nil {
+				t.Fatal("accepted failed download")
+			}
+			continue
+		}
+		if e != nil {
+			t.Fatal(e)
+		}
+		var oldSrc, newSrc source
+		for _, s := range lock.Sources {
+			if s.ID == "pokesprite-v2" {
+				oldSrc = s
+			}
+		}
+		for _, s := range updated.Sources {
+			if s.ID == "pokesprite-v2" {
+				newSrc = s
+			}
+		}
+		if len(newSrc.Files) != len(oldSrc.Files)+2 {
+			t.Fatal("missing palette pins or repinned existing asset")
+		}
+		for _, old := range oldSrc.Files {
+			found := false
+			for _, current := range newSrc.Files {
+				if current.Path == old.Path {
+					found = true
+					if current != old {
+						t.Fatal("changed an existing integrity pin")
+					}
+				}
+			}
+			if !found {
+				t.Fatal("dropped existing input")
+			}
+		}
 	}
 }

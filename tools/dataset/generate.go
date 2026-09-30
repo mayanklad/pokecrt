@@ -155,7 +155,7 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	previousFemale := make(map[int]bool)
 	var inherited inheritedInventory
 	previousIcons := make(map[string]bool)
-	if mappings.RulesVersion == "d06b-gen1-1" || mappings.RulesVersion == "d06-auto-1" {
+	if mappings.RulesVersion == "d06b-gen1-1" || (mappings.RulesVersion == "d06-auto-1" || mappings.RulesVersion == "d06-auto-2") {
 		inherited, err = loadInheritedInventory(lock, cache)
 		if err != nil {
 			return bundle, err
