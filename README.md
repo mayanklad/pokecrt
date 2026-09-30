@@ -1,98 +1,153 @@
 # PokéCRT
 
-An offline Pokémon terminal app built in Go.
+Offline Pokémon terminal artwork, written in Go. Print one named or randomly
+selected Pokémon with truecolor Unicode half blocks at the original pixel scale.
 
-The planned product combines colorful sprite printing and a public catalog
-with optional trainer profiles, encounters, achievements, and an interactive
-Pokédex.
+## Current coverage
 
-## Development status
+This development build prints standard regular Bulbasaur, Charizard, and
+Squirtle. The catalog contains nine starter-family species; six have no selected
+artwork. Random printing chooses uniformly among the three available species.
+Missing artwork produces an error instead of substituting another appearance.
 
-D01 provides root help and version handling. D02a provides pinned source
-downloads and cache verification. D02b adds a minimal normalized catalog,
-exact embedded asset lookup, deterministic generation, coverage, and notices.
+Public filters, alternate forms, shiny palettes, visual gender selectors, catalog
+listing, trainers, encounters, achievements, and the TUI are not implemented yet.
+The initial tested platform is Linux amd64. A UTF-8 terminal is required;
+truecolor support gives the intended artwork. Narrow terminals may wrap the
+natural-size output; sprites are not resized automatically.
 
-The initial catalog contains nine starter-family species. Three standard
-regular sprite candidates are bundled locally: Bulbasaur, Charizard, and
-Squirtle. The other six remain metadata entries with unavailable artwork.
-This is an initial development inventory, not complete Pokémon coverage.
+A public release is pending. Image redistribution review remains open, and the
+project code license has not yet been selected. Generated PNGs stay local until
+that review is complete. See [source audit](tools/dataset/source-audit.md) and
+[third-party notices](THIRD_PARTY_NOTICES.md).
 
-Printing, rendering, trainer commands, and the TUI are not implemented yet.
-Source-image redistribution verification remains open; this increment does
-not claim release-rights clearance.
+## Prepare a source checkout
 
-Initial supported target: Linux amd64.
-
-## Prepare generated files
-
-Run from the repository root. Generate before testing a checkout that does
-not yet contain generated Go files and PNGs.
-
-```bash
-go run ./tools/dataset \
-  --sources tools/dataset/sources.json \
-  --cache .cache/dataset \
-  --mappings tools/dataset/mappings.json \
-  --out . \
-  --fetch --generate --check
-```
-
-`--fetch` downloads only pinned developer inputs and verifies their size and
-SHA-256. Existing valid inputs are reused; corrupt cache files fail visibly.
-Downloads stay in the ignored cache and are not runtime dependencies.
-
-`--generate` uses verified inputs to write the catalog, cropped PNGs, asset
-manifest, coverage reports, and third-party notices. Cropping removes only
-fully transparent outer margins; visible pixels are preserved. Partial alpha
-requires an explicit normalization rule and is rejected by the initial rules.
-
-## Check generated drift offline
+Use Go 1.27.0 or newer. Development verification currently uses Go 1.27.1.
+Run from the repository root. A fresh checkout needs local PNG generation before
+building because the executable embeds those files.
 
 ```bash
 go run ./tools/dataset \
   --sources tools/dataset/sources.json \
   --cache .cache/dataset \
   --mappings tools/dataset/mappings.json \
-  --out . \
-  --check
+  --out . --fetch --generate --check
 ```
 
-This command does not download or overwrite anything. It reports missing,
-changed, or unexpected generated assets with a nonzero exit status.
-Generation and checking can also run together without network when cached
-inputs exist. An input-only check remains available by omitting both
-`--mappings` and `--out`.
+Only this explicit developer `--fetch` step downloads sources. Inputs have pinned
+revisions, sizes, and SHA-256 hashes. Valid cached inputs are reused; corrupt
+inputs fail visibly. Downloads stay in the ignored `.cache/dataset` directory.
+With verified inputs already cached, omit `--fetch` to generate offline.
 
-Generated Go files and PNGs, coverage reports, and THIRD_PARTY_NOTICES.md are
-generator-owned. Do not edit them manually. A future redistribution must
-satisfy the documented source-image verification gate.
+Generation owns catalog and manifest Go files, cropped PNGs, coverage reports,
+and notices. Do not edit them manually. Cropping removes fully transparent
+outer margins without resizing visible pixels. Partial alpha is rejected.
 
-## Build and check
+Check for generated drift without downloading or overwriting files:
 
 ```bash
+go run ./tools/dataset \
+  --sources tools/dataset/sources.json \
+  --cache .cache/dataset \
+  --mappings tools/dataset/mappings.json \
+  --out . --check
+```
+
+## Build and verify
+
+```bash
+gofmt -w cmd/pokecrt internal/cli internal/query
 go test ./...
 go vet ./...
 go build -o ./bin/pokecrt ./cmd/pokecrt
 ```
 
-No external Go modules are required yet.
+No external Go modules are required yet. The executable embeds artwork and
+metadata: runtime needs no source checkout, download cache, network, trainer,
+or data directory. Help and version also work without trainer state.
 
-## Current runtime usage
+The Linux amd64 integration test builds a trimmed executable, runs it from an
+empty directory, checks piped output and a closed pipe, verifies version/dataset
+identity, and confirms that public commands create no trainer directories.
+
+## Print
 
 ```bash
-./bin/pokecrt
 ./bin/pokecrt --help
 ./bin/pokecrt --version
+./bin/pokecrt print --help
+./bin/pokecrt print
+./bin/pokecrt print --name charizard
+./bin/pokecrt print --name squirtle --output sprite
 ```
 
-Version output now includes the generated content-based dataset ID.
-Runtime does not fetch sources, read the development cache, or initialize
-trainer storage.
+Default `compact` output is the sprite, a blank line, and a heading such as
+`#006 Charizard`. `sprite` emits only artwork and line breaks. Name lookup is
+case-insensitive and accepts exact canonical names or generated unambiguous
+aliases; it does not guess partial names. Scalar flags may appear only once.
 
-## Development documents
+Nonempty `NO_COLOR` disables ANSI colors while retaining block glyphs:
+
+```bash
+NO_COLOR=1 ./bin/pokecrt print --name bulbasaur
+```
+
+Unset or empty `NO_COLOR` preserves truecolor sequences, including through pipes.
+Transparent halves use the terminal's default background. Output does not clear
+the screen, move the cursor, or change the terminal title. Errors go to stderr;
+successful artwork goes to stdout. Invalid invocations return status 2,
+operational failures return 1, and broken pipes exit quietly with status 0.
+
+## Local installation
+
+Build first, then install the executable into `~/.local/bin`:
+
+```bash
+sh scripts/install.sh ./bin/pokecrt
+```
+
+If that directory is not on PATH, add this to your shell configuration:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Open a new shell or reload its configuration, then run:
+
+```bash
+pokecrt --version
+pokecrt print --output sprite
+```
+
+`POKECRT_INSTALL_DIR` can override the installation directory. To update, build
+and rerun the installer. To uninstall, remove only `~/.local/bin/pokecrt`.
+Installation and removal do not erase trainer data.
+
+## Local release candidate
+
+After selecting a project code license and adding `LICENSE`, prepare an archive:
+
+```bash
+sh scripts/package.sh v0.1
+(cd dist && sha256sum -c SHA256SUMS)
+```
+
+The script checks generated drift, tests, and vet; builds Linux amd64 with CGO
+disabled, trimmed paths, and the requested version; and packages the executable,
+README, LICENSE, third-party notices, and coverage notes. It writes
+`dist/pokecrt_v0.1_linux_amd64.tar.gz` and `dist/SHA256SUMS`. An existing archive
+is not overwritten. It never downloads sources or publishes anything.
+
+Before distribution, complete image-rights review and the
+[release checklist](docs/release-v0.1.md). Cross-compilation alone does not prove
+support for another platform.
+
+## Project documents
 
 - [Implementation progress](docs/progress.md)
+- [Release candidate checklist](docs/release-v0.1.md)
 - [Dataset source audit](tools/dataset/source-audit.md)
 - [Generated coverage](tools/dataset/coverage.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
-- The product specification is maintained locally and excluded from Git history.
+- The specification is maintained locally and excluded from Git history.

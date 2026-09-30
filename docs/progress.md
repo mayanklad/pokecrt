@@ -2,9 +2,9 @@
 
 Specification revision/date: 30 September 2026
 Current release target: v0.1 — Basic printer
-Current development step: D04 — Named and random printing
-Current source commit: 38711db45c27cdb98e3cc293edf602dd49d24317
-Commit reference note: D03 baseline; D04 awaits user verification and commit.
+Current development step: D05 — Linux printer packaging and verification
+Current source commit: d86a63a1c81b60ebf74443807e571dff6a2636ad
+Commit reference note: D04 baseline; D05 awaits user verification and commit. No release is published.
 
 Implemented runtime commands:
 - Root help
@@ -21,6 +21,9 @@ Implemented developer tooling:
 - Deterministic generation and offline generated-output drift checks
 - Coverage reports and third-party notices
 - Local sprite preview via tools/render-preview
+- Local executable installation via scripts/install.sh
+- Linux amd64 candidate packaging and checksums via scripts/package.sh
+- Release checklist in docs/release-v0.1.md
 
 Implemented rendering:
 - Truecolor half blocks at source-pixel scale
@@ -51,7 +54,12 @@ Verification:
 - D03 committed; user real-terminal review is not recorded here
 - D04 assistant mirror tests, vet, and build passed
 - D04 exact output, selector boundaries, failures, NO_COLOR, and no-state tests passed
-- D04 binary smoke checks passed; user verification pending
+- D04 user formatting, tests, vet, build, printing, and error statuses passed
+- D05 assistant tests and vet passed
+- D05 installed-binary tests verify version, piped ANSI, NO_COLOR, closed pipes, and no trainer state
+- D05 installer smoke check passed
+- D05 packaging refuses a missing LICENSE; temporary fixture archive verification passed
+- D05 user checks and network-disabled/manual-terminal release review pending
 
 Known limitations:
 - Public filters, forms, genders, and shiny selectors await D06
@@ -59,8 +67,11 @@ Known limitations:
 - Full coverage, forms, palettes, and visual genders remain scheduled for D06
 - Source-image redistribution gate remains open under specification section 13
 - Generated PNGs remain local pending that gate
+- Project code LICENSE is absent; code-license selection remains with the owner
+- Public v0.1 tag/release remains unpublished
 
-Next development step: D05 — Errors, piping/NO_COLOR, offline packaging, and README
+Next development step: D06 — Expanded coverage and public selection engine
+Release work: resolve code/image licensing and complete v0.1 smoke checks before publication
 
 Approved deviations:
 - Specification remains local and excluded from Git history
