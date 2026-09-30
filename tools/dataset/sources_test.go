@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -230,5 +231,105 @@ func TestExplicitAssetLockUpdatePreservesExistingPins(t *testing.T) {
 				t.Fatal("dropped existing input")
 			}
 		}
+	}
+}
+
+func TestTransferProgressDistinguishesDownloadsAndVerifiedCache(t *testing.T) {
+	data := []byte("pinned fixture\n")
+	lock := fixtureLock(data)
+	cache := t.TempDir()
+	client := &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(data)), Header: make(http.Header)}, nil
+	})}
+	var logs bytes.Buffer
+	n, e := syncInputs(context.Background(), lock, cache, true, client, progressOptions{Writer: &logs, Verbose: true})
+	if e != nil || n != 1 {
+		t.Fatalf("download: %d %v", n, e)
+	}
+	text := logs.String()
+	if !strings.Contains(text, "downloaded fixture/input.txt") || !strings.Contains(text, "1/1 | downloaded 1 | cached 0 | complete") {
+		t.Fatalf("download progress: %q", text)
+	}
+	if strings.ContainsAny(text, "\r\x1b") {
+		t.Fatal("redirected logs contain terminal controls")
+	}
+	logs.Reset()
+	n, e = syncInputs(context.Background(), lock, cache, false, client, progressOptions{Writer: &logs, Verbose: true})
+	if e != nil || n != 1 || !strings.Contains(logs.String(), "cached fixture/input.txt") || !strings.Contains(logs.String(), "downloaded 0 | cached 1 | complete") {
+		t.Fatalf("cache verification progress: %d %v %q", n, e, logs.String())
+	}
+	if e := os.WriteFile(filepath.Join(cache, "fixture", "input.txt"), []byte("corrupt"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	logs.Reset()
+	n, e = syncInputs(context.Background(), lock, cache, false, client, progressOptions{Writer: &logs})
+	if e == nil || n != 0 || !strings.Contains(e.Error(), "input.txt") || !strings.Contains(logs.String(), "0/1 | downloaded 0 | cached 0 | failed") {
+		t.Fatalf("corrupt cache was counted as verified: %d %v %q", n, e, logs.String())
+	}
+}
+
+func TestProgressOnStderrPreservesDatasetStdout(t *testing.T) {
+	data := []byte("fixture\n")
+	lock := fixtureLock(data)
+	dir := t.TempDir()
+	cache := filepath.Join(dir, "cache")
+	fixtureInput(t, &lock, cache, "fixture", "input.txt", data)
+	encoded, e := json.Marshal(lock)
+	if e != nil {
+		t.Fatal(e)
+	}
+	filename := filepath.Join(dir, "sources.json")
+	if e := os.WriteFile(filename, encoded, 0600); e != nil {
+		t.Fatal(e)
+	}
+	for _, verbose := range []bool{false, true} {
+		var stdout, stderr bytes.Buffer
+		args := []string{"--sources", filename, "--cache", cache, "--check"}
+		if verbose {
+			args = append(args, "--verbose")
+		}
+		if status := run(context.Background(), args, &stdout, &stderr); status != 0 {
+			t.Fatalf("status=%d stderr=%q", status, stderr.String())
+		}
+		if stdout.String() != "Verified 1 pinned inputs.\n" {
+			t.Fatalf("stdout changed: %q", stdout.String())
+		}
+		if !strings.Contains(stderr.String(), "cached 1 | complete") {
+			t.Fatalf("missing stderr summary: %q", stderr.String())
+		}
+		if strings.Contains(stderr.String(), "cached fixture/input.txt") != verbose {
+			t.Fatalf("verbose routing: %q", stderr.String())
+		}
+	}
+}
+
+func TestConcurrentInteractiveProgressIsSerializedAndFinalized(t *testing.T) {
+	var logs bytes.Buffer
+	p := newTransferProgress("New artwork", 80, []progressOptions{{Writer: &logs, Interactive: true}})
+	var workers sync.WaitGroup
+	for w := 0; w < 8; w++ {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for i := 0; i < 10; i++ {
+				p.record("fixture.png", true)
+			}
+		}()
+	}
+	workers.Wait()
+	// Exercise the heartbeat before finishing; it must not claim completions.
+	p.mu.Lock()
+	p.spinner++
+	p.display(false, "")
+	p.mu.Unlock()
+	p.finish(nil)
+	text := logs.String()
+	if !strings.Contains(text, "New artwork [") || !strings.Contains(text, "80/80 | downloaded 80 | cached 0 | complete\n") || !strings.Contains(text, "\r") {
+		t.Fatalf("interactive progress: %q", text)
+	}
+	select {
+	case <-p.stopped:
+	default:
+		t.Fatal("heartbeat did not stop")
 	}
 }

@@ -205,3 +205,6 @@ configuration contains selection policy and reviewed exceptions; see the
 Spinda’s unofficial blank/filled pattern templates are excluded source records,
 not collectible forms. Castform weather typings and Deoxys aliases come from
 pinned metadata and source identities.
+
+Developer dataset downloads show progress on stderr by default. Add `--verbose`
+to the dataset command for individual downloaded and cache-verified filenames.

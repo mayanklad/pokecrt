@@ -152,3 +152,22 @@ Castform standard/sunny/rainy/snowy types are Normal/Fire/Water/Ice from exact
 metadata varieties. Deoxys `normal` is a source alias of standard; attack,
 defense, and speed remain separate forms. Orientation files are not added.
 No new source provider or visual-gender audit scope is introduced by this batch.
+
+
+## Transfer progress
+
+The dataset tool reports input download/cache-verification progress to stderr by
+default. Interactive character-device stderr gets a single-line bar and a spinner
+refreshed every 250 ms. Redirected stderr (or `TERM=dumb`) gets plain-text start,
+periodic, and completion/failure lines without carriage returns or ANSI escapes.
+Periodic log updates occur every five seconds or 250 completed inputs. Counts
+separate downloaded files from successfully verified cache hits; corrupt cache
+entries and failed downloads never count as completed.
+
+`--verbose` adds one line per successfully downloaded or verified cached input.
+Failures retain the affected filename in the error. Progress for the eight
+artwork-pin download workers is serialized, and the heartbeat stops before the
+phase returns. Counters are per phase, including post-update lock verification.
+The final dataset summary remains on stdout. Progress is presentation only:
+source locks, generation, coverage, dataset identity, and offline runtime are
+unchanged. No dependency, package, or source file was added for this feature.

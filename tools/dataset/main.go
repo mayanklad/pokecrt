@@ -23,6 +23,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	flags := flag.NewFlagSet("dataset", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	updateLock := flags.Bool("update-lock", false, "Explicitly discover and pin missing audited artwork at the existing revision")
+	verbose := flags.Bool("verbose", false, "Report each downloaded or cache-verified input on stderr")
 	fetch := flags.Bool("fetch", false, "Download and verify pinned source inputs")
 	prepare := flags.Bool("prepare-assets", false, "Verify generated metadata and materialize ignored sprite assets")
 	generate := flags.Bool("generate", false, "Generate normalized catalog, assets, and coverage")
@@ -55,7 +56,8 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 	client := &http.Client{Timeout: 30 * time.Second}
-	count, err := syncInputs(ctx, lock, *cachePath, *fetch, client)
+	progress := progressOptions{Writer: stderr, Verbose: *verbose, Interactive: progressTerminal(stderr)}
+	count, err := syncInputs(ctx, lock, *cachePath, *fetch, client, progress)
 	if err != nil {
 		fmt.Fprintf(stderr, "dataset: %v\n", err)
 		return 1
@@ -67,7 +69,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 			return 1
 		}
 		if *updateLock {
-			lock, err = updateAssetLock(ctx, client, lock, *cachePath, mappings)
+			lock, err = updateAssetLock(ctx, client, lock, *cachePath, mappings, progress)
 			if err != nil {
 				fmt.Fprintf(stderr, "dataset: %v\n", err)
 				return 1
@@ -85,7 +87,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 				fmt.Fprintf(stderr, "dataset: %v\n", e)
 				return 1
 			}
-			count, err = syncInputs(ctx, lock, *cachePath, false, client)
+			count, err = syncInputs(ctx, lock, *cachePath, false, client, progress)
 			if err != nil {
 				fmt.Fprintf(stderr, "dataset: %v\n", err)
 				return 1
@@ -115,4 +117,14 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 	return 0
+}
+
+// Character-device stderr permits a single-line display; logs stay plain text.
+func progressTerminal(writer io.Writer) bool {
+	file, ok := writer.(*os.File)
+	if !ok || os.Getenv("TERM") == "dumb" {
+		return false
+	}
+	info, err := file.Stat()
+	return err == nil && info.Mode()&os.ModeCharDevice != 0
 }

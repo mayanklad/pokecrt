@@ -3,8 +3,8 @@
 Specification revision/date: 30 September 2026, including approved section 25
 Current release target: v0.2 — Complete public engine
 Last published milestone: v0.1
-Current increment: D06 automatic generation-3 inventory and evolution-family closure
-Current source commit: f117bd53bae77592987947fb554a549539161e40
+Current increment: D06 developer download progress
+Current source commit: d20e6e483a88329f87823a7b91997d641ea186d2
 Commit note: verified baseline before this increment; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -66,3 +66,14 @@ Trainers, encounters, achievements, and TUI remain later milestones.
 Generation-3 verification covers Castform weather typing, Deoxys alias folding,
 Spinda source-template exclusions, generation completeness and evolution closure.
 Source exclusion evidence is tested; no additional package or source file added.
+
+
+## Developer progress increment
+
+Generation-3 coverage is committed at the baseline above. This increment adds
+stderr progress for downloads and verified cache hits, a terminal bar/spinner,
+plain redirected logs, and optional per-file `--verbose`. Concurrent artwork
+lock updates use the same serialized reporter. Tests cover cache corruption,
+stdout/stderr separation, concurrent reporting, and reporter shutdown; tests,
+vet, and race checks pass. Generated files, source pins, dataset identity, and
+runtime behavior are unchanged. Owner verification and commit are pending.

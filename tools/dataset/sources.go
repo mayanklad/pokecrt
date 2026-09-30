@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 )
 
 type sourceLock struct {
@@ -100,11 +101,16 @@ func validHex(value string, byteCount int) bool {
 	return err == nil && len(decoded) == byteCount && value == strings.ToLower(value)
 }
 
-func syncInputs(ctx context.Context, lock sourceLock, cache string, fetch bool, client *http.Client) (int, error) {
+func syncInputs(ctx context.Context, lock sourceLock, cache string, fetch bool, client *http.Client, options ...progressOptions) (count int, err error) {
 	if err := validateLock(lock); err != nil {
 		return 0, err
 	}
-	count := 0
+	total := 0
+	for _, src := range lock.Sources {
+		total += len(src.Files)
+	}
+	progress := newTransferProgress("Inputs", total, options)
+	defer func() { progress.finish(err) }()
 	for _, source := range lock.Sources {
 		for _, file := range source.Files {
 			if err := ctx.Err(); err != nil {
@@ -112,7 +118,8 @@ func syncInputs(ctx context.Context, lock sourceLock, cache string, fetch bool, 
 			}
 			filename := filepath.Join(cache, source.ID, filepath.FromSlash(file.Path))
 			data, err := os.ReadFile(filename)
-			if os.IsNotExist(err) && fetch {
+			downloaded := os.IsNotExist(err) && fetch
+			if downloaded {
 				url := "https://raw.githubusercontent.com/" + source.Repository + "/" + source.Revision + "/" + file.Path
 				if err := fetchFile(ctx, client, url, filename, file); err != nil {
 					return count, fmt.Errorf("%s/%s: %w", source.ID, file.Path, err)
@@ -126,6 +133,7 @@ func syncInputs(ctx context.Context, lock sourceLock, cache string, fetch bool, 
 				}
 			}
 			count++
+			progress.record(source.ID+"/"+file.Path, downloaded)
 		}
 	}
 	return count, nil
@@ -182,7 +190,7 @@ func fetchFile(ctx context.Context, client *http.Client, url, filename string, f
 
 // updateAssetLock is an explicit developer action. Existing pins are immutable;
 // new paths come only from the derived, quality-gated inventory.
-func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, cache string, m mappingConfig) (sourceLock, error) {
+func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, cache string, m mappingConfig, options ...progressOptions) (resultLock sourceLock, err error) {
 	resolved, err := deriveMappings(lock, cache, m)
 	if err != nil {
 		return lock, err
@@ -209,6 +217,8 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 		}
 	}
 	sort.Strings(paths)
+	progress := newTransferProgress("New artwork", len(paths), options)
+	defer func() { progress.finish(err) }()
 	type result struct {
 		file sourceFile
 		err  error
@@ -223,6 +233,9 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 			for i := range jobs {
 				file, e := pinAsset(ctx, client, "https://raw.githubusercontent.com/"+src.Repository+"/"+src.Revision+"/"+paths[i], filepath.Join(cache, src.ID, filepath.FromSlash(paths[i])), paths[i])
 				results[i] = result{file, e}
+				if e == nil {
+					progress.record(src.ID+"/"+paths[i], true)
+				}
 			}
 		}()
 	}
@@ -296,4 +309,124 @@ func atomicWrite(filename string, data []byte) error {
 		return err
 	}
 	return os.Rename(f.Name(), filename)
+}
+
+// Progress is presentation only; it never changes hashes, lock records or stdout.
+type progressOptions struct {
+	Writer      io.Writer
+	Verbose     bool
+	Interactive bool
+}
+
+type transferProgress struct {
+	mu                                                   sync.Mutex
+	options                                              progressOptions
+	phase                                                string
+	total, completed, downloaded, cached, spinner, width int
+	lastReport                                           time.Time
+	lastCompleted                                        int
+	stop                                                 chan struct{}
+	stopped                                              chan struct{}
+}
+
+func newTransferProgress(phase string, total int, options []progressOptions) *transferProgress {
+	if len(options) == 0 || options[0].Writer == nil {
+		return nil
+	}
+	p := &transferProgress{options: options[0], phase: phase, total: total, stop: make(chan struct{}), stopped: make(chan struct{})}
+	p.display(false, "")
+	go func() {
+		defer close(p.stopped)
+		ticker := time.NewTicker(250 * time.Millisecond)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-p.stop:
+				return
+			case <-ticker.C:
+				p.mu.Lock()
+				if p.options.Interactive || time.Since(p.lastReport) >= 5*time.Second {
+					p.spinner++
+					p.display(false, "")
+				}
+				p.mu.Unlock()
+			}
+		}
+	}()
+	return p
+}
+
+func (p *transferProgress) record(filename string, downloaded bool) {
+	if p == nil {
+		return
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.completed++
+	kind := "cached"
+	if downloaded {
+		p.downloaded++
+		kind = "downloaded"
+	} else {
+		p.cached++
+	}
+	if p.options.Verbose {
+		p.clear()
+		fmt.Fprintf(p.options.Writer, "%s: %s %s\n", p.phase, kind, filename)
+		if p.options.Interactive {
+			p.display(false, "")
+		}
+	} else if !p.options.Interactive && p.completed < p.total && p.completed-p.lastCompleted >= 250 {
+		p.display(false, "")
+	}
+}
+
+func (p *transferProgress) clear() {
+	if p.options.Interactive && p.width > 0 {
+		fmt.Fprintf(p.options.Writer, "\r%s\r", strings.Repeat(" ", p.width))
+		p.width = 0
+	}
+}
+
+// Caller holds the mutex, or invokes display before starting the ticker.
+func (p *transferProgress) display(final bool, status string) {
+	p.lastReport = time.Now()
+	p.lastCompleted = p.completed
+	line := fmt.Sprintf("%s: %d/%d | downloaded %d | cached %d", p.phase, p.completed, p.total, p.downloaded, p.cached)
+	if p.options.Interactive && !final {
+		filled := 0
+		if p.total > 0 {
+			filled = 12 * p.completed / p.total
+		}
+		line = fmt.Sprintf("%s [%s%s] %c %d/%d | downloaded %d | cached %d", p.phase, strings.Repeat("#", filled), strings.Repeat("-", 12-filled), "|/-\\"[p.spinner%4], p.completed, p.total, p.downloaded, p.cached)
+	}
+	if status != "" {
+		line += " | " + status
+	}
+	if p.options.Interactive {
+		p.clear()
+		fmt.Fprint(p.options.Writer, line)
+		p.width = len(line)
+		if final {
+			fmt.Fprintln(p.options.Writer)
+			p.width = 0
+		}
+	} else {
+		fmt.Fprintln(p.options.Writer, line)
+	}
+}
+
+func (p *transferProgress) finish(err error) {
+	if p == nil {
+		return
+	}
+	close(p.stop)
+	<-p.stopped
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	status := "complete"
+	if err != nil {
+		status = "failed"
+	}
+	p.display(true, status)
 }
