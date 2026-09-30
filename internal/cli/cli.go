@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 	"syscall"
+
+	"github.com/mayanklad/pokecrt/internal/query"
 )
 
 const rootHelp = `PokéCRT — offline Pokémon terminal artwork
@@ -14,17 +16,24 @@ Usage:
   pokecrt
   pokecrt --help
   pokecrt --version
+  pokecrt print [--name <species>] [--output compact|sprite]
 
 Options:
   --help, -h   Show this help
   --version    Show application version and dataset identity
 
-Development status: CLI foundation; artwork commands are not available yet.
+Commands:
+  print       Print named or random standard regular artwork
+
+Run 'pokecrt print --help' for print options.
 `
 
 // Run executes one invocation and returns its process exit status.
 // It does not resolve data paths or initialize trainer storage.
 func Run(args []string, stdout, stderr io.Writer, version, datasetID string) int {
+	if len(args) > 0 && args[0] == "print" {
+		return runPrint(args[1:], stdout, stderr, query.CryptoIndex)
+	}
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		return invocationError(stderr, fmt.Errorf("unknown command %q", args[0]))
 	}
@@ -45,7 +54,14 @@ func Run(args []string, stdout, stderr io.Writer, version, datasetID string) int
 		output = fmt.Sprintf("pokecrt %s\ndataset: %s\n", version, datasetID)
 	}
 
-	_, err = io.WriteString(stdout, output)
+	return writeOutput(stdout, stderr, []byte(output))
+}
+
+func writeOutput(stdout, stderr io.Writer, output []byte) int {
+	n, err := stdout.Write(output)
+	if err == nil && n != len(output) {
+		err = io.ErrShortWrite
+	}
 	if err == nil || errors.Is(err, syscall.EPIPE) {
 		return 0
 	}

@@ -2,14 +2,18 @@
 
 Specification revision/date: 30 September 2026
 Current release target: v0.1 — Basic printer
-Current development step: D03 — Transparent half-block rendering
-Current source commit: 4064fb215dff2bd3199d6e9092cc575005678f88
-Commit reference note: D02b baseline; D03 awaits user verification and commit.
+Current development step: D04 — Named and random printing
+Current source commit: 38711db45c27cdb98e3cc293edf602dd49d24317
+Commit reference note: D03 baseline; D04 awaits user verification and commit.
 
 Implemented runtime commands:
 - Root help
 - --help / -h
 - --version with generated dataset identity
+- print --help / -h
+- print with exact canonical species name or generated alias
+- print with uniform random eligible species selection
+- compact (default) and sprite output
 
 Implemented developer tooling:
 - Pinned downloads and SHA-256 verification
@@ -44,16 +48,19 @@ Verification:
 - D02b user formatting, tests, vet, build, generation, and drift checks passed
 - D03 assistant mirror tests and vet passed
 - D03 preview build and piped ANSI/NO_COLOR checks passed
-- D03 user tests, build, and real-terminal visual review pending
+- D03 committed; user real-terminal review is not recorded here
+- D04 assistant mirror tests, vet, and build passed
+- D04 exact output, selector boundaries, failures, NO_COLOR, and no-state tests passed
+- D04 binary smoke checks passed; user verification pending
 
 Known limitations:
-- Public print commands are not implemented yet
+- Public filters, forms, genders, and shiny selectors await D06
 - Six catalog species have no selected artwork
 - Full coverage, forms, palettes, and visual genders remain scheduled for D06
 - Source-image redistribution gate remains open under specification section 13
 - Generated PNGs remain local pending that gate
 
-Next development step: D04 — Named and random printing, after D03 verification
+Next development step: D05 — Errors, piping/NO_COLOR, offline packaging, and README
 
 Approved deviations:
 - Specification remains local and excluded from Git history

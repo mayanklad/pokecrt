@@ -56,7 +56,6 @@ func TestRootOutput(t *testing.T) {
 func TestInvalidInvocations(t *testing.T) {
 	tests := [][]string{
 		{"charizard"},
-		{"print"},
 		{"--unknown"},
 		{"-version"},
 		{"--version", "--version"},
