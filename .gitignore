@@ -30,3 +30,9 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# PokéCRT build outputs and dataset download cache
+/bin/
+/dist/
+/.cache/dataset/
+/docs/specification-v1.md
