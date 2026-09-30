@@ -57,20 +57,20 @@ func TestPrintInvocationErrors(t *testing.T) {
 	}
 }
 
-func TestMissingNamedArtwork(t *testing.T) {
+func TestNewlyBundledNamedArtwork(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	status := Run([]string{"print", "--name", "ivysaur"}, &stdout, &stderr, "dev", catalog.DatasetID)
-	if status != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "artwork unavailable") {
+	if status != 0 || stderr.Len() != 0 || !strings.HasSuffix(stdout.String(), "#002 Ivysaur\n") {
 		t.Fatalf("status=%d stdout=%q stderr=%q", status, stdout.String(), stderr.String())
 	}
 }
 
 func TestRandomPrintAndFailures(t *testing.T) {
 	t.Setenv("NO_COLOR", "1")
-	for index, want := range []string{"#001 Bulbasaur\n", "#006 Charizard\n", "#007 Squirtle\n"} {
+	for index, want := range []string{"#001 Bulbasaur\n", "#002 Ivysaur\n", "#003 Venusaur\n", "#004 Charmander\n", "#005 Charmeleon\n", "#006 Charizard\n", "#007 Squirtle\n", "#008 Wartortle\n", "#009 Blastoise\n"} {
 		var stdout, stderr bytes.Buffer
 		status := runPrint(nil, &stdout, &stderr, func(n int) (int, error) {
-			if n != 3 {
+			if n != 9 {
 				t.Fatalf("n=%d", n)
 			}
 			return index, nil

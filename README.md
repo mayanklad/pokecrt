@@ -8,14 +8,19 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-This development build prints standard regular Bulbasaur, Charizard, and
-Squirtle. The development catalog contains nine starter-family species and 16 metadata
-forms with form-specific typing; six species have no selected
-artwork. Random printing chooses uniformly among the three available species.
-Missing artwork produces an error instead of substituting another appearance.
+This development build prints standard regular artwork for all nine species in
+the Bulbasaur, Charmander, and Squirtle evolution families. Random printing
+chooses uniformly among those nine species.
 
-Public filters, alternate-form printing, shiny palettes, visual gender selectors, catalog
-listing, trainers, encounters, achievements, and the TUI are not implemented yet.
+The bundle contains 16 forms and 32 exact assets: regular and shiny artwork for
+every mapped form, including Mega and Gigantamax appearances. Public form/shiny
+selection arrives in D07; these assets can currently be inspected through the
+developer preview tool. Distinct visual gender slots and wider species coverage
+remain pending. No artwork fallback is applied.
+
+Public filters, alternate-form/shiny printing flags, visual gender selectors,
+catalog listing, trainers, encounters, achievements, and the TUI are not
+implemented yet. Published v0.1 retains its original three-sprite coverage.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
 natural-size output; sprites are not resized automatically.
@@ -167,3 +172,15 @@ support for another platform.
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 - [Code and artwork licensing](LICENSING.md)
 - The specification is maintained locally and excluded from Git history.
+
+## Developer variant preview
+
+Inspect exact bundled appearances without adding temporary public CLI flags:
+
+```bash
+go run ./tools/render-preview --name charizard --form mega-x --palette shiny
+go run ./tools/render-preview --name venusaur --form gmax --palette regular
+```
+
+The preview tool accepts exact form and palette IDs and an optional visual gender.
+It never records trainer state and fails if the exact asset is unavailable.

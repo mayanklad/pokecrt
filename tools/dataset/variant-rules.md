@@ -44,10 +44,13 @@ for each identity must still differ.
 - Exact eligible variants count validated regular and shiny identities.
 - Missing regular appearances report each unavailable form/gender identity.
 
-The current report has 9 species, 16 metadata forms, 3 regular assets and
-collectible forms, 0 shiny assets, 0 distinct visual gender slots, and 13 missing
-regular appearances. The source lock still has 16 verified inputs. No new
-rights clearance is claimed, and PNGs remain local.
+The first D06b inventory batch extends these same nine species to 32 assets:
+16 regular/shiny pairs across all 16 mapped forms. The report has 9 eligible
+species, 9 standard regular sprites, 16 collectible forms, 16 shinies, and no
+missing regular appearances within this batch. Distinct visual gender slots
+remain 0. The source lock has 45 verified inputs. This is not full source coverage.
+No rights clearance is claimed, and PNGs remain local.
 
 Fixtures test variant normalization without distributing additional source art.
-Runtime continues to print the same three standard regular Pokémon.
+Runtime standard printing now covers all nine species; public alternate selectors
+remain D07 work.

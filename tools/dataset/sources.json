@@ -73,21 +73,6 @@
           "sha256": "91a3d95de780cccfc88b883b8d796a143961b29fc7c5f9e156200215682bca5a"
         },
         {
-          "path": "pokemon/regular/bulbasaur.png",
-          "size": 335,
-          "sha256": "a3bd4708f11413968541a177e5d05363f913b3e961a69f96fc342a419d28aca2"
-        },
-        {
-          "path": "pokemon/regular/charizard.png",
-          "size": 776,
-          "sha256": "8f240d20cf6ea209e82870cb052c244fcc51136d0d1278021253770654285af4"
-        },
-        {
-          "path": "pokemon/regular/squirtle.png",
-          "size": 346,
-          "sha256": "b86d6f10fcdef1a54d02647e92d8a28db221f7087076a89c0200b3bffe4100ea"
-        },
-        {
           "path": "readme.md",
           "size": 13037,
           "sha256": "91c511155f81a534b3d7b6e94a918fcefd4d5b9b85067216f30c9bdc8440c21a"
@@ -96,6 +81,166 @@
           "path": "sources/generated/asset-index.json",
           "size": 295355,
           "sha256": "67566c90a351c40a1f9bdbf606364be31b91c1797c038e0b5079a51b623b7347"
+        },
+        {
+          "path": "pokemon/regular/blastoise-gmax.png",
+          "size": 2038,
+          "sha256": "c0bc21061a512b2e00aac77b785314129ab02ac2ec9645274938058fa9764875"
+        },
+        {
+          "path": "pokemon/regular/blastoise-mega.png",
+          "size": 532,
+          "sha256": "1c5b553be669fe51072cb04ef0b347a56f0a55bc8b19d7824b10703eff6e8121"
+        },
+        {
+          "path": "pokemon/regular/blastoise.png",
+          "size": 668,
+          "sha256": "fd60b68fc65b2317f92d7a77f262ce643d27a2237e09a667fea8765d1c598617"
+        },
+        {
+          "path": "pokemon/regular/bulbasaur.png",
+          "size": 335,
+          "sha256": "a3bd4708f11413968541a177e5d05363f913b3e961a69f96fc342a419d28aca2"
+        },
+        {
+          "path": "pokemon/regular/charizard-gmax.png",
+          "size": 1479,
+          "sha256": "26a4f71c1abbcddaae8ff7b6ead2832d0fa629c9eef85a710b04abfe6412b266"
+        },
+        {
+          "path": "pokemon/regular/charizard-mega-x.png",
+          "size": 603,
+          "sha256": "e8c76f362ff59dabaf55c96df5e68686b43774053625bd187c0d3b64afff29b8"
+        },
+        {
+          "path": "pokemon/regular/charizard-mega-y.png",
+          "size": 580,
+          "sha256": "1b47022346f7e35267dac4b12ca3e442a7364cbfc7dcf09d78ecf094f589924d"
+        },
+        {
+          "path": "pokemon/regular/charizard.png",
+          "size": 776,
+          "sha256": "8f240d20cf6ea209e82870cb052c244fcc51136d0d1278021253770654285af4"
+        },
+        {
+          "path": "pokemon/regular/charmander.png",
+          "size": 322,
+          "sha256": "beb7e8bf9b24fcf74a1dcdc1b03ee2a85997235a5919544966c827ec8fe27f77"
+        },
+        {
+          "path": "pokemon/regular/charmeleon.png",
+          "size": 374,
+          "sha256": "9a2f815a65b0dfc3bea1c507e6f1e582492e6ae64190eb9d61c325a82e03415f"
+        },
+        {
+          "path": "pokemon/regular/ivysaur.png",
+          "size": 380,
+          "sha256": "ccceb815ed9fe6efe49b785bac25113b4f1ec54e37f622d5b8f45978f0372286"
+        },
+        {
+          "path": "pokemon/regular/squirtle.png",
+          "size": 346,
+          "sha256": "b86d6f10fcdef1a54d02647e92d8a28db221f7087076a89c0200b3bffe4100ea"
+        },
+        {
+          "path": "pokemon/regular/venusaur-gmax.png",
+          "size": 1488,
+          "sha256": "aa579837f3711f519398b03ff53d8910343fbf2ca0fd1d79f7be5ba119a1177d"
+        },
+        {
+          "path": "pokemon/regular/venusaur-mega.png",
+          "size": 545,
+          "sha256": "712f77d7a78a7e7e0b277c47e9a2fd581a60a15dfd26e02a9db09e983b360cc9"
+        },
+        {
+          "path": "pokemon/regular/venusaur.png",
+          "size": 1538,
+          "sha256": "b72a2fdfba2100718711e1a1ea6ba0513345074b871fe30850a1e867cc4e014b"
+        },
+        {
+          "path": "pokemon/regular/wartortle.png",
+          "size": 416,
+          "sha256": "1aa5e6ac6310bbcbc700f9fef7bc51090a9aa4bca325949bad2f3225187504b4"
+        },
+        {
+          "path": "pokemon/shiny/blastoise-gmax.png",
+          "size": 2112,
+          "sha256": "653f6878df5b3c5f028bced7277173199f8a9726472b3e750f0c612918a3fee5"
+        },
+        {
+          "path": "pokemon/shiny/blastoise-mega.png",
+          "size": 539,
+          "sha256": "68b110623d7f239286243b92f7e98f7e9cce244763434e0bec8fac06ed02e697"
+        },
+        {
+          "path": "pokemon/shiny/blastoise.png",
+          "size": 776,
+          "sha256": "ee5e2afd34bf20adb10a246e51f48353bfcac023a8201b4f4f428821065046e9"
+        },
+        {
+          "path": "pokemon/shiny/bulbasaur.png",
+          "size": 347,
+          "sha256": "96f252a6438094413a7e4c896c368796faac75ae5a51810a4c68c3e5e89b266c"
+        },
+        {
+          "path": "pokemon/shiny/charizard-gmax.png",
+          "size": 1626,
+          "sha256": "5e2b10bc748f4e1a1a453f3d13160f7cec461baa06ea756040f15b93a4e719c9"
+        },
+        {
+          "path": "pokemon/shiny/charizard-mega-x.png",
+          "size": 614,
+          "sha256": "ff3c652e7873d2523c8b6d3af7c5bf735d31eab326dd049937a861134da5206e"
+        },
+        {
+          "path": "pokemon/shiny/charizard-mega-y.png",
+          "size": 594,
+          "sha256": "2c19ccaaa9113e69cba9dd0a0a6350be2e3fe969bf9b79228fd11e776d8b3519"
+        },
+        {
+          "path": "pokemon/shiny/charizard.png",
+          "size": 831,
+          "sha256": "4382a9a7191dec898ee1e8e354dd37d4fcc540d3e5ead157c82acc25a6c039c6"
+        },
+        {
+          "path": "pokemon/shiny/charmander.png",
+          "size": 330,
+          "sha256": "cd76f1a26a5d185cfe9bbb7fd6a21092767b9e18cabccd4cf36d43ae094b10f6"
+        },
+        {
+          "path": "pokemon/shiny/charmeleon.png",
+          "size": 384,
+          "sha256": "9d6ca64d90096ef70b95119770e5dc80b5bd8cfde990d0ae2457e927edcf7deb"
+        },
+        {
+          "path": "pokemon/shiny/ivysaur.png",
+          "size": 395,
+          "sha256": "80367fd9d7a1556590ce294ee25e18063290cd69c940866fd0be52f42975a847"
+        },
+        {
+          "path": "pokemon/shiny/squirtle.png",
+          "size": 354,
+          "sha256": "2a254cdf8324c6b11a71cca00d1b5ee3d2a217c00ebb3ed73865e6ee53e1dbf6"
+        },
+        {
+          "path": "pokemon/shiny/venusaur-gmax.png",
+          "size": 1431,
+          "sha256": "4010122644f27ff363a4fdbaec98a1f2e27f4d436fa958010fa47a59e93f7a79"
+        },
+        {
+          "path": "pokemon/shiny/venusaur-mega.png",
+          "size": 586,
+          "sha256": "d06075c1260e2cec62bd2465827298e011b47aa62de853c47e4a588bd4a4c013"
+        },
+        {
+          "path": "pokemon/shiny/venusaur.png",
+          "size": 906,
+          "sha256": "9f5e9ad8cd0111332f9464d2af176a817aad796c151a2ea2583e064bd7db0a74"
+        },
+        {
+          "path": "pokemon/shiny/wartortle.png",
+          "size": 426,
+          "sha256": "c6261d687001bbbdc613e83f0bcf8eb0a1b0303cfbba944f8e96983b77b00306"
         }
       ]
     }

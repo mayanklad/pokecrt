@@ -1,159 +1,22 @@
 {
-  "dataset_id": "3d5af3be715de18bf313b0b00c87c14fabcee8c510d96f0a6fa4ac526303e47e",
+  "dataset_id": "235b5b786090f029ade2bc371c05f46056fb0ef8011911e3c629dfc54bb82a73",
   "rules_version": "d06a-1",
   "catalog_species": 9,
   "catalog_forms": 16,
-  "missing_regular_variants": [
-    {
-      "species_id": 2,
-      "name": "Ivysaur",
-      "form_id": "standard",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 3,
-      "name": "Venusaur",
-      "form_id": "standard",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 3,
-      "name": "Venusaur",
-      "form_id": "gmax",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 3,
-      "name": "Venusaur",
-      "form_id": "mega",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 4,
-      "name": "Charmander",
-      "form_id": "standard",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 5,
-      "name": "Charmeleon",
-      "form_id": "standard",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 6,
-      "name": "Charizard",
-      "form_id": "gmax",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 6,
-      "name": "Charizard",
-      "form_id": "mega-x",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 6,
-      "name": "Charizard",
-      "form_id": "mega-y",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 8,
-      "name": "Wartortle",
-      "form_id": "standard",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 9,
-      "name": "Blastoise",
-      "form_id": "standard",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 9,
-      "name": "Blastoise",
-      "form_id": "gmax",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    },
-    {
-      "species_id": 9,
-      "name": "Blastoise",
-      "form_id": "mega",
-      "gender": "default",
-      "palette": "regular",
-      "reason": "No audited asset is mapped for this exact appearance."
-    }
-  ],
-  "eligible_species": 3,
-  "standard_regular_sprites": 3,
-  "shiny_sprites": 0,
-  "collectible_forms": 3,
+  "missing_regular_variants": [],
+  "eligible_species": 9,
+  "standard_regular_sprites": 9,
+  "shiny_sprites": 16,
+  "collectible_forms": 16,
   "distinct_visual_gender_slots": 0,
-  "exact_eligible_variants": 3,
-  "max_sprite_width": 44,
-  "max_sprite_height": 39,
-  "missing_standard_regular_assets": [
-    {
-      "species_id": 2,
-      "name": "Ivysaur",
-      "reason": "No standard regular default asset is mapped; no fallback applied."
-    },
-    {
-      "species_id": 3,
-      "name": "Venusaur",
-      "reason": "No standard regular default asset is mapped; no fallback applied."
-    },
-    {
-      "species_id": 4,
-      "name": "Charmander",
-      "reason": "No standard regular default asset is mapped; no fallback applied."
-    },
-    {
-      "species_id": 5,
-      "name": "Charmeleon",
-      "reason": "No standard regular default asset is mapped; no fallback applied."
-    },
-    {
-      "species_id": 8,
-      "name": "Wartortle",
-      "reason": "No standard regular default asset is mapped; no fallback applied."
-    },
-    {
-      "species_id": 9,
-      "name": "Blastoise",
-      "reason": "No standard regular default asset is mapped; no fallback applied."
-    }
-  ],
+  "exact_eligible_variants": 32,
+  "max_sprite_width": 49,
+  "max_sprite_height": 50,
+  "missing_standard_regular_assets": [],
   "exclusions": [
-    "This D06a schema increment maps all 16 forms of the current nine species; wider species coverage remains D06b.",
-    "Only three previously audited standard regular PNGs are included. Other forms and palettes remain metadata with unavailable artwork.",
-    "Visual gender pairs require different audited regular assets; biological gender differences alone do not create visual slots.",
-    "Generated artwork, source-only aliases, orientation duplicates, and shiny fallbacks are not accepted."
+    "This D06b first inventory batch covers the nine existing starter-family species and all 16 mapped forms; wider species and visual-gender coverage remain pending.",
+    "Only audited nongenerated inherited artwork with exact regular/shiny pairs is included; source-generated candidates and fallback palettes are excluded.",
+    "A default visual slot does not claim biological gender or a complete source gender audit. Distinct visual gender pairs will be added only with explicit validated mappings."
   ],
   "source_quality_flags": [
     "Only explicitly mapped inherited artwork with matching source provenance is accepted.",

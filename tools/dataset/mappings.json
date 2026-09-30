@@ -12,14 +12,168 @@
     9
   ],
   "source_standard_form": "base",
-  "standard_form_reason": "The source base identity maps to standard. Every other source form has an explicit owning Pok\u00e9API variety; no alias or orientation creates a new appearance.",
+  "standard_form_reason": "The source base identity maps to standard. Every other source form has an explicit owning PokéAPI variety; no alias or orientation creates a new appearance.",
   "assets": [
     {
       "species_id": 1,
       "source_id": "pokesprite-v2",
       "path": "pokemon/regular/bulbasaur.png",
       "source_slug": "bulbasaur",
-      "reason": "Audited initial standard regular sprite without a distinct visual gender.",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 1,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/bulbasaur.png",
+      "source_slug": "bulbasaur",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 2,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/ivysaur.png",
+      "source_slug": "ivysaur",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 2,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/ivysaur.png",
+      "source_slug": "ivysaur",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 3,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/venusaur.png",
+      "source_slug": "venusaur",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 3,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/venusaur.png",
+      "source_slug": "venusaur",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 3,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/venusaur-gmax.png",
+      "source_slug": "venusaur-gmax",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 3,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/venusaur-gmax.png",
+      "source_slug": "venusaur-gmax",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 3,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/venusaur-mega.png",
+      "source_slug": "venusaur-mega",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 3,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/venusaur-mega.png",
+      "source_slug": "venusaur-mega",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 4,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/charmander.png",
+      "source_slug": "charmander",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 4,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/charmander.png",
+      "source_slug": "charmander",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 5,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/charmeleon.png",
+      "source_slug": "charmeleon",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 5,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/charmeleon.png",
+      "source_slug": "charmeleon",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/charizard.png",
+      "source_slug": "charizard",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
       "form_id": "standard",
       "source_form_id": "base",
       "gender": "default",
@@ -28,9 +182,86 @@
     {
       "species_id": 6,
       "source_id": "pokesprite-v2",
-      "path": "pokemon/regular/charizard.png",
+      "path": "pokemon/shiny/charizard.png",
       "source_slug": "charizard",
-      "reason": "Audited initial standard regular sprite without a distinct visual gender.",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/charizard-gmax.png",
+      "source_slug": "charizard-gmax",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/charizard-gmax.png",
+      "source_slug": "charizard-gmax",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/charizard-mega-x.png",
+      "source_slug": "charizard-mega-x",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega-x",
+      "source_form_id": "mega-x",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/charizard-mega-x.png",
+      "source_slug": "charizard-mega-x",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega-x",
+      "source_form_id": "mega-x",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/charizard-mega-y.png",
+      "source_slug": "charizard-mega-y",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega-y",
+      "source_form_id": "mega-y",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 6,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/charizard-mega-y.png",
+      "source_slug": "charizard-mega-y",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega-y",
+      "source_form_id": "mega-y",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 7,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/squirtle.png",
+      "source_slug": "squirtle",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
       "form_id": "standard",
       "source_form_id": "base",
       "gender": "default",
@@ -39,20 +270,107 @@
     {
       "species_id": 7,
       "source_id": "pokesprite-v2",
-      "path": "pokemon/regular/squirtle.png",
+      "path": "pokemon/shiny/squirtle.png",
       "source_slug": "squirtle",
-      "reason": "Audited initial standard regular sprite without a distinct visual gender.",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 8,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/wartortle.png",
+      "source_slug": "wartortle",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
       "form_id": "standard",
       "source_form_id": "base",
       "gender": "default",
       "palette": "regular"
+    },
+    {
+      "species_id": 8,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/wartortle.png",
+      "source_slug": "wartortle",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 9,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/blastoise.png",
+      "source_slug": "blastoise",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 9,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/blastoise.png",
+      "source_slug": "blastoise",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "standard",
+      "source_form_id": "base",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 9,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/blastoise-gmax.png",
+      "source_slug": "blastoise-gmax",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 9,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/blastoise-gmax.png",
+      "source_slug": "blastoise-gmax",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "gmax",
+      "source_form_id": "gmax",
+      "gender": "default",
+      "palette": "shiny"
+    },
+    {
+      "species_id": 9,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/regular/blastoise-mega.png",
+      "source_slug": "blastoise-mega",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "regular"
+    },
+    {
+      "species_id": 9,
+      "source_id": "pokesprite-v2",
+      "path": "pokemon/shiny/blastoise-mega.png",
+      "source_slug": "blastoise-mega",
+      "reason": "Exact pinned nongenerated source appearance with matching palette provenance; normalized pixels validated by generator.",
+      "form_id": "mega",
+      "source_form_id": "mega",
+      "gender": "default",
+      "palette": "shiny"
     }
   ],
   "exclusions": [
-    "This D06a schema increment maps all 16 forms of the current nine species; wider species coverage remains D06b.",
-    "Only three previously audited standard regular PNGs are included. Other forms and palettes remain metadata with unavailable artwork.",
-    "Visual gender pairs require different audited regular assets; biological gender differences alone do not create visual slots.",
-    "Generated artwork, source-only aliases, orientation duplicates, and shiny fallbacks are not accepted."
+    "This D06b first inventory batch covers the nine existing starter-family species and all 16 mapped forms; wider species and visual-gender coverage remain pending.",
+    "Only audited nongenerated inherited artwork with exact regular/shiny pairs is included; source-generated candidates and fallback palettes are excluded.",
+    "A default visual slot does not claim biological gender or a complete source gender audit. Distinct visual gender pairs will be added only with explicit validated mappings."
   ],
   "forms": [
     {
@@ -65,7 +383,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 2,
@@ -77,7 +395,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 3,
@@ -89,7 +407,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 3,
@@ -101,7 +419,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 3,
@@ -113,7 +431,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 4,
@@ -125,7 +443,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 5,
@@ -137,7 +455,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 6,
@@ -149,7 +467,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 6,
@@ -161,7 +479,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 6,
@@ -173,7 +491,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 6,
@@ -185,7 +503,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 7,
@@ -197,7 +515,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 8,
@@ -209,7 +527,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 9,
@@ -221,7 +539,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 9,
@@ -233,7 +551,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     },
     {
       "species_id": 9,
@@ -245,7 +563,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Exact pinned source form matched to its owning Pok\u00e9API variety for form-specific typing. No visual gender pair is claimed without audited assets."
+      "reason": "Exact pinned source form matched to its owning PokéAPI variety for form-specific typing. No visual gender pair is claimed without audited assets."
     }
   ]
 }
