@@ -14,7 +14,7 @@ fi
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$project_root"
 
-for required_file in LICENSE README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md; do
+for required_file in LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md; do
     if [ ! -s "$required_file" ]; then
         echo "package: missing required file: $required_file" >&2
         exit 1
@@ -43,10 +43,10 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags "-s -w -X main.version=$release_tag" \
     -o "$staging_dir/pokecrt" ./cmd/pokecrt
 chmod 0755 "$staging_dir/pokecrt"
-cp README.md LICENSE THIRD_PARTY_NOTICES.md "$staging_dir/"
+cp README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md "$staging_dir/"
 cp tools/dataset/coverage.md "$staging_dir/COVERAGE.md"
 tar -czf "dist/$archive_name" -C "$staging_dir" \
-    pokecrt README.md LICENSE THIRD_PARTY_NOTICES.md COVERAGE.md
+    pokecrt README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md COVERAGE.md
 # Include all local release archives so earlier checksum entries remain present.
 (cd dist && sha256sum pokecrt_*_linux_amd64.tar.gz > SHA256SUMS)
 printf 'Created dist/%s and dist/SHA256SUMS\n' "$archive_name"

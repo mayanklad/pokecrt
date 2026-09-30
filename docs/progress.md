@@ -2,9 +2,9 @@
 
 Specification revision/date: 30 September 2026
 Current release target: v0.1 — Basic printer
-Current development step: D05 — Linux printer packaging and verification
-Current source commit: d86a63a1c81b60ebf74443807e571dff6a2636ad
-Commit reference note: D04 baseline; D05 awaits user verification and commit. No release is published.
+Current development step: v0.1 release preparation — D06 paused
+Current source commit: 959e4f66b89d69d73a2ca116ade08c459983d9c7
+Commit reference note: D05 baseline. Release licensing/documentation changes await user application. No release is published.
 
 Implemented runtime commands:
 - Root help
@@ -59,7 +59,8 @@ Verification:
 - D05 installed-binary tests verify version, piped ANSI, NO_COLOR, closed pipes, and no trainer state
 - D05 installer smoke check passed
 - D05 packaging refuses a missing LICENSE; temporary fixture archive verification passed
-- D05 user checks and network-disabled/manual-terminal release review pending
+- Real local v0.1 candidate archive, checksum, Linux amd64 executable, version, and extracted-binary checks passed in the assistant mirror
+- User visual/network-disabled checks remain pending; this environment does not permit an isolated network namespace
 
 Known limitations:
 - Public filters, forms, genders, and shiny selectors await D06
@@ -67,10 +68,10 @@ Known limitations:
 - Full coverage, forms, palettes, and visual genders remain scheduled for D06
 - Source-image redistribution gate remains open under specification section 13
 - Generated PNGs remain local pending that gate
-- Project code LICENSE is absent; code-license selection remains with the owner
+- Owner selected MIT for original code; LICENSE and LICENSING.md are prepared
 - Public v0.1 tag/release remains unpublished
 
-Next development step: D06 — Expanded coverage and public selection engine
+Next development step: complete v0.1 release checks; D06 stays unapplied
 Release work: resolve code/image licensing and complete v0.1 smoke checks before publication
 
 Approved deviations:

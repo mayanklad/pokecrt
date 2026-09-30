@@ -16,8 +16,8 @@ The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
 natural-size output; sprites are not resized automatically.
 
-A public release is pending. Image redistribution review remains open, and the
-project code license has not yet been selected. Generated PNGs stay local until
+A public release is pending. Image redistribution review remains open. Original PokéCRT code is licensed
+under MIT; that license does not cover third-party Pokémon artwork. Generated PNGs stay local until
 that review is complete. See [source audit](tools/dataset/source-audit.md) and
 [third-party notices](THIRD_PARTY_NOTICES.md).
 
@@ -126,7 +126,7 @@ Installation and removal do not erase trainer data.
 
 ## Local release candidate
 
-After selecting a project code license and adding `LICENSE`, prepare an archive:
+Prepare a local candidate archive:
 
 ```bash
 sh scripts/package.sh v0.1
@@ -135,7 +135,7 @@ sh scripts/package.sh v0.1
 
 The script checks generated drift, tests, and vet; builds Linux amd64 with CGO
 disabled, trimmed paths, and the requested version; and packages the executable,
-README, LICENSE, third-party notices, and coverage notes. It writes
+README, LICENSE, licensing scope, third-party notices, and coverage notes. It writes
 `dist/pokecrt_v0.1_linux_amd64.tar.gz` and `dist/SHA256SUMS`. An existing archive
 is not overwritten. It never downloads sources or publishes anything.
 
@@ -150,4 +150,5 @@ support for another platform.
 - [Dataset source audit](tools/dataset/source-audit.md)
 - [Generated coverage](tools/dataset/coverage.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
+- [Code and artwork licensing](LICENSING.md)
 - The specification is maintained locally and excluded from Git history.

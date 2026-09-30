@@ -21,7 +21,7 @@ trainers, encounters, achievements, and TUI are not part of v0.1.
 
 ## Before publication
 
-- [ ] Select the project code license and add LICENSE.
+- [x] Owner selected MIT for original PokéCRT code; LICENSE is prepared.
 - [ ] Complete specification section 13 source-image redistribution review.
 - [ ] Run generation drift checks, tests, and vet on the final source.
 - [ ] Review all three colored sprites in a real Linux terminal, including a
@@ -37,7 +37,8 @@ apply once the corresponding features land.
 
 ## Archive smoke commands
 
-Run after the licensing gates and final source verification:
+These commands prepare and test a local candidate. Public distribution remains
+pending the artwork review and final smoke checks:
 
 ```bash
 sh scripts/package.sh v0.1
