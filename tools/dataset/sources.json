@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "pokeapi",
+      "repository": "PokeAPI/pokeapi",
+      "revision": "bc92d3b6029ef1abe9e7ad424c400b338f3c11fe",
+      "terms": "BSD-3-Clause repository terms; preserve LICENSE.md in source and binary distributions. Pokemon character names are trademarks of Nintendo.",
+      "attribution": "Paul Hallett and PokeAPI contributors",
+      "files": [
+        {
+          "path": "LICENSE.md",
+          "size": 1621,
+          "sha256": "1c04595dc662981c20956ae4251dfa7b62b475c345eddf98bc9b904cb2373f2c"
+        },
+        {
+          "path": "data/v2/csv/generations.csv",
+          "size": 194,
+          "sha256": "d39634465251f1334aa0389b5adc4b4f2754eaec61f305fceb9432a3d4c96748"
+        },
+        {
+          "path": "data/v2/csv/pokemon.csv",
+          "size": 47082,
+          "sha256": "16c81c33188b0eac403aa2f759fcbe9e42c611f722d263f5b5a6a5bff9f8ce6b"
+        },
+        {
+          "path": "data/v2/csv/pokemon_colors.csv",
+          "size": 92,
+          "sha256": "02f0753b509eacc92eb7896e932f3e873d86697de6449491ecebb278b1e60c1a"
+        },
+        {
+          "path": "data/v2/csv/pokemon_species.csv",
+          "size": 56884,
+          "sha256": "e66e2eeb25fd3836b0ebab6bf87bbf01960aa3c0555e2bac495fa8393c5e0c45"
+        },
+        {
+          "path": "data/v2/csv/pokemon_species_names.csv",
+          "size": 404502,
+          "sha256": "820cde17074cdb1c2b0595c997fb8f998e773bd5da3bb525dec85703c86c5fd9"
+        },
+        {
+          "path": "data/v2/csv/pokemon_types.csv",
+          "size": 19058,
+          "sha256": "f1fc4bfd657a034ea3bf6972423b10276424aa068577b304a78a08996425ba05"
+        },
+        {
+          "path": "data/v2/csv/types.csv",
+          "size": 321,
+          "sha256": "37f039c8d722f47d51ba1c5c5ecf9b7007235b1a9a1af2827645c777b70307c8"
+        }
+      ]
+    },
+    {
+      "id": "pokesprite",
+      "repository": "darknesspwnsu/pokesprite-v2",
+      "revision": "32ab52ea6b61871da34d9a3c61c7760c65a37af7",
+      "terms": "MIT applies to code and non-image material. README excludes sprite images from MIT and identifies Nintendo/Creatures Inc./GAME FREAK Inc. copyright. contributors.md invites project reuse; this is not a license from the underlying image rights holders.",
+      "attribution": "PokeSprite v2, msikma/pokesprite, and the contributors listed in contributors.md",
+      "files": [
+        {
+          "path": "contributors.md",
+          "size": 2367,
+          "sha256": "ef527cd2352f0b2d19f4764bb80061aabca57a2f5215eb112c0dccc80523baa4"
+        },
+        {
+          "path": "data/pokemon.json",
+          "size": 873380,
+          "sha256": "dc9d37718c0c21de4b7c2ef194085fd9dfe231650e7085878ca466ac0363f1be"
+        },
+        {
+          "path": "license.md",
+          "size": 1051,
+          "sha256": "91a3d95de780cccfc88b883b8d796a143961b29fc7c5f9e156200215682bca5a"
+        },
+        {
+          "path": "pokemon/regular/bulbasaur.png",
+          "size": 335,
+          "sha256": "a3bd4708f11413968541a177e5d05363f913b3e961a69f96fc342a419d28aca2"
+        },
+        {
+          "path": "pokemon/regular/charizard.png",
+          "size": 776,
+          "sha256": "8f240d20cf6ea209e82870cb052c244fcc51136d0d1278021253770654285af4"
+        },
+        {
+          "path": "pokemon/regular/squirtle.png",
+          "size": 346,
+          "sha256": "b86d6f10fcdef1a54d02647e92d8a28db221f7087076a89c0200b3bffe4100ea"
+        },
+        {
+          "path": "readme.md",
+          "size": 13037,
+          "sha256": "91c511155f81a534b3d7b6e94a918fcefd4d5b9b85067216f30c9bdc8440c21a"
+        },
+        {
+          "path": "sources/generated/asset-index.json",
+          "size": 295355,
+          "sha256": "67566c90a351c40a1f9bdbf606364be31b91c1797c038e0b5079a51b623b7347"
+        }
+      ]
+    }
+  ]
+}
