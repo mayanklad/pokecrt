@@ -1,5 +1,5 @@
 {
-  "rules_version": "d06-auto-4",
+  "rules_version": "d06-auto-5",
   "selection": {
     "generations": [
       1,
@@ -7,7 +7,8 @@
       3,
       4,
       5,
-      6
+      6,
+      7
     ],
     "family_seeds": [],
     "visual_gender_species": [
@@ -127,6 +128,54 @@
       "species_id": 327,
       "source_form_id": "filled",
       "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pok\u00e9mon collectible form."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "blue-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "green-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "indigo-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "orange-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "red-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "violet-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 774,
+      "source_form_id": "yellow-gen7",
+      "reason": "Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 802,
+      "source_form_id": "gen7",
+      "reason": "Pinned inherited inventory marks this historical Marshadow artwork version as unofficial. It has no exact metadata form identity; standard Marshadow resolves separately. Exclude this source-only artwork record without creating another collectible."
+    }
+  ],
+  "duplicate_palette_exclusions": [
+    {
+      "species_id": 774,
+      "form_id": "standard",
+      "gender": "default",
+      "reason": "Pinned Minior meteor regular and shiny artwork are visually identical. Keep regular meteor artwork; do not manufacture a distinct shiny collectible. Core color forms retain their verified palettes."
     }
   ]
 }

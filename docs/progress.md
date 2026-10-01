@@ -3,8 +3,8 @@
 Specification: v1, including approved sections 25–27 and implementation clarifications
 Current release target: v0.2 — Complete public engine
 Last published milestone: v0.1
-Current increment: D06 generation-6 inventory
-Current source commit: 058a78b5c62dfb068127ca9ee7dc645ac1f3df0e
+Current increment: D06 generation-7 inventory and reviewed source exclusions
+Current source commit: dd51b1520c576e882587928f23cd9a64250b5f0d
 Commit note: verified baseline before this increment; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -18,14 +18,14 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 ## Dataset
 
 Development dataset ID:
-`24f08e188a30391a582e613593d2ef8d4414f5c2b4352cb487e1af4ce8254c8c`
+`43dd04f9f4838bb0f6772f35b879b9db0767702f7040ff91207d045779491933`
 
-- 738 catalog species: all generation-1 through generation-6 species plus full evolution-family closure
-- 1,014 metadata forms; 974 collectible forms; 1,952 exact regular/shiny assets
-- 727 eligible species; 729 standard regular slots; 976 shiny slots
+- 826 catalog species: all generation-1 through generation-7 species plus full evolution-family closure
+- 1,138 metadata forms; 1,080 collectible forms; 2,163 exact regular/shiny assets
+- 815 eligible species; 817 standard regular slots; 1,081 shiny slots
 - 4 distinct visual gender slots across Pyroar/Meowstic, with male defaults
-- 40 unavailable metadata form appearances; eleven species lack audited standard artwork
-- 1,968 pinned inputs; coverage.json/coverage.md record availability and quality
+- 58 unavailable metadata form appearances; eleven species lack audited standard artwork
+- 2,180 pinned inputs; coverage.json/coverage.md record availability and quality
 - Direct images remain pinned PokéSprite-v2; inherited provider records stay distinct
 - Complete evolution references, aliases, typing, stages, flags, and name corrections
 
@@ -35,13 +35,13 @@ Development dataset ID:
 - Exact source/palette provenance; inherited edit/retained-generation flags audited
 - Reject provisional candidates, unknown inherited flags, duplicate pixels, and unsupported layouts
 - Explicit name corrections require exact pinned source/canonical spellings and reasons
-- Assistant full tests/vet and generation checks passed; all 230 new sprites inspected
+- Assistant full tests/vet and generation checks passed; all 211 new sprites inspected
 - Tests cover family completeness, baby stages, source quality gates, name aliases,
   uniform species boundaries, missing artwork, and installed-binary behavior
 - Routine species/form/asset entries are derived automatically; only policy and exceptions are maintained
 - Provenance modules/tests and dataset documentation consolidated
 - Static selection moved into catalog with injected sprite availability
-- Earlier inventory remains intact; 67 catalog species and 230 assets added
+- Earlier inventory remains intact; 88 catalog species and 211 eligible assets added
 - Pinned form table resolves Unown/Pichu; seven reasoned form exceptions remain
 - Source defaults checked against metadata defaults, including Dudunsparce
 - Explicit --update-lock derives and validates new artwork pins; ordinary generation preserves locks
@@ -104,4 +104,17 @@ exception is reviewed. Seven new metadata appearances remain unavailable under
 unchanged source-quality rules. Generation checks, tests, vet, build, fresh asset
 preparation, and visual review pass; owner verification/commit pending.
 No generator source files, packages, dependencies, or runtime flags added.
-Next: generation 7, then remaining D06 coverage and audit gates.
+Generation 6 owner-committed at dd51b1520c576e882587928f23cd9a64250b5f0d.
+
+
+## Generation-7 increment
+
+Routine inventory remains automatic. Eight reviewed historical source-only
+artwork records are excluded; no typing overrides added. Minior meteor shiny
+pixels equal regular, so one reviewed duplicate-palette exclusion removes only
+that shiny asset after pinned/provenance/hash verification. Coverage retains the
+exclusion and exact normalized hash. Both source inputs stay locked.
+Rules: d06-auto-5. Specification section 13 documents these evidence requirements.
+Tests, vet, build, deterministic generation, fresh asset preparation, and visual
+review pass. No new source files, packages, dependencies or public flags added.
+Owner verification/commit pending. Next: generation 8 and remaining D06 audits.

@@ -258,3 +258,24 @@ func TestExactMetadataFormTypingOverridesVarietyAndRejectsBadRows(t *testing.T) 
 		})
 	}
 }
+
+func TestDuplicatePaletteExclusionsRequireEqualVerifiedArtwork(t *testing.T) {
+	assets := []normalizedAsset{{SpeciesID: 774, FormID: "standard", Gender: "default", Palette: "regular", SHA256: "same"}, {SpeciesID: 774, FormID: "standard", Gender: "default", Palette: "shiny", SHA256: "same"}}
+	e := duplicatePaletteExclusion{SpeciesID: 774, FormID: "standard", Gender: "default", Reason: "Reviewed fixture duplicate"}
+	kept, reasons, err := excludeDuplicatePalettes(assets, []duplicatePaletteExclusion{e})
+	if err != nil || len(kept) != 1 || kept[0].Palette != "regular" || len(reasons) != 1 {
+		t.Fatalf("exclusion: %+v %v %v", kept, reasons, err)
+	}
+	for _, list := range [][]duplicatePaletteExclusion{{e, e}, {{SpeciesID: 775, FormID: "standard", Gender: "default", Reason: "Absent"}}, {{SpeciesID: 774, FormID: "standard", Gender: "default"}}} {
+		if _, _, err := excludeDuplicatePalettes(assets, list); err == nil {
+			t.Fatal("accepted invalid or unused exclusion")
+		}
+	}
+	assets[1].SHA256 = "different"
+	if _, _, err := excludeDuplicatePalettes(assets, []duplicatePaletteExclusion{e}); err == nil {
+		t.Fatal("removed distinct shiny artwork")
+	}
+	if _, _, err := excludeDuplicatePalettes(assets[:1], []duplicatePaletteExclusion{e}); err == nil {
+		t.Fatal("accepted missing shiny evidence")
+	}
+}

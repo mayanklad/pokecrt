@@ -24,7 +24,7 @@ func assetIdentity(a assetMapping) string {
 }
 
 func validateMappings(m *mappingConfig) error {
-	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4") {
+	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && m.RulesVersion != "d06-auto-5")) {
 		return fmt.Errorf("unsupported mapping rules %q", m.RulesVersion)
 	}
 	if m.SourceStandardForm != "base" || strings.TrimSpace(m.StandardFormReason) == "" || len(m.CatalogSpecies) == 0 {
@@ -59,7 +59,7 @@ func validateMappings(m *mappingConfig) error {
 		}
 		identity := assetIdentity(*a)
 		expectedPath, layoutErr := assetSourcePath(*a)
-		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4")) || a.Path != expectedPath || seen[identity] {
+		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && m.RulesVersion != "d06-auto-5"))) || a.Path != expectedPath || seen[identity] {
 			return fmt.Errorf("invalid or duplicate asset mapping %s", identity)
 		}
 		seen[identity] = true
@@ -302,4 +302,41 @@ func validateVariantInventory(species []normalizedSpecies, assets []normalizedAs
 		}
 	}
 	return nil
+}
+
+// Exclusions require both verified palettes to have exactly equal normalized bytes.
+// Distinct shiny artwork can never be removed through this policy.
+func excludeDuplicatePalettes(assets []normalizedAsset, exclusions []duplicatePaletteExclusion) ([]normalizedAsset, []string, error) {
+	excluded := map[string]bool{}
+	reasons := []string{}
+	for _, e := range exclusions {
+		key := fmt.Sprintf("%d/%s/%s", e.SpeciesID, e.FormID, e.Gender)
+		if e.SpeciesID <= 0 || !slugValid(e.FormID) || (e.Gender != "default" && e.Gender != "male" && e.Gender != "female") || strings.TrimSpace(e.Reason) == "" || excluded[key] {
+			return nil, nil, fmt.Errorf("invalid duplicate-palette exclusion %s", key)
+		}
+		var regular, shiny string
+		for _, a := range assets {
+			if a.SpeciesID == e.SpeciesID && a.FormID == e.FormID && a.Gender == e.Gender {
+				if a.Palette == "regular" {
+					regular = a.SHA256
+				}
+				if a.Palette == "shiny" {
+					shiny = a.SHA256
+				}
+			}
+		}
+		if regular == "" || shiny == "" || regular != shiny {
+			return nil, nil, fmt.Errorf("duplicate-palette exclusion lacks equal verified palettes %s", key)
+		}
+		excluded[key] = true
+		reasons = append(reasons, fmt.Sprintf("#%03d/%s/%s/shiny: %s Normalized SHA-256 equals regular: %s.", e.SpeciesID, e.FormID, e.Gender, e.Reason, regular))
+	}
+	kept := []normalizedAsset{}
+	for _, a := range assets {
+		if a.Palette == "shiny" && excluded[fmt.Sprintf("%d/%s/%s", a.SpeciesID, a.FormID, a.Gender)] {
+			continue
+		}
+		kept = append(kept, a)
+	}
+	return kept, reasons, nil
 }

@@ -28,18 +28,26 @@ type sourceFormExclusion struct {
 	Reason          string `json:"reason"`
 }
 
+type duplicatePaletteExclusion struct {
+	SpeciesID int    `json:"species_id"`
+	FormID    string `json:"form_id"`
+	Gender    string `json:"gender"`
+	Reason    string `json:"reason"`
+}
+
 type mappingConfig struct {
-	SourceFormExclusions []sourceFormExclusion `json:"source_form_exclusions,omitempty"`
-	Selection            *inventorySelection   `json:"selection,omitempty"`
-	FormOverrides        []formMapping         `json:"form_overrides,omitempty"`
-	SourceNameOverrides  []sourceNameOverride  `json:"source_name_overrides,omitempty"`
-	RulesVersion         string                `json:"rules_version"`
-	CatalogSpecies       []int                 `json:"catalog_species"`
-	SourceStandardForm   string                `json:"source_standard_form"`
-	StandardFormReason   string                `json:"standard_form_reason"`
-	Assets               []assetMapping        `json:"assets"`
-	Forms                []formMapping         `json:"forms,omitempty"`
-	Exclusions           []string              `json:"exclusions"`
+	DuplicatePaletteExclusions []duplicatePaletteExclusion `json:"duplicate_palette_exclusions,omitempty"`
+	SourceFormExclusions       []sourceFormExclusion       `json:"source_form_exclusions,omitempty"`
+	Selection                  *inventorySelection         `json:"selection,omitempty"`
+	FormOverrides              []formMapping               `json:"form_overrides,omitempty"`
+	SourceNameOverrides        []sourceNameOverride        `json:"source_name_overrides,omitempty"`
+	RulesVersion               string                      `json:"rules_version"`
+	CatalogSpecies             []int                       `json:"catalog_species"`
+	SourceStandardForm         string                      `json:"source_standard_form"`
+	StandardFormReason         string                      `json:"standard_form_reason"`
+	Assets                     []assetMapping              `json:"assets"`
+	Forms                      []formMapping               `json:"forms,omitempty"`
+	Exclusions                 []string                    `json:"exclusions"`
 }
 
 type assetMapping struct {
@@ -140,7 +148,7 @@ func readMappings(filename string) (mappingConfig, error) {
 		}
 		return mappings, nil
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && mappings.RulesVersion != "d06-auto-4")) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && (mappings.RulesVersion != "d06-auto-4" && mappings.RulesVersion != "d06-auto-5"))) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
@@ -459,7 +467,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			return nil, nil, err
 		}
 		sourceSpecies := sourceSpeciesByID[id]
-		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && mappings.RulesVersion != "d06-auto-4") && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
+		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && (mappings.RulesVersion != "d06-auto-4" && mappings.RulesVersion != "d06-auto-5")) && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
 			return nil, nil, fmt.Errorf("source identity/default mapping mismatch for #%03d", id)
 		}
 		if defaults[id] == 0 || typeSlots[defaults[id]][1] == "" {
@@ -528,7 +536,7 @@ func metadataFormTyping(lock sourceLock, cache, rules string) (map[int]int, map[
 		}
 	}
 	if !pinned {
-		if rules == "d06-auto-4" {
+		if rules == "d06-auto-4" || rules == "d06-auto-5" {
 			return nil, nil, fmt.Errorf("automatic rules v4 require pinned pokemon_form_types.csv")
 		}
 		return owners, slots, nil

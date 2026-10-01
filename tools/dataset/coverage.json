@@ -1,8 +1,8 @@
 {
-  "dataset_id": "24f08e188a30391a582e613593d2ef8d4414f5c2b4352cb487e1af4ce8254c8c",
-  "rules_version": "d06-auto-4",
-  "catalog_species": 738,
-  "catalog_forms": 1014,
+  "dataset_id": "43dd04f9f4838bb0f6772f35b879b9db0767702f7040ff91207d045779491933",
+  "rules_version": "d06-auto-5",
+  "catalog_species": 826,
+  "catalog_forms": 1138,
   "missing_regular_variants": [
     {
       "species_id": 58,
@@ -221,6 +221,150 @@
       "reason": "No audited asset is mapped for this exact appearance."
     },
     {
+      "species_id": 724,
+      "name": "Decidueye",
+      "form_id": "hisui",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "bug",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "dark",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "dragon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "electric",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "fairy",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "fighting",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "fire",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "flying",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "ghost",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "grass",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "ground",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "ice",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "poison",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "psychic",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "rock",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "steel",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 773,
+      "name": "Silvally",
+      "form_id": "water",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
       "species_id": 899,
       "name": "Wyrdeer",
       "form_id": "standard",
@@ -325,12 +469,12 @@
       "reason": "No audited asset is mapped for this exact appearance."
     }
   ],
-  "eligible_species": 727,
-  "standard_regular_sprites": 729,
-  "shiny_sprites": 976,
-  "collectible_forms": 974,
+  "eligible_species": 815,
+  "standard_regular_sprites": 817,
+  "shiny_sprites": 1081,
+  "collectible_forms": 1080,
   "distinct_visual_gender_slots": 4,
-  "exact_eligible_variants": 1952,
+  "exact_eligible_variants": 2163,
   "max_sprite_width": 58,
   "max_sprite_height": 54,
   "missing_standard_regular_assets": [
@@ -423,6 +567,32 @@
     "#710/super: inherited appearance flags are missing or provisional; artwork excluded.",
     "#713/hisui: inherited appearance flags are missing or provisional; artwork excluded.",
     "#713/hisui-noble: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#724/hisui: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/bug: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/dark: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/dragon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/electric: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/fairy: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/fighting: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/fire: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/flying: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/ghost: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/grass: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/ground: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/ice: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/poison: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/psychic: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/rock: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/steel: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#773/water: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#774/blue-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#774/green-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#774/indigo-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#774/orange-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#774/red-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#774/violet-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#774/yellow-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#802/gen7: Pinned inherited inventory marks this historical Marshadow artwork version as unofficial. It has no exact metadata form identity; standard Marshadow resolves separately. Exclude this source-only artwork record without creating another collectible.",
     "#899/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#900/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#900/noble: inherited appearance flags are missing or provisional; artwork excluded.",
@@ -435,7 +605,8 @@
     "#981/standard: provider or generated status is outside the audited inherited policy.",
     "#982/standard: provider or generated status is outside the audited inherited policy.",
     "#982/three-segment: provider or generated status is outside the audited inherited policy.",
-    "#983/standard: provider or generated status is outside the audited inherited policy."
+    "#983/standard: provider or generated status is outside the audited inherited policy.",
+    "#774/standard/default/shiny: Pinned Minior meteor regular and shiny artwork are visually identical. Keep regular meteor artwork; do not manufacture a distinct shiny collectible. Core color forms retain their verified palettes. Normalized SHA-256 equals regular: eba09f2701b7e736f0eadf1cadcb41650c2e576e651aa25d5061a19afbd558ba."
   ],
   "source_quality_flags": [
     "Only explicitly mapped inherited artwork with matching source provenance is accepted.",
@@ -1072,6 +1243,55 @@
     "Retained previous-generation source artwork: #714/standard",
     "Retained previous-generation source artwork: #719/mega",
     "Retained previous-generation source artwork: #720/standard",
-    "Retained previous-generation source artwork: #720/unbound"
+    "Retained previous-generation source artwork: #720/unbound",
+    "Retained previous-generation source artwork: #722/standard",
+    "Retained previous-generation source artwork: #723/standard",
+    "Retained previous-generation source artwork: #725/standard",
+    "Retained previous-generation source artwork: #726/standard",
+    "Retained previous-generation source artwork: #728/standard",
+    "Retained previous-generation source artwork: #729/standard",
+    "Retained previous-generation source artwork: #731/standard",
+    "Retained previous-generation source artwork: #732/standard",
+    "Retained previous-generation source artwork: #733/standard",
+    "Retained previous-generation source artwork: #734/standard",
+    "Retained previous-generation source artwork: #735/standard",
+    "Retained previous-generation source artwork: #736/standard",
+    "Retained previous-generation source artwork: #737/standard",
+    "Retained previous-generation source artwork: #739/standard",
+    "Retained previous-generation source artwork: #740/standard",
+    "Retained previous-generation source artwork: #741/pau",
+    "Retained previous-generation source artwork: #741/pom-pom",
+    "Retained previous-generation source artwork: #741/sensu",
+    "Retained previous-generation source artwork: #741/standard",
+    "Retained previous-generation source artwork: #742/standard",
+    "Retained previous-generation source artwork: #744/standard",
+    "Retained previous-generation source artwork: #746/standard",
+    "Retained previous-generation source artwork: #747/standard",
+    "Retained previous-generation source artwork: #749/standard",
+    "Retained previous-generation source artwork: #751/standard",
+    "Retained previous-generation source artwork: #753/standard",
+    "Retained previous-generation source artwork: #755/standard",
+    "Retained previous-generation source artwork: #757/standard",
+    "Retained previous-generation source artwork: #759/standard",
+    "Retained previous-generation source artwork: #761/standard",
+    "Retained previous-generation source artwork: #762/standard",
+    "Retained previous-generation source artwork: #767/standard",
+    "Retained previous-generation source artwork: #769/standard",
+    "Retained previous-generation source artwork: #774/blue",
+    "Retained previous-generation source artwork: #774/green",
+    "Retained previous-generation source artwork: #774/indigo",
+    "Retained previous-generation source artwork: #774/orange",
+    "Retained previous-generation source artwork: #774/red",
+    "Retained previous-generation source artwork: #774/standard",
+    "Retained previous-generation source artwork: #774/violet",
+    "Retained previous-generation source artwork: #774/yellow",
+    "Retained previous-generation source artwork: #775/standard",
+    "Retained previous-generation source artwork: #779/standard",
+    "Retained previous-generation source artwork: #782/standard",
+    "Retained previous-generation source artwork: #783/standard",
+    "Retained previous-generation source artwork: #789/standard",
+    "Retained previous-generation source artwork: #790/standard",
+    "Retained previous-generation source artwork: #800/ultra",
+    "Retained previous-generation source artwork: #803/standard"
   ]
 }

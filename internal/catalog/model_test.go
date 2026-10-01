@@ -54,8 +54,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 1014 {
-		t.Fatalf("form count=%d; want 1014 in the current mapping", count)
+	if count != 1138 {
+		t.Fatalf("form count=%d; want 1138 in the current mapping", count)
 	}
 }
 
@@ -95,10 +95,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGenerationsOneThroughSixFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 721; id++ {
+func TestGenerationsOneThroughSevenFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 809; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1–Gen6 species %d", id)
+			t.Fatalf("missing Gen1–Gen7 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -273,5 +273,58 @@ func TestGenerationSixPatternsTypingAndAliases(t *testing.T) {
 	greninja, _ := ByNumber(658)
 	if len(greninja.Forms) != 2 || greninja.Forms[1].ID != "ash" || !slices.Contains(greninja.Forms[1].SourceAliases, "battle-bond") {
 		t.Fatalf("Greninja forms: %+v", greninja.Forms)
+	}
+}
+
+func TestGenerationSevenTypesAndSourceAliases(t *testing.T) {
+	silvally, _ := ByNumber(773)
+	if len(silvally.Forms) != 18 {
+		t.Fatalf("Silvally forms: %+v", silvally.Forms)
+	}
+	for _, f := range silvally.Forms {
+		typ := f.ID
+		if typ == "standard" {
+			typ = "normal"
+		}
+		if !slices.Equal(f.Types, []string{typ}) {
+			t.Fatalf("Silvally typing: %+v", f)
+		}
+	}
+	expected := map[int]map[string][]string{
+		741: {"standard": {"fire", "flying"}, "pau": {"psychic", "flying"}, "pom-pom": {"electric", "flying"}, "sensu": {"ghost", "flying"}},
+		800: {"standard": {"psychic"}, "dawn": {"psychic", "ghost"}, "dusk": {"psychic", "steel"}, "ultra": {"psychic", "dragon"}},
+	}
+	for id, forms := range expected {
+		species, _ := ByNumber(id)
+		if len(species.Forms) != len(forms) {
+			t.Fatalf("forms #%d: %+v", id, species.Forms)
+		}
+		for _, f := range species.Forms {
+			if !slices.Equal(f.Types, forms[f.ID]) {
+				t.Fatalf("typing #%d: %+v", id, f)
+			}
+		}
+	}
+	minior, _ := ByNumber(774)
+	if len(minior.Forms) != 8 {
+		t.Fatalf("historical Minior artwork became forms: %+v", minior.Forms)
+	}
+	for _, f := range minior.Forms {
+		if !slices.Equal(f.Types, []string{"rock", "flying"}) {
+			t.Fatalf("Minior typing: %+v", f)
+		}
+	}
+	marshadow, _ := ByNumber(802)
+	if len(marshadow.Forms) != 1 {
+		t.Fatal("historical Marshadow artwork became a form")
+	}
+	for _, tc := range []struct {
+		id    int
+		alias string
+	}{{735, "totem"}, {744, "own-tempo"}, {745, "midday"}, {746, "solo"}, {778, "busted"}} {
+		species, _ := ByNumber(tc.id)
+		if !slices.Contains(species.Forms[0].SourceAliases, tc.alias) {
+			t.Fatalf("lost alias #%d/%s", tc.id, tc.alias)
+		}
 	}
 }

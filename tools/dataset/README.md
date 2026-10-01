@@ -7,7 +7,7 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 through 6. The earlier Litleo/Espurr
+The current policy selects generations 1 through 7. The earlier Litleo/Espurr
 family seeds are now redundant and removed; generation selection includes them.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
@@ -47,8 +47,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 738 catalog species, 1,014 metadata forms,
-727 printable species, 974 collectible forms, and 1,952 assets. Forty appearances
+The current coverage is 826 catalog species, 1,138 metadata forms,
+815 printable species, 1,080 collectible forms, and 2,163 assets. Fifty-eight appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -97,7 +97,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-6 expansion changes that ID and adds 230 exact images. No trainer database exists, so no storage migration applies.
+Generation-7 expansion changes that ID and adds 211 eligible images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -132,7 +132,7 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-4`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-5`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated/unaudited artwork remains unavailable. No new source provider or
 visual-gender scope is accepted by this batch.
@@ -239,3 +239,38 @@ are unchanged. Source revisions, providers, generator code, and visual-gender
 scope are unchanged. Rules remain `d06-auto-4`. No source files, packages,
 dependencies, or public flags were added. D06 remains open for generations
 7–9 and remaining provider, gender, and achievement-tag audits.
+
+
+## Generation 7 increment
+
+Generation 7 adds 88 catalog species, 124 metadata forms, and 211 eligible
+images. All National numbers 1–809 have audited standard regular artwork.
+Silvally's 18 types derive from exact metadata varieties; 17 alternate-type
+artworks remain unavailable under the inherited quality gate. Hisuian Decidueye
+also remains metadata-only. Oricorio styles, Necrozma fusions, Lycanroc forms,
+Wishiwashi School, Magearna Original, and Melmetal Gigantamax resolve from pinned
+identities. Totem, Rockruff own-tempo, and Mimikyu source aliases do not create
+extra collectible appearances.
+
+Eight reviewed `source_form_exclusions` cover seven Minior `*-gen7` records
+and Marshadow `gen7`. These are historical artwork versions marked unofficial,
+with no separate metadata identity. They are retained as coverage exclusions;
+Minior's seven core colors and standard Marshadow remain supported. This is
+exception evidence, not a manually maintained catalog or sprite list.
+
+`duplicate_palette_exclusions` records the single reviewed Minior meteor case.
+Both raw palettes remain pinned, provenance-validated, decoded and normalized.
+The exception requires equal normalized SHA-256 values for the exact same
+species/form/gender, removes only shiny artwork from the manifest/files, and
+reports hash evidence in coverage. Duplicate, empty, unused, missing-palette,
+and unequal-pixel exceptions fail. Without an exception, equal palettes still
+fail the existing validator. Core Minior palettes remain verified independently.
+There are 2,180 locked inputs: 2,163 eligible PNGs, one excluded duplicate PNG,
+and 16 metadata/terms inputs. No synthetic palette or runtime fallback is added.
+
+All 211 new eligible images were visually inspected; all 1,952 earlier PNGs
+are unchanged. Generator changes stay in existing files. Source revisions,
+provider scope and visual genders are unchanged. Rules version `d06-auto-5`
+records the narrow reviewed duplicate-palette policy. Tests cover generation
+completeness, aliases, exact typing, selection boundaries, and exclusion failure
+cases. D06 remains open for generations 8–9 and provider/gender/tag audits.

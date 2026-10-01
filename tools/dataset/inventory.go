@@ -16,10 +16,10 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4") || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
+	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && m.RulesVersion != "d06-auto-5")) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
-	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4" {
+	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && m.RulesVersion != "d06-auto-5") {
 		return fmt.Errorf("source-only exclusions require automatic rules v3")
 	}
 	for _, e := range m.SourceFormExclusions {
@@ -110,6 +110,9 @@ func selectedSpecies(rows []map[string]string, policy inventorySelection) ([]int
 }
 
 func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConfig, error) {
+	if len(m.DuplicatePaletteExclusions) > 0 && m.RulesVersion != "d06-auto-5" {
+		return m, fmt.Errorf("duplicate palette exclusions require automatic rules v5")
+	}
 	if m.Selection == nil {
 		return m, nil
 	} // Existing fixture schemas remain supported.
@@ -217,7 +220,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || m.RulesVersion == "d06-auto-4") && !foundFormTable {
+	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || m.RulesVersion == "d06-auto-5")) && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
 	}
 	formOwners, formTypes, err := metadataFormTyping(lock, cache, m.RulesVersion)

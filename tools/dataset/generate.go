@@ -155,7 +155,7 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	previousFemale := make(map[int]bool)
 	var inherited inheritedInventory
 	previousIcons := make(map[string]bool)
-	if mappings.RulesVersion == "d06b-gen1-1" || (mappings.RulesVersion == "d06-auto-1" || mappings.RulesVersion == "d06-auto-2" || mappings.RulesVersion == "d06-auto-3" || mappings.RulesVersion == "d06-auto-4") {
+	if mappings.RulesVersion == "d06b-gen1-1" || (mappings.RulesVersion == "d06-auto-1" || mappings.RulesVersion == "d06-auto-2" || mappings.RulesVersion == "d06-auto-3" || (mappings.RulesVersion == "d06-auto-4" || mappings.RulesVersion == "d06-auto-5")) {
 		inherited, err = loadInheritedInventory(lock, cache)
 		if err != nil {
 			return bundle, err
@@ -226,6 +226,22 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 		assets = append(assets, normalizedAsset{SpeciesID: mapping.SpeciesID, FormID: mapping.FormID, Gender: mapping.Gender, Palette: mapping.Palette, Path: assetPath, SHA256: hash, SourceSHA256: file.SHA256, SourceURL: "https://raw.githubusercontent.com/" + source.Repository + "/" + source.Revision + "/" + file.Path, SourceProvider: provenance.Source, SourceWidth: originalSize.X, SourceHeight: originalSize.Y, CropX: bounds.Min.X, CropY: bounds.Min.Y, Width: bounds.Dx(), Height: bounds.Dy()})
 		bundle.Files["internal/sprite/"+assetPath] = cropped
 	}
+
+	kept, reasons, err := excludeDuplicatePalettes(assets, mappings.DuplicatePaletteExclusions)
+	if err != nil {
+		return bundle, err
+	}
+	keptPaths := map[string]bool{}
+	for _, a := range kept {
+		keptPaths[a.Path] = true
+	}
+	for _, a := range assets {
+		if !keptPaths[a.Path] {
+			delete(bundle.Files, "internal/sprite/"+a.Path)
+		}
+	}
+	assets = kept
+	mappings.Exclusions = append(mappings.Exclusions, reasons...)
 	if err := validateVariantInventory(species, assets); err != nil {
 		return bundle, err
 	}
