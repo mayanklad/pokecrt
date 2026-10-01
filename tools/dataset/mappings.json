@@ -5,7 +5,8 @@
       1,
       2,
       3,
-      4
+      4,
+      5
     ],
     "family_seeds": [
       667,
@@ -17,7 +18,7 @@
     ]
   },
   "source_standard_form": "base",
-  "standard_form_reason": "The source-designated default maps to standard and must match its owning default PokéAPI variety. Exact metadata variety/form identifiers resolve other forms; exceptions cannot create aliases or orientation duplicates.",
+  "standard_form_reason": "The source-designated default maps to standard and must match its owning default Pok\u00e9API variety. Exact metadata variety/form identifiers resolve other forms; exceptions cannot create aliases or orientation duplicates.",
   "form_overrides": [
     {
       "species_id": 59,
@@ -29,7 +30,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate PokéAPI variety exists. Provisional artwork is excluded."
+      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
     },
     {
       "species_id": 101,
@@ -41,7 +42,7 @@
       "genders": [
         "default"
       ],
-      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate PokéAPI variety exists. Provisional artwork is excluded."
+      "reason": "Source Noble visual state shares the explicitly mapped Hisuian variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
     },
     {
       "species_id": 900,
@@ -65,33 +66,57 @@
       "genders": [
         "default"
       ],
-      "reason": "Shadow Lugia is a source cosmetic identity without a same-species PokéAPI variety; use standard Lugia typing. Artwork must independently pass the inherited quality gate."
+      "reason": "Shadow Lugia is a source cosmetic identity without a same-species Pok\u00e9API variety; use standard Lugia typing. Artwork must independently pass the inherited quality gate."
+    },
+    {
+      "species_id": 549,
+      "id": "hisui-noble",
+      "name": "Hisuian Noble",
+      "source_form_id": "hisui-noble",
+      "pokemon_id": 10237,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Source Noble visual state shares the explicitly mapped Hisuian Lilligant variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
+    },
+    {
+      "species_id": 555,
+      "id": "galar",
+      "name": "Galarian",
+      "source_form_id": "galar",
+      "pokemon_id": 10177,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned artwork galar corresponds to the owning metadata darmanitan-galar-standard variety; galar-zen remains a separate exact identity."
     }
   ],
   "source_name_overrides": [
     {
       "species_id": 83,
       "source_name": "Farfetch'd",
-      "canonical_name": "Farfetch’d",
-      "reason": "Pinned artwork and PokéAPI English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
+      "canonical_name": "Farfetch\u2019d",
+      "reason": "Pinned artwork and Pok\u00e9API English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
     },
     {
       "species_id": 865,
       "source_name": "Sirfetch'd",
-      "canonical_name": "Sirfetch’d",
-      "reason": "Pinned artwork and PokéAPI English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
+      "canonical_name": "Sirfetch\u2019d",
+      "reason": "Pinned artwork and Pok\u00e9API English names differ only in apostrophe typography; keep the artwork spelling as an exact generated alias."
     }
   ],
   "source_form_exclusions": [
     {
       "species_id": 327,
       "source_form_id": "blank",
-      "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pokémon collectible form."
+      "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pok\u00e9mon collectible form."
     },
     {
       "species_id": 327,
       "source_form_id": "filled",
-      "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pokémon collectible form."
+      "reason": "Pinned inherited inventory marks this Spinda pattern template as unofficial. It has no exact metadata form identity; retain as an excluded source record, not a Pok\u00e9mon collectible form."
     }
   ]
 }

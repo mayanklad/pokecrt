@@ -7,7 +7,7 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 through 4 and the Litleo/Espurr family seeds.
+The current policy selects generations 1 through 5 and the Litleo/Espurr family seeds.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
 branches. The sorted species list therefore comes from data, not a National total.
@@ -22,8 +22,10 @@ its standard artwork is A. Pichu’s Spiky-eared identity also resolves there.
 Source canonical pointers are folded into aliases, never extra collectibles.
 Unknown matches fail; the tool does not guess typing from a similar filename.
 
-Four reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode,
+Six reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode/Lilligant,
 Noble Kleavor, and Shadow Lugia share explicitly identified variety typing.
+The artwork identity Darmanitan `galar` maps to exact owning metadata variety
+`darmanitan-galar-standard`; `galar-zen` resolves automatically and stays distinct.
 Shadow Lugia artwork remains excluded by the independent quality gate.
 Two exact name corrections preserve the Farfetch’d/Sirfetch’d apostrophe aliases.
 Unused, redundant, duplicate, and wrong-owner form exceptions fail validation.
@@ -44,8 +46,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 512 catalog species, 700 metadata forms,
-503 printable species, 676 collectible forms, and 1,356 assets. Twenty-four appearances
+The current coverage is 671 catalog species, 892 metadata forms,
+660 printable species, 859 collectible forms, and 1,722 assets. Thirty-three appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -94,7 +96,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-4 expansion changes that ID and adds 226 exact images. No trainer database exists, so no storage migration applies.
+Generation-5 expansion changes that ID and adds 366 exact images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -194,3 +196,20 @@ The generation-4 batch adds 78 catalog species through full family closure and
 226 sprites in 113 regular/shiny pairs. Dialga/Palkia Origin are metadata-only
 pending inherited source-quality review. All earlier PNGs are unchanged. Source
 providers and reviewed visual-gender scope remain unchanged; D06 stays open.
+
+
+## Generation 5 increment
+
+The generation-5 policy adds 159 catalog species through connected family closure,
+192 metadata forms, and 366 sprites in 183 regular/shiny pairs. All National
+numbers 1–649 have audited standard artwork. Later relatives Basculegion and
+Kingambit remain metadata-only under the unchanged source-quality gate. New
+Hisuian appearances remain unavailable where inherited quality is provisional.
+Darmanitan retains Fire, Fire/Psychic, Ice, and Ice/Fire typing by exact variety.
+Meloetta Pirouette is Normal/Fighting. Genesect drives remain Bug/Steel; drive
+names do not determine Pokémon types. Deerling/Sawsbuck seasons, Kyurem forms,
+and source canonical aliases derive from pinned records without maintained lists.
+All 366 new normalized sprites were visually inspected; all earlier PNG bytes
+are unchanged. Source revisions, providers, generator code, and visual-gender
+policy are unchanged. Rules remain `d06-auto-4` because no derivation logic changed.
+D06 remains open for later generations and provider/gender/tag audits.

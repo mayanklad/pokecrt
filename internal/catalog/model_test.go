@@ -54,8 +54,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 700 {
-		t.Fatalf("form count=%d; want 700 in the current mapping", count)
+	if count != 892 {
+		t.Fatalf("form count=%d; want 892 in the current mapping", count)
 	}
 }
 
@@ -95,10 +95,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGenerationsOneThroughFourFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 493; id++ {
+func TestGenerationsOneThroughFiveFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 649; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1–Gen4 species %d", id)
+			t.Fatalf("missing Gen1–Gen5 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -193,6 +193,40 @@ func TestArceusTypesAndGenerationFourAliases(t *testing.T) {
 		s, _ := ByNumber(tc.id)
 		if !slices.Contains(s.Forms[0].SourceAliases, tc.alias) {
 			t.Fatalf("lost source alias #%d/%s", tc.id, tc.alias)
+		}
+	}
+}
+
+func TestGenerationFiveFormTypingAndAliases(t *testing.T) {
+	expected := map[int]map[string][]string{
+		555: {"standard": {"fire"}, "zen": {"fire", "psychic"}, "galar": {"ice"}, "galar-zen": {"ice", "fire"}},
+		648: {"standard": {"normal", "psychic"}, "pirouette": {"normal", "fighting"}},
+		649: {"standard": {"bug", "steel"}, "burn": {"bug", "steel"}, "chill": {"bug", "steel"}, "douse": {"bug", "steel"}, "shock": {"bug", "steel"}},
+	}
+	for id, forms := range expected {
+		species, ok := ByNumber(id)
+		if !ok || len(species.Forms) != len(forms) {
+			t.Fatalf("forms #%d: %+v", id, species.Forms)
+		}
+		for _, f := range species.Forms {
+			if !slices.Equal(f.Types, forms[f.ID]) {
+				t.Fatalf("typing #%d: %+v", id, f)
+			}
+		}
+	}
+	for _, tc := range []struct {
+		id    int
+		alias string
+	}{{555, "standard"}, {647, "ordinary"}, {648, "aria"}, {649, "standard"}} {
+		species, _ := ByNumber(tc.id)
+		if !slices.Contains(species.Forms[0].SourceAliases, tc.alias) {
+			t.Fatalf("lost alias #%d/%s", tc.id, tc.alias)
+		}
+	}
+	for _, id := range []int{585, 586} {
+		species, _ := ByNumber(id)
+		if len(species.Forms) != 4 {
+			t.Fatalf("seasonal forms #%d: %+v", id, species.Forms)
 		}
 	}
 }
