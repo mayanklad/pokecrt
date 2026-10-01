@@ -123,9 +123,11 @@ func TestPrintHelpAndNoState(t *testing.T) {
 }
 
 func TestUnauditedArtworkHasNoFallback(t *testing.T) {
-	var stdout, stderr bytes.Buffer
-	status := Run([]string{"print", "--name", "annihilape"}, &stdout, &stderr, "dev", catalog.DatasetID)
-	if status != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "artwork unavailable") {
-		t.Fatalf("status=%d stdout=%q stderr=%q", status, stdout.String(), stderr.String())
+	for _, name := range []string{"annihilape", "sprigatito", "ogerpon", "terapagos"} {
+		var stdout, stderr bytes.Buffer
+		status := Run([]string{"print", "--name", name}, &stdout, &stderr, "dev", catalog.DatasetID)
+		if status != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "artwork unavailable") {
+			t.Fatalf("%s: status=%d stdout=%q stderr=%q", name, status, stdout.String(), stderr.String())
+		}
 	}
 }

@@ -3,8 +3,8 @@
 Specification: v1, including approved sections 25–27 and implementation clarifications
 Current release target: v0.2 — Complete public engine
 Last published milestone: v0.1
-Current increment: D06 generation-8 inventory and checked Alcremie normalization
-Current source commit: 38662346418fb5f22265db340625c9e53eaace44
+Current increment: D06 generation-9 metadata inventory
+Current source commit: 73fc88ac445deff81bb5b59ad88d217c5af7a6d9
 Commit note: verified baseline before this increment; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -18,13 +18,13 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 ## Dataset
 
 Development dataset ID:
-`4443d5eec02882157a64107e8cb815d0c1efeb5565d66b17f9dd77b4accc80cb`
+`25d7b91661cfce4f19da4a1442a649efb0ac0bd9fccc78cf755268ebab4dd81c`
 
-- 913 catalog species: all generation-1 through generation-8 species plus full evolution-family closure
-- 1,317 metadata forms; 1,200 collectible forms; 2,403 exact regular/shiny assets
+- 1,025 catalog species: all generation-1 through generation-9 species plus full evolution-family closure
+- 1,447 metadata forms; 1,200 collectible forms; 2,403 exact regular/shiny assets
 - 898 eligible species; 900 standard regular slots; 1,201 shiny slots
 - 4 distinct visual gender slots across Pyroar/Meowstic, with male defaults
-- 117 unavailable metadata form appearances; fifteen species lack audited standard artwork
+- 247 unavailable metadata form appearances; 127 species lack audited standard artwork
 - 2,422 pinned inputs; coverage.json/coverage.md record availability and quality
 - Direct images remain pinned PokéSprite-v2; inherited provider records stay distinct
 - Complete evolution references, aliases, typing, stages, flags, and name corrections
@@ -35,13 +35,13 @@ Development dataset ID:
 - Exact source/palette provenance; inherited edit/retained-generation flags audited
 - Reject provisional candidates, unknown inherited flags, duplicate pixels, and unsupported layouts
 - Explicit name corrections require exact pinned source/canonical spellings and reasons
-- Assistant full tests/vet and generation checks passed; all 240 new sprites inspected
+- Assistant full tests/vet and generation checks passed; no new sprites; earlier visual review remains applicable
 - Tests cover family completeness, baby stages, source quality gates, name aliases,
   uniform species boundaries, missing artwork, and installed-binary behavior
 - Routine species/form/asset entries are derived automatically; only policy and exceptions are maintained
 - Provenance modules/tests and dataset documentation consolidated
 - Static selection moved into catalog with injected sprite availability
-- Earlier inventory remains intact; 87 catalog species and 240 eligible assets added
+- Earlier inventory remains intact; 112 catalog species and 130 metadata forms added; all artwork unchanged
 - Pinned form table resolves Unown/Pichu; eleven reasoned form exceptions remain
 - Source defaults checked against metadata defaults, including Dudunsparce
 - Explicit --update-lock derives and validates new artwork pins; ordinary generation preserves locks
@@ -133,3 +133,18 @@ Tests, vet, build, generation/fresh preparation and visual review pass.
 Maximum dimensions: 67 columns, 56 source pixel rows (28 terminal rows).
 No new source files, packages, dependencies or runtime flags added.
 Owner verification/commit pending. Next: generation 9 and remaining D06 audits.
+
+
+## Generation-9 metadata increment
+
+Generation 8 owner-committed at 73fc88ac445deff81bb5b59ad88d217c5af7a6d9.
+All nine source generations are selected automatically. No new corrections,
+source pins, asset bytes, generator files or runtime features added. Generation
+9 artwork is unavailable under the current provider/generated-image policy.
+Tests cover exact mask types, default identities, source mode aliases, species
+completeness and explicit missing-artwork failures. Tests, vet, build,
+deterministic generation and fresh asset preparation pass.
+Rules: d06-auto-6. Specification remains unchanged.
+Owner verification/commit pending. D06 remains incomplete.
+Next: additional-provider/source-quality audit, including generation-9 artwork;
+then remaining form/gender semantics and achievement-tag audit gates.

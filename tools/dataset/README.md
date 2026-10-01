@@ -7,7 +7,7 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 through 8. The earlier Litleo/Espurr
+The current policy selects generations 1 through 9. The earlier Litleo/Espurr
 family seeds are now redundant and removed; generation selection includes them.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
@@ -49,8 +49,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 913 catalog species, 1,317 metadata forms,
-898 printable species, 1,200 collectible forms, and 2,403 assets. 117 appearances
+The current coverage is 1,025 catalog species, 1,447 metadata forms,
+898 printable species, 1,200 collectible forms, and 2,403 assets. 247 appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -99,7 +99,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-8 expansion changes that ID and adds 240 eligible images. No trainer database exists, so no storage migration applies.
+Generation-9 metadata expansion changes that ID without adding image pins or eligible assets. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -320,3 +320,33 @@ include 2,403 eligible images, two default-alias evidence images, the existing
 excluded Minior shiny image, and 16 metadata/terms files. Tests, vet, build and
 reproducibility checks pass. No source files, packages, dependencies or public
 flags added. D06 remains open for generation 9 and provider/gender/tag audits.
+
+
+## Generation 9 metadata increment
+
+Selecting generation 9 adds 112 catalog species and 130 metadata forms through
+pinned-source derivation, without new exceptions or generator changes. The
+catalog now spans all nine source generations: 1,025 species and 1,447 metadata
+forms. This is species metadata coverage, not completion of D06 or full artwork
+coverage. Generation 9 source appearances use generated candidates or
+`bamq/pokemon-sprites`, outside the currently reviewed inherited-provider scope.
+They remain metadata-only. No artwork source pins or PNG bytes change.
+
+Eligible artwork remains 898 species, 1,200 collectible forms and 2,403 assets.
+There are 127 unavailable standard appearances and 247 unavailable metadata
+form appearances. Named generation-9 printing fails with artwork unavailable;
+there is no substitute, generated fallback, or implicit runtime download.
+Coverage distinguishes each excluded provider/generated source record.
+
+Ogerpon masks use exact Grass/Rock, Grass/Fire, and Grass/Water types; standard
+is Grass. Terapagos forms remain Normal according to their verified metadata;
+`stellar` is not inferred as a type from a form name. Maushold/Squawkabilly/Palafin
+non-base defaults match their owning default varieties. Koraidon/Miraidon source
+mode aliases do not produce extra artwork collectibles. Tests verify these
+metadata cases, complete species/family references, and missing-artwork failures.
+
+Rules remain `d06-auto-6`; no new file, package, dependency, correction policy,
+or runtime command is introduced. D06 next audits the additional provider,
+remaining provisional artwork, visual-gender identities (including Oinkologne),
+source-generated form/alias claims, and achievement tags. Generated appearance
+claims are not evidence of usable artwork or completed form/gender semantics.

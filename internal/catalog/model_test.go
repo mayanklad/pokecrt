@@ -55,8 +55,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 1317 {
-		t.Fatalf("form count=%d; want 1317 in the current mapping", count)
+	if count != 1447 {
+		t.Fatalf("form count=%d; want 1447 in the current mapping", count)
 	}
 }
 
@@ -96,10 +96,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGenerationsOneThroughEightFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 905; id++ {
+func TestGenerationsOneThroughNineFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 1025; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1–Gen8 species %d", id)
+			t.Fatalf("missing Gen1–Gen9 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -355,6 +355,37 @@ func TestGenerationEightTypingAndAlcremieIdentities(t *testing.T) {
 	for _, f := range alcremie.Forms {
 		if !slices.Equal(f.Types, []string{"fairy"}) || strings.HasSuffix(f.ID, "-plain") {
 			t.Fatalf("Alcremie typing/template: %+v", f)
+		}
+	}
+}
+
+func TestGenerationNineDefaultsAndTypes(t *testing.T) {
+	expected := map[int]map[string][]string{
+		925:  {"standard": {"normal"}, "family-of-three": {"normal"}},
+		931:  {"standard": {"normal", "flying"}, "blue-plumage": {"normal", "flying"}, "white-plumage": {"normal", "flying"}, "yellow-plumage": {"normal", "flying"}},
+		964:  {"standard": {"water"}, "hero": {"water"}},
+		1017: {"standard": {"grass"}, "cornerstone-mask": {"grass", "rock"}, "hearthflame-mask": {"grass", "fire"}, "wellspring-mask": {"grass", "water"}},
+		1024: {"standard": {"normal"}, "terastal": {"normal"}, "stellar": {"normal"}},
+	}
+	for id, forms := range expected {
+		species, ok := ByNumber(id)
+		if !ok || species.Generation != 9 || len(species.Forms) != len(forms) {
+			t.Fatalf("forms #%d: %+v", id, species.Forms)
+		}
+		for _, f := range species.Forms {
+			if !slices.Equal(f.Types, forms[f.ID]) {
+				t.Fatalf("typing #%d: %+v", id, f)
+			}
+		}
+	}
+	for _, tc := range []struct {
+		id    int
+		types []string
+		alias string
+	}{{1007, []string{"fighting", "dragon"}, "limited-build"}, {1008, []string{"electric", "dragon"}, "low-power-mode"}} {
+		species, _ := ByNumber(tc.id)
+		if len(species.Forms) != 1 || !slices.Equal(species.Forms[0].Types, tc.types) || !slices.Contains(species.Forms[0].SourceAliases, tc.alias) {
+			t.Fatalf("source mode #%d: %+v", tc.id, species.Forms)
 		}
 	}
 }
