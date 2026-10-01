@@ -8,17 +8,17 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-The development catalog contains all generation-1 through generation-3 species, their complete
+The development catalog contains all generation-1 through generation-4 species, their complete
 connected evolution families (including later-generation relatives), and the
-existing Pyroar/Meowstic families: 434 species and 585 metadata forms.
+existing Pyroar/Meowstic families: 512 species and 700 metadata forms.
 
-Audited artwork covers 425 species and 563 collectible forms, with 1,130 exact
+Audited artwork covers 503 species and 676 collectible forms, with 1,356 exact
 regular/shiny assets. Nine catalog species currently have metadata but no
-audited standard artwork. Twenty-two form appearances are explicitly excluded pending source
+audited standard artwork. Twenty-four form appearances are explicitly excluded pending source
 quality/provider review. Printing never substitutes another appearance.
 
 Pyroar and Meowstic retain distinct male/female regular and shiny slots within
-one standard form. There are 427 standard regular artwork slots across 425
+one standard form. There are 505 standard regular artwork slots across 503
 eligible species; random printing samples species uniformly, not artwork slots.
 Other visual-gender combinations and wider inventory remain pending.
 
@@ -208,3 +208,7 @@ pinned metadata and source identities.
 
 Developer dataset downloads show progress on stderr by default. Add `--verbose`
 to the dataset command for individual downloaded and cache-verified filenames.
+
+Arceus’s 18 supported type forms use exact pinned form-specific typing. Its
+unsupported `unknown` appearance is excluded explicitly; base Normal typing
+is never substituted for another type form.

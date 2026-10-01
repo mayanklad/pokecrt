@@ -211,3 +211,50 @@ func TestSourceGenderFormFoldsIntoOneCollectibleForm(t *testing.T) {
 		t.Fatalf("gender became a collectible form: %+v", bundle.Coverage)
 	}
 }
+
+func TestExactMetadataFormTypingOverridesVarietyAndRejectsBadRows(t *testing.T) {
+	for _, tc := range []struct {
+		name, rows string
+		valid      bool
+	}{
+		{"exact type", "10000,10,1\n", true},
+		{"unknown owner", "99999,10,1\n", false},
+		{"duplicate slot", "10000,10,1\n10000,12,1\n", false},
+		{"missing first slot", "10000,10,2\n", false},
+		{"unknown type", "10000,999,1\n", false},
+		{"unsupported type", "10000,10001,1\n", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			lock, cache, m := variantFixture(t)
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("id,identifier,pokemon_id,is_default\n1,bulbasaur,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n10000,bulbasaur-fixture,1,0\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_form_types.csv", []byte("pokemon_form_id,type_id,slot\n"+tc.rows))
+			data, _, _, e := readInput(lock, cache, "pokeapi", "data/v2/csv/types.csv")
+			if e != nil {
+				t.Fatal(e)
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/types.csv", append(data, []byte("10,fire\n10001,unknown\n")...))
+			editManifest(t, &lock, cache, func(s *sourceManifest) {
+				yes, no := true, false
+				s.Pokemon[0].Forms = append(s.Pokemon[0].Forms, sourceForm{ID: "fixture", Label: "Fixture", Slug: "bulbasaur-fixture", HasRegular: &yes, IsGenerated: &no, Source: "msikma/pokesprite"})
+			})
+			m.Forms = append(m.Forms, formMapping{SpeciesID: 1, ID: "fixture", Name: "Fixture", SourceFormID: "fixture", PokemonID: 1, MetadataFormID: 10000, DefaultGender: "default", Genders: []string{"default"}, Reason: "Exact fixture metadata form"})
+			species, _, e := normalizeCatalog(lock, cache, m)
+			if !tc.valid {
+				if e == nil {
+					t.Fatal("accepted invalid form typing")
+				}
+				return
+			}
+			if e != nil {
+				t.Fatal(e)
+			}
+			if !reflect.DeepEqual(species[0].Forms[0].Types, []string{"grass", "poison"}) || !reflect.DeepEqual(species[0].Forms[1].Types, []string{"fire"}) {
+				t.Fatal("form type did not override only its own variety")
+			}
+			m.Forms[len(m.Forms)-1].MetadataFormID = 2
+			if _, _, e := normalizeCatalog(lock, cache, m); e == nil {
+				t.Fatal("accepted wrong metadata form owner")
+			}
+		})
+	}
+}

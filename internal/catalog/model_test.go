@@ -1,6 +1,9 @@
 package catalog
 
-import "testing"
+import (
+	"slices"
+	"testing"
+)
 
 func TestExactSpeciesLookupAndIndependentCopies(t *testing.T) {
 	species, ok := ByName("  CHARIZARD  ")
@@ -51,8 +54,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 585 {
-		t.Fatalf("form count=%d; want 585 in the current mapping", count)
+	if count != 700 {
+		t.Fatalf("form count=%d; want 700 in the current mapping", count)
 	}
 }
 
@@ -92,10 +95,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGenerationsOneThroughThreeFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 386; id++ {
+func TestGenerationsOneThroughFourFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 493; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1–Gen3 species %d", id)
+			t.Fatalf("missing Gen1–Gen4 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -150,5 +153,46 @@ func TestCastformTypesAndDeoxysAlias(t *testing.T) {
 	spinda, _ := ByNumber(327)
 	if len(spinda.Forms) != 1 {
 		t.Fatal("Spinda templates became Pokémon forms")
+	}
+}
+
+func TestArceusTypesAndGenerationFourAliases(t *testing.T) {
+	arceus, ok := ByNumber(493)
+	if !ok || len(arceus.Forms) != 18 {
+		t.Fatalf("Arceus forms: %+v", arceus.Forms)
+	}
+	for _, f := range arceus.Forms {
+		want := f.ID
+		if f.ID == "standard" {
+			want = "normal"
+		}
+		if len(f.Types) != 1 || f.Types[0] != want {
+			t.Fatalf("Arceus typing: %+v", f)
+		}
+	}
+	expected := map[int]map[string][]string{
+		413: {"standard": {"bug", "grass"}, "sandy": {"bug", "ground"}, "trash": {"bug", "steel"}},
+		479: {"standard": {"electric", "ghost"}, "heat": {"electric", "fire"}, "wash": {"electric", "water"}, "frost": {"electric", "ice"}, "fan": {"electric", "flying"}, "mow": {"electric", "grass"}},
+		492: {"standard": {"grass"}, "sky": {"grass", "flying"}},
+	}
+	for id, forms := range expected {
+		s, ok := ByNumber(id)
+		if !ok || len(s.Forms) != len(forms) {
+			t.Fatalf("forms #%d: %+v", id, s.Forms)
+		}
+		for _, f := range s.Forms {
+			if !slices.Equal(f.Types, forms[f.ID]) {
+				t.Fatalf("typing #%d: %+v", id, f)
+			}
+		}
+	}
+	for _, tc := range []struct {
+		id    int
+		alias string
+	}{{412, "plant"}, {413, "plant"}, {421, "overcast"}, {422, "west"}, {423, "west"}, {487, "altered"}, {493, "normal"}} {
+		s, _ := ByNumber(tc.id)
+		if !slices.Contains(s.Forms[0].SourceAliases, tc.alias) {
+			t.Fatalf("lost source alias #%d/%s", tc.id, tc.alias)
+		}
 	}
 }

@@ -1,10 +1,11 @@
 {
-  "rules_version": "d06-auto-3",
+  "rules_version": "d06-auto-4",
   "selection": {
     "generations": [
       1,
       2,
-      3
+      3,
+      4
     ],
     "family_seeds": [
       667,

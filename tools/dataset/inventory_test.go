@@ -198,3 +198,34 @@ func TestSourceTemplatesRequireEvidenceAndDoNotBecomeForms(t *testing.T) {
 		})
 	}
 }
+
+func TestUnsupportedMetadataFormIsDerivedAsExclusion(t *testing.T) {
+	lock, cache, m := automaticFixture(t)
+	m.RulesVersion = "d06-auto-4"
+	if _, e := deriveMappings(lock, cache, m); e == nil {
+		t.Fatal("accepted missing required v4 metadata tables")
+	}
+	fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("id,identifier,pokemon_id,is_default\n1,bulbasaur,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n10000,bulbasaur-mega,100,1\n"))
+	fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_form_types.csv", []byte("pokemon_form_id,type_id,slot\n10000,10001,1\n"))
+	data, _, _, e := readInput(lock, cache, "pokeapi", "data/v2/csv/types.csv")
+	if e != nil {
+		t.Fatal(e)
+	}
+	fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/types.csv", append(data, []byte("10001,unknown\n")...))
+	resolved, e := deriveMappings(lock, cache, m)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if len(resolved.Forms) != 3 || len(resolved.SourceFormExclusions) != 1 || resolved.SourceFormExclusions[0].UnsupportedType != "unknown" {
+		t.Fatalf("unsupported appearance not excluded explicitly: %+v", resolved)
+	}
+	for _, a := range resolved.Assets {
+		if a.FormID == "mega" {
+			t.Fatal("unsupported typing remained eligible")
+		}
+	}
+	m.SourceFormExclusions = resolved.SourceFormExclusions
+	if _, e := deriveMappings(lock, cache, m); e == nil {
+		t.Fatal("accepted manually invented unsupported-type evidence")
+	}
+}

@@ -24,7 +24,7 @@ func assetIdentity(a assetMapping) string {
 }
 
 func validateMappings(m *mappingConfig) error {
-	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3") {
+	if m.RulesVersion != "d02b-1" && m.RulesVersion != "d06a-1" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4") {
 		return fmt.Errorf("unsupported mapping rules %q", m.RulesVersion)
 	}
 	if m.SourceStandardForm != "base" || strings.TrimSpace(m.StandardFormReason) == "" || len(m.CatalogSpecies) == 0 {
@@ -59,7 +59,7 @@ func validateMappings(m *mappingConfig) error {
 		}
 		identity := assetIdentity(*a)
 		expectedPath, layoutErr := assetSourcePath(*a)
-		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3")) || a.Path != expectedPath || seen[identity] {
+		if !slices.Contains(m.CatalogSpecies, a.SpeciesID) || a.SourceID != "pokesprite-v2" || !slugValid(a.FormID) || !slugValid(a.SourceFormID) || !slugValid(a.SourceSlug) || strings.TrimSpace(a.Reason) == "" || (a.Gender != "default" && a.Gender != "male" && a.Gender != "female") || (a.Palette != "regular" && a.Palette != "shiny") || layoutErr != nil || (a.SourceLayout != "" && m.RulesVersion != "d06b-gender-1" && m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4")) || a.Path != expectedPath || seen[identity] {
 			return fmt.Errorf("invalid or duplicate asset mapping %s", identity)
 		}
 		seen[identity] = true
@@ -137,7 +137,7 @@ func sourceFormByID(species sourceSpecies, id string) (sourceForm, error) {
 	return *found, nil
 }
 
-func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int, owners map[int]int, slots map[int]map[int]string) ([]normalizedForm, error) {
+func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int, owners map[int]int, slots map[int]map[int]string, metadata ...metadataTyping) ([]normalizedForm, error) {
 	var mappings []formMapping
 	for _, f := range m.Forms {
 		if f.SpeciesID == id {
@@ -168,8 +168,22 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 			}
 			hasStandard = true
 		}
-		types := []string{slots[mapping.PokemonID][1]}
-		if second := slots[mapping.PokemonID][2]; second != "" {
+		selectedSlots := slots[mapping.PokemonID]
+		if mapping.MetadataFormID != 0 && len(metadata) > 0 && len(metadata[0].Owners) > 0 {
+			if metadata[0].Owners[mapping.MetadataFormID] != mapping.PokemonID {
+				return nil, fmt.Errorf("metadata form typing owner mismatch #%03d/%s", id, mapping.ID)
+			}
+			if explicit := metadata[0].Slots[mapping.MetadataFormID]; len(explicit) > 0 {
+				selectedSlots = explicit
+			}
+		}
+		types := []string{selectedSlots[1]}
+		for _, typ := range selectedSlots {
+			if !supportedPokemonType(typ) {
+				return nil, fmt.Errorf("unsupported form type %s for #%03d/%s", typ, id, mapping.ID)
+			}
+		}
+		if second := selectedSlots[2]; second != "" {
 			if types[0] == second {
 				return nil, fmt.Errorf("duplicate form typing #%03d/%s", id, mapping.ID)
 			}

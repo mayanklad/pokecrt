@@ -22,9 +22,10 @@ type sourceNameOverride struct {
 }
 
 type sourceFormExclusion struct {
-	SpeciesID    int    `json:"species_id"`
-	SourceFormID string `json:"source_form_id"`
-	Reason       string `json:"reason"`
+	UnsupportedType string `json:"unsupported_type,omitempty"`
+	SpeciesID       int    `json:"species_id"`
+	SourceFormID    string `json:"source_form_id"`
+	Reason          string `json:"reason"`
 }
 
 type mappingConfig struct {
@@ -55,15 +56,16 @@ type assetMapping struct {
 }
 
 type formMapping struct {
-	SpeciesID     int      `json:"species_id"`
-	ID            string   `json:"id"`
-	Name          string   `json:"name"`
-	SourceFormID  string   `json:"source_form_id"`
-	PokemonID     int      `json:"pokemon_id"`
-	DefaultGender string   `json:"default_gender"`
-	Genders       []string `json:"genders"`
-	SourceAliases []string `json:"source_aliases,omitempty"`
-	Reason        string   `json:"reason"`
+	MetadataFormID int      `json:"metadata_form_id,omitempty"`
+	SpeciesID      int      `json:"species_id"`
+	ID             string   `json:"id"`
+	Name           string   `json:"name"`
+	SourceFormID   string   `json:"source_form_id"`
+	PokemonID      int      `json:"pokemon_id"`
+	DefaultGender  string   `json:"default_gender"`
+	Genders        []string `json:"genders"`
+	SourceAliases  []string `json:"source_aliases,omitempty"`
+	Reason         string   `json:"reason"`
 }
 
 type normalizedForm struct {
@@ -138,7 +140,7 @@ func readMappings(filename string) (mappingConfig, error) {
 		}
 		return mappings, nil
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3")) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && mappings.RulesVersion != "d06-auto-4")) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
@@ -422,6 +424,10 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 		}
 		sourceSpeciesByID[species.ID] = species
 	}
+	formOwners, formTypes, err := metadataFormTyping(lock, cache, mappings.RulesVersion)
+	if err != nil {
+		return nil, nil, err
+	}
 	var result []normalizedSpecies
 	aliasOwners := make(map[string]int)
 	for _, id := range mappings.CatalogSpecies {
@@ -453,7 +459,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			return nil, nil, err
 		}
 		sourceSpecies := sourceSpeciesByID[id]
-		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3") && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
+		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && mappings.RulesVersion != "d06-auto-4") && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
 			return nil, nil, fmt.Errorf("source identity/default mapping mismatch for #%03d", id)
 		}
 		if defaults[id] == 0 || typeSlots[defaults[id]][1] == "" {
@@ -489,11 +495,92 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			}
 			aliasOwners[alias] = id
 		}
-		forms, err := normalizeForms(id, sourceSpecies, mappings, defaults[id], varietyOwners, typeSlots)
+		forms, err := normalizeForms(id, sourceSpecies, mappings, defaults[id], varietyOwners, typeSlots, metadataTyping{Owners: formOwners, Slots: formTypes})
 		if err != nil {
 			return nil, nil, err
 		}
 		result = append(result, normalizedSpecies{ID: id, Name: names[id], Slug: row["identifier"], Aliases: aliases, Generation: generation, Color: colors[color], Stage: stages[id], Baby: baby, Legendary: legendary, Mythical: mythical, EvolvesFrom: parents[id], EvolvesTo: relations, Types: selectedTypes, Forms: forms})
 	}
 	return result, sourceSpeciesByID, nil
+}
+
+type metadataTyping struct {
+	Owners map[int]int
+	Slots  map[int]map[int]string
+}
+
+func supportedPokemonType(value string) bool {
+	return slices.Contains([]string{"normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"}, value)
+}
+
+// Form type rows override variety types only for their exact metadata form owner.
+func metadataFormTyping(lock sourceLock, cache, rules string) (map[int]int, map[int]map[int]string, error) {
+	owners := map[int]int{}
+	slots := map[int]map[int]string{}
+	pinned := false
+	for _, src := range lock.Sources {
+		if src.ID == "pokeapi" {
+			for _, file := range src.Files {
+				if file.Path == "data/v2/csv/pokemon_form_types.csv" {
+					pinned = true
+				}
+			}
+		}
+	}
+	if !pinned {
+		if rules == "d06-auto-4" {
+			return nil, nil, fmt.Errorf("automatic rules v4 require pinned pokemon_form_types.csv")
+		}
+		return owners, slots, nil
+	}
+	forms, e := readTable(lock, cache, "pokemon_forms.csv", "id", "pokemon_id")
+	if e != nil {
+		return nil, nil, e
+	}
+	for _, r := range forms {
+		id, e := integer(r, "id", false)
+		if e != nil {
+			return nil, nil, e
+		}
+		owner, e := integer(r, "pokemon_id", false)
+		if e != nil || owners[id] != 0 {
+			return nil, nil, fmt.Errorf("invalid or duplicate metadata form owner")
+		}
+		owners[id] = owner
+	}
+	types, e := identifiers(lock, cache, "types.csv")
+	if e != nil {
+		return nil, nil, e
+	}
+	rows, e := readTable(lock, cache, "pokemon_form_types.csv", "pokemon_form_id", "type_id", "slot")
+	if e != nil {
+		return nil, nil, e
+	}
+	for _, r := range rows {
+		id, e := integer(r, "pokemon_form_id", false)
+		if e != nil || owners[id] == 0 {
+			return nil, nil, fmt.Errorf("unknown metadata form typing owner")
+		}
+		typ, e := integer(r, "type_id", false)
+		if e != nil || types[typ] == "" {
+			return nil, nil, fmt.Errorf("unknown metadata form type")
+		}
+		slot, e := integer(r, "slot", false)
+		if e != nil || slot > 2 {
+			return nil, nil, fmt.Errorf("invalid metadata form type slot")
+		}
+		if slots[id] == nil {
+			slots[id] = map[int]string{}
+		}
+		if slots[id][slot] != "" {
+			return nil, nil, fmt.Errorf("duplicate metadata form type slot")
+		}
+		slots[id][slot] = types[typ]
+	}
+	for _, values := range slots {
+		if values[1] == "" || values[1] == values[2] {
+			return nil, nil, fmt.Errorf("invalid metadata form type cardinality")
+		}
+	}
+	return owners, slots, nil
 }

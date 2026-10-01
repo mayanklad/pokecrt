@@ -7,7 +7,7 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 through 3 and the Litleo/Espurr family seeds.
+The current policy selects generations 1 through 4 and the Litleo/Espurr family seeds.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
 branches. The sorted species list therefore comes from data, not a National total.
@@ -44,8 +44,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 434 catalog species, 585 metadata forms,
-425 printable species, 563 collectible forms, and 1,130 assets. Twenty-two appearances
+The current coverage is 512 catalog species, 700 metadata forms,
+503 printable species, 676 collectible forms, and 1,356 assets. Twenty-four appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -94,7 +94,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-3 expansion changes that ID and adds 344 exact images. No trainer database exists, so no storage migration applies.
+Generation-4 expansion changes that ID and adds 226 exact images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -129,7 +129,7 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-3`. It requires the pinned metadata form table.
+Current rules version: `d06-auto-4`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated/unaudited artwork remains unavailable. No new source provider or
 visual-gender scope is accepted by this batch.
@@ -144,8 +144,8 @@ pixel rows (up to 27 half-block terminal rows). Narrow terminals may wrap.
 These identities have no exact PokéAPI variety/form match and are marked
 unofficial in the pinned inherited inventory. They are retained in coverage
 exclusion reasons, not promoted to Pokémon forms or folded into false aliases.
-A source exclusion requires a reason and matching species/slug/appearance evidence.
-It cannot hide a standard identity, an exact metadata form, or official artwork.
+A manual template exclusion requires a reason and matching species/slug/appearance evidence.
+A manual template exclusion cannot hide a standard identity, an exact metadata form, or official artwork.
 Duplicate, unused, aliased, or already claimed exclusions fail validation.
 
 Castform standard/sunny/rainy/snowy types are Normal/Fire/Water/Ice from exact
@@ -171,3 +171,26 @@ phase returns. Counters are per phase, including post-update lock verification.
 The final dataset summary remains on stdout. Progress is presentation only:
 source locks, generation, coverage, dataset identity, and offline runtime are
 unchanged. No dependency, package, or source file was added for this feature.
+
+
+## Exact form-specific types
+
+`pokemon_form_types.csv` supplies type overrides attached to exact metadata form
+IDs, not filenames or inferred type words. `pokemon_forms.csv` establishes the
+owning variety, and `pokemon.csv` establishes species ownership. When a form has
+explicit type rows, use them instead of its variety's types; otherwise retain
+its verified variety typing. Validate positive identities, ownership, known type
+IDs, slot cardinality, and unique slots. Supported v1 types are the 18 standard
+types. This derives all Arceus type forms automatically, and protects the
+Wormadam, Rotom, and Shaymin form-specific types.
+
+Arceus `unknown` has an exact metadata form but an unsupported type. The tool
+automatically reports that source identity as excluded without assigning Normal
+typing or creating an eligible asset. Such exclusions carry exact metadata form
+and unsupported-type evidence; users cannot invent that evidence in mappings.
+These differ from the manually reviewed Spinda source-template exclusions.
+
+The generation-4 batch adds 78 catalog species through full family closure and
+226 sprites in 113 regular/shiny pairs. Dialga/Palkia Origin are metadata-only
+pending inherited source-quality review. All earlier PNGs are unchanged. Source
+providers and reviewed visual-gender scope remain unchanged; D06 stays open.

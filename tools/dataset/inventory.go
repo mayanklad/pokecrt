@@ -16,11 +16,16 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3") || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
+	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4") || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
-	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" {
+	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && m.RulesVersion != "d06-auto-4" {
 		return fmt.Errorf("source-only exclusions require automatic rules v3")
+	}
+	for _, e := range m.SourceFormExclusions {
+		if e.UnsupportedType != "" {
+			return fmt.Errorf("unsupported-type exclusions must be derived from pinned metadata")
+		}
 	}
 	if len(m.CatalogSpecies)+len(m.Forms)+len(m.Assets)+len(m.Exclusions) != 0 {
 		return fmt.Errorf("automatic selection cannot contain maintained catalog, forms, assets or exclusions")
@@ -168,6 +173,8 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	}
 	// Exact metadata form identifiers resolve cosmetic states such as Unown.
 	// Optional only for legacy source locks and small test fixtures.
+	metadataIDs := map[string]int{}
+	defaultMetadataIDs := map[int]int{}
 	foundFormTable := false
 	for _, src := range lock.Sources {
 		if src.ID != "pokeapi" {
@@ -190,6 +197,19 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 					return m, fmt.Errorf("invalid or duplicate metadata form %s", key)
 				}
 				seen[key] = true
+				if row["id"] != "" {
+					formID, e := integer(row, "id", false)
+					if e != nil {
+						return m, e
+					}
+					metadataIDs[key] = formID
+					if row["is_default"] == "1" {
+						if defaultMetadataIDs[id] != 0 {
+							return m, fmt.Errorf("duplicate metadata default form for variety %d", id)
+						}
+						defaultMetadataIDs[id] = formID
+					}
+				}
 				if existing := names[key]; existing != 0 && existing != id {
 					return m, fmt.Errorf("conflicting variety/form identity %s", key)
 				}
@@ -197,8 +217,12 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3") && !foundFormTable {
+	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || m.RulesVersion == "d06-auto-4") && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
+	}
+	formOwners, formTypes, err := metadataFormTyping(lock, cache, m.RulesVersion)
+	if err != nil {
+		return m, err
 	}
 	inherited, err := loadInheritedInventory(lock, cache)
 	if err != nil {
@@ -263,6 +287,11 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 				pokemonID = defaults[id]
 			}
 			f := formMapping{SpeciesID: id, ID: formID, Name: name, SourceFormID: sf.ID, PokemonID: pokemonID, DefaultGender: "default", Genders: []string{"default"}, Reason: "Derived from pinned source identity and exact same-species PokéAPI variety."}
+			if sf.ID == sp.DefaultForm {
+				f.MetadataFormID = defaultMetadataIDs[f.PokemonID]
+			} else {
+				f.MetadataFormID = metadataIDs[sp.Slug+"-"+sf.ID]
+			}
 			key := fmt.Sprintf("%d/%s", id, sf.ID)
 			if override, ok := overrides[key]; ok {
 				if pokemonID != 0 {
@@ -273,6 +302,27 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 			if f.ID != formID || f.SourceFormID != sf.ID || owners[f.PokemonID] != id {
 				return m, fmt.Errorf("unresolved or wrong-owner variety %s; add a reasoned exception", key)
+			}
+			unsupported := ""
+			if f.MetadataFormID != 0 && len(formOwners) > 0 {
+				if formOwners[f.MetadataFormID] != f.PokemonID {
+					return m, fmt.Errorf("metadata form owner mismatch %s", key)
+				}
+				for _, slot := range []int{1, 2} {
+					if typ := formTypes[f.MetadataFormID][slot]; typ != "" && !supportedPokemonType(typ) {
+						unsupported = typ
+						break
+					}
+				}
+			}
+			if unsupported != "" {
+				if sf.ID == sp.DefaultForm {
+					return m, fmt.Errorf("unsupported standard typing %s", key)
+				}
+				reason := fmt.Sprintf("Pinned metadata form #%d has unsupported type %s; excluded without substitution.", f.MetadataFormID, unsupported)
+				m.SourceFormExclusions = append(m.SourceFormExclusions, sourceFormExclusion{SpeciesID: id, SourceFormID: sf.ID, Reason: reason, UnsupportedType: unsupported})
+				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: %s", id, sf.ID, reason))
+				continue
 			}
 			for _, alias := range sp.Forms {
 				if alias.CanonicalForm != nil && *alias.CanonicalForm == sf.ID {
