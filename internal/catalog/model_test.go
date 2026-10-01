@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"slices"
+	"strings"
 	"testing"
 )
 
@@ -54,8 +55,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 1138 {
-		t.Fatalf("form count=%d; want 1138 in the current mapping", count)
+	if count != 1317 {
+		t.Fatalf("form count=%d; want 1317 in the current mapping", count)
 	}
 }
 
@@ -95,10 +96,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGenerationsOneThroughSevenFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 809; id++ {
+func TestGenerationsOneThroughEightFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 905; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1–Gen7 species %d", id)
+			t.Fatalf("missing Gen1–Gen8 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -325,6 +326,35 @@ func TestGenerationSevenTypesAndSourceAliases(t *testing.T) {
 		species, _ := ByNumber(tc.id)
 		if !slices.Contains(species.Forms[0].SourceAliases, tc.alias) {
 			t.Fatalf("lost alias #%d/%s", tc.id, tc.alias)
+		}
+	}
+}
+
+func TestGenerationEightTypingAndAlcremieIdentities(t *testing.T) {
+	expected := map[int]map[string][]string{
+		888: {"standard": {"fairy"}, "crowned": {"fairy", "steel"}},
+		889: {"standard": {"fighting"}, "crowned": {"fighting", "steel"}},
+		892: {"standard": {"fighting", "dark"}, "gmax": {"fighting", "dark"}, "rapid-strike-gmax": {"fighting", "water"}},
+		898: {"standard": {"psychic", "grass"}, "ice-rider": {"psychic", "ice"}, "shadow-rider": {"psychic", "ghost"}},
+	}
+	for id, forms := range expected {
+		species, _ := ByNumber(id)
+		if len(species.Forms) != len(forms) {
+			t.Fatalf("forms #%d: %+v", id, species.Forms)
+		}
+		for _, f := range species.Forms {
+			if !slices.Equal(f.Types, forms[f.ID]) {
+				t.Fatalf("typing #%d: %+v", id, f)
+			}
+		}
+	}
+	alcremie, _ := ByNumber(869)
+	if len(alcremie.Forms) != 64 || !slices.Contains(alcremie.Forms[0].SourceAliases, "vanilla-cream-strawberry") {
+		t.Fatalf("Alcremie identities: %+v", alcremie.Forms)
+	}
+	for _, f := range alcremie.Forms {
+		if !slices.Equal(f.Types, []string{"fairy"}) || strings.HasSuffix(f.ID, "-plain") {
+			t.Fatalf("Alcremie typing/template: %+v", f)
 		}
 	}
 }

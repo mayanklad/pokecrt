@@ -1,8 +1,8 @@
 {
-  "dataset_id": "43dd04f9f4838bb0f6772f35b879b9db0767702f7040ff91207d045779491933",
-  "rules_version": "d06-auto-5",
-  "catalog_species": 826,
-  "catalog_forms": 1138,
+  "dataset_id": "4443d5eec02882157a64107e8cb815d0c1efeb5565d66b17f9dd77b4accc80cb",
+  "rules_version": "d06-auto-6",
+  "catalog_species": 913,
+  "catalog_forms": 1317,
   "missing_regular_variants": [
     {
       "species_id": 58,
@@ -365,6 +365,438 @@
       "reason": "No audited asset is mapped for this exact appearance."
     },
     {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "caramel-swirl-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "caramel-swirl-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "caramel-swirl-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "caramel-swirl-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "caramel-swirl-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "caramel-swirl-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "lemon-cream-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "lemon-cream-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "lemon-cream-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "lemon-cream-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "lemon-cream-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "lemon-cream-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "matcha-cream-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "matcha-cream-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "matcha-cream-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "matcha-cream-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "matcha-cream-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "matcha-cream-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "mint-cream-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "mint-cream-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "mint-cream-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "mint-cream-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "mint-cream-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "mint-cream-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "rainbow-swirl-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "rainbow-swirl-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "rainbow-swirl-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "rainbow-swirl-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "rainbow-swirl-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "rainbow-swirl-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-cream-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-cream-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-cream-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-cream-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-cream-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-cream-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-swirl-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-swirl-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-swirl-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-swirl-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-swirl-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "ruby-swirl-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "salted-cream-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "salted-cream-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "salted-cream-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "salted-cream-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "salted-cream-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "salted-cream-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "vanilla-cream-berry",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "vanilla-cream-clover",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "vanilla-cream-flower",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "vanilla-cream-love",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "vanilla-cream-ribbon",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 869,
+      "name": "Alcremie",
+      "form_id": "vanilla-cream-star",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
       "species_id": 899,
       "name": "Wyrdeer",
       "form_id": "standard",
@@ -421,6 +853,22 @@
       "reason": "No audited asset is mapped for this exact appearance."
     },
     {
+      "species_id": 905,
+      "name": "Enamorus",
+      "form_id": "standard",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 905,
+      "name": "Enamorus",
+      "form_id": "therian",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
       "species_id": 979,
       "name": "Annihilape",
       "form_id": "standard",
@@ -467,16 +915,40 @@
       "gender": "default",
       "palette": "regular",
       "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 1011,
+      "name": "Dipplin",
+      "form_id": "standard",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 1018,
+      "name": "Archaludon",
+      "form_id": "standard",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 1019,
+      "name": "Hydrapple",
+      "form_id": "standard",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
     }
   ],
-  "eligible_species": 815,
-  "standard_regular_sprites": 817,
-  "shiny_sprites": 1081,
-  "collectible_forms": 1080,
+  "eligible_species": 898,
+  "standard_regular_sprites": 900,
+  "shiny_sprites": 1201,
+  "collectible_forms": 1200,
   "distinct_visual_gender_slots": 4,
-  "exact_eligible_variants": 2163,
-  "max_sprite_width": 58,
-  "max_sprite_height": 54,
+  "exact_eligible_variants": 2403,
+  "max_sprite_width": 67,
+  "max_sprite_height": 56,
   "missing_standard_regular_assets": [
     {
       "species_id": 899,
@@ -509,6 +981,11 @@
       "reason": "No standard regular default asset is mapped; no fallback applied."
     },
     {
+      "species_id": 905,
+      "name": "Enamorus",
+      "reason": "No standard regular default asset is mapped; no fallback applied."
+    },
+    {
       "species_id": 979,
       "name": "Annihilape",
       "reason": "No standard regular default asset is mapped; no fallback applied."
@@ -532,11 +1009,27 @@
       "species_id": 983,
       "name": "Kingambit",
       "reason": "No standard regular default asset is mapped; no fallback applied."
+    },
+    {
+      "species_id": 1011,
+      "name": "Dipplin",
+      "reason": "No standard regular default asset is mapped; no fallback applied."
+    },
+    {
+      "species_id": 1018,
+      "name": "Archaludon",
+      "reason": "No standard regular default asset is mapped; no fallback applied."
+    },
+    {
+      "species_id": 1019,
+      "name": "Hydrapple",
+      "reason": "No standard regular default asset is mapped; no fallback applied."
     }
   ],
   "exclusions": [
     "Scope is selected generations and complete connected evolution families; wider coverage remains pending.",
     "Distinct visual genders are limited to the explicitly reviewed policy scope; other candidates remain pending audit.",
+    "#869/vanilla-cream-strawberry: Pinned records resolve to the exact same default metadata form. Regular source artwork differs in outline treatment; choose source-designated standard artwork. Both raw palettes and reviewed normalized hashes must verify before folding the redundant identity. Regular source/default SHA-256: 9df2c3a6ea4843b9101df29ce78bad022f3a6507b81692ad5330f8c9bb2ceab3/300eaefce0f509d50384bc87a52bb443ddcf17dbbe1c93e12a580b674923a8c5; shiny: f526d1aae2402495a78d315de6572b92db193fd510866a50b20f2523c0d3f064/f526d1aae2402495a78d315de6572b92db193fd510866a50b20f2523c0d3f064.",
     "#058/hisui: inherited appearance flags are missing or provisional; artwork excluded.",
     "#059/hisui: inherited appearance flags are missing or provisional; artwork excluded.",
     "#059/hisui-noble: inherited appearance flags are missing or provisional; artwork excluded.",
@@ -593,6 +1086,69 @@
     "#774/violet-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
     "#774/yellow-gen7: Pinned inherited inventory marks this historical Minior artwork version as unofficial. It has no exact metadata form identity; the corresponding core color resolves separately. Exclude this source-only artwork record without creating another collectible.",
     "#802/gen7: Pinned inherited inventory marks this historical Marshadow artwork version as unofficial. It has no exact metadata form identity; standard Marshadow resolves separately. Exclude this source-only artwork record without creating another collectible.",
+    "#869/caramel-swirl-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/caramel-swirl-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/caramel-swirl-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/caramel-swirl-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/caramel-swirl-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/caramel-swirl-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/caramel-swirl-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/lemon-cream-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/lemon-cream-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/lemon-cream-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/lemon-cream-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/lemon-cream-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/lemon-cream-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/lemon-cream-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/matcha-cream-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/matcha-cream-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/matcha-cream-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/matcha-cream-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/matcha-cream-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/matcha-cream-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/matcha-cream-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/mint-cream-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/mint-cream-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/mint-cream-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/mint-cream-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/mint-cream-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/mint-cream-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/mint-cream-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/rainbow-swirl-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/rainbow-swirl-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/rainbow-swirl-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/rainbow-swirl-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/rainbow-swirl-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/rainbow-swirl-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/rainbow-swirl-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-cream-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-cream-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-cream-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-cream-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-cream-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/ruby-cream-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-cream-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-swirl-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-swirl-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-swirl-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-swirl-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-swirl-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/ruby-swirl-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/ruby-swirl-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/salted-cream-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/salted-cream-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/salted-cream-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/salted-cream-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/salted-cream-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/salted-cream-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/salted-cream-star: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/vanilla-cream-berry: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/vanilla-cream-clover: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/vanilla-cream-flower: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/vanilla-cream-love: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/vanilla-cream-plain: Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible.",
+    "#869/vanilla-cream-ribbon: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#869/vanilla-cream-star: inherited appearance flags are missing or provisional; artwork excluded.",
     "#899/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#900/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#900/noble: inherited appearance flags are missing or provisional; artwork excluded.",
@@ -600,12 +1156,17 @@
     "#902/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#903/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#904/standard: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#905/standard: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#905/therian: inherited appearance flags are missing or provisional; artwork excluded.",
     "#979/standard: provider or generated status is outside the audited inherited policy.",
     "#980/standard: provider or generated status is outside the audited inherited policy.",
     "#981/standard: provider or generated status is outside the audited inherited policy.",
     "#982/standard: provider or generated status is outside the audited inherited policy.",
     "#982/three-segment: provider or generated status is outside the audited inherited policy.",
     "#983/standard: provider or generated status is outside the audited inherited policy.",
+    "#1011/standard: provider or generated status is outside the audited inherited policy.",
+    "#1018/standard: provider or generated status is outside the audited inherited policy.",
+    "#1019/standard: provider or generated status is outside the audited inherited policy.",
     "#774/standard/default/shiny: Pinned Minior meteor regular and shiny artwork are visually identical. Keep regular meteor artwork; do not manufacture a distinct shiny collectible. Core color forms retain their verified palettes. Normalized SHA-256 equals regular: eba09f2701b7e736f0eadf1cadcb41650c2e576e651aa25d5061a19afbd558ba."
   ],
   "source_quality_flags": [

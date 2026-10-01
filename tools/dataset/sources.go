@@ -209,8 +209,12 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 	for _, file := range src.Files {
 		existing[file.Path] = true
 	}
+	aliasAssets, err := reviewedAliasAssets(lock, cache, m)
+	if err != nil {
+		return lock, err
+	}
 	var paths []string
-	for _, asset := range resolved.Assets {
+	for _, asset := range append(resolved.Assets, aliasAssets...) {
 		if !existing[asset.Path] {
 			paths = append(paths, asset.Path)
 			existing[asset.Path] = true

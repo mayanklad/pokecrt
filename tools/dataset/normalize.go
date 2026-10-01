@@ -35,7 +35,22 @@ type duplicatePaletteExclusion struct {
 	Reason    string `json:"reason"`
 }
 
+type formSuffixRule struct {
+	SpeciesID int    `json:"species_id"`
+	Suffix    string `json:"suffix"`
+	Reason    string `json:"reason"`
+}
+type reviewedDefaultAlias struct {
+	SourceHashes  map[string]string `json:"source_hashes"`
+	DefaultHashes map[string]string `json:"default_hashes"`
+	SpeciesID     int               `json:"species_id"`
+	SourceFormID  string            `json:"source_form_id"`
+	Reason        string            `json:"reason"`
+}
 type mappingConfig struct {
+	FormSuffixRules        []formSuffixRule       `json:"form_suffix_rules,omitempty"`
+	ReviewedDefaultAliases []reviewedDefaultAlias `json:"reviewed_default_aliases,omitempty"`
+
 	DuplicatePaletteExclusions []duplicatePaletteExclusion `json:"duplicate_palette_exclusions,omitempty"`
 	SourceFormExclusions       []sourceFormExclusion       `json:"source_form_exclusions,omitempty"`
 	Selection                  *inventorySelection         `json:"selection,omitempty"`
@@ -148,7 +163,7 @@ func readMappings(filename string) (mappingConfig, error) {
 		}
 		return mappings, nil
 	}
-	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && (mappings.RulesVersion != "d06-auto-4" && mappings.RulesVersion != "d06-auto-5"))) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
+	if (mappings.RulesVersion != "d02b-1" && mappings.RulesVersion != "d06a-1" && mappings.RulesVersion != "d06b-gender-1" && mappings.RulesVersion != "d06b-gen1-1" && (mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && (mappings.RulesVersion != "d06-auto-4" && (mappings.RulesVersion != "d06-auto-5" && mappings.RulesVersion != "d06-auto-6")))) || mappings.SourceStandardForm != "base" || strings.TrimSpace(mappings.StandardFormReason) == "" || len(mappings.CatalogSpecies) == 0 {
 		return mappings, fmt.Errorf("mappings require supported rules, base-to-standard reason, and species IDs")
 	}
 	sort.Ints(mappings.CatalogSpecies)
@@ -425,6 +440,9 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 	if err := json.Unmarshal(data, &manifest); err != nil {
 		return nil, nil, err
 	}
+	if err := applyReviewedDefaultAliases(&manifest, mappings); err != nil {
+		return nil, nil, err
+	}
 	sourceSpeciesByID := make(map[int]sourceSpecies)
 	for _, species := range manifest.Pokemon {
 		if species.ID <= 0 || sourceSpeciesByID[species.ID].ID != 0 {
@@ -467,7 +485,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			return nil, nil, err
 		}
 		sourceSpecies := sourceSpeciesByID[id]
-		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && (mappings.RulesVersion != "d06-auto-4" && mappings.RulesVersion != "d06-auto-5")) && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
+		if sourceSpecies.Slug != row["identifier"] || !sourceNameMatches(mappings, id, sourceSpecies.Name, names[id]) || ((mappings.RulesVersion != "d06-auto-1" && mappings.RulesVersion != "d06-auto-2" && mappings.RulesVersion != "d06-auto-3" && (mappings.RulesVersion != "d06-auto-4" && (mappings.RulesVersion != "d06-auto-5" && mappings.RulesVersion != "d06-auto-6"))) && sourceSpecies.DefaultForm != mappings.SourceStandardForm) {
 			return nil, nil, fmt.Errorf("source identity/default mapping mismatch for #%03d", id)
 		}
 		if defaults[id] == 0 || typeSlots[defaults[id]][1] == "" {
@@ -536,7 +554,7 @@ func metadataFormTyping(lock sourceLock, cache, rules string) (map[int]int, map[
 		}
 	}
 	if !pinned {
-		if rules == "d06-auto-4" || rules == "d06-auto-5" {
+		if rules == "d06-auto-4" || (rules == "d06-auto-5" || rules == "d06-auto-6") {
 			return nil, nil, fmt.Errorf("automatic rules v4 require pinned pokemon_form_types.csv")
 		}
 		return owners, slots, nil

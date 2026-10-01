@@ -3,8 +3,8 @@
 Specification: v1, including approved sections 25–27 and implementation clarifications
 Current release target: v0.2 — Complete public engine
 Last published milestone: v0.1
-Current increment: D06 generation-7 inventory and reviewed source exclusions
-Current source commit: dd51b1520c576e882587928f23cd9a64250b5f0d
+Current increment: D06 generation-8 inventory and checked Alcremie normalization
+Current source commit: 38662346418fb5f22265db340625c9e53eaace44
 Commit note: verified baseline before this increment; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -18,14 +18,14 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 ## Dataset
 
 Development dataset ID:
-`43dd04f9f4838bb0f6772f35b879b9db0767702f7040ff91207d045779491933`
+`4443d5eec02882157a64107e8cb815d0c1efeb5565d66b17f9dd77b4accc80cb`
 
-- 826 catalog species: all generation-1 through generation-7 species plus full evolution-family closure
-- 1,138 metadata forms; 1,080 collectible forms; 2,163 exact regular/shiny assets
-- 815 eligible species; 817 standard regular slots; 1,081 shiny slots
+- 913 catalog species: all generation-1 through generation-8 species plus full evolution-family closure
+- 1,317 metadata forms; 1,200 collectible forms; 2,403 exact regular/shiny assets
+- 898 eligible species; 900 standard regular slots; 1,201 shiny slots
 - 4 distinct visual gender slots across Pyroar/Meowstic, with male defaults
-- 58 unavailable metadata form appearances; eleven species lack audited standard artwork
-- 2,180 pinned inputs; coverage.json/coverage.md record availability and quality
+- 117 unavailable metadata form appearances; fifteen species lack audited standard artwork
+- 2,422 pinned inputs; coverage.json/coverage.md record availability and quality
 - Direct images remain pinned PokéSprite-v2; inherited provider records stay distinct
 - Complete evolution references, aliases, typing, stages, flags, and name corrections
 
@@ -35,14 +35,14 @@ Development dataset ID:
 - Exact source/palette provenance; inherited edit/retained-generation flags audited
 - Reject provisional candidates, unknown inherited flags, duplicate pixels, and unsupported layouts
 - Explicit name corrections require exact pinned source/canonical spellings and reasons
-- Assistant full tests/vet and generation checks passed; all 211 new sprites inspected
+- Assistant full tests/vet and generation checks passed; all 240 new sprites inspected
 - Tests cover family completeness, baby stages, source quality gates, name aliases,
   uniform species boundaries, missing artwork, and installed-binary behavior
 - Routine species/form/asset entries are derived automatically; only policy and exceptions are maintained
 - Provenance modules/tests and dataset documentation consolidated
 - Static selection moved into catalog with injected sprite availability
-- Earlier inventory remains intact; 88 catalog species and 211 eligible assets added
-- Pinned form table resolves Unown/Pichu; seven reasoned form exceptions remain
+- Earlier inventory remains intact; 87 catalog species and 240 eligible assets added
+- Pinned form table resolves Unown/Pichu; eleven reasoned form exceptions remain
 - Source defaults checked against metadata defaults, including Dudunsparce
 - Explicit --update-lock derives and validates new artwork pins; ordinary generation preserves locks
 - Owner verification and commit remain pending
@@ -118,3 +118,18 @@ Rules: d06-auto-5. Specification section 13 documents these evidence requirement
 Tests, vet, build, deterministic generation, fresh asset preparation, and visual
 review pass. No new source files, packages, dependencies or public flags added.
 Owner verification/commit pending. Next: generation 8 and remaining D06 audits.
+
+
+## Generation-8 increment
+
+Generation 7 owner-committed at 38662346418fb5f22265db340625c9e53eaace44.
+Alcremie forms use one ownership-checked metadata suffix rule. A reviewed default
+artwork alias uses exact metadata identity and four normalized hash pins; both
+raw palettes remain locked, with original provenance verified. Nine unofficial
+plain templates stay excluded. Four variety spelling exceptions preserve
+Toxtricity/Urshifu Gigantamax and Calyrex fusion typing. Coverage records evidence.
+Rules: d06-auto-6. Specification section 13 documents the correction gates.
+Tests, vet, build, generation/fresh preparation and visual review pass.
+Maximum dimensions: 67 columns, 56 source pixel rows (28 terminal rows).
+No new source files, packages, dependencies or runtime flags added.
+Owner verification/commit pending. Next: generation 9 and remaining D06 audits.

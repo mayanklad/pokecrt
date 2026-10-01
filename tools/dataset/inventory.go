@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -16,10 +17,10 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && m.RulesVersion != "d06-auto-5")) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
+	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6"))) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
-	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && m.RulesVersion != "d06-auto-5") {
+	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6")) {
 		return fmt.Errorf("source-only exclusions require automatic rules v3")
 	}
 	for _, e := range m.SourceFormExclusions {
@@ -110,7 +111,10 @@ func selectedSpecies(rows []map[string]string, policy inventorySelection) ([]int
 }
 
 func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConfig, error) {
-	if len(m.DuplicatePaletteExclusions) > 0 && m.RulesVersion != "d06-auto-5" {
+	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && m.RulesVersion != "d06-auto-6" {
+		return m, fmt.Errorf("form suffix and default alias corrections require automatic rules v6")
+	}
+	if len(m.DuplicatePaletteExclusions) > 0 && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6") {
 		return m, fmt.Errorf("duplicate palette exclusions require automatic rules v5")
 	}
 	if m.Selection == nil {
@@ -133,6 +137,9 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	}
 	var manifest sourceManifest
 	if err = json.Unmarshal(data, &manifest); err != nil {
+		return m, err
+	}
+	if err := applyReviewedDefaultAliases(&manifest, m); err != nil {
 		return m, err
 	}
 	byID := map[int]sourceSpecies{}
@@ -220,12 +227,23 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || m.RulesVersion == "d06-auto-5")) && !foundFormTable {
+	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || (m.RulesVersion == "d06-auto-5" || m.RulesVersion == "d06-auto-6"))) && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
 	}
 	formOwners, formTypes, err := metadataFormTyping(lock, cache, m.RulesVersion)
 	if err != nil {
 		return m, err
+	}
+
+	if err := applyFormSuffixRules(m, ids, byID, names, owners, metadataIDs); err != nil {
+		return m, err
+	}
+	for _, a := range m.ReviewedDefaultAliases {
+		sp := byID[a.SpeciesID]
+		key := sp.Slug + "-" + a.SourceFormID
+		if names[key] != defaults[sp.ID] || metadataIDs[key] == 0 || metadataIDs[key] != defaultMetadataIDs[defaults[sp.ID]] {
+			return m, fmt.Errorf("reviewed alias does not match exact default metadata %d/%s", a.SpeciesID, a.SourceFormID)
+		}
 	}
 	inherited, err := loadInheritedInventory(lock, cache)
 	if err != nil {
@@ -251,6 +269,9 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	}
 	m.CatalogSpecies = ids
 	m.Exclusions = []string{"Scope is selected generations and complete connected evolution families; wider coverage remains pending.", "Distinct visual genders are limited to the explicitly reviewed policy scope; other candidates remain pending audit."}
+	for _, a := range m.ReviewedDefaultAliases {
+		m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: %s Regular source/default SHA-256: %s/%s; shiny: %s/%s.", a.SpeciesID, a.SourceFormID, a.Reason, a.SourceHashes["regular"], a.DefaultHashes["regular"], a.SourceHashes["shiny"], a.DefaultHashes["shiny"]))
+	}
 	for _, id := range ids {
 		sp, ok := byID[id]
 		if !ok {
@@ -390,4 +411,125 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 		}
 	}
 	return m, validateMappings(&m)
+}
+
+// Default aliases are explicit corrections, not filename similarity guesses.
+func applyReviewedDefaultAliases(manifest *sourceManifest, m mappingConfig) error {
+	seen := map[string]bool{}
+	for _, a := range m.ReviewedDefaultAliases {
+		key := fmt.Sprintf("%d/%s", a.SpeciesID, a.SourceFormID)
+		if seen[key] || strings.TrimSpace(a.Reason) == "" || !slugValid(a.SourceFormID) {
+			return fmt.Errorf("invalid default alias %s", key)
+		}
+
+		for _, hashes := range []map[string]string{a.SourceHashes, a.DefaultHashes} {
+			if len(hashes) != 2 {
+				return fmt.Errorf("default alias requires both palette hashes %s", key)
+			}
+			for _, palette := range []string{"regular", "shiny"} {
+				decoded, err := hex.DecodeString(hashes[palette])
+				if err != nil || len(decoded) != 32 {
+					return fmt.Errorf("invalid default alias hash %s/%s", key, palette)
+				}
+			}
+		}
+		seen[key] = true
+		found := false
+		for i := range manifest.Pokemon {
+			sp := &manifest.Pokemon[i]
+			if sp.ID != a.SpeciesID {
+				continue
+			}
+			target, err := sourceFormByID(*sp, sp.DefaultForm)
+			if err != nil {
+				return err
+			}
+			for j := range sp.Forms {
+				sf := &sp.Forms[j]
+				if sf.ID != a.SourceFormID {
+					continue
+				}
+				if sf.ID == sp.DefaultForm || sf.CanonicalForm != nil {
+					return fmt.Errorf("redundant default alias %s", key)
+				}
+				canonical := sp.DefaultForm
+				sf.CanonicalForm = &canonical
+				sf.Slug = target.Slug
+				found = true
+			}
+		}
+		if !found {
+			return fmt.Errorf("unused default alias %s", key)
+		}
+	}
+	return nil
+}
+
+func reviewedAliasAssets(lock sourceLock, cache string, m mappingConfig) ([]assetMapping, error) {
+	data, _, _, err := readInput(lock, cache, "pokesprite-v2", "data/pokemon.json")
+	if err != nil {
+		return nil, err
+	}
+	var manifest sourceManifest
+	if err = json.Unmarshal(data, &manifest); err != nil {
+		return nil, err
+	}
+	result := []assetMapping{}
+	for _, a := range m.ReviewedDefaultAliases {
+		found := false
+		for _, sp := range manifest.Pokemon {
+			if sp.ID != a.SpeciesID {
+				continue
+			}
+			sf, err := sourceFormByID(sp, a.SourceFormID)
+			if err != nil {
+				return nil, err
+			}
+			if sf.IsGenerated == nil || *sf.IsGenerated || sf.Source != "msikma/pokesprite" || sf.HasRegular == nil || !*sf.HasRegular || sf.HasShiny == nil || !*sf.HasShiny {
+				return nil, fmt.Errorf("alias lacks audited palettes %d/%s", a.SpeciesID, a.SourceFormID)
+			}
+			for _, palette := range []string{"regular", "shiny"} {
+				asset := assetMapping{SpeciesID: sp.ID, FormID: "standard", SourceFormID: sf.ID, SourceID: "pokesprite-v2", SourceSlug: sf.Slug, Gender: "default", Palette: palette}
+				asset.Path, _ = assetSourcePath(asset)
+				result = append(result, asset)
+			}
+			found = true
+		}
+		if !found {
+			return nil, fmt.Errorf("missing alias species %d", a.SpeciesID)
+		}
+	}
+	return result, nil
+}
+
+func applyFormSuffixRules(m mappingConfig, ids []int, byID map[int]sourceSpecies, names map[string]int, owners map[int]int, metadataIDs map[string]int) error {
+	usedSuffix := map[int]bool{}
+	seenSuffix := map[int]bool{}
+	for _, rule := range m.FormSuffixRules {
+		if rule.SpeciesID <= 0 || seenSuffix[rule.SpeciesID] || rule.Suffix == "" || !slugValid("form"+rule.Suffix) || strings.TrimSpace(rule.Reason) == "" || !slices.Contains(ids, rule.SpeciesID) {
+			return fmt.Errorf("invalid form suffix rule %d", rule.SpeciesID)
+		}
+		seenSuffix[rule.SpeciesID] = true
+		sp := byID[rule.SpeciesID]
+		for _, sf := range sp.Forms {
+			key := sp.Slug + "-" + sf.ID
+			corrected := key + rule.Suffix
+			if sf.ID == sp.DefaultForm || (sf.CanonicalForm != nil && !slices.ContainsFunc(m.ReviewedDefaultAliases, func(a reviewedDefaultAlias) bool { return a.SpeciesID == sp.ID && a.SourceFormID == sf.ID })) || names[key] != 0 {
+				continue
+			}
+			if names[corrected] == 0 {
+				continue
+			}
+			if owners[names[corrected]] != sp.ID || metadataIDs[corrected] == 0 {
+				return fmt.Errorf("suffix rule lacks same-species metadata form %s", corrected)
+			}
+			names[key] = names[corrected]
+			metadataIDs[key] = metadataIDs[corrected]
+			usedSuffix[rule.SpeciesID] = true
+		}
+		if !usedSuffix[rule.SpeciesID] {
+			return fmt.Errorf("unused form suffix rule %d", rule.SpeciesID)
+		}
+	}
+	return nil
 }

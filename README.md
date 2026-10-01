@@ -8,19 +8,19 @@ The current development branch targets v0.2.
 
 ## Current coverage
 
-The development catalog contains all generation-1 through generation-7 species, their complete
+The development catalog contains all generation-1 through generation-8 species, their complete
 connected evolution families (including later-generation relatives):
-826 species and 1,138 metadata forms.
+913 species and 1,317 metadata forms.
 
-Audited artwork covers 815 species and 1,080 collectible forms, with 2,163 exact
-regular/shiny assets. Eleven catalog species currently have metadata but no
-audited standard artwork. Fifty-eight form appearances are explicitly excluded pending source
+Audited artwork covers 898 species and 1,200 collectible forms, with 2,403 exact
+regular/shiny assets. Fifteen catalog species currently have metadata but no
+audited standard artwork. 117 form appearances are explicitly excluded pending source
 quality/provider review. Minior meteor has regular artwork only because its
 source shiny pixels are identical; the reviewed exclusion is hash-verified.
 Printing never substitutes another appearance.
 
 Pyroar and Meowstic retain distinct male/female regular and shiny slots within
-one standard form. There are 817 standard regular artwork slots across 815
+one standard form. There are 900 standard regular artwork slots across 898
 eligible species; random printing samples species uniformly, not artwork slots.
 Other visual-gender combinations and wider inventory remain pending.
 

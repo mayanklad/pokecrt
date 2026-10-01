@@ -8,11 +8,11 @@ import (
 )
 
 func TestStandardCandidateBoundaries(t *testing.T) {
-	for _, test := range []struct{ index, want int }{{0, 1}, {24, 25}, {150, 151}, {151, 152}, {250, 251}, {251, 252}, {385, 386}, {386, 387}, {492, 493}, {493, 494}, {648, 649}, {649, 650}, {720, 721}, {721, 722}, {808, 809}, {814, 867}} {
+	for _, test := range []struct{ index, want int }{{0, 1}, {24, 25}, {150, 151}, {151, 152}, {250, 251}, {251, 252}, {385, 386}, {386, 387}, {492, 493}, {493, 494}, {648, 649}, {649, 650}, {720, 721}, {721, 722}, {808, 809}, {809, 810}, {897, 898}} {
 		index, want := test.index, test.want
 		species, key, err := chooseStandard(func(n int) (int, error) {
-			if n != 815 {
-				t.Fatalf("candidate count=%d; want 815", n)
+			if n != 898 {
+				t.Fatalf("candidate count=%d; want 898", n)
 			}
 			return index, nil
 		})
@@ -31,7 +31,7 @@ func TestSelectorFailures(t *testing.T) {
 	if !errors.Is(err, failure) {
 		t.Fatalf("got %v", err)
 	}
-	for _, index := range []int{-1, 815} {
+	for _, index := range []int{-1, 898} {
 		_, _, err := chooseStandard(func(int) (int, error) { return index, nil })
 		if err == nil {
 			t.Fatal("accepted out-of-range selector")

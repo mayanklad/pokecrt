@@ -229,3 +229,59 @@ func TestUnsupportedMetadataFormIsDerivedAsExclusion(t *testing.T) {
 		t.Fatal("accepted manually invented unsupported-type evidence")
 	}
 }
+
+func TestFormSuffixRulesRequireExactOwnedMetadata(t *testing.T) {
+	m := mappingConfig{FormSuffixRules: []formSuffixRule{{SpeciesID: 869, Suffix: "-sweet", Reason: "Reviewed source naming discrepancy"}}}
+	species := map[int]sourceSpecies{869: {ID: 869, Slug: "alcremie", DefaultForm: "base", Forms: []sourceForm{{ID: "base"}, {ID: "ruby-cream-berry"}, {ID: "ruby-cream-plain"}}}}
+	names := map[string]int{"alcremie-ruby-cream-berry-sweet": 869}
+	owners := map[int]int{869: 869}
+	forms := map[string]int{"alcremie-ruby-cream-berry-sweet": 10450}
+	if err := applyFormSuffixRules(m, []int{869}, species, names, owners, forms); err != nil {
+		t.Fatal(err)
+	}
+	if names["alcremie-ruby-cream-berry"] != 869 || forms["alcremie-ruby-cream-berry"] != 10450 || names["alcremie-ruby-cream-plain"] != 0 {
+		t.Fatal("rule guessed an unmatched identity")
+	}
+	for _, tc := range []struct{ owner, form int }{{1, 10450}, {869, 0}} {
+		fresh := map[string]int{"alcremie-ruby-cream-berry-sweet": 869}
+		if err := applyFormSuffixRules(m, []int{869}, species, fresh, map[int]int{869: tc.owner}, map[string]int{"alcremie-ruby-cream-berry-sweet": tc.form}); err == nil {
+			t.Fatal("accepted missing or wrong-owner metadata")
+		}
+	}
+	if err := applyFormSuffixRules(m, []int{869}, species, map[string]int{}, owners, map[string]int{}); err == nil {
+		t.Fatal("accepted unused suffix rule")
+	}
+	m.FormSuffixRules = append(m.FormSuffixRules, m.FormSuffixRules[0])
+	if err := applyFormSuffixRules(m, []int{869}, species, map[string]int{}, owners, forms); err == nil {
+		t.Fatal("accepted duplicate suffix rule")
+	}
+}
+
+func TestReviewedDefaultAliasRequiresCompleteHashEvidence(t *testing.T) {
+	hash := strings.Repeat("a", 64)
+	alias := reviewedDefaultAlias{SpeciesID: 1, SourceFormID: "duplicate", Reason: "Reviewed same metadata identity", SourceHashes: map[string]string{"regular": hash, "shiny": hash}, DefaultHashes: map[string]string{"regular": hash, "shiny": hash}}
+	fixture := func() sourceManifest {
+		return sourceManifest{Pokemon: []sourceSpecies{{ID: 1, DefaultForm: "base", Forms: []sourceForm{{ID: "base", Slug: "bulbasaur"}, {ID: "duplicate", Slug: "bulbasaur-duplicate"}}}}}
+	}
+	manifest := fixture()
+	if err := applyReviewedDefaultAliases(&manifest, mappingConfig{ReviewedDefaultAliases: []reviewedDefaultAlias{alias}}); err != nil {
+		t.Fatal(err)
+	}
+	folded := manifest.Pokemon[0].Forms[1]
+	if folded.CanonicalForm == nil || *folded.CanonicalForm != "base" || folded.Slug != "bulbasaur" {
+		t.Fatal("did not fold reviewed identity")
+	}
+	for _, id := range []string{"base", "absent"} {
+		bad := alias
+		bad.SourceFormID = id
+		manifest = fixture()
+		if err := applyReviewedDefaultAliases(&manifest, mappingConfig{ReviewedDefaultAliases: []reviewedDefaultAlias{bad}}); err == nil {
+			t.Fatal("accepted invalid alias")
+		}
+	}
+	alias.SourceHashes = map[string]string{"regular": hash}
+	manifest = fixture()
+	if err := applyReviewedDefaultAliases(&manifest, mappingConfig{ReviewedDefaultAliases: []reviewedDefaultAlias{alias}}); err == nil {
+		t.Fatal("accepted missing shiny hash evidence")
+	}
+}

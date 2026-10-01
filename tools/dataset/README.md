@@ -7,7 +7,7 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 through 7. The earlier Litleo/Espurr
+The current policy selects generations 1 through 8. The earlier Litleo/Espurr
 family seeds are now redundant and removed; generation selection includes them.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
@@ -23,10 +23,12 @@ its standard artwork is A. Pichu’s Spiky-eared identity also resolves there.
 Source canonical pointers are folded into aliases, never extra collectibles.
 Unknown matches fail; the tool does not guess typing from a similar filename.
 
-Seven reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode/Lilligant/Avalugg,
+Eleven reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode/Lilligant/Avalugg,
 Noble Kleavor, and Shadow Lugia share explicitly identified variety typing.
 The artwork identity Darmanitan `galar` maps to exact owning metadata variety
 `darmanitan-galar-standard`; `galar-zen` resolves automatically and stays distinct.
+Toxtricity/Urshifu Gigantamax and Calyrex rider spellings have four checked
+style-specific variety corrections.
 Shadow Lugia artwork remains excluded by the independent quality gate.
 Two exact name corrections preserve the Farfetch’d/Sirfetch’d apostrophe aliases.
 Unused, redundant, duplicate, and wrong-owner form exceptions fail validation.
@@ -47,8 +49,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 826 catalog species, 1,138 metadata forms,
-815 printable species, 1,080 collectible forms, and 2,163 assets. Fifty-eight appearances
+The current coverage is 913 catalog species, 1,317 metadata forms,
+898 printable species, 1,200 collectible forms, and 2,403 assets. 117 appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -97,7 +99,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-7 expansion changes that ID and adds 211 eligible images. No trainer database exists, so no storage migration applies.
+Generation-8 expansion changes that ID and adds 240 eligible images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -132,13 +134,13 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-5`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-6`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated/unaudited artwork remains unavailable. No new source provider or
 visual-gender scope is accepted by this batch.
 
-Maximum cropped artwork dimensions in this batch are 58 columns by 54 source
-pixel rows (up to 27 half-block terminal rows). Narrow terminals may wrap.
+Maximum cropped artwork dimensions in this batch are 67 columns by 56 source
+pixel rows (up to 28 half-block terminal rows). Narrow terminals may wrap.
 
 
 ## Excluded source templates
@@ -274,3 +276,47 @@ provider scope and visual genders are unchanged. Rules version `d06-auto-5`
 records the narrow reviewed duplicate-palette policy. Tests cover generation
 completeness, aliases, exact typing, selection boundaries, and exclusion failure
 cases. D06 remains open for generations 8–9 and provider/gender/tag audits.
+
+
+## Generation 8 increment
+
+Generation 8 adds 87 catalog species through family closure, 179 metadata forms,
+and 240 sprites in 120 regular/shiny pairs. Earlier family members were already
+included, so selection does not add them twice. All National numbers 1–898 have
+standard regular artwork. Hisuian species 899–905 and new later relatives
+Dipplin/Archaludon/Hydrapple remain metadata-only under the unchanged quality gate.
+There are 117 unavailable metadata appearances and 15 unavailable standards.
+
+Alcremie normalization uses one reviewed `form_suffix_rules` entry: append
+`-sweet` only when an exact same-species metadata form record exists. Require
+metadata form IDs and ownership; reject duplicate, unused or wrong-owner rules.
+Unmatched source identities remain errors or independently reviewed exclusions.
+This derives the supported combinations without maintaining dozens of mappings.
+Nine decoration-free `*-plain` templates are unofficial source-only exclusions.
+The 64 normalized Alcremie identities comprise standard, 62 other sweet/cream
+combinations and Gigantamax. Most sweet artwork remains quality-gated unavailable.
+
+`reviewed_default_aliases` folds vanilla-cream-strawberry into standard only
+after its exact metadata form ID matches the owning default. The regular
+source files differ in outline treatment; this correction is an explicit artwork
+version decision, not an equality claim. Both source palettes remain locked;
+verify manifest availability, nongenerated inherited provenance and source asset
+index, then match all four reviewed normalized hashes (source/default regular
+and shiny). Preserve source-designated standard artwork and report the correction
+and hash evidence in coverage. Missing or changed pins, incomplete/wrong hashes,
+invalid ownership, redundant/unused aliases and unaudited artwork fail. Normal
+checks never fetch or refresh this evidence silently. Explicit lock expansion
+adds the two evidence inputs through the same bounded, validated download path.
+
+Calyrex standard/Ice Rider/Shadow Rider retain Psychic/Grass, Psychic/Ice and
+Psychic/Ghost types. Crowned Zacian and Zamazenta retain their Steel second type.
+Urshifu Rapid Strike Gigantamax remains Fighting/Water; its standard and default
+Gigantamax are Fighting/Dark. These types use owning metadata varieties.
+Four reasoned spelling exceptions resolve the source's shorter/longer names.
+
+All 240 new assets were visually inspected and earlier PNG bytes are unchanged.
+Rules `d06-auto-6` record suffix/default-alias normalization. 2,422 pinned inputs
+include 2,403 eligible images, two default-alias evidence images, the existing
+excluded Minior shiny image, and 16 metadata/terms files. Tests, vet, build and
+reproducibility checks pass. No source files, packages, dependencies or public
+flags added. D06 remains open for generation 9 and provider/gender/tag audits.

@@ -1,5 +1,5 @@
 {
-  "rules_version": "d06-auto-5",
+  "rules_version": "d06-auto-6",
   "selection": {
     "generations": [
       1,
@@ -8,7 +8,8 @@
       4,
       5,
       6,
-      7
+      7,
+      8
     ],
     "family_seeds": [],
     "visual_gender_species": [
@@ -102,6 +103,54 @@
         "default"
       ],
       "reason": "Source Noble visual state shares the explicitly mapped Hisuian Avalugg variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
+    },
+    {
+      "species_id": 849,
+      "id": "gmax",
+      "name": "Gigantamax",
+      "source_form_id": "gmax",
+      "pokemon_id": 10219,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source gmax is the owning default-style Gigantamax variety; exact metadata uses the longer style-specific identifier. Other source canonical aliases remain folded."
+    },
+    {
+      "species_id": 892,
+      "id": "gmax",
+      "name": "Gigantamax",
+      "source_form_id": "gmax",
+      "pokemon_id": 10226,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source gmax is the owning default-style Gigantamax variety; exact metadata uses the longer style-specific identifier. Other source canonical aliases remain folded."
+    },
+    {
+      "species_id": 898,
+      "id": "ice-rider",
+      "name": "Ice Rider",
+      "source_form_id": "ice-rider",
+      "pokemon_id": 10193,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source rider identifier maps to the exact owning Calyrex ice metadata variety; preserve its verified fusion typing."
+    },
+    {
+      "species_id": 898,
+      "id": "shadow-rider",
+      "name": "Shadow Rider",
+      "source_form_id": "shadow-rider",
+      "pokemon_id": 10194,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Pinned source rider identifier maps to the exact owning Calyrex shadow metadata variety; preserve its verified fusion typing."
     }
   ],
   "source_name_overrides": [
@@ -168,6 +217,51 @@
       "species_id": 802,
       "source_form_id": "gen7",
       "reason": "Pinned inherited inventory marks this historical Marshadow artwork version as unofficial. It has no exact metadata form identity; standard Marshadow resolves separately. Exclude this source-only artwork record without creating another collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "caramel-swirl-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "lemon-cream-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "matcha-cream-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "mint-cream-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "rainbow-swirl-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "ruby-cream-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "ruby-swirl-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "salted-cream-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
+    },
+    {
+      "species_id": 869,
+      "source_form_id": "vanilla-cream-plain",
+      "reason": "Pinned inherited inventory marks the decoration-free Alcremie template as unofficial. No exact metadata form exists; exclude this source-only template without fabricating a collectible."
     }
   ],
   "duplicate_palette_exclusions": [
@@ -176,6 +270,28 @@
       "form_id": "standard",
       "gender": "default",
       "reason": "Pinned Minior meteor regular and shiny artwork are visually identical. Keep regular meteor artwork; do not manufacture a distinct shiny collectible. Core color forms retain their verified palettes."
+    }
+  ],
+  "form_suffix_rules": [
+    {
+      "species_id": 869,
+      "suffix": "-sweet",
+      "reason": "Pinned Alcremie artwork identifiers omit the metadata sweet suffix. Resolve only exact same-species metadata form records after appending it."
+    }
+  ],
+  "reviewed_default_aliases": [
+    {
+      "species_id": 869,
+      "source_form_id": "vanilla-cream-strawberry",
+      "reason": "Pinned records resolve to the exact same default metadata form. Regular source artwork differs in outline treatment; choose source-designated standard artwork. Both raw palettes and reviewed normalized hashes must verify before folding the redundant identity.",
+      "source_hashes": {
+        "regular": "9df2c3a6ea4843b9101df29ce78bad022f3a6507b81692ad5330f8c9bb2ceab3",
+        "shiny": "f526d1aae2402495a78d315de6572b92db193fd510866a50b20f2523c0d3f064"
+      },
+      "default_hashes": {
+        "regular": "300eaefce0f509d50384bc87a52bb443ddcf17dbbe1c93e12a580b674923a8c5",
+        "shiny": "f526d1aae2402495a78d315de6572b92db193fd510866a50b20f2523c0d3f064"
+      }
     }
   ]
 }

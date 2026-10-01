@@ -130,6 +130,9 @@ func normalizePNG(data []byte) ([]byte, image.Rectangle, image.Point, error) {
 func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generatedBundle, error) {
 	bundle := generatedBundle{Files: make(map[string][]byte)}
 	var err error
+	if err = verifyReviewedAliasPixels(lock, cache, mappings); err != nil {
+		return bundle, err
+	}
 	mappings, err = deriveMappings(lock, cache, mappings)
 	if err != nil {
 		return bundle, err
@@ -155,7 +158,7 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	previousFemale := make(map[int]bool)
 	var inherited inheritedInventory
 	previousIcons := make(map[string]bool)
-	if mappings.RulesVersion == "d06b-gen1-1" || (mappings.RulesVersion == "d06-auto-1" || mappings.RulesVersion == "d06-auto-2" || mappings.RulesVersion == "d06-auto-3" || (mappings.RulesVersion == "d06-auto-4" || mappings.RulesVersion == "d06-auto-5")) {
+	if mappings.RulesVersion == "d06b-gen1-1" || (mappings.RulesVersion == "d06-auto-1" || mappings.RulesVersion == "d06-auto-2" || mappings.RulesVersion == "d06-auto-3" || (mappings.RulesVersion == "d06-auto-4" || (mappings.RulesVersion == "d06-auto-5" || mappings.RulesVersion == "d06-auto-6"))) {
 		inherited, err = loadInheritedInventory(lock, cache)
 		if err != nil {
 			return bundle, err
@@ -519,4 +522,90 @@ func prepareAssets(bundle generatedBundle, root string) error {
 		}
 	}
 	return writeBundle(assets, root)
+}
+
+func verifyReviewedAliasPixels(lock sourceLock, cache string, m mappingConfig) error {
+	assets, err := reviewedAliasAssets(lock, cache, m)
+	if err != nil {
+		return err
+	}
+	if len(assets) == 0 {
+		return nil
+	}
+	inherited, err := loadInheritedInventory(lock, cache)
+	if err != nil {
+		return err
+	}
+	data, _, _, err := readInput(lock, cache, "pokesprite-v2", "data/pokemon.json")
+	if err != nil {
+		return err
+	}
+	var manifest sourceManifest
+	if err = json.Unmarshal(data, &manifest); err != nil {
+		return err
+	}
+	indexData, _, _, err := readInput(lock, cache, "pokesprite-v2", "sources/generated/asset-index.json")
+	if err != nil {
+		return err
+	}
+	var index map[string]json.RawMessage
+	if err = json.Unmarshal(indexData, &index); err != nil {
+		return err
+	}
+	for _, asset := range assets {
+		var slots map[string]struct {
+			Source      string `json:"source"`
+			IsGenerated *bool  `json:"is_generated"`
+		}
+		if err = json.Unmarshal(index[asset.SourceSlug], &slots); err != nil {
+			return err
+		}
+		provenance := slots[asset.Palette]
+		if provenance.Source != "msikma/pokesprite" || provenance.IsGenerated == nil || *provenance.IsGenerated {
+			return fmt.Errorf("invalid reviewed alias provenance %d/%s/%s", asset.SpeciesID, asset.SourceFormID, asset.Palette)
+		}
+		var sp sourceSpecies
+		for _, s := range manifest.Pokemon {
+			if s.ID == asset.SpeciesID {
+				sp = s
+			}
+		}
+		if _, err = inherited.verify(asset, sp.Slug); err != nil {
+			return err
+		}
+		target, err := sourceFormByID(sp, sp.DefaultForm)
+		if err != nil {
+			return err
+		}
+		original, _, _, err := readInput(lock, cache, asset.SourceID, asset.Path)
+		if err != nil {
+			return err
+		}
+		targetAsset := asset
+		targetAsset.SourceSlug = target.Slug
+		targetAsset.SourceFormID = target.ID
+		targetAsset.Path, _ = assetSourcePath(targetAsset)
+		other, _, _, err := readInput(lock, cache, targetAsset.SourceID, targetAsset.Path)
+		if err != nil {
+			return err
+		}
+		first, _, _, err := normalizePNG(original)
+		if err != nil {
+			return err
+		}
+		second, _, _, err := normalizePNG(other)
+		if err != nil {
+			return err
+		}
+		var correction reviewedDefaultAlias
+		for _, a := range m.ReviewedDefaultAliases {
+			if a.SpeciesID == asset.SpeciesID && a.SourceFormID == asset.SourceFormID {
+				correction = a
+			}
+		}
+		if digest(first) != correction.SourceHashes[asset.Palette] || digest(second) != correction.DefaultHashes[asset.Palette] {
+			return fmt.Errorf("reviewed alias hash evidence differs %d/%s/%s", asset.SpeciesID, asset.SourceFormID, asset.Palette)
+		}
+	}
+	return nil
 }

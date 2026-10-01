@@ -178,6 +178,61 @@
           "sha256": "c2e4765e82e58075779982ee1f12e4f6e6dbd05f3b63c45af14adda043888b41"
         },
         {
+          "path": "pokemon/regular/alcremie-caramel-swirl-strawberry.png",
+          "size": 893,
+          "sha256": "2de63b0c7f765fc30c086a06b16b79e1db32e39735960c3933e0199bbcda7524"
+        },
+        {
+          "path": "pokemon/regular/alcremie-gmax.png",
+          "size": 1405,
+          "sha256": "7f1941d5cff4c84a127c089097a86bac609a77c985374cbd7f227c958b640fe5"
+        },
+        {
+          "path": "pokemon/regular/alcremie-lemon-cream-strawberry.png",
+          "size": 840,
+          "sha256": "a040ce2a8d86e268fe5525396bcaa19b3b76456c91736b3ae5efa7c0217058e4"
+        },
+        {
+          "path": "pokemon/regular/alcremie-matcha-cream-strawberry.png",
+          "size": 840,
+          "sha256": "9fa5afc1154e5a7055e2a713ee1851452686bd873d54365320bc34286bb0d56b"
+        },
+        {
+          "path": "pokemon/regular/alcremie-mint-cream-strawberry.png",
+          "size": 872,
+          "sha256": "e418143635507b8d160b85f42f09334f4a31bb6dbc595e747c2eeea9954fac8d"
+        },
+        {
+          "path": "pokemon/regular/alcremie-rainbow-swirl-strawberry.png",
+          "size": 935,
+          "sha256": "cf9ec342bcaf4dfd0bb61a0a19a42ba29e51373050a37a2c69c8a7196e7065ba"
+        },
+        {
+          "path": "pokemon/regular/alcremie-ruby-cream-strawberry.png",
+          "size": 781,
+          "sha256": "088aa3d1ecbdfa0fbd4ff0e4787d294068adf487406ef78de8419eb99df20b7e"
+        },
+        {
+          "path": "pokemon/regular/alcremie-ruby-swirl-strawberry.png",
+          "size": 878,
+          "sha256": "fb066a4c327e1bb0e4a20e94254be423c7450937c4050b994fefe622cfbdc893"
+        },
+        {
+          "path": "pokemon/regular/alcremie-salted-cream-strawberry.png",
+          "size": 764,
+          "sha256": "e9239a1663c34a6bc2bdfc51a6f2dbb2a26a78b15aed26c3f0526b21e0f86deb"
+        },
+        {
+          "path": "pokemon/regular/alcremie-vanilla-cream-strawberry.png",
+          "size": 726,
+          "sha256": "4f9ff7f19b60613149f528d660615b2491744c4a3d5dc2bebb9ed7c33fbbea01"
+        },
+        {
+          "path": "pokemon/regular/alcremie.png",
+          "size": 795,
+          "sha256": "39d29c60a4e9b4073446b81442ec9f18c76b01afd911889c2893c94f34d8fd1d"
+        },
+        {
           "path": "pokemon/regular/alomomola.png",
           "size": 297,
           "sha256": "4d6f0f63a8ff1e0daeabdfc87a15a59ede2dc923864aea6172379566ca290370"
@@ -221,6 +276,16 @@
           "path": "pokemon/regular/anorith.png",
           "size": 372,
           "sha256": "5c2529e97fea0e09eb3b11af49162e5a154be412be96f9a1e862c7b86fa542de"
+        },
+        {
+          "path": "pokemon/regular/appletun.png",
+          "size": 1043,
+          "sha256": "0bd2bdeea0e51fc0e6e85868c79710841cec4bb90562273f07cd6ecc93220ae4"
+        },
+        {
+          "path": "pokemon/regular/applin.png",
+          "size": 415,
+          "sha256": "add9fb8ceb76a04b443de1723d8cd2d1443ab2bfc12c7f1d97d4465c00ef86e7"
         },
         {
           "path": "pokemon/regular/araquanid.png",
@@ -338,6 +403,16 @@
           "sha256": "bd7585ba07bdca131efc8946667bf4ab661012c8c95b68ba075ab5e0e6f0f6cd"
         },
         {
+          "path": "pokemon/regular/arctovish.png",
+          "size": 797,
+          "sha256": "d53fbfe9ca0751259691a1fab56e3d99b6e8a10fba00d94eb2f07c60ba184605"
+        },
+        {
+          "path": "pokemon/regular/arctozolt.png",
+          "size": 841,
+          "sha256": "60681db61a7c3d868b249914753ce6dbb6154ac908be316f2ee9853f2da084cb"
+        },
+        {
           "path": "pokemon/regular/ariados.png",
           "size": 408,
           "sha256": "d6e4610c00176828d2a3091312919e7f77cd6b82fc886450074f5962bce46b25"
@@ -356,6 +431,11 @@
           "path": "pokemon/regular/aron.png",
           "size": 241,
           "sha256": "4e724ec098e7c7377d5f0518bc821400e2fe2e62a5ae02a68e4d983ce43578aa"
+        },
+        {
+          "path": "pokemon/regular/arrokuda.png",
+          "size": 521,
+          "sha256": "4752a44cb29d39eaea109e1432f6a7fbed5baf6dd664dc839da7b6bf3185d26c"
         },
         {
           "path": "pokemon/regular/articuno-galar.png",
@@ -436,6 +516,11 @@
           "path": "pokemon/regular/barboach.png",
           "size": 267,
           "sha256": "3e5695ab7997dee16ff9da8aaf96c4b4e32711447f36cc9b18a5e7a087379a62"
+        },
+        {
+          "path": "pokemon/regular/barraskewda.png",
+          "size": 817,
+          "sha256": "bc99dc123488b17b19393160f236fbdd5743afa3f2c71cbc33bb654c5dfa849b"
         },
         {
           "path": "pokemon/regular/basculin-blue-striped.png",
@@ -558,6 +643,11 @@
           "sha256": "704cf542729b477fcef511f162918af89f5b3e4ed4c27260b1dd8d75ddab62bf"
         },
         {
+          "path": "pokemon/regular/blipbug.png",
+          "size": 641,
+          "sha256": "c9ee68ab2c7e858e6520f0690470e770968ea86b1959d384f769d3aa2f152591"
+        },
+        {
           "path": "pokemon/regular/blissey.png",
           "size": 970,
           "sha256": "c6bb04aab108b97391ab2881b8eb0b192d201ac7bdbcf683d719396bd0c65a1c"
@@ -571,6 +661,11 @@
           "path": "pokemon/regular/boldore.png",
           "size": 386,
           "sha256": "bfdc6a5a7162392a19775581de95d01289ae20b60df259e6300fb0629ad09f86"
+        },
+        {
+          "path": "pokemon/regular/boltund.png",
+          "size": 780,
+          "sha256": "20c355c0e7f18d8b5f3b76cf1366c6d7073078be86d227faa8efbfa6201d7074"
         },
         {
           "path": "pokemon/regular/bonsly.png",
@@ -688,6 +783,21 @@
           "sha256": "bf4b554e5bf158930c267c9a9d9c16c3389cb0f9aaed3706e00f1d0730d45935"
         },
         {
+          "path": "pokemon/regular/calyrex-ice-rider.png",
+          "size": 1506,
+          "sha256": "a5e9dc3f50a00e35906f787b37932bc9094d087128528e7d80e00f35c26bce2b"
+        },
+        {
+          "path": "pokemon/regular/calyrex-shadow-rider.png",
+          "size": 1530,
+          "sha256": "9dba6090f33224e3ba7912d48d454bd823f6cf16e59e1167abff9006cc0f016c"
+        },
+        {
+          "path": "pokemon/regular/calyrex.png",
+          "size": 903,
+          "sha256": "28f07e03eec1cf056336fd16d7003aaa40c7709b804bcf1aa148848c9e440360"
+        },
+        {
           "path": "pokemon/regular/camerupt-mega.png",
           "size": 546,
           "sha256": "3cb99d7eb3759ccb668d7d1a3b194cea4a9d4609b7b95f5c942d3755d6b3aead"
@@ -701,6 +811,11 @@
           "path": "pokemon/regular/carbink.png",
           "size": 264,
           "sha256": "f58ea54779367e93a6dbe7a71c16f0039a484d36cdfca34e8d47fc823094dd06"
+        },
+        {
+          "path": "pokemon/regular/carkol.png",
+          "size": 696,
+          "sha256": "2a04d73974056bdd2613a58ec4434ddedc55f763f697307642e01844930e5fe0"
         },
         {
           "path": "pokemon/regular/carnivine.png",
@@ -756,6 +871,16 @@
           "path": "pokemon/regular/celesteela.png",
           "size": 1374,
           "sha256": "3ec3a62fab83deb6165b4b24f1cf9b3281a4c8c9209834ab82fd98d97fd3da38"
+        },
+        {
+          "path": "pokemon/regular/centiskorch-gmax.png",
+          "size": 1582,
+          "sha256": "a6da7876762bfb5ca78e196e63aa5fa8c7b27801606d40efa0d423592849c961"
+        },
+        {
+          "path": "pokemon/regular/centiskorch.png",
+          "size": 876,
+          "sha256": "77d3a5629214528660c215cd3c56b73ba417b53b2de929217545d7bee9fe0f05"
         },
         {
           "path": "pokemon/regular/chandelure.png",
@@ -833,6 +958,11 @@
           "sha256": "c138de64d8bef97f334381e350bd2de9e78696782b0ad0fe5d869f5046622661"
         },
         {
+          "path": "pokemon/regular/chewtle.png",
+          "size": 553,
+          "sha256": "41fbc500a00dbd083fdd025c2139c2efebeb4c4899e886075a8b8749a85c8766"
+        },
+        {
           "path": "pokemon/regular/chikorita.png",
           "size": 312,
           "sha256": "ba29d90bdd2ae888fb55e061226b71ec7216abe465964f51ad8d409556dd78b7"
@@ -861,6 +991,16 @@
           "path": "pokemon/regular/cinccino.png",
           "size": 1020,
           "sha256": "224933476fa4af38274bc95a52128825c5d7786c5c8afc4a32ff351bac99b938"
+        },
+        {
+          "path": "pokemon/regular/cinderace-gmax.png",
+          "size": 1848,
+          "sha256": "e6a2b6e6be16250810acd89d53010a5b0433ed97e06da0f683eebf81c25d6570"
+        },
+        {
+          "path": "pokemon/regular/cinderace.png",
+          "size": 905,
+          "sha256": "99f8ce90c4f4762e3d3c1ae2daaa4b76b96f6572333787ecbe3cac657f8289fd"
         },
         {
           "path": "pokemon/regular/clamperl.png",
@@ -898,9 +1038,24 @@
           "sha256": "de2b838788c673b4dcd3a845e2c742f5737440a3c57698990bc1edc281de1b41"
         },
         {
+          "path": "pokemon/regular/clobbopus.png",
+          "size": 525,
+          "sha256": "1b0db7db968033a054bbe3442e98b9bada915d3b1548e65fc43e7aa6c767d0df"
+        },
+        {
           "path": "pokemon/regular/cloyster.png",
           "size": 645,
           "sha256": "057cd367f8a0aac2c3f9bf66faa956bf737a52bea9f58106cb7c73ef292bbf12"
+        },
+        {
+          "path": "pokemon/regular/coalossal-gmax.png",
+          "size": 1473,
+          "sha256": "c9cc8117ea2ef1bac93b58f7cd9b7a57ecbe561b54c4e2cd0f1b4080e9d5f85d"
+        },
+        {
+          "path": "pokemon/regular/coalossal.png",
+          "size": 1274,
+          "sha256": "b01c208806324c43dfe759c0aa255ce802e01c405b4b45d1e458c27ccd0da1e1"
         },
         {
           "path": "pokemon/regular/cobalion.png",
@@ -933,6 +1088,16 @@
           "sha256": "533672a78f00cd293d44cd1eaa9280ce832b74226ee2ec3db170937ef4d3464b"
         },
         {
+          "path": "pokemon/regular/copperajah-gmax.png",
+          "size": 1693,
+          "sha256": "9dfc8812be6d919a0155221eec8f3ff6d33c07486a0ecb24b9063fd009531ffe"
+        },
+        {
+          "path": "pokemon/regular/copperajah.png",
+          "size": 1155,
+          "sha256": "48cbec98bba2392cc458c54bafa78374960b47fa1c5e32fff96714c333569263"
+        },
+        {
           "path": "pokemon/regular/corphish.png",
           "size": 337,
           "sha256": "366f10bfe0ffbf9ea0389b10d5aee438ae8bbe4ea2cd5cd4e418c9b5d16ea5f3"
@@ -946,6 +1111,21 @@
           "path": "pokemon/regular/corsola.png",
           "size": 360,
           "sha256": "05bccc933152f66f5019a36eca00fe7d88a47698c55f7ae5bb98b426eeafa51d"
+        },
+        {
+          "path": "pokemon/regular/corviknight-gmax.png",
+          "size": 1295,
+          "sha256": "e7c6824002ef99c7558b43c43d9b4c8af6f529229971cb3fde969a6c03e1f2c4"
+        },
+        {
+          "path": "pokemon/regular/corviknight.png",
+          "size": 955,
+          "sha256": "f9c33c9f1118abe02bd48dd65adb5b8864a5db46aa8348f28fded07ba6799e80"
+        },
+        {
+          "path": "pokemon/regular/corvisquire.png",
+          "size": 553,
+          "sha256": "61352c834c9ad80461aadc50b6ccc68dd0c3d9170e3aa307e321e5a86cfb9c6e"
         },
         {
           "path": "pokemon/regular/cosmoem.png",
@@ -976,6 +1156,21 @@
           "path": "pokemon/regular/cradily.png",
           "size": 459,
           "sha256": "fb50800dafeea3b8d6f3252d8d217b755f1cb9e1b3dfbab3c38e825539386e86"
+        },
+        {
+          "path": "pokemon/regular/cramorant-gorging.png",
+          "size": 827,
+          "sha256": "efa488b2c896393fed0a4882ce8d282d466f5b185a0945c1bbd167ba3467e3b5"
+        },
+        {
+          "path": "pokemon/regular/cramorant-gulping.png",
+          "size": 820,
+          "sha256": "f0441ef153cb5915efbc4510d3b111538652b75e9584c47f6373e3259dd16588"
+        },
+        {
+          "path": "pokemon/regular/cramorant.png",
+          "size": 685,
+          "sha256": "197a5dfb280729ec1cd71857a58a0e7947d08044c51ae2df9c7478423b0d0f5e"
         },
         {
           "path": "pokemon/regular/cranidos.png",
@@ -1026,6 +1221,11 @@
           "path": "pokemon/regular/cubone.png",
           "size": 321,
           "sha256": "69ae54111ad0677324ff801eccbbf276ac64bc6c33cbdd6b6fed66a037741767"
+        },
+        {
+          "path": "pokemon/regular/cufant.png",
+          "size": 607,
+          "sha256": "8f56b6904aa13f71e6a7f3767427364f4fbab2ec04bdbb3295aeb4c1daf7809c"
         },
         {
           "path": "pokemon/regular/cursola.png",
@@ -1223,14 +1423,34 @@
           "sha256": "82b904a7880373ae01e8b3e2250740f48c1e3ab88b84b5e447c72c6318e242b6"
         },
         {
+          "path": "pokemon/regular/dottler.png",
+          "size": 715,
+          "sha256": "2191225c95e2b903c2666b94097778e05678b13e5e58e4677a49136a3702741a"
+        },
+        {
           "path": "pokemon/regular/doublade.png",
           "size": 463,
           "sha256": "d4eb7751e3c0cc33e8a763dc10064daaf24c0843b95517294a30c0a14c1ed798"
         },
         {
+          "path": "pokemon/regular/dracovish.png",
+          "size": 1050,
+          "sha256": "1a13b61e82c2254c217b2f1b673360563568d1d21b2bf5fd1eeadd33553f52ab"
+        },
+        {
+          "path": "pokemon/regular/dracozolt.png",
+          "size": 1130,
+          "sha256": "f2ad3ef5040f50f70a3812e4dc30718a9cc124331a48973680eb0bc87ebd5962"
+        },
+        {
           "path": "pokemon/regular/dragalge.png",
           "size": 883,
           "sha256": "7d842b582a86681ff04722bcc3a50967d5241c938516cd35df95cd5cd3af23a2"
+        },
+        {
+          "path": "pokemon/regular/dragapult.png",
+          "size": 1334,
+          "sha256": "388c8c9f85165456be2ff4e21b5952c34de39bdf65d5a761ded14145c1459e25"
         },
         {
           "path": "pokemon/regular/dragonair.png",
@@ -1241,6 +1461,11 @@
           "path": "pokemon/regular/dragonite.png",
           "size": 691,
           "sha256": "8fce19e24f223570f4a5d01e990b9c361a2e4cd358ee1bed046072739c2d6b2d"
+        },
+        {
+          "path": "pokemon/regular/drakloak.png",
+          "size": 711,
+          "sha256": "edd4d50a02ee5deabfc9cebe2ac1c6ca3d5f64a64b931c016306bf45309f5df3"
         },
         {
           "path": "pokemon/regular/drampa.png",
@@ -1258,6 +1483,21 @@
           "sha256": "84a2ba8e3fe9b11314e64ec3e61e3e2cd25e0897201c2fb2851efa6fe175e6c2"
         },
         {
+          "path": "pokemon/regular/drednaw-gmax.png",
+          "size": 2013,
+          "sha256": "3d087ea64e87d15f12cc277067daefba927d7895dc7ccc760976d1004a8e7dca"
+        },
+        {
+          "path": "pokemon/regular/drednaw.png",
+          "size": 1196,
+          "sha256": "28626c46e900805dc9052869e1314d5cfabe566ccc0f0b96ab2fb9f98eceef1d"
+        },
+        {
+          "path": "pokemon/regular/dreepy.png",
+          "size": 567,
+          "sha256": "fa5006823661f035022ba2f205b68d360f73c0c016731d6039eb7c2e6a68d40a"
+        },
+        {
           "path": "pokemon/regular/drifblim.png",
           "size": 774,
           "sha256": "4e4f50df1ab11936358fcf67d3dc614e8aa80c2985c5321d6f25e72653d2b1a7"
@@ -1273,6 +1513,11 @@
           "sha256": "640dfdb8e625ab49a47c66691ec8604554b821e11d75dc71e474ea817736a39d"
         },
         {
+          "path": "pokemon/regular/drizzile.png",
+          "size": 762,
+          "sha256": "4f06d077d13814c2c42ccff965c7621c002aecc89a45f2b800a64198637935d4"
+        },
+        {
           "path": "pokemon/regular/drowzee.png",
           "size": 356,
           "sha256": "8824521d933ea2d1309fcb7071c161c798d73e342040aee798deab9f27cb9f9d"
@@ -1281,6 +1526,11 @@
           "path": "pokemon/regular/druddigon.png",
           "size": 1226,
           "sha256": "33cb920319367931fb4c2f3e2b752d63878f1975d42535da0de4e798f808d76d"
+        },
+        {
+          "path": "pokemon/regular/dubwool.png",
+          "size": 872,
+          "sha256": "26e803ffe6c201e07329d4c05e990ce35278209e0153c4327f08bf635aaf369e"
         },
         {
           "path": "pokemon/regular/ducklett.png",
@@ -1306,6 +1556,16 @@
           "path": "pokemon/regular/duosion.png",
           "size": 314,
           "sha256": "2568fa2ebbaa68200c24c2b0a174b9fa9ceeac8a03e502895dfbddf0d6b157a1"
+        },
+        {
+          "path": "pokemon/regular/duraludon-gmax.png",
+          "size": 1180,
+          "sha256": "e0ca21138ac50e4752677f1b4cc816ba03193fd468840aead35d1e65ab05e766"
+        },
+        {
+          "path": "pokemon/regular/duraludon.png",
+          "size": 910,
+          "sha256": "97e034d30217bfcea2f395efc6ef897fb07490cfc829c4f7b05defa067fbd8a2"
         },
         {
           "path": "pokemon/regular/durant.png",
@@ -1363,9 +1623,24 @@
           "sha256": "c9f60c40232d326c47306dec3c403ae3024ac6a0b93a06c417c47becf7278d23"
         },
         {
+          "path": "pokemon/regular/eiscue-noice.png",
+          "size": 463,
+          "sha256": "a91216f2ed04a373dcd926c41a464de54e9e6b2323a994b003a4c2da5d411b0e"
+        },
+        {
+          "path": "pokemon/regular/eiscue.png",
+          "size": 562,
+          "sha256": "4596ee657478a6c20dccf85c53f2e3a7bc3d8c4191dd431046caf65d983e7ea8"
+        },
+        {
           "path": "pokemon/regular/ekans.png",
           "size": 346,
           "sha256": "8fbe1ca6d640941135498c651bdad9b79a851b904d675c7ccdd8ea06a4f5daca"
+        },
+        {
+          "path": "pokemon/regular/eldegoss.png",
+          "size": 712,
+          "sha256": "692a5bef3431e6fbdead1796323908cb4bbb40b7dcc9ce6ea8df6f628b7d496a"
         },
         {
           "path": "pokemon/regular/electabuzz.png",
@@ -1433,6 +1708,16 @@
           "sha256": "9153fca9e55bc06dd80dea6cc167cf37869d2a169e73fbdefba39ac67046c919"
         },
         {
+          "path": "pokemon/regular/eternatus-eternamax.png",
+          "size": 2072,
+          "sha256": "5b9e669d387b4b2004839df55764927f0fd7b79752e54c66b7060a39435cca76"
+        },
+        {
+          "path": "pokemon/regular/eternatus.png",
+          "size": 1931,
+          "sha256": "a345d9d3bb1a8fcf787656b17d02c007933f2194547566c7a12e24a8e3cf7d4f"
+        },
+        {
           "path": "pokemon/regular/excadrill.png",
           "size": 1043,
           "sha256": "fdbbd05dc4bc614c55fdb4ab5774f408ae047462885792b0783596940c7bd3d1"
@@ -1456,6 +1741,11 @@
           "path": "pokemon/regular/exploud.png",
           "size": 1265,
           "sha256": "ff046286d0360687338121e9884179d7c682d45c913a24c74f173d69b6462a36"
+        },
+        {
+          "path": "pokemon/regular/falinks.png",
+          "size": 849,
+          "sha256": "df69b296185807cd8ea10689dd079148727d350be7402330962abf1702ad86c2"
         },
         {
           "path": "pokemon/regular/farfetchd-galar.png",
@@ -1531,6 +1821,16 @@
           "path": "pokemon/regular/flabebe.png",
           "size": 324,
           "sha256": "d84846e515f305eedef04a8959b2b8cb904e9e7b87bc75bd5698c085821cb5f4"
+        },
+        {
+          "path": "pokemon/regular/flapple-gmax.png",
+          "size": 1085,
+          "sha256": "003b63b365262f58dd48bf5a371d79b879e1619e705e409e26c9913e3573e3ad"
+        },
+        {
+          "path": "pokemon/regular/flapple.png",
+          "size": 1001,
+          "sha256": "349340ba0ecde7fed530ff7ccd563c9fbe276b0afb408b70b0484d37445400cb"
         },
         {
           "path": "pokemon/regular/flareon.png",
@@ -1651,6 +1951,11 @@
           "path": "pokemon/regular/froslass.png",
           "size": 837,
           "sha256": "b7ac926a5d92f92b44b5f882927ae528ba97fd3e43b37de5647e0b0b15257765"
+        },
+        {
+          "path": "pokemon/regular/frosmoth.png",
+          "size": 911,
+          "sha256": "7628cff00d5f3ed6bcbf1046f23e7b397ca7b5ea2332d6d94b805465d5603538"
         },
         {
           "path": "pokemon/regular/furfrou-dandy.png",
@@ -1868,6 +2173,11 @@
           "sha256": "adf4b1fa00a76deef20284977a1f54b269a44092cdafa1a7d339899c82a2ec63"
         },
         {
+          "path": "pokemon/regular/glastrier.png",
+          "size": 937,
+          "sha256": "e7519de690badb7abb4323a26591d41d37639c43964f621117addefed9a7dba5"
+        },
+        {
           "path": "pokemon/regular/gligar.png",
           "size": 413,
           "sha256": "1293247507c67321ad1e25c3e8fdcbfe0c240b0221feb1be21b1d2f0d550347d"
@@ -1943,6 +2253,11 @@
           "sha256": "3f3238ce0c300e8576af2b900bce81b113dd40c75a55089a979db0dbbaffd6d7"
         },
         {
+          "path": "pokemon/regular/gossifleur.png",
+          "size": 466,
+          "sha256": "19ce936e016469fd635576de21d49bd0da0b10d0b4401d5317a5e6152de85a8d"
+        },
+        {
           "path": "pokemon/regular/gothita.png",
           "size": 285,
           "sha256": "ec2dc6005a243fdd3d39ea5f1b63b66f8c01436a41ba6042e7f3c354575c35e1"
@@ -1968,6 +2283,11 @@
           "sha256": "9495286b0a1516a45cdbf9817cc9c968df9f018244ebdc8d6019e764527b889d"
         },
         {
+          "path": "pokemon/regular/grapploct.png",
+          "size": 880,
+          "sha256": "58078345c5878a57b82169d990e057139eabb23640b78aff5251c862d88f27f7"
+        },
+        {
           "path": "pokemon/regular/graveler-alola.png",
           "size": 457,
           "sha256": "8913e2ddb32299573b182edec1efbe2ba6a114c4603f0291ba7b0651a8a939f2"
@@ -1976,6 +2296,11 @@
           "path": "pokemon/regular/graveler.png",
           "size": 408,
           "sha256": "9eba453309df936ed5d23a0f76a7f5b634005d06439ce4e009ab27ade64d15a9"
+        },
+        {
+          "path": "pokemon/regular/greedent.png",
+          "size": 979,
+          "sha256": "934294e883323e3df027a66c1d7e773daa62ee3e10fad2fa2c7abcf5160f8f51"
         },
         {
           "path": "pokemon/regular/greninja-ash.png",
@@ -1996,6 +2321,21 @@
           "path": "pokemon/regular/grimer.png",
           "size": 329,
           "sha256": "3dd9da35c632ff5075fbfed6fc3271f464529c78dbcbd579614eec45162c1c9b"
+        },
+        {
+          "path": "pokemon/regular/grimmsnarl-gmax.png",
+          "size": 1179,
+          "sha256": "13d0b5034f648531e2e3df5cf4943a9a16abc981dd599b6e267aea9a2ff0a599"
+        },
+        {
+          "path": "pokemon/regular/grimmsnarl.png",
+          "size": 1079,
+          "sha256": "6b05d0be2420b85b1cb78a50b7e7e0ade39d75e2a874d1b3c5827c9847c6bb80"
+        },
+        {
+          "path": "pokemon/regular/grookey.png",
+          "size": 533,
+          "sha256": "4422a55ad96f2af7431df9edf6a057c6c4f306ee08237c3c9126e0e0cc1c76bf"
         },
         {
           "path": "pokemon/regular/grotle.png",
@@ -2076,6 +2416,26 @@
           "path": "pokemon/regular/hariyama.png",
           "size": 403,
           "sha256": "00e4c7e21cc533b2e8cfaa84b4cc5475076180b6aa1cc251935341ce3d245bc3"
+        },
+        {
+          "path": "pokemon/regular/hatenna.png",
+          "size": 415,
+          "sha256": "5e86a79902b4498d620f52aa1571faec93bae6bcd82dae32a1a3f67bd8f3cf37"
+        },
+        {
+          "path": "pokemon/regular/hatterene-gmax.png",
+          "size": 1327,
+          "sha256": "6c1224eb886cda1faa2a91a5dac34b52351242b33f199bec2ccefb10f8c4ed1d"
+        },
+        {
+          "path": "pokemon/regular/hatterene.png",
+          "size": 866,
+          "sha256": "fbf171cc9dca646b556d2830a4e9b47c6e97590d08a520447c97b2b1f836efba"
+        },
+        {
+          "path": "pokemon/regular/hattrem.png",
+          "size": 542,
+          "sha256": "a50fcb84a22006db9625d24a4ed40a88e0dc39d10f71267da40d6084d2e0863a"
         },
         {
           "path": "pokemon/regular/haunter.png",
@@ -2233,9 +2593,19 @@
           "sha256": "ce5221390ab216e38f4693480b4e917d83d6c2c5ff8feef47b71b5c7098cf6d5"
         },
         {
+          "path": "pokemon/regular/impidimp.png",
+          "size": 494,
+          "sha256": "ec71fb9e06d054203578f025a552b2cf98cd8f43eb4c9403c9fdd569a1c99443"
+        },
+        {
           "path": "pokemon/regular/incineroar.png",
           "size": 1089,
           "sha256": "42284f008c48f4b052bedcac29790b57cff4289017e1885bd3b025b9580e797b"
+        },
+        {
+          "path": "pokemon/regular/indeedee.png",
+          "size": 632,
+          "sha256": "2cc86b0a842573132e1af39eb806d89d9bbd124dbbbff909fa348092b5b408bd"
         },
         {
           "path": "pokemon/regular/infernape.png",
@@ -2246,6 +2616,16 @@
           "path": "pokemon/regular/inkay.png",
           "size": 322,
           "sha256": "ed8958c07c159fed2140769bc34d05e2c24f99d3071dc4f57f5b811c475c4a8e"
+        },
+        {
+          "path": "pokemon/regular/inteleon-gmax.png",
+          "size": 1556,
+          "sha256": "c43f526dd8bfdbe97251cd50c9360a555b0f193b8aaefcc3eb84a2cc5464879f"
+        },
+        {
+          "path": "pokemon/regular/inteleon.png",
+          "size": 966,
+          "sha256": "61b4c677cb6d7fb1f1c1bc53a4f3b9a89bc450d114696acaaf0fdb6ccafe2eb0"
         },
         {
           "path": "pokemon/regular/ivysaur.png",
@@ -2426,6 +2806,11 @@
           "path": "pokemon/regular/krookodile.png",
           "size": 1000,
           "sha256": "7f2609c551b64e5a5b391b870848fc6022082698e35d55763cba6d1fc1af3405"
+        },
+        {
+          "path": "pokemon/regular/kubfu.png",
+          "size": 550,
+          "sha256": "4fc9ee02156a8079986523565923e7947be102af54aa112211c20447374ff6cb"
         },
         {
           "path": "pokemon/regular/kyogre-primal.png",
@@ -2993,6 +3378,11 @@
           "sha256": "bae19ea7e6784a9aa8e47ce334f658e1562d4afbc50ed3471647555fe5c3aa54"
         },
         {
+          "path": "pokemon/regular/milcery.png",
+          "size": 303,
+          "sha256": "d706da8a63a088ad01d204c6a1be3da9e4a0fd14200c0e6b5b29989536c403e4"
+        },
+        {
           "path": "pokemon/regular/milotic.png",
           "size": 1145,
           "sha256": "49d8bfc601c5e76f375aacc0a8c82f0fb026d93613da9f5b949910e100010aa6"
@@ -3093,6 +3483,21 @@
           "sha256": "c85974507a8dbb02df14b4a6d705bc1d90ea874c26c4bcd68f5b2a84ab17e086"
         },
         {
+          "path": "pokemon/regular/morgrem.png",
+          "size": 589,
+          "sha256": "ec9f8c00d4602fe6c7a79ec26567919a98b6a5cd5d4af15ff186852ec61a00d8"
+        },
+        {
+          "path": "pokemon/regular/morpeko-hangry.png",
+          "size": 440,
+          "sha256": "c92705ea0639c557d82896a77f9e2619ab0216290118ba86cfa86e71fdea489b"
+        },
+        {
+          "path": "pokemon/regular/morpeko.png",
+          "size": 430,
+          "sha256": "e23c4a0ccac28a04c77393a2581e5be363bcf015cdeff6f38f56ef097ce77982"
+        },
+        {
           "path": "pokemon/regular/mothim.png",
           "size": 385,
           "sha256": "b78783ef36e505cc07948c72906dde54e6c9a130122e443d34a2712d1a37b205"
@@ -3186,6 +3591,11 @@
           "path": "pokemon/regular/necrozma.png",
           "size": 990,
           "sha256": "2cd5654ff2b4d9dcbdb8f216fdc5e712030f2741d7960ab19974befb7859ff03"
+        },
+        {
+          "path": "pokemon/regular/nickit.png",
+          "size": 616,
+          "sha256": "670a41e2b38a57ec2d946f850f181eaee717e3b4d827d3c74b2ad172a6a8c885"
         },
         {
           "path": "pokemon/regular/nidoking.png",
@@ -3306,6 +3716,16 @@
           "path": "pokemon/regular/oranguru.png",
           "size": 1150,
           "sha256": "9d0172e8e90939d5b8959a90b53c8cd1e9208d45de9cda9af4593f17d8f18dfc"
+        },
+        {
+          "path": "pokemon/regular/orbeetle-gmax.png",
+          "size": 1589,
+          "sha256": "8ec393382de30f0ed6ba767cda0a3d3ae473520311bf231e4a74fd6f27c2f967"
+        },
+        {
+          "path": "pokemon/regular/orbeetle.png",
+          "size": 956,
+          "sha256": "1d8453a9a7b692dc8c601ccd42bd8c78040efbb2ccafbf51ab13addd3fde3f52"
         },
         {
           "path": "pokemon/regular/oricorio-pau.png",
@@ -3578,6 +3998,11 @@
           "sha256": "7aee71df6f341d4cae540e92cd11dcd879f2c6bdac433e0095e1126e0b57c3cd"
         },
         {
+          "path": "pokemon/regular/pincurchin.png",
+          "size": 411,
+          "sha256": "5f35be45a3e8d9f72943c5f08d7a32a82b304d6abb264b393bed1301b6905696"
+        },
+        {
           "path": "pokemon/regular/pineco.png",
           "size": 333,
           "sha256": "8ff00123840aa266f268fa09aaec8f05f953303cb70de4f60e6cdb4bfa828f8e"
@@ -3626,6 +4051,11 @@
           "path": "pokemon/regular/poliwrath.png",
           "size": 1010,
           "sha256": "d992494263487dfd8325a13ad55435354c1a761248101cb37d704c09cfaaf8ea"
+        },
+        {
+          "path": "pokemon/regular/polteageist.png",
+          "size": 869,
+          "sha256": "6ec9302e0334bb1ef9c30ac26dca8ee8e44b36192b840da74fd7d51f36f08551"
         },
         {
           "path": "pokemon/regular/ponyta-galar.png",
@@ -3738,6 +4168,11 @@
           "sha256": "47db7980f29af79e493ecff63a4c362e6ea5c1a021ee02bd9cfb7cbe620165a9"
         },
         {
+          "path": "pokemon/regular/raboot.png",
+          "size": 695,
+          "sha256": "76a3378164b764a9cb74cc2fc28f768e1f0dea54749d367271f3884dd6790532"
+        },
+        {
           "path": "pokemon/regular/raichu-alola.png",
           "size": 410,
           "sha256": "1ac385460d8fdcded0c4832783959c44ccaf8c5864ba8c2352577c03ec1f412f"
@@ -3808,6 +4243,16 @@
           "sha256": "3ed75347f55cb449033412f1a095eaee583cdf367ee417d68e2ba1399222e9bf"
         },
         {
+          "path": "pokemon/regular/regidrago.png",
+          "size": 1026,
+          "sha256": "b75d0da83bda249975fad397f0b7765477a18d25da253e8dd85a974f942ff342"
+        },
+        {
+          "path": "pokemon/regular/regieleki.png",
+          "size": 1006,
+          "sha256": "50a4fddd6d2cd91b48bf18edeb8a422093f5ed579c5ed64b65a965de1a938cdc"
+        },
+        {
           "path": "pokemon/regular/regigigas.png",
           "size": 1303,
           "sha256": "8ad245b816344a6f82f9ed5bdcdaf9dd758b5aaa28828bfcc7a5ddac5e7e7a86"
@@ -3863,6 +4308,16 @@
           "sha256": "b9b860cb03f17003c87602f977a7840a817d8951a81f43bd15cc9d65857cf4f0"
         },
         {
+          "path": "pokemon/regular/rillaboom-gmax.png",
+          "size": 2651,
+          "sha256": "1c0e69aad67007fc57622ff0cef414d92b17b0b8a26f7a0acf54e806dcc13c31"
+        },
+        {
+          "path": "pokemon/regular/rillaboom.png",
+          "size": 1277,
+          "sha256": "99abe93fdf35f14c4f8f23f064c83c5264bbc8d9a786f25d89594ce0b0c91366"
+        },
+        {
           "path": "pokemon/regular/riolu.png",
           "size": 311,
           "sha256": "ac671f8ec31ec23d17f3dc4c96adb31d60e4be25df203081fe815924a2d4d662"
@@ -3876,6 +4331,16 @@
           "path": "pokemon/regular/roggenrola.png",
           "size": 260,
           "sha256": "ac1b0c7d0db32758267df25626fe8fb64b57f0c185f4eeba46747482aaf88d29"
+        },
+        {
+          "path": "pokemon/regular/rolycoly.png",
+          "size": 470,
+          "sha256": "898e854dec6cb8f659bc3d207a62e707c0ffa4fca9e2dfd3244921e0c74004db"
+        },
+        {
+          "path": "pokemon/regular/rookidee.png",
+          "size": 442,
+          "sha256": "de3f57235f1fefd772aadcf496ad6d4ed356fda1b645db405494ec2bc2e01e7f"
         },
         {
           "path": "pokemon/regular/roselia.png",
@@ -3968,6 +4433,16 @@
           "sha256": "dc43c3bfd2210df1ee772323cf90ea5044e2a47f258593dc852045413866a64b"
         },
         {
+          "path": "pokemon/regular/sandaconda-gmax.png",
+          "size": 1363,
+          "sha256": "a3d9457661b354d5c12d7602bf2c40c6647c61a7b7230087e26a82aa02ed0c55"
+        },
+        {
+          "path": "pokemon/regular/sandaconda.png",
+          "size": 846,
+          "sha256": "fb1cc55edfcd9ce0ab6b2ea6868567bc0cb2b8274edda378cad31740e077bf55"
+        },
+        {
           "path": "pokemon/regular/sandile.png",
           "size": 312,
           "sha256": "220a91bd587e6742781bc8eccf4f59e40ec576095b61c9be57924a3f2be3cd12"
@@ -4051,6 +4526,11 @@
           "path": "pokemon/regular/scolipede.png",
           "size": 992,
           "sha256": "510f6a8a1dabe2961aa377dd94bb8222b5b38874ed7885b91278889b3b7312b5"
+        },
+        {
+          "path": "pokemon/regular/scorbunny.png",
+          "size": 562,
+          "sha256": "870f592bb6e2eadbf31a1ec6982ec28e4ed29d8074334e6c540e8a15a2664429"
         },
         {
           "path": "pokemon/regular/scrafty.png",
@@ -4218,6 +4698,11 @@
           "sha256": "dae0e91fb7353289a7e4ce8f300ce5019eb48e8cd6bc0d9682a0073703737eb2"
         },
         {
+          "path": "pokemon/regular/silicobra.png",
+          "size": 502,
+          "sha256": "05cd7c516435373db466292e5bd09e45cbe7e5707f9df38369d3997deb1714cf"
+        },
+        {
           "path": "pokemon/regular/silvally.png",
           "size": 1034,
           "sha256": "cded0850b4e688dd00388b469e0cb0ffda2383f3317355e41ed9df6284f92661"
@@ -4238,9 +4723,19 @@
           "sha256": "774435661b9bdc5776138d089059e9dc8481b046f0fef59d513152923583bcc8"
         },
         {
+          "path": "pokemon/regular/sinistea.png",
+          "size": 455,
+          "sha256": "1bb3609c78dfe0e9274619fdbc9cca7f8f58e62f0fc09b6bb495c4551eb0f627"
+        },
+        {
           "path": "pokemon/regular/sirfetchd.png",
           "size": 1167,
           "sha256": "d49b2b87fbaeca03b43dd06b528cab72d974136180d4a2af50a937e431822e5e"
+        },
+        {
+          "path": "pokemon/regular/sizzlipede.png",
+          "size": 333,
+          "sha256": "52f84478868ae402dce3576e119cbaa0dc3529ec8bd413b3be1174166a71bb19"
         },
         {
           "path": "pokemon/regular/skarmory.png",
@@ -4276,6 +4771,11 @@
           "path": "pokemon/regular/skuntank.png",
           "size": 747,
           "sha256": "68a005d4eee4cc7f6a86b270b6fd410bab9a6a0c23921a689ca7987daea9413f"
+        },
+        {
+          "path": "pokemon/regular/skwovet.png",
+          "size": 551,
+          "sha256": "67cd67a11f8df7d0a03471c34412a108a0334297928a558168c6018541010850"
         },
         {
           "path": "pokemon/regular/slaking.png",
@@ -4358,6 +4858,11 @@
           "sha256": "fa4f5b539668960ec4a77571d0a55b64a19decd4fe886b7f2cc178bc135c168d"
         },
         {
+          "path": "pokemon/regular/snom.png",
+          "size": 331,
+          "sha256": "b67d490b24a73a4a53dafd5b408c3815899f1f108166fe7a10ec2821c79c1abe"
+        },
+        {
           "path": "pokemon/regular/snorlax-gmax.png",
           "size": 1855,
           "sha256": "a1bdffb181d842212e17dbdf9d77fcfb8b0934eb12ebdc53d620a4d44f647302"
@@ -4383,6 +4888,11 @@
           "sha256": "63bd5554e1e1cda0e8ac5b6735dbf51a02b5e6fc51e10e085fe02214da34ec61"
         },
         {
+          "path": "pokemon/regular/sobble.png",
+          "size": 645,
+          "sha256": "d9dcd6e5654c28ef1f4368b38dd2c0101a1d4203617d8c8fc6b84894d61d669b"
+        },
+        {
           "path": "pokemon/regular/solgaleo.png",
           "size": 1626,
           "sha256": "5c961d24a38b791b86115d599093ed15b9fa6b32496741b76d5cc4eb402ba1e2"
@@ -4401,6 +4911,11 @@
           "path": "pokemon/regular/spearow.png",
           "size": 316,
           "sha256": "28a11057411cebe7bf8da43c8579875fbccf09e808764eeb5e425560a519251f"
+        },
+        {
+          "path": "pokemon/regular/spectrier.png",
+          "size": 958,
+          "sha256": "47716db708fff6a03c1d1d7b41d73cfffc436425a3a1099d562d60a6b41301ce"
         },
         {
           "path": "pokemon/regular/spewpa.png",
@@ -4491,6 +5006,11 @@
           "path": "pokemon/regular/steenee.png",
           "size": 332,
           "sha256": "fe5d854f7129ee1867707d9e69b11a7ef5a02ed9f1d9ff8a92608b1c079b5798"
+        },
+        {
+          "path": "pokemon/regular/stonjourner.png",
+          "size": 989,
+          "sha256": "c2948db53bcac5f0aa10fe14b1207f681ff268aaf16ecaffe675d7147e9eea74"
         },
         {
           "path": "pokemon/regular/stoutland.png",
@@ -4668,6 +5188,11 @@
           "sha256": "d5382575c7a5e6961e3d8c50547bc67eed00c57c6c736edecc9b9294a1bf2cfe"
         },
         {
+          "path": "pokemon/regular/thievul.png",
+          "size": 832,
+          "sha256": "4ea4b9913ebb8cc2f901fdce5254af09be9ebe09934b5ca5d4e8ed62f33e166a"
+        },
+        {
           "path": "pokemon/regular/throh.png",
           "size": 1095,
           "sha256": "968861aec6a751005cb5223a0dde01e3f3d4cd280282712c52cebe5ba8bbb4df"
@@ -4681,6 +5206,11 @@
           "path": "pokemon/regular/thundurus.png",
           "size": 1095,
           "sha256": "a1a1821332a2e0442dad1d2fc016afffb25f8cb11216978318242d6638b0f2c2"
+        },
+        {
+          "path": "pokemon/regular/thwackey.png",
+          "size": 753,
+          "sha256": "462fb0fcb6d1ceeec2c79c45ebda16d8da827a5273307d18ed0d626994663ce4"
         },
         {
           "path": "pokemon/regular/timburr.png",
@@ -4758,9 +5288,29 @@
           "sha256": "ad2ecc7835297dee383568e842eed463dd76b5d347cab6c0024bac2b2975dbfc"
         },
         {
+          "path": "pokemon/regular/toxel.png",
+          "size": 560,
+          "sha256": "9dc75a57f8b4c4d4cf40659886cf51b46ecb5a58bdfdeffa4ed6dab1ae481a0b"
+        },
+        {
           "path": "pokemon/regular/toxicroak.png",
           "size": 920,
           "sha256": "f18269049e4d6e7ce063291286f0ae8e8ec802387be44542973d28f644256c83"
+        },
+        {
+          "path": "pokemon/regular/toxtricity-gmax.png",
+          "size": 1461,
+          "sha256": "64da9830842268c49b61d1c808c051c51c1b9b4af1be687eebbf9d80e2594867"
+        },
+        {
+          "path": "pokemon/regular/toxtricity-low-key.png",
+          "size": 929,
+          "sha256": "4316966e32871366dc805ebf10c8a594749cc1aa98ed93e40e0daf0f9c0ef2b1"
+        },
+        {
+          "path": "pokemon/regular/toxtricity.png",
+          "size": 1001,
+          "sha256": "03b02d2fca96ce13f50c42df5439094d551d68dca9e349724e3814d9450b07ef"
         },
         {
           "path": "pokemon/regular/tranquill.png",
@@ -5011,6 +5561,21 @@
           "path": "pokemon/regular/ursaring.png",
           "size": 372,
           "sha256": "5853c86ce70eb2e58e0c61ec120a0989009a31ab000156c0d38648200547513b"
+        },
+        {
+          "path": "pokemon/regular/urshifu-gmax.png",
+          "size": 1479,
+          "sha256": "b51382d24233b22786ae3747577dcf194b37667175c95354bf3c2bb9a99b4146"
+        },
+        {
+          "path": "pokemon/regular/urshifu-rapid-strike-gmax.png",
+          "size": 1478,
+          "sha256": "8482b4c5ee9ea294e73422b9fe3130dea0ec35967b3529da50bcee0fd10e075b"
+        },
+        {
+          "path": "pokemon/regular/urshifu.png",
+          "size": 1014,
+          "sha256": "7b7e82b97c9877e6fb664ab0b260050ef3a9d1039681317a226d78910bdd58bb"
         },
         {
           "path": "pokemon/regular/uxie.png",
@@ -5348,6 +5913,11 @@
           "sha256": "628efb94db1aefc338d5a69f63466dbf07f5645c8ba8bb5ac8a671b0c7dbb328"
         },
         {
+          "path": "pokemon/regular/wooloo.png",
+          "size": 489,
+          "sha256": "da9e72b546c95b4b794f9aa4aa7e2e63afcf189835e33e62dd8fb58d38a3e9b2"
+        },
+        {
           "path": "pokemon/regular/wooper.png",
           "size": 312,
           "sha256": "fab7a0368723e194a8246cb9d1f4f19453d48af2ce0e9d782f56df0af1bf9af4"
@@ -5408,6 +5978,11 @@
           "sha256": "fa9aa9d63a51fde90456b303af60725f88088bdb659202e5f9f96cf5e1347b56"
         },
         {
+          "path": "pokemon/regular/yamper.png",
+          "size": 590,
+          "sha256": "9e8abe97d4c46f9fca161536ae00fef5bb497f5e80cd92e1f0d350d54c574120"
+        },
+        {
           "path": "pokemon/regular/yanma.png",
           "size": 387,
           "sha256": "a74815d562dd84b6e4573ae4793651e7f60e9b956773b9ed26c3a191418f7d1e"
@@ -5428,6 +6003,26 @@
           "sha256": "c129da767603a54d50ad2d0156747269a365aa72082f21c002e87bbaa2e43b11"
         },
         {
+          "path": "pokemon/regular/zacian-crowned.png",
+          "size": 1727,
+          "sha256": "df1e15f6c90767dd2fa86cac1fb7d01a15652dff5ff82029903b9c1b5b811221"
+        },
+        {
+          "path": "pokemon/regular/zacian.png",
+          "size": 1298,
+          "sha256": "b261b349648c77fc4f3f33f226586fd2123f62e778e1dbf75c0940819bc6445f"
+        },
+        {
+          "path": "pokemon/regular/zamazenta-crowned.png",
+          "size": 1741,
+          "sha256": "69e89783c5b706b88c25262c99ea5d828a94b47adb1b3743ecb5627a8528f3c4"
+        },
+        {
+          "path": "pokemon/regular/zamazenta.png",
+          "size": 1217,
+          "sha256": "2f9b0b8696d2ff10c69c719359f0c3820501683b2f002f947f088679f3283307"
+        },
+        {
           "path": "pokemon/regular/zangoose.png",
           "size": 373,
           "sha256": "5f52f5c0b6a46272f9b995fcbdd3db91816e697da0a253138242494815ba6825"
@@ -5441,6 +6036,16 @@
           "path": "pokemon/regular/zapdos.png",
           "size": 1054,
           "sha256": "1770827b4b274a4b3ad1611faa2ed900b1c32a9cdf8baddee81fa9067c8e5088"
+        },
+        {
+          "path": "pokemon/regular/zarude-dada.png",
+          "size": 957,
+          "sha256": "356a77fe1449e7faf46b234c6859d2bd6022692da8da090c881c5f37c968b76d"
+        },
+        {
+          "path": "pokemon/regular/zarude.png",
+          "size": 929,
+          "sha256": "fda66d0721ab1f1ce10b93877184809ccd9c4b91181cfa14c353cc99e2a1a7da"
         },
         {
           "path": "pokemon/regular/zebstrika.png",
@@ -5578,6 +6183,61 @@
           "sha256": "ec6fce84ce78e217bca328d2551c4eea3858f980eb3ba902a32a2b535be59b4a"
         },
         {
+          "path": "pokemon/shiny/alcremie-caramel-swirl-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-gmax.png",
+          "size": 1525,
+          "sha256": "c5d9094486dbca0b091d6bcb8eb02ac3b8cb8e1604f5c3cc1987e34aa5d24679"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-lemon-cream-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-matcha-cream-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-mint-cream-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-rainbow-swirl-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-ruby-cream-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-ruby-swirl-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-salted-cream-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie-vanilla-cream-strawberry.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
+          "path": "pokemon/shiny/alcremie.png",
+          "size": 783,
+          "sha256": "9b29cd411ea297ee86e5ec5086434120ef5b6800b7af4b9065ba0f799c58c27c"
+        },
+        {
           "path": "pokemon/shiny/alomomola.png",
           "size": 299,
           "sha256": "5d1c09d0d51110e2e1f0a2ce20c39d123280d1e2616cba15938760e0821cbc43"
@@ -5621,6 +6281,16 @@
           "path": "pokemon/shiny/anorith.png",
           "size": 381,
           "sha256": "ccea275c4a8f031783696629fdbbdb99584302f9571b41e7812eae9c99c32e79"
+        },
+        {
+          "path": "pokemon/shiny/appletun.png",
+          "size": 1099,
+          "sha256": "3306f47a9880bdbad4acd5ccb5d7ca2a5ebc287585c34c64c48c775c79ac9120"
+        },
+        {
+          "path": "pokemon/shiny/applin.png",
+          "size": 473,
+          "sha256": "0101f8e962614b4e2448e7848a168b52c52a7bf671f388c47bef3b05644b47f6"
         },
         {
           "path": "pokemon/shiny/araquanid.png",
@@ -5738,6 +6408,16 @@
           "sha256": "620bdbdfd6b4dd4ba51db1aa2ffe2715e1cb8a70a80e2becd945f98260189bed"
         },
         {
+          "path": "pokemon/shiny/arctovish.png",
+          "size": 845,
+          "sha256": "d897325bf1c7ed701252d3e0c75d42fd8b4fdd83fa6a4125e6435fefc0a85abd"
+        },
+        {
+          "path": "pokemon/shiny/arctozolt.png",
+          "size": 936,
+          "sha256": "81e8e60444898d5d25f8f9faf5f9568cb90ae975433f13dbbb5cf276302f00f5"
+        },
+        {
           "path": "pokemon/shiny/ariados.png",
           "size": 423,
           "sha256": "3a229ee723f717e0b590321de318d41d020e64e66c74bdeed64d18bc2fcabed2"
@@ -5756,6 +6436,11 @@
           "path": "pokemon/shiny/aron.png",
           "size": 254,
           "sha256": "3aae9c0cad7b7e792109c52400947b23b4a59ec5403312067f1f67ec409d88a0"
+        },
+        {
+          "path": "pokemon/shiny/arrokuda.png",
+          "size": 595,
+          "sha256": "7ccda7afe69ea1a35f229ab29fef1c420d390598e18a7e4570576e9a8ccf9418"
         },
         {
           "path": "pokemon/shiny/articuno-galar.png",
@@ -5836,6 +6521,11 @@
           "path": "pokemon/shiny/barboach.png",
           "size": 266,
           "sha256": "3eefd09a7d553253ddccd7ece2223218f10793a69a232f9eb5f15d7db6828602"
+        },
+        {
+          "path": "pokemon/shiny/barraskewda.png",
+          "size": 863,
+          "sha256": "ab5e85368688fde1939e36361da5596c46c0fa8a63b0fde9f4c89b926ec5b352"
         },
         {
           "path": "pokemon/shiny/basculin-blue-striped.png",
@@ -5958,6 +6648,11 @@
           "sha256": "14bcfe33a42bcabd52d2092e2742af6fea6f16a730ac3bf81c67537b4efd1358"
         },
         {
+          "path": "pokemon/shiny/blipbug.png",
+          "size": 685,
+          "sha256": "b69898c3fc368716fc91a362ed46fb86e823093694c4aa98bb9151c6545d5891"
+        },
+        {
           "path": "pokemon/shiny/blissey.png",
           "size": 1047,
           "sha256": "fd2fe70f231fc41b49e848956a7f4246fffbaff0b69dffd87dea7deb6b22f8cf"
@@ -5971,6 +6666,11 @@
           "path": "pokemon/shiny/boldore.png",
           "size": 390,
           "sha256": "9f262e02661bce9b936c04501e4a0bde44554fcb564f2bfc8781cc81ee44a286"
+        },
+        {
+          "path": "pokemon/shiny/boltund.png",
+          "size": 872,
+          "sha256": "4cadf77efab245e50e4eb173a2f949f669fcd4322dca58aee69740ba9d7fd294"
         },
         {
           "path": "pokemon/shiny/bonsly.png",
@@ -6088,6 +6788,21 @@
           "sha256": "7dbf7711e0e8fece69cc3b496aaa4e3b93f7f07a0350cf4c02e91e91b91ebf36"
         },
         {
+          "path": "pokemon/shiny/calyrex-ice-rider.png",
+          "size": 1588,
+          "sha256": "80d258f4752f2c9e284fe9753513556dde280e73bad97382fd982d85237290d7"
+        },
+        {
+          "path": "pokemon/shiny/calyrex-shadow-rider.png",
+          "size": 1624,
+          "sha256": "cd7568583503505af2629778fc101ac7de72343b4a1aeeb5b2e4d640ad79932f"
+        },
+        {
+          "path": "pokemon/shiny/calyrex.png",
+          "size": 974,
+          "sha256": "3a71127648cbf0e0592bdfbdc51e249434dc82910011e6ba219ed0a7222f5c1a"
+        },
+        {
           "path": "pokemon/shiny/camerupt-mega.png",
           "size": 553,
           "sha256": "ea4da22a9f521b5810bed1a66d91cb51faadb02ff0819d5340dd25e42883cb1d"
@@ -6101,6 +6816,11 @@
           "path": "pokemon/shiny/carbink.png",
           "size": 275,
           "sha256": "b791b9df626ea9f8e88f469ce4f0f1deeeb687cb70632736e1ffaf36746ec723"
+        },
+        {
+          "path": "pokemon/shiny/carkol.png",
+          "size": 760,
+          "sha256": "99e4570cb3bf6e5a222d78c3311f2a37c60266934c9d54c3310ad80f6fccf66d"
         },
         {
           "path": "pokemon/shiny/carnivine.png",
@@ -6156,6 +6876,16 @@
           "path": "pokemon/shiny/celesteela.png",
           "size": 1429,
           "sha256": "965af8e8e7a56710b6851a46db986344587a5d9e948cd76f4fbc7c4427589530"
+        },
+        {
+          "path": "pokemon/shiny/centiskorch-gmax.png",
+          "size": 1725,
+          "sha256": "050dd9ae2b864ebbb37a34e411d4672fe6000446c3a1474f213424ee017f8194"
+        },
+        {
+          "path": "pokemon/shiny/centiskorch.png",
+          "size": 968,
+          "sha256": "2b753ba684de7ff8800d42f135f232810bbf222aaf7eb9fea69b4950e2817ce9"
         },
         {
           "path": "pokemon/shiny/chandelure.png",
@@ -6233,6 +6963,11 @@
           "sha256": "3ce1d1cdf1a80ca92313ea269a4deaca802a11ba97fc1cf227c0c3fc6785f000"
         },
         {
+          "path": "pokemon/shiny/chewtle.png",
+          "size": 631,
+          "sha256": "54a134a5d91bebb011d5a953ee39dbe9795f07379cfd66e72b905d7587851317"
+        },
+        {
           "path": "pokemon/shiny/chikorita.png",
           "size": 316,
           "sha256": "58c12538318770d0cb160c2f062448ccfdfad11905c1d290b87cb2cc4bc1d0df"
@@ -6261,6 +6996,16 @@
           "path": "pokemon/shiny/cinccino.png",
           "size": 1096,
           "sha256": "720b0b2377e061b6e5100ef878605cc82ed8821a4a509cff23e8d116499786a8"
+        },
+        {
+          "path": "pokemon/shiny/cinderace-gmax.png",
+          "size": 1966,
+          "sha256": "6426199ff86cd022881eb2e8c09b4cf05e037b2172777d0d6880a5c21f48b3ce"
+        },
+        {
+          "path": "pokemon/shiny/cinderace.png",
+          "size": 970,
+          "sha256": "a5f9f8c7b25072913010e110d7044787ecb7aabb2e617d9c4df3ca63369d0106"
         },
         {
           "path": "pokemon/shiny/clamperl.png",
@@ -6298,9 +7043,24 @@
           "sha256": "66e9973f73ed1b4d36be661c163e6cfe969c112d96568d293e26d45001c153cb"
         },
         {
+          "path": "pokemon/shiny/clobbopus.png",
+          "size": 575,
+          "sha256": "04f269547670fa9f791af5d90722fb1dce970bbba0bb2a72af0e6ed2ceb15ee6"
+        },
+        {
           "path": "pokemon/shiny/cloyster.png",
           "size": 689,
           "sha256": "37acb32ee4f558ef16e8db0bd4590d301bbbbe0693772b00979efec9a725567f"
+        },
+        {
+          "path": "pokemon/shiny/coalossal-gmax.png",
+          "size": 1543,
+          "sha256": "19a6b78667eeb45118db3383ff27efb2b6f435292026f1a2038a40c9e6963cd7"
+        },
+        {
+          "path": "pokemon/shiny/coalossal.png",
+          "size": 1354,
+          "sha256": "31af5fbee9047b54195625408684c604869add20055c8cb6e2b6d9b113b15ebe"
         },
         {
           "path": "pokemon/shiny/cobalion.png",
@@ -6333,6 +7093,16 @@
           "sha256": "3913ce3068c5e3337fc3038163776f4df22987b486438b4f8402b3563d732a75"
         },
         {
+          "path": "pokemon/shiny/copperajah-gmax.png",
+          "size": 1798,
+          "sha256": "8afc9968b1e3a332659b46ddc60b0e1cc8606b0878ba04fb08a1badfd09c08d5"
+        },
+        {
+          "path": "pokemon/shiny/copperajah.png",
+          "size": 1247,
+          "sha256": "92da3b94e22df144ea1e589c0e942969e65c5d2cc173f7248b9276acdd35c638"
+        },
+        {
           "path": "pokemon/shiny/corphish.png",
           "size": 341,
           "sha256": "6a46e449bbd7385e35727332b7a7216d08e7c4236e7c37745e73462a8c4af096"
@@ -6346,6 +7116,21 @@
           "path": "pokemon/shiny/corsola.png",
           "size": 367,
           "sha256": "41cfed9985cb7e56230792d265245b9b2050a327bcb9db31269e83c865979abe"
+        },
+        {
+          "path": "pokemon/shiny/corviknight-gmax.png",
+          "size": 1374,
+          "sha256": "6433c46765cc7604f31f5ccfed6985745ea1b9748d983d5c154614ce0c9db9b8"
+        },
+        {
+          "path": "pokemon/shiny/corviknight.png",
+          "size": 979,
+          "sha256": "191b4536d81264585447746ff7a28c6ec6cad7a59506055ef8a6a44eb71a4b15"
+        },
+        {
+          "path": "pokemon/shiny/corvisquire.png",
+          "size": 637,
+          "sha256": "9d475087c96df4ebde075e2ecb23fa0c214f436d172920e908cae0cdccec8419"
         },
         {
           "path": "pokemon/shiny/cosmoem.png",
@@ -6376,6 +7161,21 @@
           "path": "pokemon/shiny/cradily.png",
           "size": 474,
           "sha256": "1e5604a7fb662a54c8faea3a89a2bad51ca1bcb3d7763bbdc04563f47ae7fa94"
+        },
+        {
+          "path": "pokemon/shiny/cramorant-gorging.png",
+          "size": 874,
+          "sha256": "39120dd5ca968b98536dfa3d377107b9066a8cfadb648b0dc8f5618cbc9e4a2a"
+        },
+        {
+          "path": "pokemon/shiny/cramorant-gulping.png",
+          "size": 864,
+          "sha256": "8c1551e7bb4c167ab4ac55db8240473631c8fa9111e0eb344fa875cd6022605e"
+        },
+        {
+          "path": "pokemon/shiny/cramorant.png",
+          "size": 715,
+          "sha256": "ce758c68b62dccdaf3ea44bdc3d6a7d3524209475c3ac491c9819d98fe02b0f6"
         },
         {
           "path": "pokemon/shiny/cranidos.png",
@@ -6426,6 +7226,11 @@
           "path": "pokemon/shiny/cubone.png",
           "size": 308,
           "sha256": "e2b0470577e4d651c19fe118d34df7c78eba9dabcdff133c2d3a68d18a700bd7"
+        },
+        {
+          "path": "pokemon/shiny/cufant.png",
+          "size": 692,
+          "sha256": "83e22298378c0c1a9a454fbc296aba276559a221096f09f2457a7c82d7fe224d"
         },
         {
           "path": "pokemon/shiny/cursola.png",
@@ -6623,14 +7428,34 @@
           "sha256": "32e75ddf378f2f2c79d867a173b05809743f0660667cabd3331e112e72edb83c"
         },
         {
+          "path": "pokemon/shiny/dottler.png",
+          "size": 787,
+          "sha256": "48d9765fb71138365f90d32ff73245fb5797d223beeaaa6b4fdfb85ec59b4d6e"
+        },
+        {
           "path": "pokemon/shiny/doublade.png",
           "size": 488,
           "sha256": "1ada2d63319ef67a4841a4da8cc8113a4329a8b73c9bfe97bc000b846d4a0781"
         },
         {
+          "path": "pokemon/shiny/dracovish.png",
+          "size": 1128,
+          "sha256": "f0e370fff4901beb320bc66d4f3de612032834ef6f345cfba03d2177b17edfa0"
+        },
+        {
+          "path": "pokemon/shiny/dracozolt.png",
+          "size": 1266,
+          "sha256": "12017b99edf7607f0163ea1f2188f06a8d97ed51547a8032615a4a87b07a98c8"
+        },
+        {
           "path": "pokemon/shiny/dragalge.png",
           "size": 987,
           "sha256": "389b62c5a3035f79cf53adc7a6f15be32a6f8174359bb42196a1708548a212e5"
+        },
+        {
+          "path": "pokemon/shiny/dragapult.png",
+          "size": 1410,
+          "sha256": "f55c14ffe04829de7d94631686d766690b54adae535b020957862310a83feda7"
         },
         {
           "path": "pokemon/shiny/dragonair.png",
@@ -6641,6 +7466,11 @@
           "path": "pokemon/shiny/dragonite.png",
           "size": 729,
           "sha256": "4852afd64f970116771a0b7e4f3174d367f3b54afe5f8d952a330f5a065eacb0"
+        },
+        {
+          "path": "pokemon/shiny/drakloak.png",
+          "size": 780,
+          "sha256": "a7274711a2a9a949e286ee96d34b796088edd6a69cfc322f317a688235d89969"
         },
         {
           "path": "pokemon/shiny/drampa.png",
@@ -6658,6 +7488,21 @@
           "sha256": "f665b1ab95276370b1277c985f6aa03494192f0e8a27c78e792078cd54c48711"
         },
         {
+          "path": "pokemon/shiny/drednaw-gmax.png",
+          "size": 2069,
+          "sha256": "5ab3194aea189a7bd0e27f959c5b8fba13aaa659f3bcee123c61933a7669a553"
+        },
+        {
+          "path": "pokemon/shiny/drednaw.png",
+          "size": 1293,
+          "sha256": "95fdd971b0eb9540bab9b0d427e6f71a0dd338790cdfc5b928cc2097a9d07259"
+        },
+        {
+          "path": "pokemon/shiny/dreepy.png",
+          "size": 638,
+          "sha256": "7c7504017882b0a7f6d55fea71a98129e0c1fbec1907a52e8cd83333979aa13f"
+        },
+        {
           "path": "pokemon/shiny/drifblim.png",
           "size": 850,
           "sha256": "2080503dad3f82cfa173ca80461ed364cc52fde678701aac4f4ddd96bc5eea7f"
@@ -6673,6 +7518,11 @@
           "sha256": "9c8c0e039abd292cb1720f1428105c28a167b8dab55efa428a21f9aa3ead4545"
         },
         {
+          "path": "pokemon/shiny/drizzile.png",
+          "size": 876,
+          "sha256": "de095e46b40bbba635bf38f5cc36e3bcb26327d1148fa94488613a3faf135df7"
+        },
+        {
           "path": "pokemon/shiny/drowzee.png",
           "size": 360,
           "sha256": "b6fc4410a6e471236f6255bc6f0749589487bc5ba9b939f1e71b166d152530ea"
@@ -6681,6 +7531,11 @@
           "path": "pokemon/shiny/druddigon.png",
           "size": 1324,
           "sha256": "b7c6ebed296c7dbb7e65948ce12917b87d99880202fdbbadb51666e067bd8d42"
+        },
+        {
+          "path": "pokemon/shiny/dubwool.png",
+          "size": 883,
+          "sha256": "e0b50f88f3bd6e5b1e0c0f71f0f247be53fe1e2e5e3f56551dfb6acb07eac23b"
         },
         {
           "path": "pokemon/shiny/ducklett.png",
@@ -6706,6 +7561,16 @@
           "path": "pokemon/shiny/duosion.png",
           "size": 321,
           "sha256": "3b0b7a7c6514b875f794e205a8c63f683a8d9b08f42c8e526be525aa1aff06e1"
+        },
+        {
+          "path": "pokemon/shiny/duraludon-gmax.png",
+          "size": 1300,
+          "sha256": "a20ca76fbe6e9e9c3f7b76327ce4ccd674a67fda054e73435489c2ddbbdcffa7"
+        },
+        {
+          "path": "pokemon/shiny/duraludon.png",
+          "size": 993,
+          "sha256": "d47b18c107217ab77001e966ef81c516a9039731ef16b621877acf76b4f72a52"
         },
         {
           "path": "pokemon/shiny/durant.png",
@@ -6763,9 +7628,24 @@
           "sha256": "50078c15b15f04677d1bf8131a9ba70ed1195ed1ee978f2a50950ccb8d6d5e2c"
         },
         {
+          "path": "pokemon/shiny/eiscue-noice.png",
+          "size": 548,
+          "sha256": "1e2bd67d59957063848bb0e431e1be9a6447f75dd7aa60b5617fdb5ada1273a0"
+        },
+        {
+          "path": "pokemon/shiny/eiscue.png",
+          "size": 620,
+          "sha256": "6f25d22ca0e34f9cb86307d610153f2021d699336d0943821fae1f30ebb0aff0"
+        },
+        {
           "path": "pokemon/shiny/ekans.png",
           "size": 352,
           "sha256": "e4e0b6770036bdb97133a5948122e7a588f255f7710ea99c81eb47de6a6ef897"
+        },
+        {
+          "path": "pokemon/shiny/eldegoss.png",
+          "size": 801,
+          "sha256": "01f3515240ff10c79444552ba1b6db93d8731de63480f9822d02bea38e38fd0b"
         },
         {
           "path": "pokemon/shiny/electabuzz.png",
@@ -6833,6 +7713,16 @@
           "sha256": "065a1f906660b00c1db02ae45bda421ef70210f4185750c390db542739303020"
         },
         {
+          "path": "pokemon/shiny/eternatus-eternamax.png",
+          "size": 2197,
+          "sha256": "42678d53cce2ed2cd9526cff884c7ccd848a47e49ad3635f34f32738ee7be36b"
+        },
+        {
+          "path": "pokemon/shiny/eternatus.png",
+          "size": 2065,
+          "sha256": "b974014eaee7e8e84991a1266921aaadbd7da4fab86bbeebb235fcbd4eaa18bd"
+        },
+        {
           "path": "pokemon/shiny/excadrill.png",
           "size": 1175,
           "sha256": "4d679e9affc5cda9452a3a65f70377f76c4f0861f4d29c6cb11f6fd818d8492f"
@@ -6856,6 +7746,11 @@
           "path": "pokemon/shiny/exploud.png",
           "size": 1351,
           "sha256": "08e068d379c7c14b15b73b8cd872e3a287df5c46c30a56197e02343401374e33"
+        },
+        {
+          "path": "pokemon/shiny/falinks.png",
+          "size": 881,
+          "sha256": "d3579256204b2b2ba42c9a3f09b567788df52ca9d0d0c24c789208115c7a4bdc"
         },
         {
           "path": "pokemon/shiny/farfetchd-galar.png",
@@ -6931,6 +7826,16 @@
           "path": "pokemon/shiny/flabebe.png",
           "size": 333,
           "sha256": "bb89e3d3bc0e9497fc40154512f60374a0a2d71faa0bf4101bf3274fe6802629"
+        },
+        {
+          "path": "pokemon/shiny/flapple-gmax.png",
+          "size": 1160,
+          "sha256": "fec6ca4690f0fb70bc77b704a5fb4bc41c118d2adfeb757a2d88d51930575ce6"
+        },
+        {
+          "path": "pokemon/shiny/flapple.png",
+          "size": 1089,
+          "sha256": "9415edf8b344fd6ad39dedb409760f3014415479f3140449a12b3f4d8c86e3fc"
         },
         {
           "path": "pokemon/shiny/flareon.png",
@@ -7051,6 +7956,11 @@
           "path": "pokemon/shiny/froslass.png",
           "size": 905,
           "sha256": "5967751c8675d30f79fd20b835d7207493bd9bfa2a6d94efd84ef84812d4e5b9"
+        },
+        {
+          "path": "pokemon/shiny/frosmoth.png",
+          "size": 989,
+          "sha256": "21b9380bd7e2a56bc1734aa0ab030998002f3b2d44b915a2bc58e53b910c4078"
         },
         {
           "path": "pokemon/shiny/furfrou-dandy.png",
@@ -7268,6 +8178,11 @@
           "sha256": "a8a99f588e3de5ac789f5346b8b2fee474dbe1fe1f3f748747965a2e3091a576"
         },
         {
+          "path": "pokemon/shiny/glastrier.png",
+          "size": 1020,
+          "sha256": "c3a72ff5d12023d8c558fa8d9f1e5adbc060d7581da7f9348453c0a680a589c4"
+        },
+        {
           "path": "pokemon/shiny/gligar.png",
           "size": 423,
           "sha256": "721ba636db65766c9a14dfd719b2744fe3591a2a4aab823a333f47363c11d65f"
@@ -7343,6 +8258,11 @@
           "sha256": "1f7857043504af15fed8f25c671c98ea5236d3f0f215f13ed01eb00e7a71f998"
         },
         {
+          "path": "pokemon/shiny/gossifleur.png",
+          "size": 515,
+          "sha256": "30136d580222a66629259d3a164962f7569ee36d9eb8a657ce1edc584788a57c"
+        },
+        {
           "path": "pokemon/shiny/gothita.png",
           "size": 294,
           "sha256": "4756bec3938b2ed92d6bb34458935793f49bf27f810e00597cf5e4ec58bc0f99"
@@ -7368,6 +8288,11 @@
           "sha256": "0dd03a89f70572b97857017013d1a1e9bb25ef5a3f5543c86edce8060b523b06"
         },
         {
+          "path": "pokemon/shiny/grapploct.png",
+          "size": 957,
+          "sha256": "cc2808898b4abf9dacb10f8e64dcffd3f4e71f340b3eb5e5bf8f9265815f5235"
+        },
+        {
           "path": "pokemon/shiny/graveler-alola.png",
           "size": 458,
           "sha256": "d200ac08f46561f42538bc68de79698432d60ccbd212b9042b77627d672d92e8"
@@ -7376,6 +8301,11 @@
           "path": "pokemon/shiny/graveler.png",
           "size": 411,
           "sha256": "4b2f7f915419364b5fba5cf3ead5f8c3d9ed7e36ac8400adc669cd8a150e7777"
+        },
+        {
+          "path": "pokemon/shiny/greedent.png",
+          "size": 1026,
+          "sha256": "7db0cce9c65ccbd8aa927da78cfb01678346cabeffaa96b73d860e9c470b664b"
         },
         {
           "path": "pokemon/shiny/greninja-ash.png",
@@ -7396,6 +8326,21 @@
           "path": "pokemon/shiny/grimer.png",
           "size": 332,
           "sha256": "1b1e8c24f8c7a0c49d122967563f2c0fa2bda2cdf83b8e18785fc061fbeb6c1b"
+        },
+        {
+          "path": "pokemon/shiny/grimmsnarl-gmax.png",
+          "size": 1231,
+          "sha256": "59e4e7e5ed587741bb539924b042041a4855bbb8500950c696f129610ea3ff44"
+        },
+        {
+          "path": "pokemon/shiny/grimmsnarl.png",
+          "size": 1140,
+          "sha256": "a5ef67be7b2207a201c51b7fbaa08d337ff615d8c19a9d9dd62295b3add34c97"
+        },
+        {
+          "path": "pokemon/shiny/grookey.png",
+          "size": 606,
+          "sha256": "a4de41e090549eeabc014dc79fbef19b3440009e2d88d4ea5c91c2a478da2f3f"
         },
         {
           "path": "pokemon/shiny/grotle.png",
@@ -7476,6 +8421,26 @@
           "path": "pokemon/shiny/hariyama.png",
           "size": 409,
           "sha256": "1248912b0d411716317566b8bd63dfbf2492d34dcd3077d2916d1f3520c4c19f"
+        },
+        {
+          "path": "pokemon/shiny/hatenna.png",
+          "size": 471,
+          "sha256": "542e44ffdbb144781d77f74ab45e31c3b5696aa3a7b224add92c5d98ba34b501"
+        },
+        {
+          "path": "pokemon/shiny/hatterene-gmax.png",
+          "size": 1375,
+          "sha256": "267a698c69c3e4892ea243d029e84b9256b714819583d57bb94c5095ad34be1b"
+        },
+        {
+          "path": "pokemon/shiny/hatterene.png",
+          "size": 958,
+          "sha256": "0bcadf1e9eb2ba87818616caaa914b5e029ae56009b4f937db10fe3d567ffaf4"
+        },
+        {
+          "path": "pokemon/shiny/hattrem.png",
+          "size": 610,
+          "sha256": "60ba37a978062f6efeb70146b101fbbf8d71f975d6994c41a0e6504b967edd83"
         },
         {
           "path": "pokemon/shiny/haunter.png",
@@ -7633,9 +8598,19 @@
           "sha256": "2a6d7a8fb3f13a13d94d12b54bdee1a67bfeda40113ff2b15ba54c9e1663ca8b"
         },
         {
+          "path": "pokemon/shiny/impidimp.png",
+          "size": 587,
+          "sha256": "41f2958afda3c7517061a99f4949dc6f7d5caa896a9629ff4a61d48e75ed50a7"
+        },
+        {
           "path": "pokemon/shiny/incineroar.png",
           "size": 1208,
           "sha256": "422171ff09cf7a7313391f092d3e108b19d368f6f641ddef69cd85513d19e5f5"
+        },
+        {
+          "path": "pokemon/shiny/indeedee.png",
+          "size": 729,
+          "sha256": "03007d36734295d5d6e815a50a8ad26a4bcfb92688c6295b03997fbe07fa8bfe"
         },
         {
           "path": "pokemon/shiny/infernape.png",
@@ -7646,6 +8621,16 @@
           "path": "pokemon/shiny/inkay.png",
           "size": 326,
           "sha256": "a22819902dac16f86d4a939a3953cd0c70eda64bb4ec8e8ad46a798584c626b8"
+        },
+        {
+          "path": "pokemon/shiny/inteleon-gmax.png",
+          "size": 1733,
+          "sha256": "85607071883616897110810a277b9ed0eed9a49096e6f8b42f74d264f9c7010b"
+        },
+        {
+          "path": "pokemon/shiny/inteleon.png",
+          "size": 1054,
+          "sha256": "fd27da3cbbc10f7e6cdba955b8f835f75d59147b463be1c474295d789dd1b1ad"
         },
         {
           "path": "pokemon/shiny/ivysaur.png",
@@ -7826,6 +8811,11 @@
           "path": "pokemon/shiny/krookodile.png",
           "size": 1147,
           "sha256": "eacfef6986a10adaf0765411b44fd91ef13e9808108d8c1c27e32239b1db81e3"
+        },
+        {
+          "path": "pokemon/shiny/kubfu.png",
+          "size": 608,
+          "sha256": "d2f4cdb21baea8f3460a4a68ba0f32b1f3f150c8ca6062e25985376dcbcdfc4d"
         },
         {
           "path": "pokemon/shiny/kyogre-primal.png",
@@ -8393,6 +9383,11 @@
           "sha256": "c8719728b034a2060ce416bdf08fd039327ebf17e8b602f4f8dcfaf7b66c2de8"
         },
         {
+          "path": "pokemon/shiny/milcery.png",
+          "size": 373,
+          "sha256": "19247210dfd4c5bf6e95b02a73c7f00a8ede41672c7d6879a3b0951898f0ad2b"
+        },
+        {
           "path": "pokemon/shiny/milotic.png",
           "size": 1279,
           "sha256": "3d998157d4d2fb057bcc9b10f8f964f0b57a80f2779c55f8d4ed2fbd30eef307"
@@ -8493,6 +9488,21 @@
           "sha256": "4e75e4e9ace3c236912afbaf4d3e6debbe7c7efd566d26528d348d5a8eb61501"
         },
         {
+          "path": "pokemon/shiny/morgrem.png",
+          "size": 680,
+          "sha256": "eff5692f45dae1b91fe63a28ec770440e90917ec8c3dbc0147d4593986fb6883"
+        },
+        {
+          "path": "pokemon/shiny/morpeko-hangry.png",
+          "size": 504,
+          "sha256": "3347ff065a18334432e99184276ebb654ee143864cd8f385e73ff8f1fff77748"
+        },
+        {
+          "path": "pokemon/shiny/morpeko.png",
+          "size": 487,
+          "sha256": "4903bcd68e2f16e40be959d605c330400f2f1a8fa44847fbeeba6b1c0adf3909"
+        },
+        {
           "path": "pokemon/shiny/mothim.png",
           "size": 389,
           "sha256": "ebedae864166d255d377597ff44cfd32616798a8756d6af9c40707904376a69e"
@@ -8586,6 +9596,11 @@
           "path": "pokemon/shiny/necrozma.png",
           "size": 1109,
           "sha256": "cb4e129ca8d1841a927d81519ebcd514c804632336e40ca90db11724c1ca3b10"
+        },
+        {
+          "path": "pokemon/shiny/nickit.png",
+          "size": 688,
+          "sha256": "199d5194a586ed509a22b2cb7479b7a8b983dbd328de9906349e592ec671ea42"
         },
         {
           "path": "pokemon/shiny/nidoking.png",
@@ -8706,6 +9721,16 @@
           "path": "pokemon/shiny/oranguru.png",
           "size": 1247,
           "sha256": "42781acaf50bab538f6061b90dec31f5fbedce9078e8e5cf199d350604d97698"
+        },
+        {
+          "path": "pokemon/shiny/orbeetle-gmax.png",
+          "size": 1654,
+          "sha256": "35e3a1cfe02d836bd64a6a22a907d20bc514ab3f1190571278b74d613b6a351c"
+        },
+        {
+          "path": "pokemon/shiny/orbeetle.png",
+          "size": 1030,
+          "sha256": "ea1a268f4fe5c8259b18bce23d4f7eecb36af9c7df2c28d692c8b3d30d5e02db"
         },
         {
           "path": "pokemon/shiny/oricorio-pau.png",
@@ -8978,6 +10003,11 @@
           "sha256": "b06d28b8543a68e86c188bb42a2240f93774b537cafad9aa7ff1e3cfe189a353"
         },
         {
+          "path": "pokemon/shiny/pincurchin.png",
+          "size": 477,
+          "sha256": "0adc5622ce741b65a4a8c6ac9454a1c3f4e1f4eccb8e4586d4fbc6c055f92dde"
+        },
+        {
           "path": "pokemon/shiny/pineco.png",
           "size": 336,
           "sha256": "94d6012dcec276cf70615c3c7335f5d69fa6ae6cf0c128f29ed147d6c7a49c26"
@@ -9026,6 +10056,11 @@
           "path": "pokemon/shiny/poliwrath.png",
           "size": 672,
           "sha256": "00e6706566dc4efacbdd215796f81daffccc6bdf080abaef720cd8e1797e7ca8"
+        },
+        {
+          "path": "pokemon/shiny/polteageist.png",
+          "size": 951,
+          "sha256": "d6a3a7c0818d7ba1285e6be987cce0d0c85734dc1e6b0df6c2fe452769fe6d7f"
         },
         {
           "path": "pokemon/shiny/ponyta-galar.png",
@@ -9138,6 +10173,11 @@
           "sha256": "76234ffe4c4da00f2332e65db7377922f29c2da44f0ef385e62ddb9d5037aaa8"
         },
         {
+          "path": "pokemon/shiny/raboot.png",
+          "size": 749,
+          "sha256": "f83dc1fcb1fb5454bf2559e9b096cecaec97bf43235213d2336dd0d34d2606ca"
+        },
+        {
           "path": "pokemon/shiny/raichu-alola.png",
           "size": 395,
           "sha256": "559918c4e1d18606d41764199a3fd9dcfdb345b7a998755a1bb526a465adb4e5"
@@ -9208,6 +10248,16 @@
           "sha256": "cfa54393afa80b733a9af5e4ef3fd98aff578a4c1eb85e018cbb222532712d00"
         },
         {
+          "path": "pokemon/shiny/regidrago.png",
+          "size": 1106,
+          "sha256": "ba4fa617142ec214c51a454be858a97a9b81ab65b964773ed9b27be0fd1af218"
+        },
+        {
+          "path": "pokemon/shiny/regieleki.png",
+          "size": 1098,
+          "sha256": "af3b8ac4597b1ad8f30fce13032901897529c27a0421572f9166f580c49ac2e9"
+        },
+        {
           "path": "pokemon/shiny/regigigas.png",
           "size": 1424,
           "sha256": "0ca8c61518ada363e62f504d47b2d57108ac11ab636873c71f3110a783d89636"
@@ -9263,6 +10313,16 @@
           "sha256": "1bea2ae6f07df897570c22d67dd326a02bad56c4113715e77db5f6d3f9a25faa"
         },
         {
+          "path": "pokemon/shiny/rillaboom-gmax.png",
+          "size": 2745,
+          "sha256": "4e6906c9295035faefe3512e3d9da436c1d190004e13aa9179ffe1108fe5af2f"
+        },
+        {
+          "path": "pokemon/shiny/rillaboom.png",
+          "size": 1375,
+          "sha256": "edfa0ef09eddfe0776210f8c9bbb40e9d0a3e64a6e661c251456a70ca8c1d591"
+        },
+        {
           "path": "pokemon/shiny/riolu.png",
           "size": 317,
           "sha256": "42fb0986422c46aedfc7a2d46b7e70dd9b3abf325897405055aa8b65199aa9cb"
@@ -9276,6 +10336,16 @@
           "path": "pokemon/shiny/roggenrola.png",
           "size": 258,
           "sha256": "c7d256bbefe9e5cef38d05d1536da6255cacab333dbb8831c929c993767294e8"
+        },
+        {
+          "path": "pokemon/shiny/rolycoly.png",
+          "size": 544,
+          "sha256": "c8970524e76dff60fe6a9e13ffe5b76142ca8a134a4235320f2e9ca95554800e"
+        },
+        {
+          "path": "pokemon/shiny/rookidee.png",
+          "size": 525,
+          "sha256": "0f215de95250ddb532f65e237ad4bca7084fb35fbd83b2d1318864de4e220cdd"
         },
         {
           "path": "pokemon/shiny/roselia.png",
@@ -9368,6 +10438,16 @@
           "sha256": "02d8d045f51a88f6b3929a4648134505c154bd8c088847783579726c261fc5cc"
         },
         {
+          "path": "pokemon/shiny/sandaconda-gmax.png",
+          "size": 1421,
+          "sha256": "fbd8b3c3867925fd9e2a58e72ee5c5625c0ca7f04566a1594870614152053eb2"
+        },
+        {
+          "path": "pokemon/shiny/sandaconda.png",
+          "size": 903,
+          "sha256": "d316b7cdd9552e5577be5bac77e3c310fd3afd4c8e8b00327c6683b2c2a1fe86"
+        },
+        {
           "path": "pokemon/shiny/sandile.png",
           "size": 314,
           "sha256": "bd6e7a6b33c95d0f379cff27c4823cf3411e621a744e819d5b792917ce4451b8"
@@ -9451,6 +10531,11 @@
           "path": "pokemon/shiny/scolipede.png",
           "size": 1145,
           "sha256": "ac60524d4ece6a6716ccb29aa664f581d4a9e0c0df65a0022178c448ffe794c8"
+        },
+        {
+          "path": "pokemon/shiny/scorbunny.png",
+          "size": 598,
+          "sha256": "c1ca14cda52d85c101fe04e21b4fd2ddc467c84e670247fa11a8bc3b44af7eaa"
         },
         {
           "path": "pokemon/shiny/scrafty.png",
@@ -9618,6 +10703,11 @@
           "sha256": "97fd9410f23e50da113e1d589d14fb1263096a4f0a44ee4e7755bb5b9fed3c05"
         },
         {
+          "path": "pokemon/shiny/silicobra.png",
+          "size": 592,
+          "sha256": "44a989a800e80479c5b2dc73bfa01c3e85b7698b177a03765bb9a95509b626bc"
+        },
+        {
           "path": "pokemon/shiny/silvally.png",
           "size": 1119,
           "sha256": "937a50dd3667f5d32fe980af56d29b5230e84d4825e0dba777a7d0a6826f5ad1"
@@ -9638,9 +10728,19 @@
           "sha256": "a5dd81d70b950c84c4379cc7c72119d14853f55afa2b63f8b1524f0e7baac70f"
         },
         {
+          "path": "pokemon/shiny/sinistea.png",
+          "size": 515,
+          "sha256": "18dc2e13487a63e594dcc6d3bf76b652366cff83587bac8553f4e27cbc84bfa7"
+        },
+        {
           "path": "pokemon/shiny/sirfetchd.png",
           "size": 1254,
           "sha256": "2b1b3aeef43f57f1207fa172f92eaae0536c5328393a6af503db9858bf94123a"
+        },
+        {
+          "path": "pokemon/shiny/sizzlipede.png",
+          "size": 414,
+          "sha256": "aab660aa0807d44ea013e4631ac0d38f2a273e17b4c65e1ec2947d1ffdb84efb"
         },
         {
           "path": "pokemon/shiny/skarmory.png",
@@ -9676,6 +10776,11 @@
           "path": "pokemon/shiny/skuntank.png",
           "size": 818,
           "sha256": "30f823704648a686b1aafdd8204f5206b18eb7eaad27d654352a2fcc11a46d53"
+        },
+        {
+          "path": "pokemon/shiny/skwovet.png",
+          "size": 626,
+          "sha256": "2d64bc606aef13058230ca0692f5e223db726f84a5b4f0c455e2de09b4615105"
         },
         {
           "path": "pokemon/shiny/slaking.png",
@@ -9758,6 +10863,11 @@
           "sha256": "6e183d3ac53d0605175d9c59a8f9dd1082672e1e98cb9cf0e84b058909e199cc"
         },
         {
+          "path": "pokemon/shiny/snom.png",
+          "size": 431,
+          "sha256": "bedf6b8e86754cd9885b06ca2e65146a1bb0f027f6ad0b3e5a8804ac8643bf24"
+        },
+        {
           "path": "pokemon/shiny/snorlax-gmax.png",
           "size": 1979,
           "sha256": "0f9ad615d11db8119607b6157e7c946fd16251e333a42d83960b44802f30fda7"
@@ -9783,6 +10893,11 @@
           "sha256": "5d4570b7a58f045c5623d93d4601c6bd9a0447689867d9ada0e5559fc8efdc37"
         },
         {
+          "path": "pokemon/shiny/sobble.png",
+          "size": 723,
+          "sha256": "aa0e95fc0a66a77aa86530ea3a98e47cbc8cfdde2ac49dc30a728f0a2cf93e28"
+        },
+        {
           "path": "pokemon/shiny/solgaleo.png",
           "size": 1752,
           "sha256": "07c69c63d0c8ebe3c8a50deb6169f85067f268fddeba5d7bf879b9930dcc72a2"
@@ -9801,6 +10916,11 @@
           "path": "pokemon/shiny/spearow.png",
           "size": 319,
           "sha256": "b72ff6644603a5646890c5707439a3ffc914a7f3a0a9c7bdbd41b57db61adc0b"
+        },
+        {
+          "path": "pokemon/shiny/spectrier.png",
+          "size": 1081,
+          "sha256": "21beafeea308aed0c0ff369344b61d8989c55436da1e5707dcea27ef3473145c"
         },
         {
           "path": "pokemon/shiny/spewpa.png",
@@ -9891,6 +11011,11 @@
           "path": "pokemon/shiny/steenee.png",
           "size": 339,
           "sha256": "a9ccf334bef0a38d630786fd482b3c19bc6a862c50bf2e7933774a146144e33e"
+        },
+        {
+          "path": "pokemon/shiny/stonjourner.png",
+          "size": 960,
+          "sha256": "8b0c3a4fca8a913591347f2825fba5b6a58880148ac37c4990e87bb39f6e6732"
         },
         {
           "path": "pokemon/shiny/stoutland.png",
@@ -10068,6 +11193,11 @@
           "sha256": "2f294f28eab65e25561e02e2498f69a40ebe9f23363416a91c671fe1a8e15ced"
         },
         {
+          "path": "pokemon/shiny/thievul.png",
+          "size": 917,
+          "sha256": "031219ea5578e1ec66a87f0aac0298b44b95d86993fa34ba8f13bb138a0d27f4"
+        },
+        {
           "path": "pokemon/shiny/throh.png",
           "size": 1217,
           "sha256": "d76fb53091f7829c00b1f6f9fd3aa95e52fd76cab2ab6f90f7ba2ae3bd997917"
@@ -10081,6 +11211,11 @@
           "path": "pokemon/shiny/thundurus.png",
           "size": 1183,
           "sha256": "558324a1d4893eca8ade79a0dfaf4fa3a246b6a4e5ffc1f7235e0e9008abd7a6"
+        },
+        {
+          "path": "pokemon/shiny/thwackey.png",
+          "size": 824,
+          "sha256": "18ea118af2ed85900482d8ac9560300972c298e967cc9cdc5e494806ea5b06d6"
         },
         {
           "path": "pokemon/shiny/timburr.png",
@@ -10158,9 +11293,29 @@
           "sha256": "7bb23615b6057177e4467ee2b90c943fe97a5ffe82a86efc15c955e905ddfea1"
         },
         {
+          "path": "pokemon/shiny/toxel.png",
+          "size": 632,
+          "sha256": "2dd5301a9e8ee6730a334062489c5b6122ba03d498f31e9ebee1db46b6e11bc6"
+        },
+        {
           "path": "pokemon/shiny/toxicroak.png",
           "size": 999,
           "sha256": "da60861cfa9ebefbfc10b0f8a7df60b7a2255410649c59454ab88b2d6e2a032b"
+        },
+        {
+          "path": "pokemon/shiny/toxtricity-gmax.png",
+          "size": 1561,
+          "sha256": "8a35fdd44973be9f313491d7ef3e5f7838fee19eefd5a7f1bcdd48b50f0ba0f4"
+        },
+        {
+          "path": "pokemon/shiny/toxtricity-low-key.png",
+          "size": 1010,
+          "sha256": "7a115ea5a8a24c926138b1859c8221ab3ab218636fba3a24e436dbf71b8c8ac1"
+        },
+        {
+          "path": "pokemon/shiny/toxtricity.png",
+          "size": 1101,
+          "sha256": "1a58e26dd6ea5bbb0a2d1370d9a985bc33c08ac9bff383d630bdc7956ee1a777"
         },
         {
           "path": "pokemon/shiny/tranquill.png",
@@ -10411,6 +11566,21 @@
           "path": "pokemon/shiny/ursaring.png",
           "size": 369,
           "sha256": "55d6f6fbec9c5a51ae09391b3d9258d07069a8a37f661b2e3611aec547bd30c1"
+        },
+        {
+          "path": "pokemon/shiny/urshifu-gmax.png",
+          "size": 1531,
+          "sha256": "fa3f6d96fe34dc850b06c96cab41ffeedad1cdb446bc065d90fa1281cc54a165"
+        },
+        {
+          "path": "pokemon/shiny/urshifu-rapid-strike-gmax.png",
+          "size": 1540,
+          "sha256": "cc82f7d8b5745e25dfd3017a8e75a449ccd814f171f39fead5f5bdbbab2ef3a6"
+        },
+        {
+          "path": "pokemon/shiny/urshifu.png",
+          "size": 1079,
+          "sha256": "99c4c29b16e169e9fbebb21cc3f4881b480b1b2106f8477da235ecaedcf9b2e3"
         },
         {
           "path": "pokemon/shiny/uxie.png",
@@ -10748,6 +11918,11 @@
           "sha256": "f3e373d8b2bc4a13a1e76940e5103585e2c57db53826c4acb478f628a1e842b2"
         },
         {
+          "path": "pokemon/shiny/wooloo.png",
+          "size": 486,
+          "sha256": "0737550288904089314aea02669c6737c9e21f93afd7ddc07577212abf6b9346"
+        },
+        {
           "path": "pokemon/shiny/wooper.png",
           "size": 319,
           "sha256": "8e87b4024870bec8d5e698a72ad1022257892c8edd8f366137f20ebd7eb59f90"
@@ -10808,6 +11983,11 @@
           "sha256": "0f616a3dbaf6eb366b29c4838d75c2e8a12d8e58b75a4c3e45ff989942957f74"
         },
         {
+          "path": "pokemon/shiny/yamper.png",
+          "size": 641,
+          "sha256": "ed3e6eb494b131576e631461a1f0a36fbe7e15842b1e223afc9ee6105f65ed27"
+        },
+        {
           "path": "pokemon/shiny/yanma.png",
           "size": 388,
           "sha256": "e25bd818d14e9f922712ffa5f16f35f95f10babc9e957a7f1d51b6c31dfc32a0"
@@ -10828,6 +12008,26 @@
           "sha256": "4345427035a5e64a2f1ba93fc6341956762be9184145d66e4b0f0954dc9f2863"
         },
         {
+          "path": "pokemon/shiny/zacian-crowned.png",
+          "size": 1909,
+          "sha256": "5d76625c5d92b4e9649009d660950d3c7e87ed5c6e1c3a6ed5f3694e8b953c18"
+        },
+        {
+          "path": "pokemon/shiny/zacian.png",
+          "size": 1428,
+          "sha256": "bdb381c0348f0add08f28620de419762669ee4e8b993f23dd6784c3badc806db"
+        },
+        {
+          "path": "pokemon/shiny/zamazenta-crowned.png",
+          "size": 1820,
+          "sha256": "8dec1f46f19b47d45ef6bd6348c3b35ed2d38b3f037e7352f453622349da7a11"
+        },
+        {
+          "path": "pokemon/shiny/zamazenta.png",
+          "size": 1296,
+          "sha256": "40550fa90b28db4d26ac51e02b174eae866eea811f4842d0cc967eee49e2440c"
+        },
+        {
           "path": "pokemon/shiny/zangoose.png",
           "size": 394,
           "sha256": "6381c68e0dca3c3b197dbc4311890abb5e0f22357606e7fb1b541d4bae5bf9b5"
@@ -10841,6 +12041,16 @@
           "path": "pokemon/shiny/zapdos.png",
           "size": 1154,
           "sha256": "d402230c57218e61e74f3b2dff065f25e10596db00e2a406ca2998900c7b7453"
+        },
+        {
+          "path": "pokemon/shiny/zarude-dada.png",
+          "size": 1045,
+          "sha256": "b9a730a4290128e5b536ccbc0b99d31ea4ee9c7d0815167d4c8b3489689f13e4"
+        },
+        {
+          "path": "pokemon/shiny/zarude.png",
+          "size": 1022,
+          "sha256": "54831306c7c6068307e41614461cba35be3d13cbdf5dfab42a36046aba83e9c9"
         },
         {
           "path": "pokemon/shiny/zebstrika.png",
