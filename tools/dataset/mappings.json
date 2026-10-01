@@ -6,12 +6,10 @@
       2,
       3,
       4,
-      5
+      5,
+      6
     ],
-    "family_seeds": [
-      667,
-      677
-    ],
+    "family_seeds": [],
     "visual_gender_species": [
       668,
       678
@@ -91,6 +89,18 @@
         "default"
       ],
       "reason": "Pinned artwork galar corresponds to the owning metadata darmanitan-galar-standard variety; galar-zen remains a separate exact identity."
+    },
+    {
+      "species_id": 713,
+      "id": "hisui-noble",
+      "name": "Hisuian Noble",
+      "source_form_id": "hisui-noble",
+      "pokemon_id": 10243,
+      "default_gender": "default",
+      "genders": [
+        "default"
+      ],
+      "reason": "Source Noble visual state shares the explicitly mapped Hisuian Avalugg variety typing; no separate Pok\u00e9API variety exists. Provisional artwork is excluded."
     }
   ],
   "source_name_overrides": [

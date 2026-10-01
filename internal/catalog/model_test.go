@@ -54,8 +54,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 892 {
-		t.Fatalf("form count=%d; want 892 in the current mapping", count)
+	if count != 1014 {
+		t.Fatalf("form count=%d; want 1014 in the current mapping", count)
 	}
 }
 
@@ -95,10 +95,10 @@ func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
 	}
 }
 
-func TestGenerationsOneThroughFiveFamiliesAreComplete(t *testing.T) {
-	for id := 1; id <= 649; id++ {
+func TestGenerationsOneThroughSixFamiliesAreComplete(t *testing.T) {
+	for id := 1; id <= 721; id++ {
 		if _, ok := ByNumber(id); !ok {
-			t.Fatalf("missing Gen1–Gen5 species %d", id)
+			t.Fatalf("missing Gen1–Gen6 species %d", id)
 		}
 	}
 	for _, species := range All() {
@@ -228,5 +228,50 @@ func TestGenerationFiveFormTypingAndAliases(t *testing.T) {
 		if len(species.Forms) != 4 {
 			t.Fatalf("seasonal forms #%d: %+v", id, species.Forms)
 		}
+	}
+}
+
+func TestGenerationSixPatternsTypingAndAliases(t *testing.T) {
+	for _, tc := range []struct {
+		id, count int
+		types     []string
+	}{
+		{666, 20, []string{"bug", "flying"}}, {669, 5, []string{"fairy"}},
+		{670, 6, []string{"fairy"}}, {671, 5, []string{"fairy"}},
+		{676, 10, []string{"normal"}}, {718, 3, []string{"dragon", "ground"}},
+	} {
+		species, ok := ByNumber(tc.id)
+		if !ok || len(species.Forms) != tc.count {
+			t.Fatalf("forms #%d: %+v", tc.id, species.Forms)
+		}
+		for _, f := range species.Forms {
+			if !slices.Equal(f.Types, tc.types) {
+				t.Fatalf("typing #%d: %+v", tc.id, f)
+			}
+		}
+	}
+	hoopa, _ := ByNumber(720)
+	expected := map[string][]string{"standard": {"psychic", "ghost"}, "unbound": {"psychic", "dark"}}
+	for _, f := range hoopa.Forms {
+		if !slices.Equal(f.Types, expected[f.ID]) {
+			t.Fatalf("Hoopa typing: %+v", f)
+		}
+	}
+	for _, tc := range []struct {
+		id    int
+		count int
+		alias string
+	}{
+		{664, 1, "meadow"}, {665, 1, "meadow"}, {666, 20, "meadow"},
+		{681, 2, "shield"}, {711, 1, "super"}, {716, 2, "neutral"}, {718, 3, "50"},
+	} {
+		species, _ := ByNumber(tc.id)
+		if len(species.Forms) != tc.count || !slices.Contains(species.Forms[0].SourceAliases, tc.alias) {
+			t.Fatalf("aliases #%d: %+v", tc.id, species.Forms)
+		}
+	}
+	greninja, _ := ByNumber(658)
+	if len(greninja.Forms) != 2 || greninja.Forms[1].ID != "ash" || !slices.Contains(greninja.Forms[1].SourceAliases, "battle-bond") {
+		t.Fatalf("Greninja forms: %+v", greninja.Forms)
 	}
 }

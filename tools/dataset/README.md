@@ -7,7 +7,8 @@ It no longer contains routine `catalog_species`, `forms`, or `assets` lists.
 `inventory.go` derives those entries in memory each time generation, checking,
 or asset preparation runs. No intermediate maintained inventory file is needed.
 
-The current policy selects generations 1 through 5 and the Litleo/Espurr family seeds.
+The current policy selects generations 1 through 6. The earlier Litleo/Espurr
+family seeds are now redundant and removed; generation selection includes them.
 The tool traverses pinned PokéAPI parent/child edges until complete connected
 families are included, including later-generation ancestors, descendants, and
 branches. The sorted species list therefore comes from data, not a National total.
@@ -22,7 +23,7 @@ its standard artwork is A. Pichu’s Spiky-eared identity also resolves there.
 Source canonical pointers are folded into aliases, never extra collectibles.
 Unknown matches fail; the tool does not guess typing from a similar filename.
 
-Six reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode/Lilligant,
+Seven reasoned form exceptions remain: Hisuian Noble Arcanine/Electrode/Lilligant/Avalugg,
 Noble Kleavor, and Shadow Lugia share explicitly identified variety typing.
 The artwork identity Darmanitan `galar` maps to exact owning metadata variety
 `darmanitan-galar-standard`; `galar-zen` resolves automatically and stays distinct.
@@ -46,8 +47,8 @@ explicit female provenance; male is the default. This scope choice prevents
 unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
-The current coverage is 671 catalog species, 892 metadata forms,
-660 printable species, 859 collectible forms, and 1,722 assets. Thirty-three appearances
+The current coverage is 738 catalog species, 1,014 metadata forms,
+727 printable species, 974 collectible forms, and 1,952 assets. Forty appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -96,7 +97,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-5 expansion changes that ID and adds 366 exact images. No trainer database exists, so no storage migration applies.
+Generation-6 expansion changes that ID and adds 230 exact images. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -213,3 +214,28 @@ All 366 new normalized sprites were visually inspected; all earlier PNG bytes
 are unchanged. Source revisions, providers, generator code, and visual-gender
 policy are unchanged. Rules remain `d06-auto-4` because no derivation logic changed.
 D06 remains open for later generations and provider/gender/tag audits.
+
+
+## Generation 6 increment
+
+Selecting generation 6 adds 67 catalog species, 122 metadata forms, and 230
+sprites in 115 regular/shiny pairs. The earlier four Pyroar/Meowstic family
+species and Sylveon were already included, so they are not added twice. All
+National numbers 1–721 have audited standard artwork. The existing reviewed
+visual-gender pairs retain their identities and bytes.
+
+Vivillon's 20 patterns, flower colors, Furfrou trims, Zygarde's three forms,
+and Hoopa Unbound derive from exact metadata records. Hoopa standard is
+Psychic/Ghost; Unbound is Psychic/Dark. Greninja battle-bond is a source alias
+of Ash artwork. Scatterbug/Spewpa pattern names and Gourgeist size names are
+source aliases of the same appearance, not additional collectible sprites.
+Pumpkaboo's three alternate sizes remain metadata-only because the inherited
+quality flags mark them as unofficial. Hisuian Sliggoo/Goodra/Avalugg and Noble Avalugg
+also remain unavailable under the existing quality gate. Noble Avalugg shares
+verified Hisuian variety typing through one reasoned exception.
+
+All 230 new normalized sprites were visually inspected and all earlier PNGs
+are unchanged. Source revisions, providers, generator code, and visual-gender
+scope are unchanged. Rules remain `d06-auto-4`. No source files, packages,
+dependencies, or public flags were added. D06 remains open for generations
+7–9 and remaining provider, gender, and achievement-tag audits.
