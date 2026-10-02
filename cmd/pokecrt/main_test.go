@@ -152,6 +152,27 @@ func TestInstalledBinary(t *testing.T) {
 			t.Fatalf("closed pipe: run=%v close=%v stderr=%q", runErr, closeErr, pipeErrors.String())
 		}
 	}
+	// Public commands must bypass even invalid paths or existing corrupt state.
+	corrupt := filepath.Join(temp, "corrupt-data")
+	if err := os.Mkdir(corrupt, 0700); err != nil {
+		t.Fatal(err)
+	}
+	corruptDB := filepath.Join(corrupt, "trainers.sqlite3")
+	corruptBytes := []byte("deliberately corrupt trainer database")
+	if err := os.WriteFile(corruptDB, corruptBytes, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, override := range []string{"relative-invalid-path", corrupt} {
+		for _, publicArgs := range [][]string{{"--help"}, {"--version"}, {"print", "--name", "charizard"}, {"list", "--name", "eevee", "--details"}} {
+			status, _, stderr := invoke(publicArgs, "POKECRT_DATA_DIR="+override)
+			if status != 0 || len(stderr) != 0 {
+				t.Fatalf("public command touched storage: %v: status=%d stderr=%q", publicArgs, status, stderr)
+			}
+		}
+	}
+	if got, err := os.ReadFile(corruptDB); err != nil || !bytes.Equal(got, corruptBytes) {
+		t.Fatalf("public command changed corrupt database: %q, %v", got, err)
+	}
 	for _, path := range []string{data, xdg} {
 		if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
 			t.Fatalf("created trainer path %s: %v", path, err)

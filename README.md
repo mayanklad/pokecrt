@@ -313,3 +313,11 @@ Transformation identity is checked against pinned metadata before source alias
 folding. Tatsugiri Curly Mega and Droopy Mega remain distinct metadata forms;
 the source's ordinary-image aliases do not provide accepted transformation art.
 Their artwork is explicitly unavailable, with no fallback to ordinary forms.
+
+## Trainer storage development
+
+The development source includes the D11 SQLite foundation with explicit
+initialization, schema 001, protected local files, atomic transactions and
+consistent upgrade backups. Profile commands begin in D12; this does not change
+the published v0.2 feature set. Public commands remain independent of trainer
+storage. Dependency licenses are retained in [LICENSING.md](LICENSING.md).

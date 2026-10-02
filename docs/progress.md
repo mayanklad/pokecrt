@@ -13,10 +13,29 @@ D01–D10 implement the public engine:
 - Compact/sprite output, natural-size truecolor half blocks and transparency.
 - NO_COLOR, piped colors and quiet broken pipes.
 - Public compact catalog and detailed entries with shared selectors.
-- No trainer storage or runtime downloads; listing has no discovery restriction.
+- Public commands never open trainer storage or download at runtime; listing has no discovery restriction.
 - Pinned/hash-verified preparation, provenance and deterministic generation.
 - Routine inventory derived from source data; only policies/corrections maintained.
 - Exact sprite lookup indexed automatically from the generated manifest.
+
+## Storage foundation
+
+D11 adds the storage foundation for the trainer CLI:
+
+- State path precedence: absolute `POKECRT_DATA_DIR`, absolute `XDG_DATA_HOME`,
+  then the Linux user home fallback; missing-state reads create nothing.
+- Explicit initialization with directory mode 0700 and database mode 0600.
+- CGO-free SQLite (`modernc.org/sqlite v1.60.1`), pinned modules and checksums.
+- Embedded schema 001, foreign keys, a 5000 ms busy timeout, DELETE journaling
+  and FULL synchronization on a single-connection repository.
+- Dedicated-connection immediate transactions with rollback on failure,
+  cancellation or panic, and no automatic retry of an uncertain commit.
+- Atomic versioned migrations with protected, nonoverwriting consistent backups
+  before nonempty upgrades; corrupt, newer and unknown unversioned state preserved.
+
+Profile commands and encounters remain unimplemented. Public print/list/help/
+version do not resolve storage paths and remain usable with corrupt trainer state.
+No legacy JSON storage was present, so no import routine is introduced.
 
 ## Dataset
 
@@ -33,12 +52,16 @@ Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 The catalog also reports 53 metadata varieties without resolved catalog/source
 identities; these are separate from missing artwork counts. No fallback artwork
-is inferred. Storage schema version: none.
+is inferred. Storage schema version: 1 (explicit initialization only).
 
 ## Validation and performance
 
 The public suite covers selector composition, exact artwork identity, inventory,
 coverage, status/stream behavior and installed execution outside the source tree.
+Storage tests cover initialization, path resolution, connection replacement,
+constraints, rollback, concurrent writes, migration backups and preservation.
+Upgrade tests use synthetic schema 002 fixtures; no production schema 002 exists.
+Encounter aggregates and profile workflows are validated when those features land.
 Tests, vet, race checks and pinned dataset checks pass for the implementation
 baseline. Benchmark methods, environments, startup/memory tradeoffs and numeric
 budgets are recorded in [benchmarks.md](benchmarks.md).
