@@ -84,3 +84,21 @@ The raw sprite files were originally ripped by Zhorken and Kaphotics who can be 
 
 Feel free to use PokéSprite in your own projects or to create derivative works. We appreciate it if you credit the project, but it's not required.
 
+
+## Community provider artwork
+
+Source: https://github.com/bamq/pokemon-sprites/tree/c1958e7260a4bce93bd104e79966a27fb333c7aa
+
+Pinned README and contributors record National Pokédex Version Delta community artwork adapted to 68x56. No application-code license or source label is treated as an image-rights grant. Owner-approved attributed fan-project distribution applies.
+
+bamq/pokemon-sprites; National Pokédex Version Delta Icon Dex and its contributors; linked credits preserved in generated notices.
+# pokemon-sprites
+
+Icons for Scarlet & Violet Pokémon
+
+Pokémon sprite icons are taken from the [National Pokédex Version Delta Project](https://www.deviantart.com/mbcmechachu/art/National-Pokedex-Icon-Dex-824897934) and resized to 68x56 pixels to conform with the [PokéSprite](https://github.com/msikma/pokesprite) project icons so as to look cohesive when used together.
+
+[Image credits](https://docs.google.com/spreadsheets/d/1kI_PDXnbghxjN2LBvxA6Pz-QqMYlVGN3Z1EivXOYwNY/edit?gid=0#gid=0)
+
+Icons for Scarlet and Violet Pokémon from [National Pokédex Version Delta Icon Dex](https://www.deviantart.com/mbcmechachu/art/National-Pokedex-Icon-Dex-824897934) project and its [contributors](https://docs.google.com/spreadsheets/d/1kI_PDXnbghxjN2LBvxA6Pz-QqMYlVGN3Z1EivXOYwNY/edit?gid=0#gid=0).
+

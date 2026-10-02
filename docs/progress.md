@@ -3,8 +3,8 @@
 Specification: v1, including approved sections 25–27 and implementation clarifications
 Current release target: v0.2 — Complete public engine
 Last published milestone: v0.1
-Current increment: D06 generation-9 metadata inventory
-Current source commit: 73fc88ac445deff81bb5b59ad88d217c5af7a6d9
+Current increment: D06 reviewed Generation 9 community provider
+Current source commit: 39abfc30e855ac8d0aeddf3a71667b7eb3e0e63d
 Commit note: verified baseline before this increment; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -18,15 +18,15 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 ## Dataset
 
 Development dataset ID:
-`25d7b91661cfce4f19da4a1442a649efb0ac0bd9fccc78cf755268ebab4dd81c`
+`0ecbbb58dff8f03b2ae2e168ffe88943470ad94a28dc4922bfcadf3c7abb3955`
 
 - 1,025 catalog species: all generation-1 through generation-9 species plus full evolution-family closure
-- 1,447 metadata forms; 1,200 collectible forms; 2,403 exact regular/shiny assets
-- 898 eligible species; 900 standard regular slots; 1,201 shiny slots
+- 1,447 metadata forms; 1,327 collectible forms; 2,657 exact regular/shiny assets
+- 1,017 eligible species; 1,013 standard-printable species; 1,015 standard regular slots; 1,328 shiny slots
 - 4 distinct visual gender slots across Pyroar/Meowstic, with male defaults
-- 247 unavailable metadata form appearances; 127 species lack audited standard artwork
-- 2,422 pinned inputs; coverage.json/coverage.md record availability and quality
-- Direct images remain pinned PokéSprite-v2; inherited provider records stay distinct
+- 120 unavailable metadata form appearances; 12 species lack accepted standard artwork
+- 2,935 pinned inputs; coverage.json/coverage.md record availability and quality
+- Runtime images remain pinned PokéSprite-v2; community imports also match original-provider pins
 - Complete evolution references, aliases, typing, stages, flags, and name corrections
 
 ## Tooling and verification
@@ -35,13 +35,13 @@ Development dataset ID:
 - Exact source/palette provenance; inherited edit/retained-generation flags audited
 - Reject provisional candidates, unknown inherited flags, duplicate pixels, and unsupported layouts
 - Explicit name corrections require exact pinned source/canonical spellings and reasons
-- Assistant full tests/vet and generation checks passed; no new sprites; earlier visual review remains applicable
+- Assistant tests/vet/race and generation checks passed; all 254 new sprites visually reviewed
 - Tests cover family completeness, baby stages, source quality gates, name aliases,
   uniform species boundaries, missing artwork, and installed-binary behavior
 - Routine species/form/asset entries are derived automatically; only policy and exceptions are maintained
 - Provenance modules/tests and dataset documentation consolidated
 - Static selection moved into catalog with injected sprite availability
-- Earlier inventory remains intact; 112 catalog species and 130 metadata forms added; all artwork unchanged
+- Earlier metadata and 2,403 PNGs remain intact; 254 exact community-provider assets added
 - Pinned form table resolves Unown/Pichu; eleven reasoned form exceptions remain
 - Source defaults checked against metadata defaults, including Dudunsparce
 - Explicit --update-lock derives and validates new artwork pins; ordinary generation preserves locks
@@ -148,3 +148,19 @@ Rules: d06-auto-6. Specification remains unchanged.
 Owner verification/commit pending. D06 remains incomplete.
 Next: additional-provider/source-quality audit, including generation-9 artwork;
 then remaining form/gender semantics and achievement-tag audit gates.
+
+
+## Generation 9 provider increment
+
+Metadata increment owner-committed at 39abfc30e855ac8d0aeddf3a71667b7eb3e0e63d.
+The bamq provider is reviewed at the exact v2 import commit. Acceptance remains
+automatic for nongenerated canonical records with exact identity and palette
+provenance. Provider/import evidence and credits are pinned; original/imported
+PNGs must be byte-identical. Generated candidates stay excluded. Community
+artwork and upstream resizing are disclosed in notices and licensing scope.
+Rules: d06-auto-7. Specification section 13 documents provider acceptance gates.
+Twelve standards and 120 metadata appearances remain unavailable; no fallback.
+Tests, vet, race, build, deterministic generation, fresh preparation and visual
+review pass. No new source files, packages, dependencies or runtime flags.
+Owner verification/commit pending. D06 next reviews remaining provisional artwork,
+form/gender semantics and achievement tags; D07 remains later.

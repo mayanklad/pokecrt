@@ -85,7 +85,7 @@ func TestInstalledBinary(t *testing.T) {
 		args   []string
 		status int
 	}{
-		{[]string{"print", "--name", "annihilape"}, 1},
+		{[]string{"print", "--name", "ogerpon"}, 1},
 		{[]string{"print", "--name", "unknown"}, 2},
 		{[]string{"print", "--output", "full"}, 2},
 		{[]string{"print", "--name", "charizard", "--name", "squirtle"}, 2},
@@ -93,6 +93,12 @@ func TestInstalledBinary(t *testing.T) {
 		status, stdout, stderr := invoke(test.args)
 		if status != test.status || len(stdout) != 0 || len(stderr) == 0 {
 			t.Fatalf("%v: status=%d stdout=%q stderr=%q", test.args, status, stdout, stderr)
+		}
+	}
+	for _, name := range []string{"sprigatito", "annihilape", "terapagos", "pecharunt"} {
+		status, output, stderr := invoke([]string{"print", "--name", name}, "NO_COLOR=1")
+		if status != 0 || len(output) == 0 || len(stderr) != 0 {
+			t.Fatalf("new provider %s: status=%d stderr=%q", name, status, stderr)
 		}
 	}
 	// A closed reader reliably exercises real SIGPIPE/EPIPE handling rather than

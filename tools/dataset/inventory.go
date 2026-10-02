@@ -17,10 +17,10 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6"))) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
+	if !automaticRules(m.RulesVersion) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
-	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6")) {
+	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && m.RulesVersion != "d06-auto-7"))) {
 		return fmt.Errorf("source-only exclusions require automatic rules v3")
 	}
 	for _, e := range m.SourceFormExclusions {
@@ -111,10 +111,13 @@ func selectedSpecies(rows []map[string]string, policy inventorySelection) ([]int
 }
 
 func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConfig, error) {
-	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && m.RulesVersion != "d06-auto-6" {
+	if err := validateReviewedProviders(m); err != nil {
+		return m, err
+	}
+	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && (m.RulesVersion != "d06-auto-6" && m.RulesVersion != "d06-auto-7") {
 		return m, fmt.Errorf("form suffix and default alias corrections require automatic rules v6")
 	}
-	if len(m.DuplicatePaletteExclusions) > 0 && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6") {
+	if len(m.DuplicatePaletteExclusions) > 0 && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && m.RulesVersion != "d06-auto-7")) {
 		return m, fmt.Errorf("duplicate palette exclusions require automatic rules v5")
 	}
 	if m.Selection == nil {
@@ -227,7 +230,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || (m.RulesVersion == "d06-auto-5" || m.RulesVersion == "d06-auto-6"))) && !foundFormTable {
+	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || (m.RulesVersion == "d06-auto-5" || (m.RulesVersion == "d06-auto-6" || m.RulesVersion == "d06-auto-7")))) && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
 	}
 	formOwners, formTypes, err := metadataFormTyping(lock, cache, m.RulesVersion)
@@ -361,12 +364,21 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 				f.Genders = []string{"male", "female"}
 			}
 			m.Forms = append(m.Forms, f)
-			a := assetMapping{SpeciesID: id, SourceID: "pokesprite-v2", SourceSlug: sf.Slug, FormID: f.ID, SourceFormID: sf.ID, Gender: f.DefaultGender, Palette: "regular", Reason: "Derived from pinned manifest; audited inherited provider and quality flags required."}
-			if sf.IsGenerated == nil || *sf.IsGenerated || sf.Source != "msikma/pokesprite" {
-				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: provider or generated status is outside the audited inherited policy.", id, f.ID))
+			a := assetMapping{SpeciesID: id, SourceID: "pokesprite-v2", Provider: sf.Source, SourceSlug: sf.Slug, FormID: f.ID, SourceFormID: sf.ID, Gender: f.DefaultGender, Palette: "regular", Reason: "Derived from pinned manifest; reviewed provider and exact provenance required."}
+			if sf.IsGenerated == nil || *sf.IsGenerated || !providerReviewed(m, sf.Source) {
+				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: provider or generated status is outside the reviewed artwork policy.", id, f.ID))
 				continue
 			}
-			if _, err := inherited.verify(a, sp.Slug); err != nil {
+			var providerErr error
+			if a.Provider == "msikma/pokesprite" {
+				_, providerErr = inherited.verify(a, sp.Slug)
+			} else {
+				_, providerErr = verifyAssetProvider(lock, cache, m, a, sp.Slug, false)
+			}
+			if providerErr != nil {
+				if a.Provider == "bamq/pokemon-sprites" {
+					return m, fmt.Errorf("provider evidence for #%03d/%s: %w", id, f.ID, providerErr)
+				}
 				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: inherited appearance flags are missing or provisional; artwork excluded.", id, f.ID))
 				continue
 			}
@@ -489,7 +501,7 @@ func reviewedAliasAssets(lock sourceLock, cache string, m mappingConfig) ([]asse
 				return nil, fmt.Errorf("alias lacks audited palettes %d/%s", a.SpeciesID, a.SourceFormID)
 			}
 			for _, palette := range []string{"regular", "shiny"} {
-				asset := assetMapping{SpeciesID: sp.ID, FormID: "standard", SourceFormID: sf.ID, SourceID: "pokesprite-v2", SourceSlug: sf.Slug, Gender: "default", Palette: palette}
+				asset := assetMapping{SpeciesID: sp.ID, FormID: "standard", SourceFormID: sf.ID, SourceID: "pokesprite-v2", Provider: sf.Source, SourceSlug: sf.Slug, Gender: "default", Palette: palette}
 				asset.Path, _ = assetSourcePath(asset)
 				result = append(result, asset)
 			}
@@ -532,4 +544,12 @@ func applyFormSuffixRules(m mappingConfig, ids []int, byID map[int]sourceSpecies
 		}
 	}
 	return nil
+}
+
+func automaticRules(version string) bool {
+	switch version {
+	case "d06-auto-1", "d06-auto-2", "d06-auto-3", "d06-auto-4", "d06-auto-5", "d06-auto-6", "d06-auto-7":
+		return true
+	}
+	return false
 }

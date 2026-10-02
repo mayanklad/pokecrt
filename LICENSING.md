@@ -19,10 +19,16 @@ else and the programming code. Its contributors document invites reuse and
 derivative projects. Those statements do not establish an underlying image
 rights grant from the named rights holders.
 
-The three selected regular images have pinned hashes and an upstream inherited,
-nongenerated provenance record. That verifies their identity and recorded
-provenance, not ownership or redistribution clearance. Cropping transparent
-margins does not change this distinction.
+Accepted images have pinned hashes and nongenerated source/provider provenance.
+Inherited PokéSprite artwork requires verified nonprovisional appearance flags.
+Generation 9 community artwork comes from `bamq/pokemon-sprites` at
+c1958e7260a4bce93bd104e79966a27fb333c7aa, the exact commit recorded by the
+pinned PokéSprite-v2 importer. Its README attributes the National Pokédex Version
+Delta project and states that icons were resized upstream to 68×56. PokéCRT
+verifies the imported PNG bytes against that provider commit, retains its README
+and contributor credits in generated notices, and only crops transparent margins.
+This verifies recorded identity and provenance, not ownership or redistribution
+clearance. Community images remain subject to their respective owners' rights.
 
 On 30 September 2026, the owner approved attributed fan-project releases with
 bundled sprites. The project-wide policy is recorded in docs/release-policy.md
@@ -36,6 +42,7 @@ endorsed by Nintendo, Creatures Inc., GAME FREAK Inc., or The Pokémon Company.
 Preserve source provenance, credits, and notices in distributed packages.
 
 References:
+- https://github.com/bamq/pokemon-sprites/tree/c1958e7260a4bce93bd104e79966a27fb333c7aa
 - https://github.com/darknesspwnsu/pokesprite-v2/blob/32ab52ea6b61871da34d9a3c61c7760c65a37af7/readme.md
 - https://github.com/darknesspwnsu/pokesprite-v2/blob/32ab52ea6b61871da34d9a3c61c7760c65a37af7/contributors.md
 - https://msikma.github.io/pokesprite/index.html

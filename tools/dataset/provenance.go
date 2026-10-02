@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -96,7 +97,7 @@ func verifyFemaleProvenance(lock sourceLock, cache string, a assetMapping) (bool
 func validateSourceNames(m mappingConfig) error {
 	seen := map[int]bool{}
 	for _, name := range m.SourceNameOverrides {
-		if m.RulesVersion != "d06b-gen1-1" && (m.RulesVersion != "d06-auto-1" && m.RulesVersion != "d06-auto-2" && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && m.RulesVersion != "d06-auto-6"))) || !slices.Contains(m.CatalogSpecies, name.SpeciesID) || seen[name.SpeciesID] || strings.TrimSpace(name.SourceName) == "" || strings.TrimSpace(name.CanonicalName) == "" || name.SourceName == name.CanonicalName || strings.TrimSpace(name.Reason) == "" {
+		if m.RulesVersion != "d06b-gen1-1" && !automaticRules(m.RulesVersion) || !slices.Contains(m.CatalogSpecies, name.SpeciesID) || seen[name.SpeciesID] || strings.TrimSpace(name.SourceName) == "" || strings.TrimSpace(name.CanonicalName) == "" || name.SourceName == name.CanonicalName || strings.TrimSpace(name.Reason) == "" {
 			return fmt.Errorf("invalid or duplicate source-name correction for #%03d", name.SpeciesID)
 		}
 		seen[name.SpeciesID] = true
@@ -111,4 +112,79 @@ func sourceNameMatches(m mappingConfig, id int, source, canonical string) bool {
 		}
 	}
 	return source == canonical
+}
+
+func providerReviewed(m mappingConfig, provider string) bool {
+	return provider == "msikma/pokesprite" || (provider == "bamq/pokemon-sprites" && slices.Contains(m.ReviewedProviders, provider))
+}
+func validateReviewedProviders(m mappingConfig) error {
+	if len(m.ReviewedProviders) == 0 {
+		return nil
+	}
+	if m.RulesVersion != "d06-auto-7" || len(m.ReviewedProviders) != 1 || m.ReviewedProviders[0] != "bamq/pokemon-sprites" {
+		return fmt.Errorf("unsupported or duplicate reviewed provider policy")
+	}
+	return nil
+}
+func verifyAssetProvider(lock sourceLock, cache string, m mappingConfig, a assetMapping, slug string, verifyPixels bool) (bool, error) {
+	provider := a.Provider
+	if provider == "" {
+		provider = "msikma/pokesprite"
+	}
+	if !providerReviewed(m, provider) {
+		return false, fmt.Errorf("unreviewed provider %s", provider)
+	}
+	if provider == "msikma/pokesprite" {
+		inventory, err := loadInheritedInventory(lock, cache)
+		if err != nil {
+			return false, err
+		}
+		return inventory.verify(a, slug)
+	}
+	if a.SourceLayout != "" || a.Gender != "default" {
+		return false, fmt.Errorf("unsupported provider gender/layout %s", assetIdentity(a))
+	}
+	data, _, _, err := readInput(lock, cache, "pokesprite-v2", "sources/upstreams/upstream-lock.json")
+	if err != nil {
+		return false, err
+	}
+	var evidence struct {
+		Sources struct {
+			Bamq struct {
+				URL  string `json:"url"`
+				Head string `json:"head"`
+			} `json:"bamq_repo"`
+		} `json:"sources"`
+	}
+	if err = json.Unmarshal(data, &evidence); err != nil {
+		return false, err
+	}
+	found := false
+	for _, src := range lock.Sources {
+		if src.ID == "bamq" {
+			found = src.Repository == "bamq/pokemon-sprites" && evidence.Sources.Bamq.URL == "https://github.com/"+src.Repository && evidence.Sources.Bamq.Head == src.Revision
+		}
+	}
+	if !found {
+		return false, fmt.Errorf("provider revision does not match pinned import evidence")
+	}
+	for _, name := range []string{"README.md", "contributors.md"} {
+		if _, _, _, err = readInput(lock, cache, "bamq", name); err != nil {
+			return false, err
+		}
+	}
+	if verifyPixels {
+		canonical, _, _, err := readInput(lock, cache, "pokesprite-v2", a.Path)
+		if err != nil {
+			return false, err
+		}
+		original, _, _, err := readInput(lock, cache, "bamq", a.Path)
+		if err != nil {
+			return false, err
+		}
+		if !bytes.Equal(canonical, original) {
+			return false, fmt.Errorf("provider import bytes differ %s", assetIdentity(a))
+		}
+	}
+	return false, nil
 }

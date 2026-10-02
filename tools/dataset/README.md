@@ -36,8 +36,11 @@ Unused, redundant, duplicate, and wrong-owner form exceptions fail validation.
 ## Artwork policy and current audit scope
 
 Routine regular/shiny paths are derived from upstream availability flags.
-Only nongenerated `msikma/pokesprite` inherited appearances with verified
-identity and nonprovisional gen-8 flags pass this batch's quality gate.
+Nongenerated `msikma/pokesprite` inherited appearances require verified identity
+and nonprovisional gen-8 flags. Explicitly reviewed `bamq/pokemon-sprites`
+appearances require the pinned import commit, preserved credits, and byte-identical
+PNGs from the original provider. Unknown providers and generated candidates fail
+the acceptance policy.
 Excluded appearances stay in metadata and are reported automatically.
 Asset-index palette/provider provenance and pinned file hashes are also checked.
 Decoded PNGs are cropped only at transparent margins; distinct regular/shiny
@@ -50,7 +53,8 @@ unaudited female candidates from being added by the refactor. It is not a v1
 exclusion. Other gender pairs and providers remain D06 work.
 
 The current coverage is 1,025 catalog species, 1,447 metadata forms,
-898 printable species, 1,200 collectible forms, and 2,403 assets. 247 appearances
+1,013 standard-printable species, 1,017 eligible encounter species, 1,327
+collectible forms, and 2,657 assets. 120 appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -99,7 +103,7 @@ and revision changes still require separate reviewed pin updates.
 explicit `--generate`; it is not a runtime or ordinary build action.
 
 The dataset ID includes the policy, resolved inventory, exceptions, and assets.
-Generation-9 metadata expansion changes that ID without adding image pins or eligible assets. No trainer database exists, so no storage migration applies.
+The reviewed provider expansion changes that ID and adds exact artwork pins. No trainer database exists, so no storage migration applies.
 
 ## Package structure
 
@@ -112,9 +116,10 @@ There is no separate `internal/query` package or duplicated selection engine.
 
 ## Sources, terms, and history
 
-Direct artwork is downloaded only from `darknesspwnsu/pokesprite-v2`, initially
+Runtime artwork is prepared from `darknesspwnsu/pokesprite-v2`, initially
 pinned at `32ab52ea6b61871da34d9a3c61c7760c65a37af7`. Inherited
-`msikma/pokesprite` labels describe provenance, not a second download source.
+`msikma/pokesprite` labels describe provenance. Reviewed community imports are additionally checked against the
+original pinned `bamq/pokemon-sprites` repository.
 PokéAPI metadata is pinned at `bc92d3b6029ef1abe9e7ad424c400b338f3c11fe`.
 The cache label is `pokesprite-v2`; raw inputs and normalized PNGs stay outside Git.
 
@@ -134,10 +139,10 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-6`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-7`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
-its generated/unaudited artwork remains unavailable. No new source provider or
-visual-gender scope is accepted by this batch.
+its generated standard artwork remains unavailable. The community provider is
+reviewed below; visual-gender scope remains Pyroar/Meowstic.
 
 Maximum cropped artwork dimensions in this batch are 67 columns by 56 source
 pixel rows (up to 28 half-block terminal rows). Narrow terminals may wrap.
@@ -350,3 +355,38 @@ or runtime command is introduced. D06 next audits the additional provider,
 remaining provisional artwork, visual-gender identities (including Oinkologne),
 source-generated form/alias claims, and achievement tags. Generated appearance
 claims are not evidence of usable artwork or completed form/gender semantics.
+
+
+## Reviewed Generation 9 provider increment
+
+Generation 9 metadata was owner-committed at
+39abfc30e855ac8d0aeddf3a71667b7eb3e0e63d. Rules `d06-auto-7` explicitly accept
+nongenerated `bamq/pokemon-sprites` appearances without maintaining a species or
+image list. Paths and identities continue to derive from pinned source records.
+The provider revision c1958e7260a4bce93bd104e79966a27fb333c7aa must match the
+pinned v2 upstream lock. Reviewed importer/build scripts are pinned as evidence:
+they copy PNGs without reencoding. Every accepted community PNG is locked in both
+repositories and must match byte-for-byte. Missing or mismatched provider evidence
+fails generation. The original provider README and contributor file are pinned
+and included in generated notices, retaining project and artist-credit links.
+These are community-adapted icons, resized upstream to 68×56; PokéCRT does not
+resize them or claim they are untouched game assets. The existing owner-approved
+fan-project release policy applies; the audit does not claim image rights clearance.
+
+This adds 254 assets in 127 regular/shiny pairs across 119 species. Standard
+printing gains 115 species, bringing its pool to 1,013 species. Four species have
+accepted alternate artwork but no accepted standard, so encounter eligibility
+across all forms is 1,017. Twelve standards remain unavailable: Hisuian species
+899–905, Oinkologne, Palafin, Tatsugiri, Dudunsparce, and Ogerpon. Their exact
+missing appearances stay reported; alternate artwork never replaces standard.
+Generated candidates remain excluded. Oinkologne gender semantics and suspicious
+source-only alias claims remain explicit D06 review work before public selectors.
+
+All 254 new normalized images were visually inspected; all earlier 2,403 PNGs
+remain byte-identical. Tests cover provider policy, exact import revision,
+missing credits, byte mismatch, unsupported gender/layout, standard selection,
+missing artwork and installed Generation 9 printing. Source locks total 2,935
+inputs: 2,657 accepted v2 images, three existing excluded/alias evidence images,
+254 original-provider images, and 21 metadata/terms/import-evidence files.
+No additional source file, package, dependency or public flag is introduced.
+The maximum cropped dimensions remain 67×56. D06 remains open.

@@ -1,5 +1,5 @@
 {
-  "rules_version": "d06-auto-6",
+  "rules_version": "d06-auto-7",
   "selection": {
     "generations": [
       1,
@@ -294,5 +294,8 @@
         "shiny": "f526d1aae2402495a78d315de6572b92db193fd510866a50b20f2523c0d3f064"
       }
     }
+  ],
+  "reviewed_providers": [
+    "bamq/pokemon-sprites"
   ]
 }

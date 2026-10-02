@@ -133,3 +133,49 @@ func TestExactDocumentedSourceNameCorrection(t *testing.T) {
 		t.Fatal("accepted duplicate correction")
 	}
 }
+
+func TestReviewedProviderEvidence(t *testing.T) {
+	for _, name := range []string{"verified", "unreviewed", "wrong revision", "missing credits", "different bytes", "unsupported gender"} {
+		t.Run(name, func(t *testing.T) {
+			lock, cache, m := variantFixture(t)
+			m.RulesVersion = "d06-auto-7"
+			m.ReviewedProviders = []string{"bamq/pokemon-sprites"}
+			revision := strings.Repeat("a", 40)
+			lock.Sources = append(lock.Sources, source{ID: "bamq", Repository: "bamq/pokemon-sprites", Revision: revision, Terms: "fixture", Attribution: "fixture"})
+			fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/upstreams/upstream-lock.json", []byte(`{"sources":{"bamq_repo":{"url":"https://github.com/bamq/pokemon-sprites","head":"`+revision+`"}}}`))
+			fixtureInput(t, &lock, cache, "bamq", "README.md", []byte("fixture origin"))
+			fixtureInput(t, &lock, cache, "bamq", "contributors.md", []byte("fixture credits"))
+			a := m.Assets[0]
+			a.Provider = "bamq/pokemon-sprites"
+			pixels := encodeFixturePNG(t, false)
+			fixtureInput(t, &lock, cache, "pokesprite-v2", a.Path, pixels)
+			fixtureInput(t, &lock, cache, "bamq", a.Path, pixels)
+			switch name {
+			case "unreviewed":
+				m.ReviewedProviders = nil
+			case "wrong revision":
+				lock.Sources[len(lock.Sources)-1].Revision = strings.Repeat("b", 40)
+			case "missing credits":
+				lock.Sources[len(lock.Sources)-1].Files = lock.Sources[len(lock.Sources)-1].Files[:1]
+			case "different bytes":
+				fixtureInput(t, &lock, cache, "bamq", a.Path, encodeFixturePNG(t, true))
+			case "unsupported gender":
+				a.Gender = "female"
+			}
+			_, err := verifyAssetProvider(lock, cache, m, a, "bulbasaur", true)
+			if (err == nil) != (name == "verified") {
+				t.Fatalf("evidence accepted=%t: %v", err == nil, err)
+			}
+		})
+	}
+}
+func TestReviewedProviderPolicy(t *testing.T) {
+	for _, providers := range [][]string{{"other/provider"}, {"bamq/pokemon-sprites", "bamq/pokemon-sprites"}} {
+		if err := validateReviewedProviders(mappingConfig{RulesVersion: "d06-auto-7", ReviewedProviders: providers}); err == nil {
+			t.Fatal("accepted invalid provider policy")
+		}
+	}
+	if err := validateReviewedProviders(mappingConfig{RulesVersion: "d06-auto-6", ReviewedProviders: []string{"bamq/pokemon-sprites"}}); err == nil {
+		t.Fatal("accepted new provider under old rules")
+	}
+}

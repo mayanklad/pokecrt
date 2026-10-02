@@ -205,6 +205,20 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 		return lock, fmt.Errorf("artwork source missing")
 	}
 	src := lock.Sources[index]
+	providerPaths := map[string]bool{}
+	for _, a := range resolved.Assets {
+		if a.Provider == "bamq/pokemon-sprites" {
+			providerPaths[a.Path] = true
+		}
+	}
+	var upstream source
+	upstreamIndex := -1
+	for i, s := range lock.Sources {
+		if s.ID == "bamq" {
+			upstream = s
+			upstreamIndex = i
+		}
+	}
 	existing := map[string]bool{}
 	for _, file := range src.Files {
 		existing[file.Path] = true
@@ -224,8 +238,9 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 	progress := newTransferProgress("New artwork", len(paths), options)
 	defer func() { progress.finish(err) }()
 	type result struct {
-		file sourceFile
-		err  error
+		file     sourceFile
+		upstream sourceFile
+		err      error
 	}
 	results := make([]result, len(paths))
 	jobs := make(chan int)
@@ -236,7 +251,18 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 			defer workers.Done()
 			for i := range jobs {
 				file, e := pinAsset(ctx, client, "https://raw.githubusercontent.com/"+src.Repository+"/"+src.Revision+"/"+paths[i], filepath.Join(cache, src.ID, filepath.FromSlash(paths[i])), paths[i])
-				results[i] = result{file, e}
+				var original sourceFile
+				if e == nil && providerPaths[paths[i]] {
+					if upstreamIndex < 0 {
+						e = fmt.Errorf("missing reviewed provider source")
+					} else {
+						original, e = pinAsset(ctx, client, "https://raw.githubusercontent.com/"+upstream.Repository+"/"+upstream.Revision+"/"+paths[i], filepath.Join(cache, upstream.ID, filepath.FromSlash(paths[i])), paths[i])
+						if e == nil && (original.SHA256 != file.SHA256 || original.Size != file.Size) {
+							e = fmt.Errorf("provider import bytes differ: %s", paths[i])
+						}
+					}
+				}
+				results[i] = result{file: file, upstream: original, err: e}
 				if e == nil {
 					progress.record(src.ID+"/"+paths[i], true)
 				}
@@ -256,8 +282,19 @@ func updateAssetLock(ctx context.Context, client *http.Client, lock sourceLock, 
 	// Copy the slice so callers' existing lock records cannot be modified.
 	lock.Sources = append([]source(nil), lock.Sources...)
 	lock.Sources[index].Files = append([]sourceFile(nil), src.Files...)
+	if upstreamIndex >= 0 {
+		lock.Sources[upstreamIndex].Files = append([]sourceFile(nil), upstream.Files...)
+	}
 	for _, r := range results {
 		lock.Sources[index].Files = append(lock.Sources[index].Files, r.file)
+		if r.upstream.Path != "" {
+			lock.Sources[upstreamIndex].Files = append(lock.Sources[upstreamIndex].Files, r.upstream)
+		}
+	}
+	if upstreamIndex >= 0 {
+		sort.Slice(lock.Sources[upstreamIndex].Files, func(i, j int) bool {
+			return lock.Sources[upstreamIndex].Files[i].Path < lock.Sources[upstreamIndex].Files[j].Path
+		})
 	}
 	sort.Slice(lock.Sources[index].Files, func(i, j int) bool { return lock.Sources[index].Files[i].Path < lock.Sources[index].Files[j].Path })
 	return lock, validateLock(lock)

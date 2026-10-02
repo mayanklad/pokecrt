@@ -12,19 +12,21 @@ The development catalog contains all generation-1 through generation-9 species, 
 connected evolution families (including later-generation relatives):
 1,025 species and 1,447 metadata forms.
 
-Audited artwork covers 898 species and 1,200 collectible forms, with 2,403 exact
-regular/shiny assets. 127 catalog species currently have metadata but no
-audited standard artwork. 247 form appearances are explicitly excluded pending source
-quality/provider review. Minior meteor has regular artwork only because its
-source shiny pixels are identical; the reviewed exclusion is hash-verified.
-Printing never substitutes another appearance.
+Audited artwork covers 1,017 species and 1,327 collectible forms, with 2,657 exact
+regular/shiny assets. Standard regular printing covers 1,013 species; 12 species
+currently lack accepted standard artwork. 120 form appearances remain unavailable.
+Minior meteor has regular artwork only because its source shiny pixels are
+identical; the reviewed exclusion is hash-verified. Printing never substitutes
+another appearance.
 
 Pyroar and Meowstic retain distinct male/female regular and shiny slots within
-one standard form. There are 900 standard regular artwork slots across 898
-eligible species; random printing samples species uniformly, not artwork slots.
-Generation 9 currently has metadata only: its source artwork uses generated
-candidates or a provider awaiting audit. It cannot yet be printed. D06 still
-includes provider, form/gender identity, and achievement-tag audits.
+one standard form. There are 1,015 standard regular slots across 1,013 printable
+species; random printing samples species uniformly. Reviewed community artwork
+from `bamq/pokemon-sprites` adds Generation 9 printing, verified against the exact
+commit imported by PokéSprite-v2. Generated candidates remain excluded. Some
+species have accepted alternate artwork but no accepted standard artwork.
+D06 still includes remaining source-quality, form/gender identity, and
+achievement-tag audits.
 
 Public filters and explicit form/shiny/gender printing flags arrive in D07;
 variants can currently be inspected through the developer preview tool. Catalog
@@ -60,7 +62,8 @@ Only this explicit developer `--fetch` step downloads sources. Inputs have pinne
 revisions, sizes, and SHA-256 hashes. Valid cached inputs are reused; corrupt
 inputs fail visibly. Downloads stay in the ignored `.cache/dataset` directory. Artwork inputs use
 the source ID and cache folder `pokesprite-v2`; inherited `msikma/pokesprite`
-provenance identifies the original artwork provider and is preserved.
+provenance identifies the original artwork provider and is preserved. Reviewed
+community inputs are also pinned under `bamq` to verify unchanged imports.
 With verified inputs already cached, omit `--fetch` to generate offline.
 
 For an intentional dataset/schema update, use `--generate --check` instead of

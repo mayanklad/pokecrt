@@ -69,12 +69,12 @@ func TestRandomPrintAndFailures(t *testing.T) {
 	for _, test := range []struct {
 		index int
 		name  string
-	}{{0, "#001 Bulbasaur"}, {24, "#025 Pikachu"}, {150, "#151 Mew"}, {151, "#152 Chikorita"}, {250, "#251 Celebi"}, {251, "#252 Treecko"}, {385, "#386 Deoxys"}, {386, "#387 Turtwig"}, {492, "#493 Arceus"}, {493, "#494 Victini"}, {648, "#649 Genesect"}, {649, "#650 Chespin"}, {720, "#721 Volcanion"}, {721, "#722 Rowlet"}, {808, "#809 Melmetal"}, {809, "#810 Grookey"}, {897, "#898 Calyrex"}} {
+	}{{0, "#001 Bulbasaur"}, {24, "#025 Pikachu"}, {150, "#151 Mew"}, {151, "#152 Chikorita"}, {250, "#251 Celebi"}, {251, "#252 Treecko"}, {385, "#386 Deoxys"}, {386, "#387 Turtwig"}, {492, "#493 Arceus"}, {493, "#494 Victini"}, {648, "#649 Genesect"}, {649, "#650 Chespin"}, {720, "#721 Volcanion"}, {721, "#722 Rowlet"}, {808, "#809 Melmetal"}, {809, "#810 Grookey"}, {897, "#898 Calyrex"}, {898, "#906 Sprigatito"}, {1012, "#1025 Pecharunt"}} {
 		index := test.index
 		want := test.name + "\n"
 		var stdout, stderr bytes.Buffer
 		status := runPrint(nil, &stdout, &stderr, func(n int) (int, error) {
-			if n != 898 {
+			if n != 1013 {
 				t.Fatalf("n=%d", n)
 			}
 			return index, nil
@@ -123,7 +123,7 @@ func TestPrintHelpAndNoState(t *testing.T) {
 }
 
 func TestUnauditedArtworkHasNoFallback(t *testing.T) {
-	for _, name := range []string{"annihilape", "sprigatito", "ogerpon", "terapagos"} {
+	for _, name := range []string{"wyrdeer", "oinkologne", "palafin", "tatsugiri", "ogerpon", "dudunsparce"} {
 		var stdout, stderr bytes.Buffer
 		status := Run([]string{"print", "--name", name}, &stdout, &stderr, "dev", catalog.DatasetID)
 		if status != 1 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "artwork unavailable") {

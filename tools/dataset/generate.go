@@ -158,7 +158,7 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	previousFemale := make(map[int]bool)
 	var inherited inheritedInventory
 	previousIcons := make(map[string]bool)
-	if mappings.RulesVersion == "d06b-gen1-1" || (mappings.RulesVersion == "d06-auto-1" || mappings.RulesVersion == "d06-auto-2" || mappings.RulesVersion == "d06-auto-3" || (mappings.RulesVersion == "d06-auto-4" || (mappings.RulesVersion == "d06-auto-5" || mappings.RulesVersion == "d06-auto-6"))) {
+	if mappings.RulesVersion == "d06b-gen1-1" || automaticRules(mappings.RulesVersion) {
 		inherited, err = loadInheritedInventory(lock, cache)
 		if err != nil {
 			return bundle, err
@@ -185,14 +185,20 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 			available = selected.HasShiny
 		}
 		provenance, ok := slots[mapping.Palette]
-		if selected.Slug != mapping.SourceSlug || selected.CanonicalForm != nil || available == nil || !*available || selected.IsGenerated == nil || *selected.IsGenerated || !ok || provenance.IsGenerated == nil || *provenance.IsGenerated || provenance.Source != "msikma/pokesprite" || selected.Source != provenance.Source {
+		if selected.Slug != mapping.SourceSlug || selected.CanonicalForm != nil || available == nil || !*available || selected.IsGenerated == nil || *selected.IsGenerated || !ok || provenance.IsGenerated == nil || *provenance.IsGenerated || !providerReviewed(mappings, provenance.Source) || selected.Source != provenance.Source || (mapping.Provider != "" && mapping.Provider != provenance.Source) {
 			return bundle, fmt.Errorf("unverified, generated, aliased, or mismatched asset %s", assetIdentity(mapping))
 		}
 		if mapping.Gender == "default" && selected.ID != form.SourceFormID {
 			return bundle, fmt.Errorf("default asset uses a different source form %s", assetIdentity(mapping))
 		}
 		if inherited != nil {
-			previous, err := inherited.verify(mapping, sourceSpecies[mapping.SpeciesID].Slug)
+			var previous bool
+			var err error
+			if mapping.Provider == "bamq/pokemon-sprites" {
+				previous, err = verifyAssetProvider(lock, cache, mappings, mapping, sourceSpecies[mapping.SpeciesID].Slug, true)
+			} else {
+				previous, err = inherited.verify(mapping, sourceSpecies[mapping.SpeciesID].Slug)
+			}
 			if err != nil {
 				return bundle, err
 			}
@@ -287,6 +293,9 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	for _, key := range previousKeys {
 		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, "Retained previous-generation source artwork: "+key)
 	}
+	if slices.Contains(mappings.ReviewedProviders, "bamq/pokemon-sprites") {
+		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, "bamq/pokemon-sprites: community artwork adapted upstream to 68x56; exact imported bytes verified at the pinned provider revision. Generated candidates remain excluded.")
+	}
 	coverageJSON, err := json.MarshalIndent(bundle.Coverage, "", "  ")
 	if err != nil {
 		return bundle, err
@@ -334,7 +343,7 @@ func spriteSource(assets []normalizedAsset, datasetID string) ([]byte, error) {
 }
 
 func makeCoverage(species []normalizedSpecies, assets []normalizedAsset, mappings mappingConfig, datasetID string) coverageReport {
-	coverage := coverageReport{DatasetID: datasetID, RulesVersion: mappings.RulesVersion, CatalogSpecies: len(species), ExactEligibleVariants: len(assets), Missing: []missingAsset{}, MissingVariants: []missingVariant{}, Exclusions: mappings.Exclusions, SourceQualityFlags: []string{"Only explicitly mapped inherited artwork with matching source provenance is accepted.", "Generated candidates, source-only aliases, shiny fallbacks, and shiny-only collectibles are rejected.", "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed."}}
+	coverage := coverageReport{DatasetID: datasetID, RulesVersion: mappings.RulesVersion, CatalogSpecies: len(species), ExactEligibleVariants: len(assets), Missing: []missingAsset{}, MissingVariants: []missingVariant{}, Exclusions: mappings.Exclusions, SourceQualityFlags: []string{"Only automatically derived or explicitly mapped artwork with reviewed provider and exact source provenance is accepted.", "Generated candidates, source-only aliases, shiny fallbacks, and shiny-only collectibles are rejected.", "Image copyrights are separate from repository code licenses; no underlying-rights clearance is claimed."}}
 	eligible := map[int]bool{}
 	forms := map[string]bool{}
 	genders := map[string]bool{}
@@ -418,6 +427,19 @@ func thirdPartyNotices(lock sourceLock, cache string) ([]byte, error) {
 		fmt.Fprintf(&output, "\n## %s\n\nSource: https://github.com/%s/tree/%s\n\n%s\n\n", item.heading, source.Repository, source.Revision, source.Terms)
 		output.Write(data)
 		output.WriteByte('\n')
+	}
+	for _, src := range lock.Sources {
+		if src.ID == "bamq" {
+			fmt.Fprintf(&output, "\n## Community provider artwork\n\nSource: https://github.com/%s/tree/%s\n\n%s\n\n%s\n", src.Repository, src.Revision, src.Terms, src.Attribution)
+			for _, name := range []string{"README.md", "contributors.md"} {
+				data, _, _, err := readInput(lock, cache, "bamq", name)
+				if err != nil {
+					return nil, err
+				}
+				output.Write(data)
+				output.WriteByte('\n')
+			}
+		}
 	}
 	return output.Bytes(), nil
 }
