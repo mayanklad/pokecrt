@@ -3,8 +3,10 @@ package cli
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"syscall"
@@ -173,5 +175,53 @@ func TestEvolutionBranchesSeparatorsAndStateFreeListing(t *testing.T) {
 		if status != tc.status || (errout.Len() != 0) != (tc.status != 0) {
 			t.Fatalf("writer status=%d stderr=%q", status, errout.String())
 		}
+	}
+}
+
+func TestPublicQueryVerificationMatrix(t *testing.T) {
+	t.Setenv("NO_COLOR", "1")
+	for _, tc := range []struct {
+		name string
+		args []string
+		ids  []int
+	}{
+		{"generation OR and type intersections", []string{"--gen=1,2", "--type=fire", "--type-any=flying,dragon"}, []int{6, 146, 250}},
+		{"deduplicated lists", []string{"--gen=2,1,2", "--type=FIRE,fire", "--type-any=dragon,flying,flying"}, []int{6, 146, 250}},
+		{"species color and stage", []string{"--gen=1,2", "--type=fire", "--type-any=flying,dragon", "--color=red", "--stage=3"}, []int{6}},
+		{"no standard cross-form typing", []string{"--name=charizard", "--type=dragon"}, nil},
+		{"explicit selected form", []string{"--name=charizard", "--form=mega-x", "--type=fire,dragon"}, []int{6}},
+		{"shiny keeps species color and stage", []string{"--name=charizard", "--form=mega-x", "--shiny", "--color=red", "--stage=3"}, []int{6}},
+		{"gender keeps species color", []string{"--name=hippowdon", "--gender=female", "--color=brown"}, []int{450}},
+		{"valid stage contradiction", []string{"--name=charizard", "--form=mega-x", "--stage=2"}, nil},
+		{"false statuses impose no restriction", []string{"--name=charizard", "--legendary=false", "--mythical=false", "--baby=false"}, []int{6}},
+		{"positive status intersection", []string{"--name=mew", "--mythical", "--legendary"}, nil},
+		{"biological gender is not artwork", []string{"--name=charizard", "--gender=female"}, nil},
+		{"missing regular metadata stays public", []string{"--name=oinkologne", "--gender=female"}, []int{916}},
+		{"missing shiny is not a public candidate", []string{"--name=minior", "--shiny"}, nil},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			text := listOutput(t, tc.args...)
+			var ids []int
+			for _, line := range strings.Split(text, "\n") {
+				if strings.HasPrefix(line, "#") {
+					field := strings.Fields(line)[0]
+					id, err := strconv.Atoi(field[1:])
+					if err != nil {
+						t.Fatal(err)
+					}
+					ids = append(ids, id)
+				}
+			}
+			if !reflect.DeepEqual(ids, tc.ids) {
+				t.Fatalf("IDs=%v want %v; output=%q", ids, tc.ids, text)
+			}
+			if len(tc.ids) == 1 && tc.ids[0] != 916 {
+				var out, errout bytes.Buffer
+				status := Run(append([]string{"print"}, tc.args...), &out, &errout, "dev", catalog.DatasetID)
+				if status != 0 || errout.Len() != 0 || !strings.Contains(out.String(), "#"+fmt.Sprintf("%03d", tc.ids[0])+" ") {
+					t.Fatalf("print disagrees with list: %d %q", status, errout.String())
+				}
+			}
+		})
 	}
 }

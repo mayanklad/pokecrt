@@ -35,7 +35,7 @@ metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
 D06 is verified for the current reviewed inventory. D07 public selectors and D08 catalog listing are
-implemented. Public-engine coverage validation is next.
+implemented. D09 coverage/public behavior validation is complete. D10 benchmarks are next.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 Trainers, encounters, achievements and the TUI are not implemented yet.
@@ -203,6 +203,34 @@ available regular/shiny/gender slots. It never renders all form sprites or
 substitutes an alternate when standard artwork is missing. Broad detail queries
 can be long; no results are capped and no pager is launched. No trainer or
 discovery state limits the public catalog. `NO_COLOR` applies to detail sprites.
+
+## Public-engine verification
+
+D09 checks generated coverage against the embedded catalog/assets and public
+queries, including declared form/gender ownership, regular/shiny eligibility,
+missing appearances, completion denominators and fully supported branching
+families. Installed-binary tests run outside the repository/cache and check
+status codes, stdout/stderr boundaries, ANSI/NO_COLOR and real closed pipes.
+
+| Example | Expected result |
+| --- | --- |
+| `print --gen 1,2 --type fire --type-any flying,dragon` | One matching species; standard form and default gender |
+| `list --name charizard --type dragon` | Empty list, status 0 |
+| `print --name charizard --type dragon` | No candidate, status 1 |
+| `list --name charizard --form mega-x --type fire,dragon` | Mega X with Fire / Dragon typing |
+| `list --name oinkologne --gender female --details` | Metadata retained; selected artwork unavailable |
+| `list --name minior --shiny` | Empty list; no fabricated shiny meteor palette |
+| `print --gen 1,,2` | Invalid empty list member, status 2 |
+| `list --form unknown` | Unknown static form, status 2 |
+
+Metadata generation, color and stage remain species attributes across forms,
+shiny palettes and visual genders. Coverage limits remain explicit: 53 metadata
+varieties lack resolved catalog/source identities, separately from 122
+unavailable catalog appearances. Public output never fills those gaps by guess.
+
+Run the existing generation/check pipeline, `go test ./...` and `go vet ./...`.
+`go test -race ./...` also passes for this increment. Performance budgets and
+release packaging are still pending D10; v0.2 is not yet published.
 
 ## Local installation
 

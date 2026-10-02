@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D08 public catalog verified; D09 coverage/public behavior is next.
-Verified baseline commit: 0e94a317fde4166de6adab1c3ca201a069121ecb.
-Baseline status: D07 selectors owner-committed and pushed; clean tree.
+Current step: D09 coverage/public behavior verified; D10 benchmarks are next.
+Verified baseline commit: fa578c03048c02961424514f782dcc042000ad4e.
+Baseline status: D08 catalog owner-committed and pushed; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -35,38 +35,39 @@ Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-Public list now uses the D07 shared FlagSet selector registration/validation and
-exact-appearance query. Compact rows are aligned, one per species, in National
-order; metadata-only regular entries remain visible and marked unavailable.
-Valid empty lists succeed, while invalid invocations return status 2.
+D09 adds verification and documentation only; production behavior is unchanged.
+Coverage is checked against embedded catalog/manifest identities and public
+default queries, including asset ownership, palette/gender eligibility, missing
+artwork, generation/national targets and complete branching-family membership.
 
-Details show exactly one selected sprite or an unavailable message, verified
-metadata, the complete connected evolution family and all catalog forms with
-actual regular/shiny/gender availability. Public headings are shared with print.
-No alternate artwork is borrowed, results are uncapped and no pager is launched.
-Two files are added within internal/cli for the list command and its tests.
-No new packages or dependencies; this follows the existing print command layout.
+The public command matrix checks generation OR, type AND/type-any OR, selected
+form typing, species color/stage across shiny/forms/genders, false status flags,
+empty intersections and unavailable combinations. Installed-binary tests verify
+print/list status differences, command-specific invalid flags, detail ANSI and
+NO_COLOR, real broken pipes and unchanged nonexistent trainer/data directories.
+README examples state exact status and availability behavior.
 
-Tests cover full sorted catalog coverage, exact selected sprite bytes/headings,
-NO_COLOR, missing standard/variant assets, shiny/gender inventory, connected
-branches, consistent entry separators, empty lists, invalid/repeated flags,
-broken pipes, state-free commands and an offline installed binary.
+No runtime code corrections were needed. No new files, packages, dependencies,
+flags or commands. Source revisions, dataset, all generated outputs and accepted
+artwork remain unchanged. Optional additions or optimizations require owner
+confirmation before implementation.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
 applies. Previously supported collectible identities and default printing remain.
 
 Checks: full tests, vet, race, build, deterministic generation, fresh asset
-preparation pass; artwork is unchanged. Source revisions/provider scope and
-dataset identity are unchanged. D08 adds list and its --details flag.
+preparation and twice-repeated pinned generation pass; artwork is unchanged.
+The complete public matrix passes without production-code changes.
 
 ## Remaining work and next step
 
-D06 is verified for the reviewed supported inventory; its 53 metadata scope gaps
-and unsupported artwork remain explicit limitations. D07 is owner-committed.
-D08 is assistant-verified with owner application/verification/commit pending.
-D09 validates the full public behavior matrix and coverage/help/examples. D10
-then measures startup/memory/rendering and establishes real performance budgets.
+D06–D08 are owner-committed for the reviewed supported inventory; its 53 metadata
+scope gaps and unsupported artwork remain explicit limitations. D09 is
+assistant-verified with owner application/verification/commit pending. D10
+measures startup/memory/rendering and establishes performance budgets before
+v0.2 release. Any suggested optimization will be presented for owner confirmation
+before code changes. No benchmark result or release gate is claimed yet.
 Trainer CLI, storage, progression and TUI remain their specified later milestones.
 Performance measurements and budgets remain required before v0.2 release.
 

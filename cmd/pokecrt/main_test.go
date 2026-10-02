@@ -95,6 +95,35 @@ func TestInstalledBinary(t *testing.T) {
 			t.Fatalf("%v: status=%d stdout=%q stderr=%q", test.args, status, stdout, stderr)
 		}
 	}
+	// Public command status contracts must also hold in the installed binary,
+	// away from the repository and development cache.
+	for _, test := range []struct {
+		args           []string
+		status         int
+		stdout, stderr string
+	}{
+		{[]string{"list", "--name", "charizard", "--type", "dragon"}, 0, "No Pokémon match the specified filters.", ""},
+		{[]string{"print", "--name", "charizard", "--type", "dragon"}, 1, "", "No Pokémon match the specified filters."},
+		{[]string{"list", "--name", "charizard", "--gender", "female"}, 0, "No Pokémon match the specified filters.", ""},
+		{[]string{"print", "--name", "charizard", "--gender", "female"}, 1, "", "distinct visual-gender"},
+		{[]string{"list", "--name", "minior", "--shiny"}, 0, "No Pokémon match the specified filters.", ""},
+		{[]string{"print", "--name", "minior", "--shiny"}, 1, "", "shiny artwork unavailable"},
+		{[]string{"list", "--form", "unknown"}, 2, "", "unknown form"},
+		{[]string{"print", "--gen", "1,,2"}, 2, "", "empty --gen list element"},
+		{[]string{"list", "--details", "--details=false"}, 2, "", "only once"},
+		{[]string{"list", "--output", "sprite"}, 2, "", "flag provided but not defined"},
+		{[]string{"print", "--details"}, 2, "", "flag provided but not defined"},
+	} {
+		status, out, errout := invoke(test.args, "NO_COLOR=1")
+		if status != test.status || (test.stdout == "" && len(out) != 0) || (test.stderr == "" && len(errout) != 0) || !strings.Contains(string(out), test.stdout) || !strings.Contains(string(errout), test.stderr) {
+			t.Fatalf("public status %v: %d stdout=%q stderr=%q", test.args, status, out, errout)
+		}
+	}
+	_, detailColored, _ := invoke([]string{"list", "--name", "charizard", "--details"})
+	_, detailPlain, _ := invoke([]string{"list", "--name", "charizard", "--details"}, "NO_COLOR=1")
+	if !bytes.Contains(detailColored, []byte("\x1b[38;2;")) || bytes.Contains(detailPlain, []byte("\x1b")) {
+		t.Fatal("detail ANSI/NO_COLOR contract failed")
+	}
 	for _, name := range []string{"sprigatito", "annihilape", "terapagos", "pecharunt"} {
 		status, output, stderr := invoke([]string{"print", "--name", name}, "NO_COLOR=1")
 		if status != 0 || len(output) == 0 || len(stderr) != 0 {
@@ -103,23 +132,25 @@ func TestInstalledBinary(t *testing.T) {
 	}
 	// A closed reader reliably exercises real SIGPIPE/EPIPE handling rather than
 	// depending on whether a short output happened to fit inside a pipe buffer.
-	reader, writer, err := os.Pipe()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := reader.Close(); err != nil {
-		t.Fatal(err)
-	}
-	command := exec.Command(binary, args...)
-	command.Dir = empty
-	command.Env = baseEnv
-	command.Stdout = writer
-	var pipeErrors bytes.Buffer
-	command.Stderr = &pipeErrors
-	runErr := command.Run()
-	closeErr := writer.Close()
-	if runErr != nil || closeErr != nil || pipeErrors.Len() != 0 {
-		t.Fatalf("closed pipe: run=%v close=%v stderr=%q", runErr, closeErr, pipeErrors.String())
+	for _, pipeArgs := range [][]string{args, {"list", "--name", "charizard", "--details"}, {"list", "--name", "charizard", "--type", "dragon"}} {
+		reader, writer, err := os.Pipe()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := reader.Close(); err != nil {
+			t.Fatal(err)
+		}
+		command := exec.Command(binary, pipeArgs...)
+		command.Dir = empty
+		command.Env = baseEnv
+		command.Stdout = writer
+		var pipeErrors bytes.Buffer
+		command.Stderr = &pipeErrors
+		runErr := command.Run()
+		closeErr := writer.Close()
+		if runErr != nil || closeErr != nil || pipeErrors.Len() != 0 {
+			t.Fatalf("closed pipe: run=%v close=%v stderr=%q", runErr, closeErr, pipeErrors.String())
+		}
 	}
 	for _, path := range []string{data, xdg} {
 		if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
