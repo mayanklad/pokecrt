@@ -31,6 +31,8 @@ type Species struct {
 }
 
 type Form struct {
+	// Tags describe exact metadata states, independently of artwork availability.
+	Tags          []string
 	ID            string
 	Name          string
 	Types         []string
@@ -73,6 +75,7 @@ func cloneSpecies(species Species) Species {
 	species.Forms = slices.Clone(species.Forms)
 	for i := range species.Forms {
 		species.Forms[i].Types = slices.Clone(species.Forms[i].Types)
+		species.Forms[i].Tags = slices.Clone(species.Forms[i].Tags)
 		species.Forms[i].Genders = slices.Clone(species.Forms[i].Genders)
 		species.Forms[i].SourceAliases = slices.Clone(species.Forms[i].SourceAliases)
 	}

@@ -143,7 +143,7 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-10`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-11`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated standard artwork remains unavailable. The community provider is
 reviewed below; the automatic inherited-gender audit is documented below.
@@ -488,3 +488,47 @@ typing, unavailable-pair validation, swapped asset claims and runtime absence.
 Earlier increment descriptions above record their historical review scope;
 Oinkologne identity is now resolved, while its artwork remains unavailable.
 D06 remains open for other provider/layout, provisional, alias and tag audits.
+
+
+## Automatic themed-inventory increment
+
+Source-encoded gender correction owner-committed at
+f5fe6d5c31b79ab3a94d706d0aaa3dec9656a22a. Rules `d06-auto-11` add sorted
+`Form.Tags` from exact, owner-checked pinned metadata. `is_mega` determines
+`mega`; the exact `gmax` state determines `gigantamax`. An explicit small
+vocabulary of regional metadata states covers Alola/Galar/Hisui/Paldea, Galarian
+Darmanitan states, Paldean Tauros breeds and Totem Alolan states. These are state
+classifications, not maintained species/form entry lists. `alola-cap`, generic
+`origin`, Bloodmoon and loose name substrings do not imply regional status.
+
+Reviewed source-only/spelling overrides without an exact metadata form inherit
+the classification of their explicitly mapped owning variety's checked default
+metadata form. No source name creates a tag, and no tag authorizes artwork.
+Missing identity evidence, wrong ownership, invalid metadata flags and duplicate
+default records fail validation. Tags join deterministic catalog/dataset identity;
+public catalog copies also clone tags to protect bundled data from mutation.
+
+Coverage now reports an `achievement_inventory`: eligible type union, regional
+and Mega/Gigantamax form counts, fully supported branching family memberships,
+generation species denominators and the national denominator. Only accepted
+regular assets qualify forms/species; palettes/genders do not duplicate these
+targets. Family membership uses the validated species evolution graph. Require
+a genuine species branch and every catalog member to be encounter-eligible;
+never shorten a family to hide missing artwork. Unsupported themed goals receive
+explicit limitations rather than impossible targets.
+
+Current targets: 18 types, 38 regional forms, 80 Mega/Gigantamax forms, 17 fully
+supported branching families, 1,017 national species. Generation denominators
+are 151/100/135/107/156/72/88/89/119 for generations 1–9. No current themed
+goal lacks eligible inventory. These are generated observations, not constants
+used to drive generation or achievement gameplay. D14 still implements evaluation
+and persistence; this increment only prepares the D06 inventory foundation.
+
+All 1,448 metadata forms, 1,327 collectible forms, 2,669 accepted PNGs and 2,947
+pins remain; asset identities and bytes are unchanged. No new source files,
+packages, dependencies, selectors or gameplay commands. No ignored filenames
+need removal and no trainer data exists to migrate. Tests cover exact classification,
+source-only owner classification, mutation isolation, misleading names, missing
+family members, alternate-form type availability, shiny-only exclusions and
+deterministic target ordering. Remaining D06 work is provider/layout, provisional
+and alias review, including the limits of source inventory coverage.

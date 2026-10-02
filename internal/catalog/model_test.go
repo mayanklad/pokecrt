@@ -424,3 +424,46 @@ func TestOinkologneGenderRecordsAreOneStandardForm(t *testing.T) {
 		t.Fatalf("Oinkologne gender identity: %+v", f)
 	}
 }
+
+func TestFormTagsKeepAppearanceMeaningAndIndependentCopies(t *testing.T) {
+	for _, tc := range []struct {
+		id   int
+		form string
+		tag  string
+	}{
+		{6, "mega-x", "mega"}, {6, "gmax", "gigantamax"}, {26, "alola", "regional"},
+		{555, "galar", "regional"},
+	} {
+		species, _ := ByNumber(tc.id)
+		found := false
+		for _, form := range species.Forms {
+			if form.ID == tc.form {
+				found = true
+				if !slices.Contains(form.Tags, tc.tag) {
+					t.Fatalf("#%d/%s: %v", tc.id, tc.form, form.Tags)
+				}
+			}
+		}
+		if !found {
+			t.Fatalf("missing #%d/%s", tc.id, tc.form)
+		}
+	}
+	pikachu, _ := ByNumber(25)
+	for _, form := range pikachu.Forms {
+		if form.ID == "alola-cap" && slices.Contains(form.Tags, "regional") {
+			t.Fatal("cap mistaken for regional form")
+		}
+	}
+	charizard, _ := ByNumber(6)
+	for i := range charizard.Forms {
+		if charizard.Forms[i].ID == "mega-x" {
+			charizard.Forms[i].Tags[0] = "changed"
+		}
+	}
+	again, _ := ByNumber(6)
+	for _, form := range again.Forms {
+		if slices.Contains(form.Tags, "changed") {
+			t.Fatal("tag mutation changed bundled catalog")
+		}
+	}
+}

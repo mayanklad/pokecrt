@@ -265,7 +265,27 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 				claimed[genderForm.ID] = true
 			}
 		}
-		result = append(result, normalizedForm{ID: mapping.ID, Name: mapping.Name, Types: types, DefaultGender: mapping.DefaultGender, Genders: mapping.Genders, SourceFormID: form.ID, SourceAliases: mapping.SourceAliases})
+		var tags []string
+		if automaticRuleLevel(m.RulesVersion) >= 11 {
+			if len(metadata) == 0 {
+				return nil, fmt.Errorf("missing form tag metadata #%03d/%s", id, mapping.ID)
+			}
+			var ok bool
+			if mapping.MetadataFormID > 0 {
+				if metadata[0].Owners[mapping.MetadataFormID] != mapping.PokemonID {
+					return nil, fmt.Errorf("wrong form tag owner #%03d/%s", id, mapping.ID)
+				}
+				tags, ok = metadata[0].Tags[mapping.MetadataFormID]
+			} else {
+				// Reviewed source-only/spelling overrides share their exact owning variety.
+				// Inherit that variety's default classification, never a source-name guess.
+				tags, ok = metadata[0].VarietyTags[mapping.PokemonID]
+			}
+			if !ok {
+				return nil, fmt.Errorf("missing exact form tag evidence #%03d/%s", id, mapping.ID)
+			}
+		}
+		result = append(result, normalizedForm{ID: mapping.ID, Name: mapping.Name, Types: types, Tags: tags, DefaultGender: mapping.DefaultGender, Genders: mapping.Genders, SourceFormID: form.ID, SourceAliases: mapping.SourceAliases})
 	}
 	for _, exclusion := range m.SourceFormExclusions {
 		if exclusion.SpeciesID != id {

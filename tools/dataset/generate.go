@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strings"
 )
 
 type normalizedAsset struct {
@@ -49,23 +50,34 @@ type missingVariant struct {
 	Reason    string `json:"reason"`
 }
 
+type achievementInventory struct {
+	Types               []string    `json:"types"`
+	RegionalForms       int         `json:"regional_forms"`
+	TransformationForms int         `json:"transformation_forms"`
+	BranchingFamilies   [][]int     `json:"branching_families"`
+	GenerationSpecies   map[int]int `json:"generation_species"`
+	NationalSpecies     int         `json:"national_species"`
+	Limitations         []string    `json:"limitations"`
+}
+
 type coverageReport struct {
-	DatasetID                 string           `json:"dataset_id"`
-	RulesVersion              string           `json:"rules_version"`
-	CatalogSpecies            int              `json:"catalog_species"`
-	CatalogForms              int              `json:"catalog_forms"`
-	MissingVariants           []missingVariant `json:"missing_regular_variants"`
-	EligibleSpecies           int              `json:"eligible_species"`
-	StandardRegularSprites    int              `json:"standard_regular_sprites"`
-	ShinySprites              int              `json:"shiny_sprites"`
-	CollectibleForms          int              `json:"collectible_forms"`
-	DistinctVisualGenderSlots int              `json:"distinct_visual_gender_slots"`
-	ExactEligibleVariants     int              `json:"exact_eligible_variants"`
-	MaxSpriteWidth            int              `json:"max_sprite_width"`
-	MaxSpriteHeight           int              `json:"max_sprite_height"`
-	Missing                   []missingAsset   `json:"missing_standard_regular_assets"`
-	Exclusions                []string         `json:"exclusions"`
-	SourceQualityFlags        []string         `json:"source_quality_flags"`
+	AchievementInventory      achievementInventory `json:"achievement_inventory"`
+	DatasetID                 string               `json:"dataset_id"`
+	RulesVersion              string               `json:"rules_version"`
+	CatalogSpecies            int                  `json:"catalog_species"`
+	CatalogForms              int                  `json:"catalog_forms"`
+	MissingVariants           []missingVariant     `json:"missing_regular_variants"`
+	EligibleSpecies           int                  `json:"eligible_species"`
+	StandardRegularSprites    int                  `json:"standard_regular_sprites"`
+	ShinySprites              int                  `json:"shiny_sprites"`
+	CollectibleForms          int                  `json:"collectible_forms"`
+	DistinctVisualGenderSlots int                  `json:"distinct_visual_gender_slots"`
+	ExactEligibleVariants     int                  `json:"exact_eligible_variants"`
+	MaxSpriteWidth            int                  `json:"max_sprite_width"`
+	MaxSpriteHeight           int                  `json:"max_sprite_height"`
+	Missing                   []missingAsset       `json:"missing_standard_regular_assets"`
+	Exclusions                []string             `json:"exclusions"`
+	SourceQualityFlags        []string             `json:"source_quality_flags"`
 }
 
 type generatedBundle struct {
@@ -317,7 +329,7 @@ func catalogSource(species []normalizedSpecies, datasetID string) ([]byte, error
 	for _, s := range species {
 		fmt.Fprintf(&output, "{ID:%d,Name:%q,Slug:%q,Aliases:%#v,Generation:%d,Color:%q,Stage:%d,Baby:%t,Legendary:%t,Mythical:%t,EvolvesFrom:%d,EvolvesTo:%#v,Forms:[]Form{", s.ID, s.Name, s.Slug, s.Aliases, s.Generation, s.Color, s.Stage, s.Baby, s.Legendary, s.Mythical, s.EvolvesFrom, s.EvolvesTo)
 		for _, f := range s.Forms {
-			fmt.Fprintf(&output, "{ID:%q,Name:%q,Types:%#v,DefaultGender:%q,Genders:%#v,SourceAliases:%#v},", f.ID, f.Name, f.Types, f.DefaultGender, f.Genders, f.SourceAliases)
+			fmt.Fprintf(&output, "{ID:%q,Name:%q,Types:%#v,Tags:%#v,DefaultGender:%q,Genders:%#v,SourceAliases:%#v},", f.ID, f.Name, f.Types, f.Tags, f.DefaultGender, f.Genders, f.SourceAliases)
 		}
 		fmt.Fprintln(&output, "}},")
 	}
@@ -382,6 +394,7 @@ func makeCoverage(species []normalizedSpecies, assets []normalizedAsset, mapping
 			}
 		}
 	}
+	coverage.AchievementInventory = deriveAchievementInventory(species, eligible, forms, coverage.ShinySprites)
 	return coverage
 }
 
@@ -397,6 +410,24 @@ func coverageMarkdown(coverage coverageReport) []byte {
 		fmt.Fprintf(&output, "| %s | %d |\n", item.name, item.count)
 	}
 	fmt.Fprintf(&output, "\nMaximum cropped dimensions: %d × %d source pixels.\n", coverage.MaxSpriteWidth, coverage.MaxSpriteHeight)
+	fmt.Fprintln(&output, "\n## Achievement inventory\n\nTargets include accepted regular artwork only; metadata-only forms do not qualify.")
+	a := coverage.AchievementInventory
+	fmt.Fprintf(&output, "\nSupported types: %s.\nRegional forms: %d. Transformation forms: %d. National species: %d.\n", strings.Join(a.Types, ", "), a.RegionalForms, a.TransformationForms, a.NationalSpecies)
+	gens := make([]int, 0, len(a.GenerationSpecies))
+	for gen := range a.GenerationSpecies {
+		gens = append(gens, gen)
+	}
+	sort.Ints(gens)
+	for _, gen := range gens {
+		fmt.Fprintf(&output, "\n- Generation %d: %d eligible species.\n", gen, a.GenerationSpecies[gen])
+	}
+	fmt.Fprintln(&output, "\nFully supported branching families (National numbers):")
+	for _, family := range a.BranchingFamilies {
+		fmt.Fprintf(&output, "\n- %v\n", family)
+	}
+	for _, limitation := range a.Limitations {
+		fmt.Fprintf(&output, "\n- Limitation: %s\n", limitation)
+	}
 	fmt.Fprintln(&output, "\n## Missing standard regular artwork\n\n| Number | Species | Reason |\n| --- | --- | --- |")
 	for _, missing := range coverage.Missing {
 		fmt.Fprintf(&output, "| #%03d | %s | %s |\n", missing.SpeciesID, missing.Name, missing.Reason)
@@ -630,4 +661,85 @@ func verifyReviewedAliasPixels(lock sourceLock, cache string, m mappingConfig) e
 		}
 	}
 	return nil
+}
+
+// Availability restricts targets; it never supplies missing family members.
+func deriveAchievementInventory(species []normalizedSpecies, eligible map[int]bool, forms map[string]bool, shiny int) achievementInventory {
+	a := achievementInventory{Types: []string{}, BranchingFamilies: [][]int{}, GenerationSpecies: map[int]int{}, Limitations: []string{}}
+	types := map[string]bool{}
+	children := map[int][]int{}
+	for _, s := range species {
+		if s.EvolvesFrom > 0 {
+			children[s.EvolvesFrom] = append(children[s.EvolvesFrom], s.ID)
+		}
+		if eligible[s.ID] {
+			a.NationalSpecies++
+			a.GenerationSpecies[s.Generation]++
+		}
+		for _, f := range s.Forms {
+			if !forms[fmt.Sprintf("%d/%s", s.ID, f.ID)] {
+				continue
+			}
+			for _, typ := range f.Types {
+				types[typ] = true
+			}
+			if slices.Contains(f.Tags, "regional") {
+				a.RegionalForms++
+			}
+			if slices.Contains(f.Tags, "mega") || slices.Contains(f.Tags, "gigantamax") {
+				a.TransformationForms++
+			}
+		}
+	}
+	for typ := range types {
+		a.Types = append(a.Types, typ)
+	}
+	sort.Strings(a.Types)
+	roots := []int{}
+	for _, s := range species {
+		if s.EvolvesFrom == 0 {
+			roots = append(roots, s.ID)
+		}
+	}
+	sort.Ints(roots)
+	for _, root := range roots {
+		family := []int{}
+		queue := []int{root}
+		complete, branching := true, false
+		for len(queue) > 0 {
+			id := queue[0]
+			queue = queue[1:]
+			family = append(family, id)
+			if !eligible[id] {
+				complete = false
+			}
+			if len(children[id]) > 1 {
+				branching = true
+			}
+			queue = append(queue, children[id]...)
+		}
+		if complete && branching {
+			sort.Ints(family)
+			a.BranchingFamilies = append(a.BranchingFamilies, family)
+		}
+	}
+	if shiny == 0 {
+		a.Limitations = append(a.Limitations, "shiny.first: no accepted shiny slots")
+	}
+	if len(a.Types) == 0 {
+		a.Limitations = append(a.Limitations, "types.complete: no eligible form types")
+	}
+	if a.RegionalForms == 0 {
+		a.Limitations = append(a.Limitations, "regional.first: no eligible regional forms")
+	}
+	if a.TransformationForms == 0 {
+		a.Limitations = append(a.Limitations, "transformation.first: no eligible Mega/Gigantamax forms")
+	}
+	if len(a.BranchingFamilies) == 0 {
+		a.Limitations = append(a.Limitations, "evolution.branching: no fully supported branching families")
+	}
+	if a.NationalSpecies == 0 {
+		a.Limitations = append(a.Limitations, "national.complete: no eligible species")
+	}
+	return a
 }

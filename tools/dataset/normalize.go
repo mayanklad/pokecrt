@@ -101,6 +101,7 @@ type formMapping struct {
 }
 
 type normalizedForm struct {
+	Tags          []string
 	ID            string
 	Name          string
 	Types         []string
@@ -463,6 +464,10 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 	if err != nil {
 		return nil, nil, err
 	}
+	formTags, varietyTags, err := metadataFormTags(lock, cache, mappings.RulesVersion, formOwners)
+	if err != nil {
+		return nil, nil, err
+	}
 	var result []normalizedSpecies
 	aliasOwners := make(map[string]int)
 	for _, id := range mappings.CatalogSpecies {
@@ -530,7 +535,7 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 			}
 			aliasOwners[alias] = id
 		}
-		forms, err := normalizeForms(id, sourceSpecies, mappings, defaults[id], varietyOwners, typeSlots, metadataTyping{Owners: formOwners, Slots: formTypes})
+		forms, err := normalizeForms(id, sourceSpecies, mappings, defaults[id], varietyOwners, typeSlots, metadataTyping{Owners: formOwners, Slots: formTypes, Tags: formTags, VarietyTags: varietyTags})
 		if err != nil {
 			return nil, nil, err
 		}
@@ -540,8 +545,10 @@ func normalizeCatalog(lock sourceLock, cache string, mappings mappingConfig) ([]
 }
 
 type metadataTyping struct {
-	Owners map[int]int
-	Slots  map[int]map[int]string
+	VarietyTags map[int][]string
+	Tags        map[int][]string
+	Owners      map[int]int
+	Slots       map[int]map[int]string
 }
 
 func supportedPokemonType(value string) bool {
@@ -618,4 +625,60 @@ func metadataFormTyping(lock sourceLock, cache, rules string) (map[int]int, map[
 		}
 	}
 	return owners, slots, nil
+}
+
+// Tags use exact metadata states, not source labels or loose name matches.
+func metadataFormTags(lock sourceLock, cache, rules string, owners map[int]int) (map[int][]string, map[int][]string, error) {
+	result := map[int][]string{}
+	defaults := map[int][]string{}
+	if automaticRuleLevel(rules) < 11 {
+		return result, defaults, nil
+	}
+	rows, err := readTable(lock, cache, "pokemon_forms.csv", "id", "pokemon_id", "form_identifier", "is_mega", "is_default")
+	if err != nil {
+		return nil, nil, err
+	}
+	for _, row := range rows {
+		id, err := integer(row, "id", false)
+		if err != nil {
+			return nil, nil, err
+		}
+		owner, err := integer(row, "pokemon_id", false)
+		if _, exists := result[id]; err != nil || exists || owners[id] != owner {
+			return nil, nil, fmt.Errorf("invalid form tag owner %d", id)
+		}
+		mega, err := sourceBool(row, "is_mega")
+		if err != nil {
+			return nil, nil, err
+		}
+		result[id] = exactFormTags(row["form_identifier"], mega)
+		isDefault, err := sourceBool(row, "is_default")
+		if err != nil {
+			return nil, nil, err
+		}
+		if isDefault {
+			if _, exists := defaults[owner]; exists {
+				return nil, nil, fmt.Errorf("duplicate default tag evidence for variety %d", owner)
+			}
+			defaults[owner] = result[id]
+		}
+	}
+	return result, defaults, nil
+}
+
+func exactFormTags(identifier string, mega bool) []string {
+	tags := []string{}
+	if mega {
+		tags = append(tags, "mega")
+	}
+	if identifier == "gmax" {
+		tags = append(tags, "gigantamax")
+	}
+	switch identifier {
+	case "alola", "galar", "hisui", "paldea", "galar-standard", "galar-zen",
+		"paldea-combat-breed", "paldea-blaze-breed", "paldea-aqua-breed", "totem-alola":
+		tags = append(tags, "regional")
+	}
+	sort.Strings(tags)
+	return tags
 }

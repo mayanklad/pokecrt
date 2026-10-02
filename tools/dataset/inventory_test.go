@@ -502,3 +502,70 @@ func TestSourceEncodedGenderPairIsOneUnavailableForm(t *testing.T) {
 		})
 	}
 }
+
+func TestExactMetadataFormTags(t *testing.T) {
+	for _, tc := range []struct {
+		identifier string
+		mega       bool
+		want       []string
+	}{
+		{"alola", false, []string{"regional"}},
+		{"galar-zen", false, []string{"regional"}},
+		{"paldea-aqua-breed", false, []string{"regional"}},
+		{"totem-alola", false, []string{"regional"}},
+		{"alola-cap", false, []string{}},
+		{"mega", false, []string{}},
+		{"future-state", true, []string{"mega"}},
+		{"gmax", false, []string{"gigantamax"}},
+		{"origin", false, []string{}},
+		{"bloodmoon", false, []string{}},
+		{"fake-hisui", false, []string{}},
+	} {
+		if got := exactFormTags(tc.identifier, tc.mega); !reflect.DeepEqual(got, tc.want) {
+			t.Fatalf("%s/%v: %v", tc.identifier, tc.mega, got)
+		}
+	}
+}
+
+func TestMetadataTagEvidenceAndOverrideOwnership(t *testing.T) {
+	for _, name := range []string{"valid", "wrong owner", "invalid flag", "duplicate default", "missing column"} {
+		t.Run(name, func(t *testing.T) {
+			lock, cache, _ := automaticFixture(t)
+			csv := "id,pokemon_id,form_identifier,is_mega,is_default\n1,1,alola,0,1\n100,100,mega,1,1\n"
+			if name == "invalid flag" {
+				csv = strings.Replace(csv, "mega,1,1", "mega,2,1", 1)
+			}
+			if name == "duplicate default" {
+				csv += "101,1,alola-cap,0,1\n"
+			}
+			if name == "missing column" {
+				csv = "id,pokemon_id,form_identifier,is_default\n1,1,alola,1\n"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte(csv))
+			owners := map[int]int{1: 1, 100: 100, 101: 1}
+			if name == "wrong owner" {
+				owners[1] = 2
+			}
+			tags, varieties, err := metadataFormTags(lock, cache, "d06-auto-11", owners)
+			if name != "valid" {
+				if err == nil {
+					t.Fatal("accepted malformed tag evidence")
+				}
+				return
+			}
+			if err != nil || !reflect.DeepEqual(tags[1], []string{"regional"}) || !reflect.DeepEqual(varieties[100], []string{"mega"}) {
+				t.Fatalf("tags=%v varieties=%v err=%v", tags, varieties, err)
+			}
+			source := sourceSpecies{ID: 1, DefaultForm: "base", Forms: []sourceForm{{ID: "base", Slug: "bulbasaur"}}}
+			m := mappingConfig{RulesVersion: "d06-auto-11", Forms: []formMapping{{SpeciesID: 1, ID: "standard", SourceFormID: "base", PokemonID: 1, DefaultGender: "default", Genders: []string{"default"}}}}
+			normalized, err := normalizeForms(1, source, m, 1, map[int]int{1: 1}, map[int]map[int]string{1: {1: "normal"}}, metadataTyping{Owners: owners, Tags: tags, VarietyTags: varieties})
+			if err != nil || !reflect.DeepEqual(normalized[0].Tags, []string{"regional"}) {
+				t.Fatalf("owning variety tags=%v err=%v", normalized, err)
+			}
+			m.Forms[0].MetadataFormID = 100
+			if _, err := normalizeForms(1, source, m, 1, map[int]int{1: 1}, map[int]map[int]string{1: {1: "normal"}}, metadataTyping{Owners: owners, Tags: tags, VarietyTags: varieties}); err == nil {
+				t.Fatal("borrowed another variety's tag")
+			}
+		})
+	}
+}

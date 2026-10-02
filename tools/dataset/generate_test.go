@@ -291,3 +291,50 @@ func TestPrepareAssetsFreshCheckoutAndDrift(t *testing.T) {
 		t.Fatal("accepted unexpected sprite")
 	}
 }
+
+func TestAchievementInventoryUsesEligibleFormsAndCompleteFamilies(t *testing.T) {
+	species := []normalizedSpecies{
+		{ID: 1, Generation: 1, Forms: []normalizedForm{{ID: "standard", Types: []string{"normal"}}, {ID: "mega", Types: []string{"dragon"}, Tags: []string{"mega"}}}},
+		{ID: 2, Generation: 2, EvolvesFrom: 1, Forms: []normalizedForm{{ID: "regional", Types: []string{"fire"}, Tags: []string{"regional"}}}},
+		{ID: 3, Generation: 2, EvolvesFrom: 1, Forms: []normalizedForm{{ID: "standard", Types: []string{"water"}}}},
+		{ID: 4, Generation: 3, Forms: []normalizedForm{{ID: "gmax", Types: []string{"grass"}, Tags: []string{"gigantamax"}}}},
+		{ID: 5, Generation: 3, EvolvesFrom: 4},
+	}
+	eligible := map[int]bool{1: true, 2: true, 3: true, 4: true, 5: true}
+	forms := map[string]bool{"1/standard": true, "2/regional": true, "3/standard": true, "4/gmax": true}
+	got := deriveAchievementInventory(species, eligible, forms, 1)
+	if !reflect.DeepEqual(got.Types, []string{"fire", "grass", "normal", "water"}) || got.RegionalForms != 1 || got.TransformationForms != 1 || got.NationalSpecies != 5 || !reflect.DeepEqual(got.BranchingFamilies, [][]int{{1, 2, 3}}) || len(got.Limitations) != 0 {
+		t.Fatalf("inventory=%+v", got)
+	}
+	if !reflect.DeepEqual(got.GenerationSpecies, map[int]int{1: 1, 2: 2, 3: 2}) {
+		t.Fatalf("generations=%v", got.GenerationSpecies)
+	}
+	// Multiple palettes/genders do not add form or species targets; asset sets
+	// are deduplicated before this stage. An unavailable branch excludes the
+	// entire family, rather than shrinking its completion denominator.
+	delete(eligible, 3)
+	got = deriveAchievementInventory(species, eligible, forms, 1)
+	if len(got.BranchingFamilies) != 0 || got.NationalSpecies != 4 {
+		t.Fatalf("partial family qualified: %+v", got)
+	}
+	// Preserve ordering regardless of metadata input order.
+	for i, j := 0, len(species)-1; i < j; i, j = i+1, j-1 {
+		species[i], species[j] = species[j], species[i]
+	}
+	if other := deriveAchievementInventory(species, eligible, forms, 1); !reflect.DeepEqual(got, other) {
+		t.Fatalf("order changed targets: %+v", other)
+	}
+	empty := deriveAchievementInventory(nil, nil, nil, 0)
+	if len(empty.Limitations) != 6 || len(empty.Types) != 0 || empty.NationalSpecies != 0 {
+		t.Fatalf("impossible goals not reported: %+v", empty)
+	}
+}
+
+func TestCoverageDoesNotCountShinyOnlyOrMetadataOnlyFormsAsTargets(t *testing.T) {
+	species := []normalizedSpecies{{ID: 1, Generation: 1, Forms: []normalizedForm{{ID: "standard", DefaultGender: "default", Genders: []string{"default"}, Types: []string{"normal"}}, {ID: "mega", Tags: []string{"mega"}, Types: []string{"dragon"}}, {ID: "regional", Tags: []string{"regional"}, Types: []string{"fire"}}}}}
+	assets := []normalizedAsset{{SpeciesID: 1, FormID: "standard", Gender: "default", Palette: "regular"}, {SpeciesID: 1, FormID: "standard", Gender: "default", Palette: "shiny"}, {SpeciesID: 1, FormID: "regional", Gender: "default", Palette: "shiny"}}
+	got := makeCoverage(species, assets, mappingConfig{}, "fixture").AchievementInventory
+	if got.RegionalForms != 0 || got.TransformationForms != 0 || got.NationalSpecies != 1 || !reflect.DeepEqual(got.Types, []string{"normal"}) {
+		t.Fatalf("unavailable appearance became a target: %+v", got)
+	}
+}

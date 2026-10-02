@@ -27,8 +27,11 @@ commit imported by PokéSprite-v2. Generated candidates remain excluded. Some
 species have accepted alternate artwork but no accepted standard artwork.
 Oinkologne’s source male/female records are one standard metadata form; both
 artwork candidates remain excluded as generated. This adds no printable slots.
-D06 still includes remaining source-quality, form/gender identity, and
-achievement-tag audits.
+Form tags and future achievement targets are generated from exact metadata and
+accepted regular artwork: 38 eligible regional forms, 80 Mega/Gigantamax forms,
+18 supported types and 17 fully supported branching families. Achievement
+gameplay remains a later milestone. D06 still includes remaining source-quality,
+provider/layout and alias audits.
 
 Public filters and explicit form/shiny/gender printing flags arrive in D07;
 variants can currently be inspected through the developer preview tool. Catalog

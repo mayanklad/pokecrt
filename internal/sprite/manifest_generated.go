@@ -3,7 +3,7 @@ package sprite
 
 import "github.com/mayanklad/pokecrt/internal/catalog"
 
-const DatasetID = "a6b508dd6e70f15536b0ac7d0de713025e418ece20bd3eb08e115381b980d177"
+const DatasetID = "90d38f3647a85e1a53f13e066c564e3758ff7a7d6ce0d0c14debc6f897c80fef"
 
 var generatedAssets = []Asset{
 	{Key: catalog.VariantKey{SpeciesID: 1, FormID: "standard", Gender: "default", Palette: "regular"}, Path: "assets/0001-standard-default-regular.png", SHA256: "d53887ac605e4f9ff8a282657a05daafb361258d866612f8c1686cc8065cd8e7", SourceSHA256: "a3bd4708f11413968541a177e5d05363f913b3e961a69f96fc342a419d28aca2", SourceURL: "https://raw.githubusercontent.com/darknesspwnsu/pokesprite-v2/32ab52ea6b61871da34d9a3c61c7760c65a37af7/pokemon/regular/bulbasaur.png", SourceProvider: "msikma/pokesprite", Width: 20, Height: 19},

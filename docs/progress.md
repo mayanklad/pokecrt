@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D06, source-encoded gender identity audit; incomplete.
-Verified baseline commit: 795183b41aac94d5fbe0e1cd083ca9d24713427c.
-Baseline status: Transformation-alias increment owner-committed; clean tree.
+Current step: D06, automatic themed-inventory audit; incomplete.
+Verified baseline commit: f5fe6d5c31b79ab3a94d706d0aaa3dec9656a22a.
+Baseline status: Source-encoded gender increment owner-committed; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -20,8 +20,8 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
 ## Dataset
 
-Dataset ID: `a6b508dd6e70f15536b0ac7d0de713025e418ece20bd3eb08e115381b980d177`.
-Rules: d06-auto-10. Coverage: tools/dataset/coverage.json and coverage.md.
+Dataset ID: `90d38f3647a85e1a53f13e066c564e3758ff7a7d6ce0d0c14debc6f897c80fef`.
+Rules: d06-auto-11. Coverage: tools/dataset/coverage.json and coverage.md.
 
 - 1,025 catalog species across all nine generations; 1,448 metadata forms.
 - 1,017 eligible encounter species; 1,013 standard-printable species.
@@ -33,13 +33,14 @@ Rules: d06-auto-10. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-Exact pinned male/female source and metadata records now derive one standard
-form when the reviewed layout uses a male default. Ownership, explicit gender
-identifiers, visual-difference metadata and exact matching typing are checked.
-Oinkologne’s two Normal records become male/female slots in one standard form;
-both generated artwork candidates remain unavailable. No species list is added.
-Metadata-only pairs may lack both assets; partial pairs and identical regular
-pixels remain invalid. Available gender coverage does not increase.
+Exact owner-checked metadata now derives regional, Mega and Gigantamax tags.
+Reviewed source-only overrides inherit their mapped variety's default metadata
+classification. No species tag lists or source-name guesses are maintained.
+Coverage derives future themed goals from accepted regular artwork: 18 types,
+38 regional forms, 80 Mega/Gigantamax forms and 17 fully supported branching
+families. It also records generation/national species denominators and explicit
+limitations for unsupported goals. Entire families must qualify; palettes and
+genders do not duplicate form/species targets. Achievement gameplay remains D14.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
@@ -52,7 +53,7 @@ or public flags added. Original source revisions/provider scope unchanged.
 ## Remaining work and next step
 
 D06 remains open: other provider/layout and
-provisional artwork review, source alias semantics, and achievement tags.
+provisional artwork review, source alias semantics and inventory coverage limits.
 D07 implements composable public selectors using FlagSet and shared validation;
 the existing handwritten print parser will be replaced there. D08 adds listing.
 Trainer CLI, storage, progression and TUI remain their specified later milestones.
