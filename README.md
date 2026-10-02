@@ -314,10 +314,35 @@ folding. Tatsugiri Curly Mega and Droopy Mega remain distinct metadata forms;
 the source's ordinary-image aliases do not provide accepted transformation art.
 Their artwork is explicitly unavailable, with no fallback to ordinary forms.
 
-## Trainer storage development
+## Trainer profiles in development source
 
-The development source includes the D11 SQLite foundation with explicit
-initialization, schema 001, protected local files, atomic transactions and
-consistent upgrade backups. Profile commands begin in D12; this does not change
-the published v0.2 feature set. Public commands remain independent of trainer
-storage. Dependency licenses are retained in [LICENSING.md](LICENSING.md).
+The development source includes local SQLite trainer profiles. These commands
+are not part of the published v0.2 binary:
+
+```bash
+pokecrt trainer --help
+pokecrt trainer create Mayank
+pokecrt trainer create "Professor Oak"
+pokecrt trainer list
+pokecrt trainer use "Professor Oak"
+pokecrt trainer
+pokecrt trainer --name Mayank
+```
+
+Only the first creation automatically selects a trainer. Names accept 1–32
+Unicode code points after trimming; NFC normalization and Unicode case folding
+prevent duplicate identities while preserving display spelling. Quoted internal
+spaces are supported. Listing and viewing do not initialize missing storage.
+
+Data is stored in `trainers.sqlite3` beneath an absolute `POKECRT_DATA_DIR`,
+otherwise absolute `XDG_DATA_HOME/pokecrt`, otherwise
+`~/.local/share/pokecrt`. A relative explicit override is rejected; a relative
+XDG base uses the home fallback. The data directory is protected with mode 0700
+and the database with mode 0600. Existing unsupported or corrupt state is never
+replaced automatically.
+
+Profile views currently show name, UTC creation time and active status. Full
+statistics and achievements arrive later; encounters begin in D13. Profile
+commands never record discoveries or encounters. Public print/list/help/version
+remain independent of trainer storage. Dependency licenses are retained in
+[LICENSING.md](LICENSING.md).

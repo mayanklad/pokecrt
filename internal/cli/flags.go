@@ -53,20 +53,36 @@ func trackFlag(fs *flag.FlagSet, name string) {
 	f.Value = &onceValue{Value: f.Value, name: name, boolean: boolean}
 }
 func parseFlags(fs *flag.FlagSet, args []string) error {
-	// Public long flags use --; FlagSet otherwise also accepts -name.
-	for _, arg := range args {
-		spelling, _, _ := strings.Cut(arg, "=")
-		if strings.HasPrefix(spelling, "-") && !strings.HasPrefix(spelling, "--") && spelling != "-h" {
-			return fmt.Errorf("unknown flag %q", spelling)
-		}
-	}
-	if err := fs.Parse(args); err != nil {
+	if err := parseFlagSet(fs, args); err != nil {
 		return err
 	}
 	if fs.NArg() > 0 {
 		return fmt.Errorf("unexpected positional argument %q", fs.Arg(0))
 	}
 	return nil
+}
+
+func parseFlagSet(fs *flag.FlagSet, args []string) error {
+	// Public long flags use --; FlagSet otherwise also accepts -name.
+	// Inspect flag spellings only, never string values or positionals.
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if arg == "--" || arg == "-" || !strings.HasPrefix(arg, "-") {
+			break
+		}
+		spelling, _, hasValue := strings.Cut(arg, "=")
+		if strings.HasPrefix(spelling, "-") && !strings.HasPrefix(spelling, "--") && spelling != "-h" {
+			return fmt.Errorf("unknown flag %q", spelling)
+		}
+		f := fs.Lookup(strings.TrimLeft(spelling, "-"))
+		if f != nil && !hasValue {
+			boolean, ok := f.Value.(interface{ IsBoolFlag() bool })
+			if !ok || !boolean.IsBoolFlag() {
+				i++ // FlagSet owns parsing and validation of this value.
+			}
+		}
+	}
+	return fs.Parse(args)
 }
 func parseRootFlags(args []string) (rootOptions, error) {
 	var o rootOptions

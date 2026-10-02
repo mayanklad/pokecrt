@@ -182,4 +182,66 @@ func TestInstalledBinary(t *testing.T) {
 	if err != nil || len(entries) != 0 {
 		t.Fatalf("runtime working directory changed: entries=%v err=%v", entries, err)
 	}
+
+	// Trainer commands run from the installed binary, with no checkout/cache.
+	profiles := filepath.Join(temp, "installed-profiles")
+	for _, helpArgs := range [][]string{{"trainer", "--help"}, {"trainer", "create", "--help"}, {"trainer", "list", "-h"}, {"trainer", "use", "--help"}} {
+		status, _, stderr := invoke(helpArgs, "POKECRT_DATA_DIR=relative-invalid")
+		if status != 0 || len(stderr) != 0 {
+			t.Fatalf("trainer help touched storage: %v: %d %q", helpArgs, status, stderr)
+		}
+	}
+	for _, emptyArgs := range [][]string{{"trainer"}, {"trainer", "list"}} {
+		status, stdout, stderr := invoke(emptyArgs, "POKECRT_DATA_DIR="+profiles)
+		if status != 0 || len(stderr) != 0 || !bytes.Contains(stdout, []byte("No trainer profiles found.")) {
+			t.Fatalf("installed first run: %d %q %q", status, stdout, stderr)
+		}
+	}
+	if _, err := os.Stat(profiles); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("first-run queries created profile storage")
+	}
+	for _, step := range []struct {
+		args     []string
+		status   int
+		contains string
+	}{
+		{[]string{"trainer", "create", "Mayank"}, 0, "Active trainer: Mayank"},
+		{[]string{"trainer", "create", "Professor Oak"}, 0, "Created trainer: Professor Oak"},
+		{[]string{"trainer", "create", "MAYANK"}, 1, ""},
+		{[]string{"trainer", "create", "Élodie"}, 0, "Created trainer: Élodie"},
+		{[]string{"trainer", "create", "E\u0301LODIE"}, 1, ""},
+		{[]string{"trainer", "--name", "Professor Oak"}, 0, "Active: No"},
+		{[]string{"trainer"}, 0, "Trainer: Mayank"},
+		{[]string{"trainer", "use", "professor oak"}, 0, "Active trainer: Professor Oak"},
+		{[]string{"trainer"}, 0, "Trainer: Professor Oak"},
+		{[]string{"trainer", "list"}, 0, "Professor Oak (active)"},
+		{[]string{"trainer", "use", "missing"}, 1, ""},
+		{[]string{"trainer", "create", "A\nB"}, 2, ""},
+	} {
+		status, stdout, stderr := invoke(step.args, "POKECRT_DATA_DIR="+profiles)
+		if status != step.status || !bytes.Contains(stdout, []byte(step.contains)) {
+			t.Fatalf("installed profile step %v: %d %q %q", step.args, status, stdout, stderr)
+		}
+		if step.status == 0 && len(stderr) != 0 {
+			t.Fatalf("profile error %q", stderr)
+		}
+		if step.status != 0 && (len(stdout) != 0 || len(stderr) == 0) {
+			t.Fatal("profile error streams")
+		}
+	}
+	profileDB := filepath.Join(profiles, "trainers.sqlite3")
+	before, err := os.ReadFile(profileDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, publicArgs := range [][]string{{"print", "--name", "charizard"}, {"list", "--name", "eevee", "--details"}, {"--version"}, {"--help"}} {
+		status, _, stderr := invoke(publicArgs, "POKECRT_DATA_DIR="+profiles)
+		if status != 0 || len(stderr) != 0 {
+			t.Fatalf("public command with profiles: %v", publicArgs)
+		}
+	}
+	after, err := os.ReadFile(profileDB)
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("public command mutated trainer database")
+	}
 }

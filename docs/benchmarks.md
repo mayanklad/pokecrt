@@ -377,3 +377,74 @@ for sample in $(seq 1 10); do
 done
 # Substitute each command from the case table; repeat with NO_COLOR=1.
 ```
+
+
+## D12 trainer dependency review
+
+D12 is measured against `30d0e76935cfff337c3909f6c5b4aa98eb8652ba`,
+using sequential baseline/current builds on the same EPYC 9V74 Linux amd64
+host, Go 1.27.1, CGO disabled, `-trimpath -ldflags "-s -w"`, version `dev`
+and `-buildvcs=false`. The dataset and embedded artwork are identical.
+SQLite and Unicode support are linked for trainer commands; public commands
+still perform no database/path work. These measurements include dependency
+initialization and executable loading.
+
+Each fresh-process row has five warmups and 100 measured samples, with output
+discarded and `GOMAXPROCS=1`. Peak RSS uses the native launcher described above,
+ten independent processes per case and mode. Measurements are host-specific;
+filesystem caches are warm and startup timing is not terminal painting latency.
+
+| Case / mode | D11 median ms | D12 median ms | D11 P95 ms | D12 P95 ms | D12 peak RSS MiB |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| color/random | 3.059 | 3.041 | 3.591 | 3.683 | 8.910 |
+| color/named | 1.837 | 2.014 | 2.198 | 2.348 | 6.406 |
+| color/filtered | 1.967 | 2.154 | 2.345 | 2.563 | 6.535 |
+| color/variant | 1.826 | 1.827 | 2.174 | 2.464 | 6.656 |
+| color/list | 3.297 | 3.162 | 3.908 | 3.958 | 8.031 |
+| color/details | 1.600 | 1.773 | 2.043 | 2.361 | 6.340 |
+| no_color/random | 2.659 | 2.756 | 3.400 | 3.239 | 8.785 |
+| no_color/named | 1.559 | 1.907 | 2.003 | 2.599 | 6.406 |
+| no_color/filtered | 1.607 | 2.091 | 2.031 | 2.648 | 6.410 |
+| no_color/variant | 1.487 | 1.875 | 2.135 | 2.454 | 6.531 |
+| no_color/list | 3.040 | 3.407 | 4.594 | 4.117 | 8.031 |
+| no_color/details | 1.494 | 1.957 | 1.969 | 2.304 | 6.340 |
+
+The worst observed short-command P95 is 2.648 ms against the initial 8 ms
+threshold; random/full-list P95 is at most 4.117 ms against 25 ms. Peak RSS
+is 8.910 MiB against 10 MiB. These public startup/memory scenarios pass the
+existing thresholds; individual timing differences include shared-host noise.
+
+The stripped executable grows from 6,373,536 bytes (6.078 MiB) to 11,579,552
+bytes (11.043 MiB), about 5 MiB added by linked SQLite/Unicode/trainer support.
+The initial 8 MiB threshold remains the historical public-only binary baseline.
+The v0.3 trainer-inclusive stripped Linux amd64 binary has a 16 MiB review
+threshold, established on 2 October 2026 to account for the linked SQLite
+engine and remaining trainer functionality. D12's 11.043 MiB binary meets it.
+All public latency, rendering and RSS thresholds remain unchanged. Recheck size
+and public performance before v0.3 publication; the size allowance is not a
+latency exemption. No alternate SQLite driver, external database executable,
+second PokéCRT binary or runtime download is introduced.
+
+Warm checks use three 200-ms runs per case, `-cpu=1`, with existing
+BenchmarkPublic/BenchmarkRender cases and discarded output. They exclude
+process startup and SQLite initialization; they exercise unchanged public paths.
+
+| Warm scenario | D12 median ms/op | Existing threshold ms/op |
+| --- | ---: | ---: |
+| Public/Color/RandomPrint | 1.755 | 12.00 |
+| Public/Color/NamedPrint | 0.514 | 0.85 |
+| Public/Color/FilteredPrint | 0.549 | 0.85 |
+| Public/Color/VariantPrint | 0.428 | 0.85 |
+| Public/Color/ListCompact | 1.965 | 12.00 |
+| Public/Color/ListDetails | 0.342 | 0.85 |
+| Public/NoColor/RandomPrint | 1.704 | 12.00 |
+| Public/NoColor/NamedPrint | 0.336 | 0.85 |
+| Public/NoColor/FilteredPrint | 0.378 | 0.85 |
+| Public/NoColor/VariantPrint | 0.320 | 0.85 |
+| Public/NoColor/ListCompact | 1.975 | 12.00 |
+| Public/NoColor/ListDetails | 0.306 | 0.85 |
+| Render/LargestArea/Color | 0.365 | 0.60 |
+
+All listed warm scenarios remain within their existing thresholds. These
+short review runs supplement the retained five-run D10 baselines; they do
+not replace those measurements or establish trainer encounter latency.

@@ -33,9 +33,29 @@ D11 adds the storage foundation for the trainer CLI:
 - Atomic versioned migrations with protected, nonoverwriting consistent backups
   before nonempty upgrades; corrupt, newer and unknown unversioned state preserved.
 
-Profile commands and encounters remain unimplemented. Public print/list/help/
+D12 implements profile commands. Encounters remain unimplemented. Public print/list/help/
 version do not resolve storage paths and remain usable with corrupt trainer state.
 No legacy JSON storage was present, so no import routine is introduced.
+
+## Trainer profiles
+
+D12 adds explicit local profiles:
+
+- `trainer create`, `trainer list`, `trainer use`, active profile viewing and
+  `trainer --name` viewing without switching.
+- Names trimmed to 1–32 Unicode input code points, stored in NFC with a
+  case-folded NFC lookup key; duplicate canonical names rejected.
+- Atomic trainer/progress creation, first-profile activation and active selection.
+  Later creation preserves the active choice, including an empty choice.
+- Sorted profile lists, explicit first-run guidance and no default trainer.
+- Read-only viewing/listing create no missing state; command help and syntax
+  validation precede path resolution and database construction.
+
+Profile views currently show name, UTC creation time and active status. Complete
+statistics and achievement views are scheduled for D17. Profiles never create
+encounters, discoveries, XP or unlocks; encounter recording begins in D13.
+The SQLite schema and dataset are unchanged. Unicode handling pins
+`golang.org/x/text v0.42.0`.
 
 ## Dataset
 
@@ -61,7 +81,10 @@ coverage, status/stream behavior and installed execution outside the source tree
 Storage tests cover initialization, path resolution, connection replacement,
 constraints, rollback, concurrent writes, migration backups and preservation.
 Upgrade tests use synthetic schema 002 fixtures; no production schema 002 exists.
-Encounter aggregates and profile workflows are validated when those features land.
+Profile tests cover canonical collisions, creation rollback, concurrent first/
+duplicate creation, selection isolation, missing-state guidance, syntax/help
+boundaries, installed execution and broken pipes after committed creation.
+Encounter aggregates are validated when encounter recording lands.
 Tests, vet, race checks and pinned dataset checks pass for the implementation
 baseline. Benchmark methods, environments, startup/memory tradeoffs and numeric
 budgets are recorded in [benchmarks.md](benchmarks.md).
@@ -70,10 +93,16 @@ Intel i7 warm color random/list medians are 3.274/3.791 ms versus
 12.705/13.394 ms before indexing: about 3.88×/3.53× improvement. These figures
 exclude process startup and are not universal latency guarantees.
 
+D12 public startup, warm runtime, rendering and RSS checks stay within existing
+thresholds. The stripped binary is 11.043 MiB against the v0.3 trainer-inclusive
+16 MiB size threshold. The historical public-only 8 MiB baseline is retained;
+public latency and memory limits are unchanged.
+
 ## Roadmap
 
 Published v0.2 provides the complete public print/catalog engine for the reviewed inventory.
 [Release notes](release-v0.2.md) describe its behavior and known limitations.
 v0.3 covers trainer profiles, SQLite storage, encounters, progression, achievements
 and private Pokédex CLI. The TUI and final hardening remain later milestones.
-Those features are not implemented in the current public engine.
+Storage and profiles are implemented in development source; the remaining
+trainer features are pending. The published v0.2 feature set is unchanged.

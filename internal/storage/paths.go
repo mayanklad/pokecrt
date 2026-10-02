@@ -2,11 +2,14 @@ package storage
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
 const databaseName = "trainers.sqlite3"
+
+var ErrInvalidPath = errors.New("invalid trainer data path")
 
 // ResolvePath returns the trainer database path without touching the filesystem.
 // Public commands must not call it; only stateful commands need this path.
@@ -17,7 +20,7 @@ func ResolvePath() (string, error) {
 func resolvePath(getenv func(string) string, home func() (string, error)) (string, error) {
 	if dir := getenv("POKECRT_DATA_DIR"); dir != "" {
 		if !filepath.IsAbs(dir) {
-			return "", errors.New("POKECRT_DATA_DIR must be an absolute path")
+			return "", fmt.Errorf("%w: POKECRT_DATA_DIR must be an absolute path", ErrInvalidPath)
 		}
 		return filepath.Join(dir, databaseName), nil
 	}
