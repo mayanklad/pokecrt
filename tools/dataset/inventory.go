@@ -656,7 +656,7 @@ func applyFormSuffixRules(m mappingConfig, ids []int, byID map[int]sourceSpecies
 
 func automaticRules(version string) bool { return automaticRuleLevel(version) > 0 }
 func automaticRuleLevel(version string) int {
-	for level := 1; level <= 11; level++ {
+	for level := 1; level <= 12; level++ {
 		if version == fmt.Sprintf("d06-auto-%d", level) {
 			return level
 		}

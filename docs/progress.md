@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D06, automatic themed-inventory audit; incomplete.
-Verified baseline commit: f5fe6d5c31b79ab3a94d706d0aaa3dec9656a22a.
-Baseline status: Source-encoded gender increment owner-committed; clean tree.
+Current step: D06 closing audit verified for the reviewed inventory; D07 next.
+Verified baseline commit: c2a26e87cb726a6fee3a7242a24fa00358b70956.
+Baseline status: Themed-inventory increment owner-committed; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -20,8 +20,8 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
 ## Dataset
 
-Dataset ID: `90d38f3647a85e1a53f13e066c564e3758ff7a7d6ce0d0c14debc6f897c80fef`.
-Rules: d06-auto-11. Coverage: tools/dataset/coverage.json and coverage.md.
+Dataset ID: `8e5073aeeff3f7761e26ccdf9f068189516ae7eded9c0998a9d970b7d37e6b60`.
+Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 - 1,025 catalog species across all nine generations; 1,448 metadata forms.
 - 1,017 eligible encounter species; 1,013 standard-printable species.
@@ -33,14 +33,18 @@ Rules: d06-auto-11. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-Exact owner-checked metadata now derives regional, Mega and Gigantamax tags.
-Reviewed source-only overrides inherit their mapped variety's default metadata
-classification. No species tag lists or source-name guesses are maintained.
-Coverage derives future themed goals from accepted regular artwork: 18 types,
-38 regional forms, 80 Mega/Gigantamax forms and 17 fully supported branching
-families. It also records generation/national species denominators and explicit
-limitations for unsupported goals. Entire families must qualify; palettes and
-genders do not duplicate form/species targets. Achievement gameplay remains D14.
+Coverage now automatically reports 53 pinned metadata varieties without
+resolved catalog/source identities, separately from the 122 unavailable catalog
+appearances. Primary mappings, aliases and declared genders resolve identities;
+metadata outside the source scope never creates guessed sprites or collectibles.
+These are variety-level gaps, not necessarily distinct missing images.
+
+All 125 folded ordinary source aliases pass exact metadata owner/type checks.
+Conflicting variety/form ownership or type sets now fail generation. The two
+Tatsugiri Mega identities remain separate and unavailable. Provider declarations
+and their generated/provisional exclusions were audited; no acceptance gate is
+relaxed. Current supported forms, genders, palettes, tags and provenance are
+verified. Achievement gameplay remains D14.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
@@ -52,8 +56,10 @@ or public flags added. Original source revisions/provider scope unchanged.
 
 ## Remaining work and next step
 
-D06 remains open: other provider/layout and
-provisional artwork review, source alias semantics and inventory coverage limits.
+D06 is verified for the reviewed supported inventory; owner checks are pending.
+Unsupported candidates and the 53 metadata scope gaps remain explicit limitations.
+Further providers/layouts/artwork require separate reviewed dataset changes;
+D06 does not require accepting every upstream candidate.
 D07 implements composable public selectors using FlagSet and shared validation;
 the existing handwritten print parser will be replaced there. D08 adds listing.
 Trainer CLI, storage, progression and TUI remain their specified later milestones.

@@ -338,3 +338,51 @@ func TestCoverageDoesNotCountShinyOnlyOrMetadataOnlyFormsAsTargets(t *testing.T)
 		t.Fatalf("unavailable appearance became a target: %+v", got)
 	}
 }
+
+func TestMetadataInventoryAuditReportsGapsAndChecksAliases(t *testing.T) {
+	for _, name := range []string{"valid", "wrong owner", "type conflict", "form type override conflict", "variety form disagreement"} {
+		t.Run(name, func(t *testing.T) {
+			lock, cache, _ := automaticFixture(t)
+			owner := "1"
+			if name == "wrong owner" {
+				owner = "2"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon.csv", []byte("id,identifier,species_id,is_default\n1,bulbasaur,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n100,bulbasaur-normal,"+owner+",0\n101,bulbasaur-future,1,0\n102,bulbasaur-female,1,0\n"))
+			formOwner := "100"
+			if name == "variety form disagreement" {
+				formOwner = "1"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("id,identifier,pokemon_id\n1,bulbasaur,1\n100,bulbasaur-normal,"+formOwner+"\n101,bulbasaur-future,101\n102,bulbasaur-female,102\n"))
+			typ := "12"
+			if name == "type conflict" {
+				typ = "4"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_types.csv", []byte("pokemon_id,type_id,slot\n1,12,1\n100,"+typ+",1\n101,12,1\n102,12,1\n"))
+			formTypes := "pokemon_form_id,type_id,slot\n"
+			if name == "form type override conflict" {
+				formTypes += "100,4,1\n"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_form_types.csv", []byte(formTypes))
+			species := []normalizedSpecies{{ID: 1, Slug: "bulbasaur", Forms: []normalizedForm{{ID: "standard", Types: []string{"grass"}, Genders: []string{"male", "female"}, SourceAliases: []string{"normal", "source-only"}}}}}
+			mappings := mappingConfig{RulesVersion: "d06-auto-12", Forms: []formMapping{{SpeciesID: 1, PokemonID: 1}}}
+			got, err := auditMetadataInventory(lock, cache, mappings, species)
+			if name != "valid" {
+				if err == nil {
+					t.Fatal("accepted conflicting source alias evidence")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.FoldedSourceAliases != 2 || len(got.MetadataVarietyGaps) != 1 || got.MetadataVarietyGaps[0].PokemonID != 101 {
+				t.Fatalf("audit=%+v", got)
+			}
+			// Alias and gender varieties have identities, not extra collectibles;
+			// unselected species are outside this report's development scope.
+			if got.MetadataVarietyGaps[0].SpeciesID != 1 || got.MetadataVarietyGaps[0].Identifier != "bulbasaur-future" {
+				t.Fatalf("gap=%+v", got.MetadataVarietyGaps)
+			}
+		})
+	}
+}

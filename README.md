@@ -30,8 +30,11 @@ artwork candidates remain excluded as generated. This adds no printable slots.
 Form tags and future achievement targets are generated from exact metadata and
 accepted regular artwork: 38 eligible regional forms, 80 Mega/Gigantamax forms,
 18 supported types and 17 fully supported branching families. Achievement
-gameplay remains a later milestone. D06 still includes remaining source-quality,
-provider/layout and alias audits.
+gameplay remains a later milestone. Coverage separately reports 53 pinned
+metadata varieties without resolved catalog/source identities, in addition to
+122 unavailable catalog appearances. These are different categories; the 53
+varieties do not imply 53 distinct missing sprites. No artwork is inferred.
+D06 is verified for the current reviewed inventory; public selection work is next.
 
 Public filters and explicit form/shiny/gender printing flags arrive in D07;
 variants can currently be inspected through the developer preview tool. Catalog

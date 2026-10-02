@@ -143,7 +143,7 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-11`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-12`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated standard artwork remains unavailable. The community provider is
 reviewed below; the automatic inherited-gender audit is documented below.
@@ -532,3 +532,50 @@ source-only owner classification, mutation isolation, misleading names, missing
 family members, alternate-form type availability, shiny-only exclusions and
 deterministic target ordering. Remaining D06 work is provider/layout, provisional
 and alias review, including the limits of source inventory coverage.
+
+
+## Closing source/inventory audit
+
+The themed-inventory increment was owner-committed at
+c2a26e87cb726a6fee3a7242a24fa00358b70956. Rules `d06-auto-12` make the
+remaining source scope visible in generated coverage rather than leaving
+metadata varieties outside the source inventory unreported. This is a
+variety-level report, not a claim to enumerate every upstream cosmetic state.
+
+The pinned manifest has 126 canonical pointers. Two distinct Tatsugiri Mega
+identities remain metadata-only; the reviewed Alcremie default correction adds
+one folded spelling record. The resulting 125 ordinary source aliases are
+checked against normalized form typing. Exact same-species metadata varieties
+and form rows must agree on ownership; exact form-type overrides take priority.
+Type sets must match the target. Source-only synonyms without metadata rows
+remain documented aliases. A conflicting alias fails generation for explicit
+identity review; a shared filename does not authorize borrowed transformation art.
+
+The automatic report finds 53 selected metadata varieties without a resolved
+catalog/source identity, including the three Paldean Tauros breeds and Paldean
+Wooper. Resolve primary mappings, folded aliases and explicitly declared genders
+before reporting a gap, so metadata genders are not mistaken for missing
+collectibles. Sort gaps by species/variety ID. These 53 records are separate from
+the 122 unavailable appearances already in the 1,448-form catalog. Some records
+may describe shared appearances or ability states; do not sum the categories
+or assume each gap warrants another sprite. No guessed identity or image is added.
+
+Provider audit confirms three non-alias manifest sources: 1,329 inherited
+msikma/pokesprite records, 127 bamq/pokemon-sprites records and 12 generated/pokeapi
+records. Those are declarations, not accepted-image counts. Existing exact
+provenance, original-provider byte checks, provisional-status and palette gates
+remain authoritative. Generated, provisional, unknown and unsupported layouts
+stay excluded; accepting every upstream candidate is not a D06 completion gate.
+Future scope/artwork expansion is a separate reviewed dataset change.
+
+All current accepted source aliases pass the ownership/type audit. Tests cover
+wrong owners, conflicting variety/form records, variety typing and exact form-type
+overrides, source-only synonyms, gender identity coverage and development scope.
+All 2,669 accepted PNGs, appearance keys and 2,947 pins are unchanged. Full tests,
+vet, race, build, repeatable generation and fresh preparation pass. No files,
+packages, dependencies or public flags added; no filenames need removal.
+
+This closes D06 for the reviewed supported inventory, with exclusions and source
+coverage limits stated explicitly. Owner application/verification remains pending.
+Next is D07: FlagSet parsing, shared validation and composable public selectors.
+D09 still validates the final public engine against coverage; D10 measures it.

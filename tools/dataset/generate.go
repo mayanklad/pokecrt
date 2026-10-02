@@ -60,7 +60,21 @@ type achievementInventory struct {
 	Limitations         []string    `json:"limitations"`
 }
 
+type metadataVarietyGap struct {
+	SpeciesID  int    `json:"species_id"`
+	PokemonID  int    `json:"pokemon_id"`
+	Identifier string `json:"identifier"`
+	Reason     string `json:"reason"`
+}
+
+type inventoryAudit struct {
+	FoldedSourceAliases int                  `json:"folded_source_aliases"`
+	MetadataVarietyGaps []metadataVarietyGap `json:"metadata_varieties_without_identity"`
+}
+
 type coverageReport struct {
+	InventoryAudit inventoryAudit `json:"inventory_audit"`
+
 	AchievementInventory      achievementInventory `json:"achievement_inventory"`
 	DatasetID                 string               `json:"dataset_id"`
 	RulesVersion              string               `json:"rules_version"`
@@ -286,6 +300,12 @@ func buildBundle(lock sourceLock, cache string, mappings mappingConfig) (generat
 	}
 	bundle.Files["internal/sprite/manifest_generated.go"] = spriteGo
 	bundle.Coverage = makeCoverage(species, assets, mappings, bundle.DatasetID)
+	if automaticRuleLevel(mappings.RulesVersion) >= 12 {
+		bundle.Coverage.InventoryAudit, err = auditMetadataInventory(lock, cache, mappings, species)
+		if err != nil {
+			return bundle, err
+		}
+	}
 	if femaleSources {
 		bundle.Coverage.SourceQualityFlags = append(bundle.Coverage.SourceQualityFlags, "Explicit gen8-female artwork verified against pinned inherited inventory; unofficial female candidates excluded.")
 	}
@@ -427,6 +447,14 @@ func coverageMarkdown(coverage coverageReport) []byte {
 	}
 	for _, limitation := range a.Limitations {
 		fmt.Fprintf(&output, "\n- Limitation: %s\n", limitation)
+	}
+	if automaticRuleLevel(coverage.RulesVersion) >= 12 {
+		fmt.Fprintln(&output, "\n## Source inventory audit")
+		fmt.Fprintf(&output, "\nFolded source aliases: %d.\n", coverage.InventoryAudit.FoldedSourceAliases)
+		fmt.Fprintln(&output, "\nThese metadata varieties lack resolved catalog/source identities. This is separate from unavailable artwork for catalog appearances; no images or identities are guessed. This report is variety-level, not a claim to enumerate all upstream cosmetic form records.\n\n| Species | Variety ID | Metadata identifier | Reason |\n| --- | --- | --- | --- |")
+		for _, gap := range coverage.InventoryAudit.MetadataVarietyGaps {
+			fmt.Fprintf(&output, "| #%03d | %d | %s | %s |\n", gap.SpeciesID, gap.PokemonID, gap.Identifier, gap.Reason)
+		}
 	}
 	fmt.Fprintln(&output, "\n## Missing standard regular artwork\n\n| Number | Species | Reason |\n| --- | --- | --- |")
 	for _, missing := range coverage.Missing {
@@ -742,4 +770,162 @@ func deriveAchievementInventory(species []normalizedSpecies, eligible map[int]bo
 		a.Limitations = append(a.Limitations, "national.complete: no eligible species")
 	}
 	return a
+}
+
+// Report metadata/source scope gaps separately from unavailable catalog assets.
+// A canonical image pointer cannot conceal conflicting ordinary form typing.
+func auditMetadataInventory(lock sourceLock, cache string, mappings mappingConfig, species []normalizedSpecies) (inventoryAudit, error) {
+	audit := inventoryAudit{MetadataVarietyGaps: []metadataVarietyGap{}}
+	rows, err := readTable(lock, cache, "pokemon.csv", "id", "identifier", "species_id")
+	if err != nil {
+		return audit, err
+	}
+	type variety struct {
+		id, owner  int
+		identifier string
+	}
+	byName := map[string]variety{}
+	varieties := []variety{}
+	for _, row := range rows {
+		id, err := integer(row, "id", false)
+		if err != nil {
+			return audit, err
+		}
+		owner, err := integer(row, "species_id", false)
+		if err != nil {
+			return audit, err
+		}
+		v := variety{id, owner, row["identifier"]}
+		byName[v.identifier] = v
+		varieties = append(varieties, v)
+	}
+	types, err := identifiers(lock, cache, "types.csv")
+	if err != nil {
+		return audit, err
+	}
+	typeRows, err := readTable(lock, cache, "pokemon_types.csv", "pokemon_id", "type_id", "slot")
+	if err != nil {
+		return audit, err
+	}
+	slots := map[int]map[int]string{}
+	for _, row := range typeRows {
+		id, e := integer(row, "pokemon_id", false)
+		if e != nil {
+			return audit, e
+		}
+		typ, e := integer(row, "type_id", false)
+		if e != nil {
+			return audit, e
+		}
+		slot, e := integer(row, "slot", false)
+		if e != nil {
+			return audit, e
+		}
+		if slots[id] == nil {
+			slots[id] = map[int]string{}
+		}
+		slots[id][slot] = types[typ]
+	}
+	_, formSlots, err := metadataFormTyping(lock, cache, mappings.RulesVersion)
+	if err != nil {
+		return audit, err
+	}
+	formRows, err := readTable(lock, cache, "pokemon_forms.csv", "id", "identifier", "pokemon_id")
+	if err != nil {
+		return audit, err
+	}
+	formIDs := map[string]int{}
+	formVarieties := map[string]int{}
+	for _, row := range formRows {
+		id, e := integer(row, "id", false)
+		if e != nil {
+			return audit, e
+		}
+		owner, e := integer(row, "pokemon_id", false)
+		if e != nil {
+			return audit, e
+		}
+		formIDs[row["identifier"]] = id
+		formVarieties[row["identifier"]] = owner
+	}
+	selected := map[int]bool{}
+	used := map[int]bool{}
+	for _, sp := range species {
+		selected[sp.ID] = true
+	}
+	for _, f := range mappings.Forms {
+		used[f.PokemonID] = true
+		for _, g := range f.SourceGenders {
+			used[g.PokemonID] = true
+		}
+	}
+	for _, sp := range species {
+		for _, f := range sp.Forms {
+			// Explicit accepted or metadata-only gender declarations can resolve a
+			// separate metadata variety without another collectible form.
+			for _, gender := range f.Genders {
+				if gender == "default" {
+					continue
+				}
+				if v, ok := byName[sp.Slug+"-"+gender]; ok && v.owner == sp.ID {
+					used[v.id] = true
+				}
+			}
+			for _, alias := range f.SourceAliases {
+				audit.FoldedSourceAliases++
+				key := sp.Slug + "-" + alias
+				varietyID := formVarieties[key]
+				if v, ok := byName[key]; ok {
+					if v.owner != sp.ID {
+						return audit, fmt.Errorf("source alias metadata owner mismatch #%03d/%s", sp.ID, alias)
+					}
+					if formVarieties[key] != 0 && formVarieties[key] != v.id {
+						return audit, fmt.Errorf("source alias variety/form disagreement #%03d/%s", sp.ID, alias)
+					}
+					varietyID = v.id
+				}
+				if varietyID == 0 {
+					continue
+				} // Source-only synonyms have no metadata typing.
+				foundOwner := false
+				for _, v := range varieties {
+					if v.id == varietyID && v.owner == sp.ID {
+						foundOwner = true
+						break
+					}
+				}
+				if !foundOwner {
+					return audit, fmt.Errorf("source alias form owner mismatch #%03d/%s", sp.ID, alias)
+				}
+				used[varietyID] = true
+				exact := slots[varietyID]
+				if values := formSlots[formIDs[key]]; len(values) > 0 {
+					exact = values
+				}
+				aliasTypes := []string{exact[1]}
+				if exact[2] != "" {
+					aliasTypes = append(aliasTypes, exact[2])
+				}
+				canonicalTypes := slices.Clone(f.Types)
+				sort.Strings(canonicalTypes)
+				sort.Strings(aliasTypes)
+				if !slices.Equal(aliasTypes, canonicalTypes) {
+					return audit, fmt.Errorf("source alias metadata typing conflict #%03d/%s: %v versus %v; review identity without borrowing artwork", sp.ID, alias, aliasTypes, f.Types)
+				}
+			}
+		}
+	}
+	for _, v := range varieties {
+		if selected[v.owner] && !used[v.id] {
+			audit.MetadataVarietyGaps = append(audit.MetadataVarietyGaps, metadataVarietyGap{SpeciesID: v.owner, PokemonID: v.id, Identifier: v.identifier, Reason: "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."})
+		}
+	}
+	sort.Slice(audit.MetadataVarietyGaps, func(i, j int) bool {
+		a, b := audit.MetadataVarietyGaps[i], audit.MetadataVarietyGaps[j]
+		if a.SpeciesID != b.SpeciesID {
+			return a.SpeciesID < b.SpeciesID
+		}
+		return a.PokemonID < b.PokemonID
+	})
+	return audit, nil
 }

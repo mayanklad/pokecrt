@@ -1,4 +1,327 @@
 {
+  "inventory_audit": {
+    "folded_source_aliases": 125,
+    "metadata_varieties_without_identity": [
+      {
+        "species_id": 26,
+        "pokemon_id": 10304,
+        "identifier": "raichu-mega-x",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 26,
+        "pokemon_id": 10305,
+        "identifier": "raichu-mega-y",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 36,
+        "pokemon_id": 10278,
+        "identifier": "clefable-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 71,
+        "pokemon_id": 10279,
+        "identifier": "victreebel-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 121,
+        "pokemon_id": 10280,
+        "identifier": "starmie-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 128,
+        "pokemon_id": 10250,
+        "identifier": "tauros-paldea-combat-breed",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 128,
+        "pokemon_id": 10251,
+        "identifier": "tauros-paldea-blaze-breed",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 128,
+        "pokemon_id": 10252,
+        "identifier": "tauros-paldea-aqua-breed",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 149,
+        "pokemon_id": 10281,
+        "identifier": "dragonite-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 154,
+        "pokemon_id": 10282,
+        "identifier": "meganium-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 160,
+        "pokemon_id": 10283,
+        "identifier": "feraligatr-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 194,
+        "pokemon_id": 10253,
+        "identifier": "wooper-paldea",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 227,
+        "pokemon_id": 10284,
+        "identifier": "skarmory-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 358,
+        "pokemon_id": 10306,
+        "identifier": "chimecho-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 359,
+        "pokemon_id": 10307,
+        "identifier": "absol-mega-z",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 398,
+        "pokemon_id": 10308,
+        "identifier": "staraptor-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 445,
+        "pokemon_id": 10309,
+        "identifier": "garchomp-mega-z",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 448,
+        "pokemon_id": 10310,
+        "identifier": "lucario-mega-z",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 478,
+        "pokemon_id": 10285,
+        "identifier": "froslass-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 485,
+        "pokemon_id": 10311,
+        "identifier": "heatran-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 491,
+        "pokemon_id": 10312,
+        "identifier": "darkrai-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 500,
+        "pokemon_id": 10286,
+        "identifier": "emboar-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 530,
+        "pokemon_id": 10287,
+        "identifier": "excadrill-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 545,
+        "pokemon_id": 10288,
+        "identifier": "scolipede-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 560,
+        "pokemon_id": 10289,
+        "identifier": "scrafty-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 604,
+        "pokemon_id": 10290,
+        "identifier": "eelektross-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 609,
+        "pokemon_id": 10291,
+        "identifier": "chandelure-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 623,
+        "pokemon_id": 10313,
+        "identifier": "golurk-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 652,
+        "pokemon_id": 10292,
+        "identifier": "chesnaught-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 655,
+        "pokemon_id": 10293,
+        "identifier": "delphox-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 658,
+        "pokemon_id": 10294,
+        "identifier": "greninja-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 668,
+        "pokemon_id": 10295,
+        "identifier": "pyroar-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 670,
+        "pokemon_id": 10296,
+        "identifier": "floette-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 678,
+        "pokemon_id": 10314,
+        "identifier": "meowstic-male-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 678,
+        "pokemon_id": 10326,
+        "identifier": "meowstic-female-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 687,
+        "pokemon_id": 10297,
+        "identifier": "malamar-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 689,
+        "pokemon_id": 10298,
+        "identifier": "barbaracle-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 691,
+        "pokemon_id": 10299,
+        "identifier": "dragalge-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 701,
+        "pokemon_id": 10300,
+        "identifier": "hawlucha-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 718,
+        "pokemon_id": 10118,
+        "identifier": "zygarde-10-power-construct",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 718,
+        "pokemon_id": 10119,
+        "identifier": "zygarde-50-power-construct",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 718,
+        "pokemon_id": 10301,
+        "identifier": "zygarde-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 740,
+        "pokemon_id": 10315,
+        "identifier": "crabominable-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 768,
+        "pokemon_id": 10316,
+        "identifier": "golisopod-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 780,
+        "pokemon_id": 10302,
+        "identifier": "drampa-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 801,
+        "pokemon_id": 10317,
+        "identifier": "magearna-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 801,
+        "pokemon_id": 10318,
+        "identifier": "magearna-original-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 807,
+        "pokemon_id": 10319,
+        "identifier": "zeraora-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 842,
+        "pokemon_id": 10217,
+        "identifier": "appletun-gmax",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 870,
+        "pokemon_id": 10303,
+        "identifier": "falinks-mega",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 892,
+        "pokemon_id": 10191,
+        "identifier": "urshifu-rapid-strike",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 901,
+        "pokemon_id": 10272,
+        "identifier": "ursaluna-bloodmoon",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      },
+      {
+        "species_id": 902,
+        "pokemon_id": 10248,
+        "identifier": "basculegion-female",
+        "reason": "Pinned metadata variety has no resolved catalog/source identity; no artwork inferred."
+      }
+    ]
+  },
   "achievement_inventory": {
     "types": [
       "bug",
@@ -138,8 +461,8 @@
     "national_species": 1017,
     "limitations": []
   },
-  "dataset_id": "90d38f3647a85e1a53f13e066c564e3758ff7a7d6ce0d0c14debc6f897c80fef",
-  "rules_version": "d06-auto-11",
+  "dataset_id": "8e5073aeeff3f7761e26ccdf9f068189516ae7eded9c0998a9d970b7d37e6b60",
+  "rules_version": "d06-auto-12",
   "catalog_species": 1025,
   "catalog_forms": 1448,
   "missing_regular_variants": [
