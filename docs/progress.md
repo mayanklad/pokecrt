@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D10a baseline measured; lookup optimization awaits owner confirmation.
-Verified baseline commit: 8490227efd6e7c5fd3782995acf7bfe739d4fda5.
-Baseline status: D09 validation owner-committed and GitHub commit verified; clean tree.
+Current step: D10b approved lookup optimization verified; owner final review pending.
+Verified baseline commit: ac2deea8fdc7cab85591542cd0264103054075cb.
+Baseline status: D10a baseline owner-committed/pushed and GitHub commit verified; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -35,46 +35,45 @@ Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-D10a adds repeatable benchmarks to four existing test files and introduces the
-specified docs/benchmarks.md report. It measures fresh-process random/named/
-filtered/variant print and compact/detailed list, warm query/CLI/decode/render/
-lookup, binary size and peak child RSS. The report records machine, toolchain,
-dataset, commands, samples, initial regression budgets and limitations.
+D10b implements the owner-approved exact-key lookup index in the existing sprite
+package. Entry positions are derived automatically from the generated manifest;
+the private map is read-only after initialization. Manifest order, returned
+value ownership, exact lookup/absence behavior and source decoding are retained.
+Tests cover every accepted asset, absent identity parts and copy isolation.
+No new files, packages, dependencies, commands, flags or handwritten entries.
 
-All tested scenarios meet the initial measured budgets. True cold filesystem
-startup is not claimed; shared page caches are not evicted. Encounter/history
-latency remains deferred until the trainer implementation exists.
+The benchmark report retains D10a, adds matched fresh-process comparisons,
+indexed warm measurements, independent RSS and the owner's i7 pre-index reference.
+Color random/list fresh medians improve about 3.4×. Several short commands cost
+about 0.1–0.3 ms more to start; peak RSS remains below 7 MiB, with short-command
+increases around 0.5–0.8 MiB. The stripped binary remains 6,373,536 bytes.
+All indexed scenarios meet the unchanged initial EPYC-environment budgets.
+Owner laptop timings must be compared against its own pre-index baseline.
 
-The random-print CPU profile attributes 73.54% cumulative sampled CPU to repeated
-sprite.Lookup scans and key equality. An automatically derived exact-key index
-in the existing sprite package is proposed but awaits owner confirmation.
-Runtime code is unchanged; no new packages, dependencies, flags or commands.
-Only docs/benchmarks.md is a new tracked file. Source revisions, dataset,
-generated outputs and accepted artwork remain unchanged.
-
-D10 is split into baseline and any owner-approved optimization so the owner can
-review measured evidence before runtime changes, as requested. The initial
-baseline remains available for the follow-up comparison. No v0.2 release gate
-or publication is claimed by this measurement-only increment.
+README now documents the v0.2 candidate workflow and final owner release checks.
+True cold filesystem measurements are not claimed; fresh processes include all
+application initialization on a warm page cache. Encounter/history latency waits
+for its specified later trainer milestone. No product scope is moved.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
 applies. Previously supported collectible identities and default printing remain.
 
-Checks: full tests, vet, race, release-style build and pinned dataset check pass.
-Five 500-ms benchmark runs per case, 100 process samples per case/mode and ten
-independent RSS measurements per case/mode are recorded. No timing assertion is
-added to correctness tests.
+Checks: full tests, vet, race, pinned preparation/check and release packaging
+pass. The extracted candidate passes offline public command checks outside the
+checkout. Generated outputs and all PNG bytes match the baseline. Repeated
+five-run benchmarks, 100 process samples per case/mode/build and ten RSS samples
+per case/mode/build document improvements and costs.
 
 ## Remaining work and next step
 
-D06–D09 are owner-committed for the reviewed supported inventory; its 53 metadata
-scope gaps and unsupported artwork remain explicit limitations. D10a is
+D06–D10a are owner-committed for the reviewed supported inventory; its 53 metadata
+scope gaps and unsupported artwork remain explicit limitations. D10b is
 assistant-verified with owner application/verification/commit pending.
-Next: obtain owner confirmation for the measured exact-key lookup optimization,
-then implement/compare/validate it if approved. Complete final terminal and
-release archive verification before owner publication of v0.2.
-Trainer CLI, storage, progression and TUI remain their specified later milestones.
+Next: final owner terminal/benchmark review, final commit/tag, clean archive
+verification and v0.2 publication. Do not begin D11 storage before closing the
+public-engine release milestone. Trainer CLI, progression and TUI remain later.
+The owner must confirm any further suggested optimization before implementation.
 
 Storage schema version: none.
 

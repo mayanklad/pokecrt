@@ -246,3 +246,34 @@ func BenchmarkDecode(b *testing.B) {
 		}
 	}
 }
+
+func TestLookupExactIdentity(t *testing.T) {
+	inventory := Inventory()
+	for _, want := range inventory {
+		got, ok := Lookup(want.Key)
+		if !ok || got != want {
+			t.Fatalf("lookup %v: got %+v, %v; want %+v", want.Key, got, ok, want)
+		}
+	}
+	for _, key := range []catalog.VariantKey{
+		{SpeciesID: -1},
+		{SpeciesID: 6, FormID: "not-a-form", Gender: "default", Palette: "regular"},
+		{SpeciesID: 6, FormID: "standard", Gender: "female", Palette: "regular"},
+		{SpeciesID: 6, FormID: "standard", Gender: "default", Palette: "not-a-palette"},
+	} {
+		if got, ok := Lookup(key); ok || got != (Asset{}) {
+			t.Fatalf("absent key %v returned %+v, %v", key, got, ok)
+		}
+	}
+	// Changing returned copies must not affect later lookups or manifest order.
+	original := inventory[0]
+	inventory[0].Path = "changed inventory copy"
+	got, _ := Lookup(original.Key)
+	got.Path = "changed lookup copy"
+	if again, ok := Lookup(original.Key); !ok || again != original {
+		t.Fatal("lookup exposes mutable inventory")
+	}
+	if again := Inventory(); !slices.Equal(again, generatedAssets) {
+		t.Fatal("inventory order/content changed")
+	}
+}

@@ -35,8 +35,8 @@ metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
 D06 is verified for the current reviewed inventory. D07 public selectors and D08 catalog listing are
-implemented. D09 coverage/public behavior validation is complete. D10 performance baselines are
-recorded; the measured lookup optimization awaits owner confirmation.
+implemented. D09 coverage/public behavior validation is complete. D10 performance measurements and the approved automatic sprite lookup index are
+implemented. Final owner verification and v0.2 publication remain pending.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 Trainers, encounters, achievements and the TUI are not implemented yet.
@@ -233,9 +233,11 @@ Run the existing generation/check pipeline, `go test ./...` and `go vet ./...`.
 `go test -race ./...` also passes for this increment. Measured performance baselines
 and initial regression budgets are recorded in
 [docs/benchmarks.md](docs/benchmarks.md), together with repeatable Go benchmarks,
-startup/memory measurements and measurement limits. The measured lookup
-optimization awaits owner confirmation; D10 and release packaging remain in
-progress. v0.2 is not yet published.
+startup/memory measurements and measurement limits. Sprite lookup now uses an
+exact-key index derived automatically from the generated manifest. Measured
+random-print/list improvements and startup/memory costs are documented; artwork
+and selection rules are unchanged. Final owner verification and release
+publication remain pending. v0.2 is not yet published.
 
 ## Local installation
 
@@ -267,7 +269,7 @@ Installation and removal do not erase trainer data.
 Prepare a local candidate archive:
 
 ```bash
-sh scripts/package.sh v0.1
+sh scripts/package.sh v0.2
 (cd dist && sha256sum -c SHA256SUMS)
 ```
 
@@ -275,18 +277,29 @@ The script prepares ignored sprites from verified cached inputs, rejects generat
 metadata drift, runs tests and vet; builds Linux amd64 with CGO
 disabled, trimmed paths, and the requested version; and packages the executable,
 README, LICENSE, licensing scope, third-party notices, and coverage notes. It writes
-`dist/pokecrt_v0.1_linux_amd64.tar.gz` and `dist/SHA256SUMS`. An existing archive
+`dist/pokecrt_v0.2_linux_amd64.tar.gz` and `dist/SHA256SUMS`. An existing archive
 is not overwritten. It never downloads sources or publishes anything.
 
-Before distribution, complete the
-[release checklist](docs/release-v0.1.md) and preserve the approved fan-project
-policy and third-party notices. Cross-compilation alone does not prove
-support for another platform.
+Before v0.2 distribution:
+
+- Apply, regenerate, test, vet and race-check the final source; review benchmark results.
+- Review regular/shiny/form/gender artwork in a real terminal, including NO_COLOR.
+- Commit and push the final source; create the v0.2 tag on that reviewed commit.
+- Build a fresh archive from the clean final tag; verify SHA256SUMS and extract it.
+- Run the extracted binary outside the checkout: help/version, named/random/filtered
+  print and list/details. Verify the dataset ID and unavailable-artwork behavior.
+- Publish the Linux amd64 archive and SHA256SUMS with accurate coverage/limitations.
+
+Preserve the approved fan-project policy and third-party notices. The owner
+performs tagging and publication; packaging does not publish. Cross-compilation
+alone does not prove support for another platform. The
+[v0.1 release record](docs/release-v0.1.md) describes the earlier milestone.
 
 ## Project documents
 
 - [Implementation progress](docs/progress.md)
-- [Release candidate checklist](docs/release-v0.1.md)
+- [Performance baseline and comparison](docs/benchmarks.md)
+- [v0.1 release record](docs/release-v0.1.md)
 - [Dataset generation and audit](tools/dataset/README.md)
 - [Generated coverage](tools/dataset/coverage.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)

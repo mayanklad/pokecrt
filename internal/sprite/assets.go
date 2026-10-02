@@ -29,13 +29,23 @@ func Inventory() []Asset {
 	return slices.Clone(generatedAssets)
 }
 
-func Lookup(key catalog.VariantKey) (Asset, bool) {
-	for _, asset := range generatedAssets {
-		if asset.Key == key {
-			return asset, true
-		}
+// Derive exact-key positions from the generated manifest once. The index is
+// read-only after initialization; positions avoid copying asset metadata into it.
+// Inventory continues to expose manifest order independently of map iteration.
+var assetIndex = func() map[catalog.VariantKey]int {
+	index := make(map[catalog.VariantKey]int, len(generatedAssets))
+	for i, asset := range generatedAssets {
+		index[asset.Key] = i
 	}
-	return Asset{}, false
+	return index
+}()
+
+func Lookup(key catalog.VariantKey) (Asset, bool) {
+	index, ok := assetIndex[key]
+	if !ok {
+		return Asset{}, false
+	}
+	return generatedAssets[index], true
 }
 
 // Decode performs exact lookup; it never substitutes a different appearance.

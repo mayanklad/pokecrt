@@ -1,10 +1,14 @@
 # Public-engine performance baseline
 
-Measured 2 October 2026 against owner commit
-`8490227efd6e7c5fd3782995acf7bfe739d4fda5`. These benchmark additions do not
-change runtime behavior. This is D10a: baseline measurement and printer docs.
-D10 remains in progress because the measured lookup optimization requires owner
-confirmation before implementation. No v0.2 tag or publication is claimed.
+D10a measured 2 October 2026 against owner commit
+`8490227efd6e7c5fd3782995acf7bfe739d4fda5`; its original baseline is retained below.
+D10b applies the owner-approved automatic lookup index to pushed D10a commit
+`ac2deea8fdc7cab85591542cd0264103054075cb`. The index is derived from the generated
+manifest, stores entry positions and is read-only after package initialization.
+No handwritten inventory, new package, data change or artwork fallback is added.
+D10 implementation is assistant-verified; owner application, terminal review,
+final commit/tag and release publication remain pending. No v0.2 publication is
+claimed. Environment and reproduction commands apply to both measurements.
 
 ## Environment and scope
 
@@ -23,7 +27,7 @@ confirmation before implementation. No v0.2 tag or publication is claimed.
 - Random paths use the real unbiased cryptographic selector, so sprites and
   allocation counts vary. No deterministic shortcut replaces runtime randomness.
 
-## Fresh processes and warm filesystem cache
+## D10a baseline: fresh processes and warm filesystem cache
 
 Each case records its first observed invocation, then five discarded warmups and
 100 fresh processes. Timings include spawning and waiting, with a warm OS page
@@ -67,7 +71,7 @@ pages touched and heap, not only Go allocations. The native launcher avoids
 mistaking Python's inherited pre-exec memory high-water mark for Pokémon runtime
 memory. It does not add launcher elapsed time to the timing results above.
 
-## Warm in-process benchmarks
+## D10a baseline: warm in-process benchmarks
 
 Five runs per sub-benchmark, 500 ms per run, one Go processor. The table gives
 median time, bytes and allocations per operation across runs. CLI benchmarks run
@@ -115,8 +119,8 @@ comparable machine, not universal latency guarantees. Headroom covers the measur
 shared-host spread and normal measurement variability. Confirm a suspected
 regression with sequential reruns before changing code. A different machine or
 larger audited dataset needs its own measured baseline; do not quietly inflate
-budgets to hide regressions. Retain this D09 baseline after an approved optimization
-and add its measured comparison before selecting tighter budgets.
+budgets to hide regressions. Retain the D10a baseline and D10b comparison below; the initial budgets remain
+unchanged rather than being silently expanded or tightened.
 
 | Measurement | Initial budget | Basis |
 | --- | ---: | --- |
@@ -136,23 +140,144 @@ Encounter latency at representative history sizes is deferred until encounters
 and storage exist; add it at their milestone without implying it works today.
 Recheck public paths at v0.3/v0.4 and the specified later performance review.
 
-## Measured bottleneck and proposed next change
+## D10b: approved lookup index and comparison
 
-A separate two-second warm random-print CPU profile collected 4.95 seconds of
-samples. `sprite.Lookup` and its key equality checks account for **73.54% cumulative
-sampled CPU**; `catalog.Query` accounts for 88.08% including those calls. The query
-checks artwork availability for each matching species by scanning 2,669 manifest
-entries repeatedly. A last/missing lookup costs about 13.5 µs, while the first is
-about 10 ns. This position-dependent cost is consistent with the source scan.
+The original two-second random-print CPU profile attributed 73.54% cumulative
+sampled CPU to sprite.Lookup and key equality checks. Each availability check
+scanned up to 2,669 entries. The owner approved replacing that scan with an
+automatically derived exact-key index on 2 October 2026.
 
-Recommendation, **pending owner confirmation**: derive an immutable exact-key
-lookup index automatically from the generated manifest in the existing sprite
-package. Preserve manifest inventory order, exact identity, absence behavior and
-all generated source data. No per-Pokémon entries should be written by hand, no
-new package is needed, and no fallback artwork should appear. Measure startup
-and memory costs of building the index as well as warm improvements, then run
-the full public suite. This report does not claim an unimplemented speedup.
-Other possible changes are not bundled into this proposal.
+The only production change is in internal/sprite/assets.go. The private map
+associates each generated VariantKey with its manifest position. It is built
+once when the process initializes and is never written afterwards. Lookup still
+returns an Asset value or a zero Asset plus false. Inventory still clones the
+manifest in its original order. Decode still uses exact source artwork, without
+substitution. Existing generation rejects duplicates; tests cross-check every
+manifest entry, missing form/gender/palette keys and returned-copy isolation.
+
+### Fresh-process comparison
+
+Baseline and indexed binaries use identical build flags, version text, dataset,
+Go processor count and measurement method. Each row has five discarded warmups
+and 100 fresh child samples before and after. Baseline was rerun sequentially
+for this comparison. Help/version were also measured because package
+initialization happens even when no artwork is requested. The first-observed
+columns are single startup diagnostics; they are not true cold filesystem tests.
+These are cold application processes on a warm filesystem cache.
+
+| Case / mode | Before median ms | Indexed median ms | Before P95 ms | Indexed P95 ms | Before first ms | Indexed first ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| color/random | 10.119 | 2.945 | 12.395 | 3.677 | 10.444 | 4.301 |
+| color/named | 1.539 | 1.801 | 2.051 | 2.255 | 1.721 | 2.031 |
+| color/filtered | 1.623 | 1.882 | 2.054 | 2.253 | 1.525 | 1.694 |
+| color/variant | 1.475 | 1.717 | 1.914 | 2.123 | 1.497 | 1.942 |
+| color/list | 10.755 | 3.143 | 13.382 | 3.964 | 10.964 | 3.325 |
+| color/details | 1.521 | 1.616 | 3.060 | 1.974 | 1.649 | 2.029 |
+| no_color/random | 9.644 | 2.846 | 11.575 | 3.495 | 10.059 | 2.885 |
+| no_color/named | 1.350 | 1.621 | 1.686 | 2.015 | 1.561 | 1.624 |
+| no_color/filtered | 1.446 | 1.703 | 2.036 | 2.101 | 1.358 | 1.695 |
+| no_color/variant | 1.288 | 1.622 | 1.537 | 2.026 | 1.464 | 1.805 |
+| no_color/list | 10.413 | 3.152 | 12.539 | 4.055 | 10.018 | 3.000 |
+| no_color/details | 1.367 | 1.651 | 1.801 | 2.499 | 2.526 | 1.883 |
+| color/help | 0.898 | 1.183 | 1.083 | 1.468 | 1.306 | 1.802 |
+| color/version | 0.901 | 1.198 | 1.227 | 1.517 | 0.946 | 1.201 |
+| no_color/help | 0.886 | 1.251 | 1.080 | 1.709 | 0.872 | 1.341 |
+| no_color/version | 0.899 | 1.211 | 1.296 | 1.500 | 1.848 | 1.240 |
+
+For color output, random printing improves from 10.119 to 2.945 ms median
+(3.44×), and full compact listing from 10.755 to 3.143 ms (3.42×). Several
+short commands become about 0.1–0.3 ms slower because the index is built at every
+process start. This is a measured tradeoff, not a claim that every command gets
+faster. Process results include index construction; warm benchmarks below do not.
+
+### Warm comparison
+
+The original five-run 500-ms D10a results are compared with five indexed runs
+using the same command and environment. Reported values are medians. Ordinary
+host variation affects rendering/named-command measurements. Random artwork
+changes bytes/allocations slightly; the index does not change per-call data
+ownership or output assembly.
+
+| Benchmark | Before µs/op | Indexed µs/op | Indexed B/op | Indexed allocs/op |
+| --- | ---: | ---: | ---: | ---: |
+| Query/Standard | 7723.988 | 1096.384 | 1,511,891 | 5,656 |
+| Query/Named | 131.124 | 129.886 | 33,168 | 73 |
+| Query/Filtered | 137.479 | 133.403 | 34,368 | 63 |
+| Public/Color/RandomPrint | 8023.518 | 1963.117 | 2,823,404 | 6,518 |
+| Public/Color/NamedPrint | 537.923 | 544.350 | 216,364 | 1,922 |
+| Public/Color/FilteredPrint | 568.045 | 604.706 | 224,217 | 2,201 |
+| Public/Color/VariantPrint | 437.585 | 483.238 | 171,681 | 1,229 |
+| Public/Color/ListCompact | 8702.533 | 2073.147 | 2,111,528 | 14,280 |
+| Public/Color/ListDetails | 351.391 | 367.278 | 152,368 | 622 |
+| Public/NoColor/RandomPrint | 7495.812 | 1879.288 | 2,790,914 | 6,531 |
+| Public/NoColor/NamedPrint | 347.342 | 369.445 | 136,487 | 1,918 |
+| Public/NoColor/FilteredPrint | 390.878 | 403.647 | 144,608 | 2,201 |
+| Public/NoColor/VariantPrint | 342.182 | 342.987 | 130,719 | 1,226 |
+| Public/NoColor/ListCompact | 8565.090 | 2211.598 | 2,111,527 | 14,280 |
+| Public/NoColor/ListDetails | 333.747 | 322.956 | 125,518 | 619 |
+| Render/Charizard/Color | 185.689 | 179.988 | 72,387 | 1,727 |
+| Render/Charizard/NoColor | 40.974 | 43.625 | 10,944 | 1,723 |
+| Render/LargestArea/Color | 365.931 | 438.452 | 146,071 | 3,764 |
+| Render/LargestArea/NoColor | 83.039 | 89.841 | 23,184 | 3,760 |
+| Lookup/First | 0.009 | 0.031 | 0 | 0 |
+| Lookup/Last | 13.456 | 0.028 | 0 | 0 |
+| Lookup/Missing | 13.475 | 0.021 | 0 | 0 |
+| Decode | 36.249 | 36.402 | 54,760 | 30 |
+
+The formerly cheap first entry also pays hashing cost: about 31 ns indexed.
+Last/missing entries now take about 28/21 ns instead of about 13.5 µs.
+Full standard query falls from 7.724 to 1.096 ms. Renderer and source PNGs are
+unchanged; differences in their measured times are not renderer optimizations.
+
+### Resource comparison
+
+RSS is independently measured with the native launcher, ten fresh children per
+row/build. Resident-page/allocator variation means differences are not a direct
+measurement of map payload size. The index persists for the process lifetime.
+
+| Case / mode | Before peak RSS MiB | Indexed peak RSS MiB |
+| --- | ---: | ---: |
+| color/random | 6.684 | 6.809 |
+| color/named | 3.793 | 4.430 |
+| color/filtered | 3.859 | 4.496 |
+| color/variant | 3.855 | 4.492 |
+| color/list | 5.734 | 5.996 |
+| color/details | 3.914 | 4.426 |
+| no_color/random | 6.559 | 6.809 |
+| no_color/named | 3.668 | 4.430 |
+| no_color/filtered | 3.859 | 4.371 |
+| no_color/variant | 3.730 | 4.367 |
+| no_color/list | 5.609 | 5.996 |
+| no_color/details | 3.914 | 4.426 |
+
+Maximum indexed peak RSS is 6.809 MiB. Short command rows increase by roughly
+0.5–0.8 MiB; full random/list rows grow less because previous transient
+allocations already contribute to their peak. Both stripped comparison binaries
+are 6,373,536 bytes (6.078 MiB); unchanged file size is an observed aligned binary
+result, not a promise that additional code always has no size cost.
+All indexed scenarios remain within the initial EPYC-environment budgets above.
+No extra runtime optimization or budget change is included.
+
+### Owner machine pre-index reference
+
+The owner's supplied D10a output uses Linux amd64, Intel Core i7-10750H 2.60 GHz,
+five 500-ms runs and `-cpu=1`. Go version, kernel and power settings were not
+included, so this is a reference rather than a fully qualified machine budget.
+It confirms successful tests/benchmarks and the same dataset. Color medians:
+
+| Benchmark | Owner D10a median ms/op |
+| --- | ---: |
+| RandomPrint | 12.705 |
+| NamedPrint | 0.829 |
+| FilteredPrint | 0.914 |
+| VariantPrint | 0.687 |
+| ListCompact | 13.394 |
+| ListDetails | 0.566 |
+
+Do not apply EPYC absolute thresholds directly to the owner's laptop. Compare
+its post-index run against these local results with the same command, Go version
+and power settings. The owner's output contains in-process benchmarks; it does
+not establish fresh-process startup or peak RSS.
 
 ## Reproduce the benchmarks
 
@@ -251,6 +376,6 @@ done
 # Substitute each command from the case table; repeat with NO_COLOR=1.
 ```
 
-Before v0.2 publication, finish the approved D10 work, apply and test the ZIP,
+Before v0.2 publication, apply and test the approved D10b ZIP,
 review real terminal artwork, and prepare/smoke-test the release archive with the
 existing packaging workflow. Only the owner tags and publishes the release.
