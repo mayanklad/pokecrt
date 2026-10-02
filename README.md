@@ -10,7 +10,7 @@ The current development branch targets v0.2.
 
 The development catalog contains all generation-1 through generation-9 species, their complete
 connected evolution families (including later-generation relatives):
-1,025 species and 1,449 metadata forms.
+1,025 species and 1,448 metadata forms.
 
 Audited artwork covers 1,017 species and 1,327 collectible forms, with 2,669 exact
 regular/shiny assets. Standard regular printing covers 1,013 species; 12 species
@@ -25,6 +25,8 @@ species; random printing samples species uniformly. Reviewed community artwork
 from `bamq/pokemon-sprites` adds Generation 9 printing, verified against the exact
 commit imported by PokéSprite-v2. Generated candidates remain excluded. Some
 species have accepted alternate artwork but no accepted standard artwork.
+Oinkologne’s source male/female records are one standard metadata form; both
+artwork candidates remain excluded as generated. This adds no printable slots.
 D06 still includes remaining source-quality, form/gender identity, and
 achievement-tag audits.
 

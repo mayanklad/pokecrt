@@ -54,9 +54,9 @@ Biological gender flags alone never create artwork slots. Male is the default.
 The eight accepted pairs are Hippopotas, Hippowdon, Unfezant, Frillish, Jellicent,
 Pyroar, Meowstic, and Indeedee. The acceptance logic maintains no species list.
 Provisional female candidates stay excluded; other providers/layouts and
-Oinkologne's separate source identities remain D06 review work.
+source-encoded layouts beyond the reviewed male-default case remain D06 review work.
 
-The current coverage is 1,025 catalog species, 1,449 metadata forms,
+The current coverage is 1,025 catalog species, 1,448 metadata forms,
 1,013 standard-printable species, 1,017 eligible encounter species, 1,327
 collectible forms, and 2,669 assets. 122 appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
@@ -143,7 +143,7 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-9`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-10`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated standard artwork remains unavailable. The community provider is
 reviewed below; the automatic inherited-gender audit is documented below.
@@ -448,7 +448,7 @@ Droopy Mega. Stretchy Mega was already separate metadata with excluded generated
 artwork. All six source Tatsugiri forms now have distinct metadata representation;
 the two ordinary aliases are removed. This adds two metadata forms and two
 reported unavailable appearances, with no new source pins, sprites, collectible
-forms, or printing candidates. Totals: 1,449 metadata forms, 122 unavailable
+forms, or printing candidates. Totals: 1,448 metadata forms, 122 unavailable
 appearances; other availability counts remain unchanged. All 2,669 PNGs and all
 2,947 source pins are unchanged. No trainer data exists and no stored identity
 migration applies; previously supported artwork identities are preserved.
@@ -460,3 +460,31 @@ generation and fresh preparation pass. No new source files, packages, dependency
 or public flags added. Oinkologne source-encoded gender identity, other alias and
 provisional-source audits, and achievement tags remain D06 work. Parser conversion
 and public selectors remain D07.
+
+
+## Source-encoded gender identity increment
+
+Transformation-alias increment owner-committed at
+795183b41aac94d5fbe0e1cd083ca9d24713427c. Rules `d06-auto-10` derive the
+source’s explicit male-default, male/female layout as one standard form. Require
+pinned gender-difference metadata, exact male/female `form_identifier` values,
+positive form IDs, same-species variety ownership, matching default variety,
+non-aliased source records, and identical exact metadata typing. The resolved
+source-gender declarations are computed; no species exception list is maintained.
+
+Oinkologne is the current pinned case. Its two Normal records become one standard
+form with male/female slots and a male default. Both candidates are generated and
+remain unavailable under the existing artwork policy. Metadata-only gender pairs
+may have neither regular asset; partial pairs, identical regular pixels and
+shiny-only slots still fail validation. Available pairs still require distinct
+regular pixels. Asset claims must match their declared source gender.
+
+Totals: 1,448 metadata forms, 122 unavailable appearances, 2,669 accepted assets,
+16 available gender slots across eight species, and 2,947 unchanged source pins.
+All accepted artwork bytes are unchanged. No files/packages/public flags are
+added; no ignored filenames need removal. No trainer data exists to migrate.
+Tests cover ownership, explicit gender identifiers, missing/aliased records,
+typing, unavailable-pair validation, swapped asset claims and runtime absence.
+Earlier increment descriptions above record their historical review scope;
+Oinkologne identity is now resolved, while its artwork remains unavailable.
+D06 remains open for other provider/layout, provisional, alias and tag audits.

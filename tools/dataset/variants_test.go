@@ -279,3 +279,29 @@ func TestDuplicatePaletteExclusionsRequireEqualVerifiedArtwork(t *testing.T) {
 		t.Fatal("accepted missing shiny evidence")
 	}
 }
+
+func TestUnavailableGenderPairDoesNotRelaxArtworkValidation(t *testing.T) {
+	species := []normalizedSpecies{{ID: 1, Forms: []normalizedForm{{ID: "standard", Genders: []string{"male", "female"}, DefaultGender: "male"}}}}
+	male := normalizedAsset{SpeciesID: 1, FormID: "standard", Gender: "male", Palette: "regular", SHA256: "male"}
+	female := male
+	female.Gender = "female"
+	female.SHA256 = "female"
+	same := female
+	same.SHA256 = male.SHA256
+	shinyOnly := female
+	shinyOnly.Palette = "shiny"
+	for _, tc := range []struct {
+		name   string
+		assets []normalizedAsset
+		valid  bool
+	}{
+		{"both unavailable", nil, true}, {"male only", []normalizedAsset{male}, false}, {"female only", []normalizedAsset{female}, false}, {"same pixels", []normalizedAsset{male, same}, false}, {"distinct pixels", []normalizedAsset{male, female}, true}, {"shiny only", []normalizedAsset{shinyOnly}, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := validateVariantInventory(species, tc.assets)
+			if (err == nil) != tc.valid {
+				t.Fatalf("accepted=%t error=%v", err == nil, err)
+			}
+		})
+	}
+}

@@ -423,3 +423,82 @@ func TestTransformationAliasUsesMetadataWithoutBorrowedArtwork(t *testing.T) {
 		})
 	}
 }
+
+func TestSourceEncodedGenderPairIsOneUnavailableForm(t *testing.T) {
+	for _, name := range []string{"verified metadata", "wrong owner", "wrong gender identifier", "missing female", "aliased female", "different typing", "no visual difference"} {
+		t.Run(name, func(t *testing.T) {
+			lock, cache, m := automaticFixture(t)
+			m.RulesVersion = "d06-auto-10"
+			owner, formGender, difference := "1", "female", "1"
+			if name == "wrong owner" {
+				owner = "2"
+			}
+			if name == "wrong gender identifier" {
+				formGender = "other"
+			}
+			if name == "no visual difference" {
+				difference = "0"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_species.csv", []byte("id,identifier,generation_id,evolves_from_species_id,color_id,is_baby,is_legendary,is_mythical,has_gender_differences\n1,bulbasaur,1,,5,0,0,0,"+difference+"\n2,ivysaur,1,1,5,0,0,0,0\n3,venusaur,1,2,5,0,0,0,1\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon.csv", []byte("id,identifier,species_id,is_default\n1,bulbasaur-male,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n101,bulbasaur-female,"+owner+",0\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("id,identifier,pokemon_id,is_default,is_mega,form_identifier\n1,bulbasaur-male,1,1,0,male\n2,ivysaur,2,1,0,\n3,venusaur,3,1,0,\n101,bulbasaur-female,101,1,0,"+formGender+"\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_form_types.csv", []byte("pokemon_form_id,type_id,slot\n"))
+			femaleTypes := "101,12,1\n101,4,2\n"
+			if name == "different typing" {
+				femaleTypes = "101,4,1\n"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_types.csv", []byte("pokemon_id,type_id,slot\n1,12,1\n1,4,2\n2,12,1\n2,4,2\n3,12,1\n3,4,2\n"+femaleTypes))
+			editManifest(t, &lock, cache, func(manifest *sourceManifest) {
+				yes := true
+				male := manifest.Pokemon[0].Forms[0]
+				male.ID = "male"
+				male.Slug = "bulbasaur-male"
+				male.IsGenerated = &yes
+				male.Source = "generated/pokeapi"
+				female := male
+				female.ID = "female"
+				female.Slug = "bulbasaur-female"
+				if name == "aliased female" {
+					target := "male"
+					female.CanonicalForm = &target
+					female.Slug = male.Slug
+				}
+				manifest.Pokemon[0].DefaultForm = "male"
+				manifest.Pokemon[0].Forms = []sourceForm{male, female}
+				if name == "missing female" {
+					manifest.Pokemon[0].Forms = manifest.Pokemon[0].Forms[:1]
+				}
+			})
+			resolved, err := deriveMappings(lock, cache, m)
+			var normalized []normalizedSpecies
+			if err == nil {
+				normalized, _, err = normalizeCatalog(lock, cache, resolved)
+			}
+			if name != "verified metadata" {
+				if err == nil {
+					t.Fatal("accepted malformed source gender identity")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(normalized[0].Forms) != 1 || normalized[0].Forms[0].DefaultGender != "male" || !reflect.DeepEqual(normalized[0].Forms[0].Genders, []string{"female", "male"}) {
+				t.Fatalf("gender became form: %+v", normalized[0].Forms)
+			}
+			for _, a := range resolved.Assets {
+				if a.SpeciesID == 1 {
+					t.Fatal("generated gender candidate accepted")
+				}
+			}
+			if err := validateVariantInventory(normalized, nil); err != nil {
+				t.Fatal(err)
+			}
+			// Even with a valid owner, an asset cannot swap the source's gender identity.
+			resolved.Assets = append(resolved.Assets, assetMapping{SpeciesID: 1, FormID: "standard", SourceFormID: "male", Gender: "female", Palette: "regular"})
+			if _, _, err := normalizeCatalog(lock, cache, resolved); err == nil {
+				t.Fatal("accepted swapped source gender")
+			}
+		})
+	}
+}

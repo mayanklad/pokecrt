@@ -203,6 +203,32 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 			}
 			types = append(types, second)
 		}
+		if len(mapping.SourceGenders) > 0 {
+			if automaticRuleLevel(m.RulesVersion) < 10 || len(mapping.SourceGenders) != 2 || mapping.ID != "standard" || mapping.DefaultGender != "male" || !slices.Equal(mapping.Genders, []string{"female", "male"}) {
+				return nil, fmt.Errorf("invalid source gender declarations #%03d", id)
+			}
+			for _, gender := range []string{"male", "female"} {
+				g, ok := mapping.SourceGenders[gender]
+				gf, err := sourceFormByID(source, g.SourceFormID)
+				if !ok || err != nil || g.SourceFormID != gender || gf.CanonicalForm != nil || owners[g.PokemonID] != id || g.MetadataFormID <= 0 || len(metadata) == 0 || metadata[0].Owners[g.MetadataFormID] != g.PokemonID {
+					return nil, fmt.Errorf("invalid source gender owner #%03d/%s", id, gender)
+				}
+				genderSlots := slots[g.PokemonID]
+				if explicit := metadata[0].Slots[g.MetadataFormID]; len(explicit) > 0 {
+					genderSlots = explicit
+				}
+				if genderSlots[1] != selectedSlots[1] || genderSlots[2] != selectedSlots[2] || len(genderSlots) != len(selectedSlots) {
+					return nil, fmt.Errorf("gender typing mismatch #%03d/%s", id, gender)
+				}
+				if gender == "male" && (g.SourceFormID != mapping.SourceFormID || g.PokemonID != mapping.PokemonID || g.MetadataFormID != mapping.MetadataFormID) {
+					return nil, fmt.Errorf("source gender default mismatch #%03d", id)
+				}
+				if gf.ID != form.ID && claimed[gf.ID] {
+					return nil, fmt.Errorf("multiply claimed source gender #%03d/%s", id, gender)
+				}
+				claimed[gf.ID] = true
+			}
+		}
 		for _, aliasID := range mapping.SourceAliases {
 			alias, err := sourceFormByID(source, aliasID)
 			if err != nil {
@@ -222,6 +248,9 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 			}
 			if !slices.Contains(mapping.Genders, asset.Gender) {
 				return nil, fmt.Errorf("undeclared visual gender #%03d/%s", id, mapping.ID)
+			}
+			if len(mapping.SourceGenders) > 0 && mapping.SourceGenders[asset.Gender].SourceFormID != asset.SourceFormID {
+				return nil, fmt.Errorf("asset gender source mismatch #%03d/%s", id, asset.Gender)
 			}
 			genderForm, err := sourceFormByID(source, asset.SourceFormID)
 			if err != nil {
@@ -294,14 +323,21 @@ func validateVariantInventory(species []normalizedSpecies, assets []normalizedAs
 	for _, s := range species {
 		for _, f := range s.Forms {
 			if len(f.Genders) > 1 {
+				present := 0
 				first := ""
 				for _, gender := range f.Genders {
-					key := fmt.Sprintf("%d/%s/%s/regular", s.ID, f.ID, gender)
-					hash := hashes[key]
-					if hash == "" || hash == first {
+					hash := hashes[fmt.Sprintf("%d/%s/%s/regular", s.ID, f.ID, gender)]
+					if hash == "" {
+						continue
+					}
+					if hash == first {
 						return fmt.Errorf("distinct visual genders require different regular assets #%03d/%s", s.ID, f.ID)
 					}
+					present++
 					first = hash
+				}
+				if present != 0 && present != len(f.Genders) {
+					return fmt.Errorf("distinct visual genders require complete regular assets #%03d/%s", s.ID, f.ID)
 				}
 			}
 		}

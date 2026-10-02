@@ -1,8 +1,8 @@
 {
-  "dataset_id": "f79ff2113136fb32aa28c4715c427988233ab3485d3d721a2bab214d4488462f",
-  "rules_version": "d06-auto-9",
+  "dataset_id": "a6b508dd6e70f15536b0ac7d0de713025e418ece20bd3eb08e115381b980d177",
+  "rules_version": "d06-auto-10",
   "catalog_species": 1025,
-  "catalog_forms": 1449,
+  "catalog_forms": 1448,
   "missing_regular_variants": [
     {
       "species_id": 58,
@@ -872,15 +872,15 @@
       "species_id": 916,
       "name": "Oinkologne",
       "form_id": "standard",
-      "gender": "default",
+      "gender": "female",
       "palette": "regular",
       "reason": "No audited asset is mapped for this exact appearance."
     },
     {
       "species_id": 916,
       "name": "Oinkologne",
-      "form_id": "female",
-      "gender": "default",
+      "form_id": "standard",
+      "gender": "male",
       "palette": "regular",
       "reason": "No audited asset is mapped for this exact appearance."
     },
@@ -1186,8 +1186,8 @@
     "#904/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#905/standard: inherited appearance flags are missing or provisional; artwork excluded.",
     "#905/therian: inherited appearance flags are missing or provisional; artwork excluded.",
+    "#916/standard: exact source/metadata male and female records are one visual-gender form. Generated or unaudited candidate artwork is not accepted through this identity correction.",
     "#916/standard: provider or generated status is outside the reviewed artwork policy.",
-    "#916/female: provider or generated status is outside the reviewed artwork policy.",
     "#925/family-of-three: provider or generated status is outside the reviewed artwork policy.",
     "#952/mega: provider or generated status is outside the reviewed artwork policy.",
     "#964/standard: provider or generated status is outside the reviewed artwork policy.",

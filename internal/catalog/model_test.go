@@ -55,8 +55,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 1449 {
-		t.Fatalf("form count=%d; want 1449 in the current mapping", count)
+	if count != 1448 {
+		t.Fatalf("form count=%d; want 1448 in the current mapping", count)
 	}
 }
 
@@ -411,5 +411,16 @@ func TestTatsugiriTransformationsAreDistinctMetadata(t *testing.T) {
 		if !seen[id] {
 			t.Fatalf("missing %s", id)
 		}
+	}
+}
+
+func TestOinkologneGenderRecordsAreOneStandardForm(t *testing.T) {
+	species, ok := ByNumber(916)
+	if !ok || len(species.Forms) != 1 {
+		t.Fatalf("Oinkologne forms: %+v", species.Forms)
+	}
+	f := species.Forms[0]
+	if f.ID != "standard" || f.DefaultGender != "male" || !slices.Equal(f.Genders, []string{"female", "male"}) || !slices.Equal(f.Types, []string{"normal"}) {
+		t.Fatalf("Oinkologne gender identity: %+v", f)
 	}
 }

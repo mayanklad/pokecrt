@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D06, source transformation-alias audit; incomplete.
-Verified baseline commit: 17558ae1a53b8288b870b4103d7b198ff735f114.
-Baseline status: Automatic inherited gender increment owner-committed; clean tree.
+Current step: D06, source-encoded gender identity audit; incomplete.
+Verified baseline commit: 795183b41aac94d5fbe0e1cd083ca9d24713427c.
+Baseline status: Transformation-alias increment owner-committed; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -20,10 +20,10 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
 ## Dataset
 
-Dataset ID: `f79ff2113136fb32aa28c4715c427988233ab3485d3d721a2bab214d4488462f`.
-Rules: d06-auto-9. Coverage: tools/dataset/coverage.json and coverage.md.
+Dataset ID: `a6b508dd6e70f15536b0ac7d0de713025e418ece20bd3eb08e115381b980d177`.
+Rules: d06-auto-10. Coverage: tools/dataset/coverage.json and coverage.md.
 
-- 1,025 catalog species across all nine generations; 1,449 metadata forms.
+- 1,025 catalog species across all nine generations; 1,448 metadata forms.
 - 1,017 eligible encounter species; 1,013 standard-printable species.
 - 1,327 collectible forms; 2,669 exact assets; 1,334 shiny slots.
 - 1,021 standard regular slots; 16 distinct gender slots across eight species.
@@ -33,12 +33,13 @@ Rules: d06-auto-9. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-The pinned form table's explicit Mega flags and same-species ownership now
-prevent distinct transformations from folding into ordinary source artwork.
-Tatsugiri Curly Mega and Droopy Mega retain their own metadata IDs and typing;
-the ordinary artwork aliases provide no usable transformation asset. Two metadata
-forms and two unavailable appearances are added. Ordinary source aliases retain
-their previous behavior. No maintained exception list is added for this correction.
+Exact pinned male/female source and metadata records now derive one standard
+form when the reviewed layout uses a male default. Ownership, explicit gender
+identifiers, visual-difference metadata and exact matching typing are checked.
+Oinkologne’s two Normal records become male/female slots in one standard form;
+both generated artwork candidates remain unavailable. No species list is added.
+Metadata-only pairs may lack both assets; partial pairs and identical regular
+pixels remain invalid. Available gender coverage does not increase.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
@@ -50,7 +51,7 @@ or public flags added. Original source revisions/provider scope unchanged.
 
 ## Remaining work and next step
 
-D06 remains open: Oinkologne form/gender identity, other provider/layout and
+D06 remains open: other provider/layout and
 provisional artwork review, source alias semantics, and achievement tags.
 D07 implements composable public selectors using FlagSet and shared validation;
 the existing handwritten print parser will be replaced there. D08 adds listing.

@@ -80,18 +80,24 @@ type assetMapping struct {
 	Palette      string `json:"palette,omitempty"`
 }
 
+type genderFormMapping struct {
+	SourceFormID   string `json:"source_form_id"`
+	PokemonID      int    `json:"pokemon_id"`
+	MetadataFormID int    `json:"metadata_form_id"`
+}
 type formMapping struct {
-	MetadataOnlyAlias bool     `json:"metadata_only_alias,omitempty"`
-	MetadataFormID    int      `json:"metadata_form_id,omitempty"`
-	SpeciesID         int      `json:"species_id"`
-	ID                string   `json:"id"`
-	Name              string   `json:"name"`
-	SourceFormID      string   `json:"source_form_id"`
-	PokemonID         int      `json:"pokemon_id"`
-	DefaultGender     string   `json:"default_gender"`
-	Genders           []string `json:"genders"`
-	SourceAliases     []string `json:"source_aliases,omitempty"`
-	Reason            string   `json:"reason"`
+	SourceGenders     map[string]genderFormMapping `json:"source_genders,omitempty"`
+	MetadataOnlyAlias bool                         `json:"metadata_only_alias,omitempty"`
+	MetadataFormID    int                          `json:"metadata_form_id,omitempty"`
+	SpeciesID         int                          `json:"species_id"`
+	ID                string                       `json:"id"`
+	Name              string                       `json:"name"`
+	SourceFormID      string                       `json:"source_form_id"`
+	PokemonID         int                          `json:"pokemon_id"`
+	DefaultGender     string                       `json:"default_gender"`
+	Genders           []string                     `json:"genders"`
+	SourceAliases     []string                     `json:"source_aliases,omitempty"`
+	Reason            string                       `json:"reason"`
 }
 
 type normalizedForm struct {

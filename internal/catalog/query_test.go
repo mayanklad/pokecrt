@@ -63,3 +63,14 @@ func TestMetadataOnlyTransformationHasNoSpriteFallback(t *testing.T) {
 		t.Fatal("lost ordinary artwork")
 	}
 }
+
+func TestUnavailableOinkologneGendersHaveNoSprite(t *testing.T) {
+	for _, gender := range []string{"male", "female"} {
+		for _, palette := range []string{"regular", "shiny"} {
+			key := catalog.VariantKey{SpeciesID: 916, FormID: "standard", Gender: gender, Palette: palette}
+			if _, ok := sprite.Lookup(key); ok {
+				t.Fatalf("generated Oinkologne gender candidate accepted: %+v", key)
+			}
+		}
+	}
+}

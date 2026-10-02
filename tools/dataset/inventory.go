@@ -193,6 +193,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	// Optional only for legacy source locks and small test fixtures.
 	metadataIDs := map[string]int{}
 	metadataMega := map[string]bool{}
+	metadataGender := map[string]string{}
 	defaultMetadataIDs := map[int]int{}
 	foundFormTable := false
 	for _, src := range lock.Sources {
@@ -207,6 +208,9 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			required := []string{"identifier", "pokemon_id"}
 			if automaticRuleLevel(m.RulesVersion) >= 9 {
 				required = append(required, "id", "is_mega")
+				if automaticRuleLevel(m.RulesVersion) >= 10 {
+					required = append(required, "form_identifier")
+				}
 			}
 			forms, e := readTable(lock, cache, "pokemon_forms.csv", required...)
 			if e != nil {
@@ -226,6 +230,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 						return m, e
 					}
 					metadataMega[key] = mega
+					metadataGender[key] = row["form_identifier"]
 				}
 				if row["id"] != "" {
 					formID, e := integer(row, "id", false)
@@ -320,6 +325,34 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 
+		var sourceGenders map[string]genderFormMapping
+		if automaticRuleLevel(m.RulesVersion) >= 10 && sp.DefaultForm == "male" {
+			var hasDifference bool
+			for _, row := range rows {
+				if row["id"] == fmt.Sprint(id) {
+					var err error
+					hasDifference, err = sourceBool(row, "has_gender_differences")
+					if err != nil {
+						return m, err
+					}
+				}
+			}
+			if !hasDifference {
+				return m, fmt.Errorf("source gender pair lacks metadata visual difference #%03d", id)
+			}
+			sourceGenders = map[string]genderFormMapping{}
+			for _, gender := range []string{"male", "female"} {
+				sf, err := sourceFormByID(sp, gender)
+				if err != nil {
+					return m, err
+				}
+				key := sp.Slug + "-" + gender
+				if sf.CanonicalForm != nil || metadataGender[key] != gender || metadataIDs[key] <= 0 || owners[names[key]] != id || (gender == "male" && names[key] != defaults[id]) {
+					return m, fmt.Errorf("invalid source gender metadata identity #%03d/%s", id, gender)
+				}
+				sourceGenders[gender] = genderFormMapping{SourceFormID: sf.ID, PokemonID: names[key], MetadataFormID: metadataIDs[key]}
+			}
+		}
 		metadataOnlyAliases := map[string]bool{}
 		if automaticRuleLevel(m.RulesVersion) >= 9 {
 			for _, alias := range sp.Forms {
@@ -345,6 +378,9 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 		for _, sf := range sp.Forms {
+			if sourceGenders != nil && sf.ID == "female" {
+				continue
+			}
 			metadataOnly := metadataOnlyAliases[sf.ID]
 			if sf.CanonicalForm != nil && !metadataOnly {
 				continue
@@ -423,6 +459,12 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			if gendered && sf.ID == "base" {
 				f.DefaultGender = "male"
 				f.Genders = []string{"male", "female"}
+			}
+			if sourceGenders != nil && sf.ID == sp.DefaultForm {
+				f.DefaultGender = "male"
+				f.Genders = []string{"male", "female"}
+				f.SourceGenders = sourceGenders
+				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/standard: exact source/metadata male and female records are one visual-gender form. Generated or unaudited candidate artwork is not accepted through this identity correction.", id))
 			}
 			f.MetadataOnlyAlias = metadataOnly
 			m.Forms = append(m.Forms, f)
@@ -614,7 +656,7 @@ func applyFormSuffixRules(m mappingConfig, ids []int, byID map[int]sourceSpecies
 
 func automaticRules(version string) bool { return automaticRuleLevel(version) > 0 }
 func automaticRuleLevel(version string) int {
-	for level := 1; level <= 9; level++ {
+	for level := 1; level <= 10; level++ {
 		if version == fmt.Sprintf("d06-auto-%d", level) {
 			return level
 		}
