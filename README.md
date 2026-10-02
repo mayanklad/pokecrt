@@ -34,9 +34,9 @@ gameplay remains a later milestone. Coverage separately reports 53 pinned
 metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
-D06 is verified for the current reviewed inventory. D07 public selectors and D08 catalog listing are
-implemented. D09 coverage/public behavior validation is complete. D10 performance measurements and the approved automatic sprite lookup index are
-implemented. Final owner verification and v0.2 publication remain pending.
+Public selectors, catalog listing and dataset validation are implemented.
+Sprite lookup uses an exact-key index derived automatically from the generated
+manifest; performance measurements are documented in docs/benchmarks.md.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 Trainers, encounters, achievements and the TUI are not implemented yet.
@@ -45,8 +45,8 @@ The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
 natural-size output; sprites are not resized automatically.
 
-PokéCRT is an unofficial fan project. The owner has approved attributed releases
-with bundled sprites under the [release policy](docs/release-policy.md).
+PokéCRT is an unofficial fan project. Attributed releases with bundled sprites
+follow the [release policy](docs/release-policy.md).
 Original PokéCRT code is MIT licensed; Pokémon artwork retains its respective
 owners' rights. No rights-holder permission or endorsement is claimed. See
 [licensing scope](LICENSING.md), [source audit](tools/dataset/README.md),
@@ -207,7 +207,7 @@ discovery state limits the public catalog. `NO_COLOR` applies to detail sprites.
 
 ## Public-engine verification
 
-D09 checks generated coverage against the embedded catalog/assets and public
+Dataset tests cross-check generated coverage against the embedded catalog/assets and public
 queries, including declared form/gender ownership, regular/shiny eligibility,
 missing appearances, completion denominators and fully supported branching
 families. Installed-binary tests run outside the repository/cache and check
@@ -229,15 +229,11 @@ shiny palettes and visual genders. Coverage limits remain explicit: 53 metadata
 varieties lack resolved catalog/source identities, separately from 122
 unavailable catalog appearances. Public output never fills those gaps by guess.
 
-Run the existing generation/check pipeline, `go test ./...` and `go vet ./...`.
-`go test -race ./...` also passes for this increment. Measured performance baselines
-and initial regression budgets are recorded in
-[docs/benchmarks.md](docs/benchmarks.md), together with repeatable Go benchmarks,
-startup/memory measurements and measurement limits. Sprite lookup now uses an
-exact-key index derived automatically from the generated manifest. Measured
-random-print/list improvements and startup/memory costs are documented; artwork
-and selection rules are unchanged. Final owner verification and release
-publication remain pending. v0.2 is not yet published.
+The public suite includes `go test ./...`, `go vet ./...` and
+`go test -race ./...`. Measured performance baselines, initial regression budgets,
+repeatable Go benchmarks and measurement limits are recorded in
+[docs/benchmarks.md](docs/benchmarks.md). The lookup index improves random-print
+and full-list performance while preserving artwork and selection rules.
 
 ## Local installation
 
@@ -264,40 +260,10 @@ pokecrt print --output sprite
 and rerun the installer. To uninstall, remove only `~/.local/bin/pokecrt`.
 Installation and removal do not erase trainer data.
 
-## Local release candidate
-
-Prepare a local candidate archive:
-
-```bash
-sh scripts/package.sh v0.2
-(cd dist && sha256sum -c SHA256SUMS)
-```
-
-The script prepares ignored sprites from verified cached inputs, rejects generated
-metadata drift, runs tests and vet; builds Linux amd64 with CGO
-disabled, trimmed paths, and the requested version; and packages the executable,
-README, LICENSE, licensing scope, third-party notices, and coverage notes. It writes
-`dist/pokecrt_v0.2_linux_amd64.tar.gz` and `dist/SHA256SUMS`. An existing archive
-is not overwritten. It never downloads sources or publishes anything.
-
-Before v0.2 distribution:
-
-- Apply, regenerate, test, vet and race-check the final source; review benchmark results.
-- Review regular/shiny/form/gender artwork in a real terminal, including NO_COLOR.
-- Commit and push the final source; create the v0.2 tag on that reviewed commit.
-- Build a fresh archive from the clean final tag; verify SHA256SUMS and extract it.
-- Run the extracted binary outside the checkout: help/version, named/random/filtered
-  print and list/details. Verify the dataset ID and unavailable-artwork behavior.
-- Publish the Linux amd64 archive and SHA256SUMS with accurate coverage/limitations.
-
-Preserve the approved fan-project policy and third-party notices. The owner
-performs tagging and publication; packaging does not publish. Cross-compilation
-alone does not prove support for another platform. The
-[v0.1 release record](docs/release-v0.1.md) describes the earlier milestone.
-
 ## Project documents
 
 - [Implementation progress](docs/progress.md)
+- [v0.2 release notes](docs/release-v0.2.md)
 - [Performance baseline and comparison](docs/benchmarks.md)
 - [v0.1 release record](docs/release-v0.1.md)
 - [Dataset generation and audit](tools/dataset/README.md)

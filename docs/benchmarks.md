@@ -1,14 +1,12 @@
 # Public-engine performance baseline
 
-D10a measured 2 October 2026 against owner commit
+D10a measured 2 October 2026 against commit
 `8490227efd6e7c5fd3782995acf7bfe739d4fda5`; its original baseline is retained below.
-D10b applies the owner-approved automatic lookup index to pushed D10a commit
+D10b applies the automatic lookup index to pushed D10a commit
 `ac2deea8fdc7cab85591542cd0264103054075cb`. The index is derived from the generated
 manifest, stores entry positions and is read-only after package initialization.
 No handwritten inventory, new package, data change or artwork fallback is added.
-D10 implementation is assistant-verified; owner application, terminal review,
-final commit/tag and release publication remain pending. No v0.2 publication is
-claimed. Environment and reproduction commands apply to both measurements.
+Environment and reproduction commands apply to both measurements.
 
 ## Environment and scope
 
@@ -144,8 +142,8 @@ Recheck public paths at v0.3/v0.4 and the specified later performance review.
 
 The original two-second random-print CPU profile attributed 73.54% cumulative
 sampled CPU to sprite.Lookup and key equality checks. Each availability check
-scanned up to 2,669 entries. The owner approved replacing that scan with an
-automatically derived exact-key index on 2 October 2026.
+scanned up to 2,669 entries. That scan was replaced with an automatically derived exact-key index on
+2 October 2026.
 
 The only production change is in internal/sprite/assets.go. The private map
 associates each generated VariantKey with its manifest position. It is built
@@ -258,26 +256,30 @@ result, not a promise that additional code always has no size cost.
 All indexed scenarios remain within the initial EPYC-environment budgets above.
 No extra runtime optimization or budget change is included.
 
-### Owner machine pre-index reference
+### Intel i7 laptop verification: before and after
 
-The owner's supplied D10a output uses Linux amd64, Intel Core i7-10750H 2.60 GHz,
-five 500-ms runs and `-cpu=1`. Go version, kernel and power settings were not
-included, so this is a reference rather than a fully qualified machine budget.
-It confirms successful tests/benchmarks and the same dataset. Color medians:
+The D10a and D10b laptop benchmark output uses Linux amd64, Intel Core i7-10750H
+2.60 GHz, five 500-ms runs and `-cpu=1`. Both logs show successful tests and
+benchmarks and the same dataset. Go version, kernel and power settings were not
+included; these observations are not a fully qualified machine-specific budget.
+They measure warm in-process work, excluding process startup and index construction.
 
-| Benchmark | Owner D10a median ms/op |
-| --- | ---: |
-| RandomPrint | 12.705 |
-| NamedPrint | 0.829 |
-| FilteredPrint | 0.914 |
-| VariantPrint | 0.687 |
-| ListCompact | 13.394 |
-| ListDetails | 0.566 |
+| Benchmark | Before ms/op | Indexed ms/op | Before / indexed |
+| --- | ---: | ---: | ---: |
+| Public/Color/RandomPrint | 12.705 | 3.274 | 3.88× |
+| Public/Color/ListCompact | 13.394 | 3.791 | 3.53× |
+| Query/Standard | 12.538 | 1.800 | 6.96× |
+| Public/Color/NamedPrint | 0.829 | 0.814 | 1.02× |
+| Public/Color/FilteredPrint | 0.914 | 0.891 | 1.03× |
+| Public/Color/VariantPrint | 0.687 | 0.702 | 0.98× |
+| Public/Color/ListDetails | 0.566 | 0.599 | 0.94× |
 
-Do not apply EPYC absolute thresholds directly to the owner's laptop. Compare
-its post-index run against these local results with the same command, Go version
-and power settings. The owner's output contains in-process benchmarks; it does
-not establish fresh-process startup or peak RSS.
+Laptop late/missing exact lookups fall from median 20.227/20.285 µs to
+56.92/39.46 ns. Named and other small paths show ordinary run-to-run differences;
+only the repeated-lookup paths demonstrate the intended large improvement.
+Do not apply EPYC absolute thresholds directly to the Intel i7 laptop. Retain its
+local before/after reference and record environment/power settings for future
+release comparisons.
 
 ## Reproduce the benchmarks
 
@@ -375,7 +377,3 @@ for sample in $(seq 1 10); do
 done
 # Substitute each command from the case table; repeat with NO_COLOR=1.
 ```
-
-Before v0.2 publication, apply and test the approved D10b ZIP,
-review real terminal artwork, and prepare/smoke-test the release archive with the
-existing packaging workflow. Only the owner tags and publishes the release.

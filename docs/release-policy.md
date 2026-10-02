@@ -45,12 +45,10 @@ THIRD_PARTY_NOTICES.md.
 Records: tools/dataset/sources.json, mappings.json, README.md,
 coverage.json, coverage.md, LICENSING.md, and THIRD_PARTY_NOTICES.md.
 
-## Package requirements
+## Distribution contents
 
-Include the executable, README, LICENSE, LICENSING.md, THIRD_PARTY_NOTICES.md,
-COVERAGE.md, and RELEASE_POLICY.md. Publish archive checksums. State actual
-platform support and dataset coverage. Do not include profiles, credentials,
-raw download caches, or unrelated development files.
-
-The repository owner performs commits, tags, and GitHub release publication.
-The assistant's GitHub access remains read-only.
+Release archives contain the executable, README, LICENSE, LICENSING.md,
+THIRD_PARTY_NOTICES.md, COVERAGE.md and RELEASE_POLICY.md. Archive checksums
+accompany the release. Platform support and dataset coverage are stated explicitly.
+Profiles, credentials, raw download caches and unrelated development files are
+excluded from release archives.
