@@ -1,6 +1,8 @@
 # v0.2 — Complete public engine
 
-Status: unreleased.
+Published 2 October 2026 for Linux amd64, with an archive and SHA256SUMS.
+[Release](https://github.com/mayanklad/pokecrt/releases/tag/v0.2).
+Source: `59fea7c10a1de45d5732f4bd84617757e6e57490`.
 
 PokéCRT v0.2 expands the offline Linux printer into the complete public engine.
 

@@ -1,8 +1,8 @@
 # Implementation progress
 
-Current development milestone: v0.2 — Complete public engine.
-Published milestone: [v0.1](https://github.com/mayanklad/pokecrt/releases/tag/v0.1).
-Implementation baseline: `d11627713611e097097b221dbbb10b260ba6e60d`.
+Published milestone: [v0.2 — Complete public engine](https://github.com/mayanklad/pokecrt/releases/tag/v0.2), 2 October 2026.
+Release source: `59fea7c10a1de45d5732f4bd84617757e6e57490`.
+Next planned milestone: v0.3 — Trainer CLI.
 
 ## Implemented behavior
 
@@ -49,7 +49,7 @@ exclude process startup and are not universal latency guarantees.
 
 ## Roadmap
 
-v0.2 provides the complete public print/catalog engine for the reviewed inventory.
+Published v0.2 provides the complete public print/catalog engine for the reviewed inventory.
 [Release notes](release-v0.2.md) describe its behavior and known limitations.
 v0.3 covers trainer profiles, SQLite storage, encounters, progression, achievements
 and private Pokédex CLI. The TUI and final hardening remain later milestones.

@@ -3,12 +3,12 @@
 Offline Pokémon terminal artwork, written in Go. Print one named or randomly
 selected Pokémon with truecolor Unicode half blocks at the original pixel scale.
 
-Published release: [v0.1](https://github.com/mayanklad/pokecrt/releases/tag/v0.1).
-The current development branch targets v0.2.
+Published release: [v0.2](https://github.com/mayanklad/pokecrt/releases/tag/v0.2) — Complete public engine.
+The next planned milestone is v0.3 — Trainer CLI.
 
 ## Current coverage
 
-The development catalog contains all generation-1 through generation-9 species, their complete
+The release catalog contains all generation-1 through generation-9 species, their complete
 connected evolution families (including later-generation relatives):
 1,025 species and 1,448 metadata forms.
 
@@ -40,7 +40,7 @@ manifest; performance measurements are documented in docs/benchmarks.md.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 Trainers, encounters, achievements and the TUI are not implemented yet.
-Published v0.1 retains its original three-sprite coverage.
+The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
 natural-size output; sprites are not resized automatically.
