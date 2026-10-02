@@ -33,7 +33,7 @@ D11 adds the storage foundation for the trainer CLI:
 - Atomic versioned migrations with protected, nonoverwriting consistent backups
   before nonempty upgrades; corrupt, newer and unknown unversioned state preserved.
 
-D12 implements profile commands. D13 adds internal encounter operations; the
+D12 implements profile commands. D13/D14 add internal encounter operations and progression; the
 public encounter command remains pending. Public print/list/help/
 version do not resolve storage paths and remain usable with corrupt trainer state.
 No legacy JSON storage was present, so no import routine is introduced.
@@ -55,7 +55,7 @@ D12 adds explicit local profiles:
 Profile views currently show name, UTC creation time and active status. Complete
 statistics and achievement views are scheduled for D17. Profiles never create
 encounters, discoveries or XP awards. Encounter recording is an internal D13
-foundation until progression and output are complete.
+foundation until output modes are complete.
 The SQLite schema and dataset are unchanged. Unicode handling pins
 `golang.org/x/text v0.42.0`.
 
@@ -80,9 +80,16 @@ D13 adds internal encounter selection and atomic history/discovery recording:
 - Returned first flags and counts come from transactional state, after commit.
   Failed writes/commits return no successful record and are never retried.
 
-The production CLI does not expose encounters yet. D13's internal recording
-uses zero XP; progression and achievement evaluation are added in D14 before
-public encounter history can be created. All five output modes follow in D15.
+The production CLI does not expose encounters yet. D14 now awards XP and
+checks numerical/themed achievements within that same transaction. Base XP is
+10, with 40 for first species, 20 for first exact variant and 100 for shiny.
+Levels advance every 1,000 XP without a cap or probability benefit. Completion
+goals derive from currently eligible inventory; type evidence uses encountered
+forms and branching goals require every catalog family member to be supported.
+Unlocks retain their timestamp, dataset and applicable target, with unique
+trainer/achievement identities. Only newly inserted unlocks are returned, in
+stable policy order. Overflow and any failed write roll back the whole action.
+All five output modes follow in D15.
 No database migration, dependency or generated dataset change is introduced.
 
 ## Dataset
@@ -113,10 +120,15 @@ Profile tests cover canonical collisions, creation rollback, concurrent first/
 duplicate creation, selection isolation, missing-state guidance, syntax/help
 boundaries, installed execution and broken pipes after committed creation.
 D13 verifies history/discovery count equality, one first flag per identity,
-foreign keys, and XP/history equality for its zero-XP foundation. It also covers
+foreign keys, and XP/history equality. It also covers
 shiny-first/repeats, clock reversal, profile isolation, concurrent first records,
 profile switching during real artwork preparation, and rollback at insertion,
-upsert and deferred commit failures. XP bonus/unlock tests land in D14;
+upsert and deferred commit failures. D14 verifies all six XP cases, level/overflow
+boundaries, every numerical goal threshold, completion intersections, exact-form
+type evidence, fully supported branching families, inventory-derived targets
+against generated coverage, one-time unlocks, concurrent bonuses/unlocks and
+XP/unlock rollback. Already satisfied new goals unlock on the next committed
+encounter;
 committed-output mode/stream tests land in D15.
 Tests, vet, race checks and pinned dataset checks pass for the implementation
 baseline. Benchmark methods, environments, startup/memory tradeoffs and numeric
@@ -133,6 +145,8 @@ public latency and memory limits are unchanged.
 
 D13 public fresh-process checks pass the existing thresholds; its stripped
 binary size remains unchanged at 11.043 MiB. No new warm/RSS result is claimed.
+D14 fresh-process short-command P95 is at most 3.012 ms (8 ms limit), and
+random/list P95 at most 4.979 ms (25 ms limit). Size remains 11.043 MiB.
 
 ## Roadmap
 

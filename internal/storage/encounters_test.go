@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -263,6 +264,9 @@ func TestConcurrentFirstEncountersAndCapturedSwitch(t *testing.T) {
 	if firstSpecies != 1 || firstVariant != 1 || integer(t, r, "SELECT count(*) FROM encounters") != 2 || integer(t, r, "SELECT encounter_count FROM variant_discoveries") != 2 {
 		t.Fatal("concurrent first flags/counts")
 	}
+	if integer(t, r, "SELECT xp_total FROM trainer_progress") != 280 || integer(t, r, "SELECT count(*) FROM achievement_unlocks") != 2 {
+		t.Fatal("concurrent XP/unlocks duplicated")
+	}
 	two, err := r.CreateProfile(ctx, profileName(t, "Oak"), 2)
 	if err != nil {
 		t.Fatal(err)
@@ -329,5 +333,110 @@ func TestEncounterCommitFailureAndCancellation(t *testing.T) {
 	cancel()
 	if _, err := r.RecordEncounter(canceled, p.ID, c, 2); !errors.Is(err, context.Canceled) {
 		t.Fatalf("cancellation: %v", err)
+	}
+}
+
+func TestEncounterProgressionAwardsUnlocksAndRollback(t *testing.T) {
+	r, _ := fresh(t)
+	p := encounterProfile(t, r)
+	ctx := context.Background()
+	regular := encounterChoice(t, 25, "standard", "default", "regular")
+	shiny := encounterChoice(t, 25, "standard", "default", "shiny")
+	for i, c := range []struct {
+		choice trainer.Choice
+		award  int64
+	}{{regular, 70}, {regular, 10}, {shiny, 130}, {shiny, 110}} {
+		record, err := r.RecordEncounter(ctx, p.ID, c.choice, int64(i+10))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if record.XPAwarded != c.award || record.After.Total-record.Before.Total != c.award {
+			t.Fatalf("XP %+v", record)
+		}
+		if i == 0 {
+			u := record.NewUnlocks()
+			if len(u) != 1 || u[0].ID != "encounters.1" {
+				t.Fatalf("first unlocks %+v", u)
+			}
+			u[0].ID = "mutated"
+			if record.NewUnlocks()[0].ID != "encounters.1" {
+				t.Fatal("unlock slice aliases")
+			}
+		}
+		if i == 2 {
+			u := record.NewUnlocks()
+			if len(u) != 1 || u[0].ID != "shiny.first" {
+				t.Fatalf("shiny unlocks %+v", u)
+			}
+		}
+		if i == 1 || i == 3 {
+			if len(record.NewUnlocks()) != 0 {
+				t.Fatal("duplicate unlock")
+			}
+		}
+		assertEncounterSums(t, r)
+	}
+	// A newly introduced, already satisfied goal unlocks only on the next write.
+	if _, err := r.db.Exec("DELETE FROM achievement_unlocks WHERE achievement_id='encounters.1'"); err != nil {
+		t.Fatal(err)
+	}
+	record, err := r.RecordEncounter(ctx, p.ID, regular, 99)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if u := record.NewUnlocks(); len(u) != 1 || u[0].ID != "encounters.1" || u[0].UnlockedAtMS != 99 || u[0].Target != 1 {
+		t.Fatalf("new definition %+v", u)
+	}
+	for _, trigger := range []string{
+		`CREATE TRIGGER fail_xp BEFORE UPDATE ON trainer_progress BEGIN SELECT RAISE(ABORT,'XP failed'); END`,
+		`CREATE TRIGGER fail_unlock BEFORE INSERT ON achievement_unlocks BEGIN SELECT RAISE(ABORT,'unlock failed'); END`,
+	} {
+		before := integer(t, r, "SELECT count(*) FROM encounters")
+		xp := integer(t, r, "SELECT xp_total FROM trainer_progress")
+		if _, err := r.db.Exec(trigger); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := r.RecordEncounter(ctx, p.ID, regular, 100); err == nil {
+			t.Fatal("failure accepted")
+		}
+		if integer(t, r, "SELECT count(*) FROM encounters") != before || integer(t, r, "SELECT xp_total FROM trainer_progress") != xp {
+			t.Fatal("partial transaction")
+		}
+		name := "fail_xp"
+		if strings.Contains(trigger, "CREATE TRIGGER fail_unlock ") {
+			name = "fail_unlock"
+		}
+		if _, err := r.db.Exec("DROP TRIGGER " + name); err != nil {
+			t.Fatal(err)
+		}
+		assertEncounterSums(t, r)
+	}
+}
+
+func TestEncounterXPOverflowAndLevelBoundary(t *testing.T) {
+	r, _ := fresh(t)
+	p := encounterProfile(t, r)
+	ctx := context.Background()
+	choice := encounterChoice(t, 25, "standard", "default", "regular")
+	if _, err := r.db.Exec("UPDATE trainer_progress SET xp_total=990"); err != nil {
+		t.Fatal(err)
+	}
+	record, err := r.RecordEncounter(ctx, p.ID, choice, 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if record.Before.Level != 1 || record.After.Level != 2 || record.After.InLevel != 60 {
+		t.Fatalf("level %+v", record)
+	}
+	if _, err := r.db.Exec("UPDATE trainer_progress SET xp_total=9223372036854775807"); err != nil {
+		t.Fatal(err)
+	}
+	before := integer(t, r, "SELECT count(*) FROM encounters")
+	record, err = r.RecordEncounter(ctx, p.ID, choice, 11)
+	if err == nil || record.ID != 0 {
+		t.Fatal("overflow accepted")
+	}
+	if integer(t, r, "SELECT count(*) FROM encounters") != before {
+		t.Fatal("overflow wrote history")
 	}
 }

@@ -343,13 +343,16 @@ replaced automatically.
 
 Profile views currently show name, UTC creation time and active status. Full
 statistics and achievements arrive later; the public encounter command remains
-pending progression and output modes. Profile
+pending output modes. Profile
 commands never record discoveries or encounters. Public print/list/help/version
 remain independent of trainer storage. Dependency licenses are retained in
 [LICENSING.md](LICENSING.md).
 
-The internal D13 encounter foundation selects uniformly by species, form and
+The internal encounter foundation selects uniformly by species, form and
 visual gender from accepted regular artwork, with a 1/4096 shiny chance when
 that exact appearance supports it. It prepares artwork before atomically
-recording history and discoveries for the captured trainer. This foundation
-is not yet exposed as a user command: progression is D14 and output modes D15.
+recording history, discoveries, XP and achievement unlocks for the captured
+trainer. Completion goals are derived from eligible catalog artwork and evolution
+relationships. Each encounter grants 10 XP, plus 40 for a first species, 20 for a
+first exact variant and 100 for shiny artwork. Levels advance every 1,000 XP.
+This foundation is not yet exposed as a user command; output modes follow in D15.

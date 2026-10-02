@@ -12,8 +12,10 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
+	"github.com/mayanklad/pokecrt/internal/trainer"
 	_ "modernc.org/sqlite"
 )
 
@@ -25,8 +27,11 @@ var ErrNoState = errors.New("trainer storage does not exist; create a trainer fi
 var migrations embed.FS
 
 type Repository struct {
-	db   *sql.DB
-	path string
+	db        *sql.DB
+	path      string
+	goalsOnce sync.Once
+	goals     *trainer.AchievementTargets
+	goalsErr  error
 }
 
 // Open opens existing writable storage and applies supported migrations.

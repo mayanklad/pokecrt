@@ -465,3 +465,17 @@ P95 is 2.926 ms (8 ms limit); random/full-list P95 is 4.931 ms
 existing thresholds. Warm/RSS rows above remain D12 observations; they are not
 relabeled as D13 measurements. Encounter latency at representative history sizes
 will be measured with completed progression before v0.3 publication.
+
+
+## D14 public-path check
+
+D14 adds internal XP and achievement evaluation against source
+`b4a0c1014300bc8084ed295136ad0891e91bb884`. Targets are initialized only when
+recording an encounter; public commands retain their storage-independent path.
+On the same Linux amd64 EPYC/Go 1.27.1 environment, the six existing fresh-process
+cases in color/NO_COLOR modes use five warmups and 100 samples per row.
+Short-command P95 is at most 3.012 ms against 8 ms; random/list P95 is at most
+4.979 ms against 25 ms. The CGO-disabled stripped binary remains 11,579,552 bytes
+(11.043 MiB), below the approved trainer-inclusive 16 MiB threshold.
+Prior warm/render/RSS results retain their original milestone labels. No new
+encounter latency or history-growth performance result is claimed here.

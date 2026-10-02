@@ -170,9 +170,13 @@ type Record struct {
 	Choice                         Choice
 	FirstSpecies, FirstVariant     bool
 	Encounters, Species, Variants  int64
-	// D13 records zero XP. D14 adds progression before public encounters land.
-	XPAwarded int64
+	XPAwarded                      int64
+	Before, After                  Progress
+	unlocks                        []Unlock
 }
+
+func (r Record) NewUnlocks() []Unlock                { return slices.Clone(r.unlocks) }
+func (r Record) WithUnlocks(unlocks []Unlock) Record { r.unlocks = slices.Clone(unlocks); return r }
 
 type EncounterRepository interface {
 	ActiveProfile(context.Context) (Profile, error)
