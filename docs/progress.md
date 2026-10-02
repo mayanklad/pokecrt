@@ -3,18 +3,19 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D06 closing audit verified for the reviewed inventory; D07 next.
-Verified baseline commit: c2a26e87cb726a6fee3a7242a24fa00358b70956.
-Baseline status: Themed-inventory increment owner-committed; clean tree.
+Current step: D07 selectors verified; D08 public catalog is next.
+Verified baseline commit: b90dba38b7475c4d1d409bb5ec1114c68cd2f2d6.
+Baseline status: D06 closing audit owner-committed; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
 ## Implemented behavior
 
-- Root/help/version; named or uniformly random standard regular printing.
+- Root/help/version; named or uniformly random matching-species printing.
+- Composable generation/type/color/stage/status and exact form/gender/shiny selectors.
 - Compact/sprite output, natural-size truecolor half blocks, transparency.
 - NO_COLOR, piped colors and quiet broken pipes.
-- No trainer storage or runtime downloads; public selectors remain D07.
+- No trainer storage or runtime downloads; public catalog listing remains D08.
 - Pinned/hash-verified preparation, exact provenance and deterministic generation.
 - Routine inventory derived from source data; only policies/corrections maintained.
 
@@ -33,18 +34,22 @@ Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-Coverage now automatically reports 53 pinned metadata varieties without
-resolved catalog/source identities, separately from the 122 unavailable catalog
-appearances. Primary mappings, aliases and declared genders resolve identities;
-metadata outside the source scope never creates guessed sprites or collectibles.
-These are variety-level gaps, not necessarily distinct missing images.
+Print now uses flag.FlagSet with shared one-occurrence validation and selector
+registration. Root flags use the same duplicate/alias checks. Lists trim and
+deduplicate; bundled vocabulary validation rejects unknown static selectors.
+Boolean false status filters impose no restriction. No CLI framework dependency.
 
-All 125 folded ordinary source aliases pass exact metadata owner/type checks.
-Conflicting variety/form ownership or type sets now fail generation. The two
-Tatsugiri Mega identities remain separate and unavailable. Provider declarations
-and their generated/provisional exclusions were audited; no acceptance gate is
-relaxed. Current supported forms, genders, palettes, tags and provenance are
-verified. Achievement gameplay remains D14.
+The shared query evaluates all constraints against one exact selected form,
+retains unavailable regular metadata entries for future listing, and requires
+actual shiny assets for shiny selection. Print selects matching renderable
+species uniformly and never borrows another appearance's artwork/typing.
+Headings show form, explicitly requested gender and shiny in the specified order.
+Defaults remain standard/regular/form-designated gender.
+
+Tests cover selector composition, valid empty intersections versus invalid
+invocations, gender and palette absence, exact output bytes, uniform species
+weighting, boolean false, duplicate flags, isolated query results, offline
+installed variants and state-free public commands.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
@@ -52,16 +57,15 @@ applies. Previously supported collectible identities and default printing remain
 
 Checks: full tests, vet, race, build, deterministic generation, fresh asset
 preparation pass; artwork is unchanged. No source files, packages, dependencies
-or public flags added. Original source revisions/provider scope unchanged.
+added. Public selector flags implement D07; no new commands. Original source revisions/provider scope unchanged.
 
 ## Remaining work and next step
 
-D06 is verified for the reviewed supported inventory; owner checks are pending.
-Unsupported candidates and the 53 metadata scope gaps remain explicit limitations.
-Further providers/layouts/artwork require separate reviewed dataset changes;
-D06 does not require accepting every upstream candidate.
-D07 implements composable public selectors using FlagSet and shared validation;
-the existing handwritten print parser will be replaced there. D08 adds listing.
+D06 is verified for the reviewed supported inventory; its 53 metadata scope gaps
+and unsupported artwork remain explicit limitations. D07 is assistant-verified
+with owner application/verification/commit pending. The handwritten print parser
+has been replaced by FlagSet and shared validation. D08 adds compact listing and
+detailed catalog entries using the same selected-appearance query.
 Trainer CLI, storage, progression and TUI remain their specified later milestones.
 Performance measurements and budgets remain required before v0.2 release.
 

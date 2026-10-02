@@ -74,3 +74,102 @@ func TestUnavailableOinkologneGendersHaveNoSprite(t *testing.T) {
 		}
 	}
 }
+
+func query(t *testing.T, q catalog.Selection) []catalog.Match {
+	t.Helper()
+	matches, err := catalog.Query(q, func(k catalog.VariantKey) bool { _, ok := sprite.Lookup(k); return ok })
+	if err != nil {
+		t.Fatal(err)
+	}
+	return matches
+}
+
+func TestComposableSelectionUsesOneExactAppearance(t *testing.T) {
+	for _, tc := range []struct {
+		q     catalog.Selection
+		count int
+	}{
+		{catalog.Selection{Name: "charizard", Types: []string{"fire"}, TypesAny: []string{"flying", "dragon"}}, 1},
+		{catalog.Selection{Name: "charizard", Types: []string{"fire", "dragon"}}, 0},
+		{catalog.Selection{Name: "charizard", Form: "mega-x", Types: []string{"fire", "dragon"}, Generations: []int{1, 2}, Stages: []int{3}, Colors: []string{"red"}}, 1},
+		{catalog.Selection{Name: "charizard", Generations: []int{2}}, 0},
+		{catalog.Selection{Name: "charizard", Form: "hisui"}, 0},
+		{catalog.Selection{Name: "charizard", Gender: "female"}, 0},
+		{catalog.Selection{Name: "mew", Mythical: true}, 1},
+		{catalog.Selection{Name: "mew", Legendary: true, Mythical: true}, 0},
+		{catalog.Selection{Name: "pichu", Baby: true, Stages: []int{1}}, 1},
+		{catalog.Selection{Name: "mew", Legendary: false}, 1},
+	} {
+		got := query(t, tc.q)
+		if len(got) != tc.count {
+			t.Fatalf("%+v: got %d, want %d", tc.q, len(got), tc.count)
+		}
+		for _, m := range got {
+			if m.Key.FormID != m.Form.ID || m.Key.SpeciesID != m.Species.ID {
+				t.Fatal("mixed appearance identity")
+			}
+		}
+	}
+}
+
+func TestSelectionVocabularyNormalizationAndUnknownValues(t *testing.T) {
+	q, err := catalog.ValidateSelection(catalog.Selection{Name: " CHARIZARD ", Form: " MEGA-X ", Types: []string{"FIRE", " fire ", "Dragon"}, Generations: []int{2, 1, 1}})
+	if err != nil || q.Form != "mega-x" || len(q.Types) != 2 || len(q.Generations) != 2 {
+		t.Fatalf("normalized=%+v err=%v", q, err)
+	}
+	for _, q := range []catalog.Selection{
+		{Name: "char"}, {Form: "base"}, {Gender: "default"}, {Generations: []int{10}}, {Stages: []int{99}}, {Types: []string{"stellar"}}, {Colors: []string{"silver"}}, {TypesAny: []string{""}},
+	} {
+		if _, err := catalog.ValidateSelection(q); err == nil {
+			t.Fatalf("accepted %+v", q)
+		}
+	}
+}
+
+func TestQueryAvailabilityAndUniformSpeciesCandidates(t *testing.T) {
+	got := query(t, catalog.Selection{Name: "oinkologne", Gender: "female"})
+	if len(got) != 1 || got[0].Available || got[0].Key.Gender != "female" {
+		t.Fatalf("metadata-only gender=%+v", got)
+	}
+	if len(query(t, catalog.Selection{Name: "oinkologne", Gender: "female", Shiny: true})) != 0 {
+		t.Fatal("shiny query retained missing artwork")
+	}
+	got = query(t, catalog.Selection{Name: "meowstic", Gender: "female", Shiny: true})
+	if len(got) != 1 || !got[0].Available || got[0].Key.Palette != "shiny" {
+		t.Fatalf("female shiny=%+v", got)
+	}
+	matches := query(t, catalog.Selection{Types: []string{"fire"}})
+	available := 0
+	seen := map[int]bool{}
+	for _, m := range matches {
+		if seen[m.Species.ID] {
+			t.Fatal("species multiplied by appearances")
+		}
+		seen[m.Species.ID] = true
+		if m.Available {
+			available++
+		}
+	}
+	calls := 0
+	for i := 0; i < available; i++ {
+		index := i
+		m, err := catalog.Choose(matches, func(n int) (int, error) {
+			calls++
+			if n != available {
+				t.Fatalf("n=%d want %d", n, available)
+			}
+			return index, nil
+		})
+		if err != nil || !m.Available || m.Key.FormID != "standard" {
+			t.Fatalf("selection=%+v err=%v", m, err)
+		}
+	}
+	if calls != available {
+		t.Fatal("uniform candidate selector bypassed")
+	}
+	matches = query(t, catalog.Selection{Name: "charizard", Form: "mega-x"})
+	matches[0].Form.Types[0] = "changed"
+	if query(t, catalog.Selection{Name: "charizard", Form: "mega-x"})[0].Form.Types[0] == "changed" {
+		t.Fatal("query mutation changed bundled catalog")
+	}
+}

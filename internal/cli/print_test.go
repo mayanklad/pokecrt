@@ -131,3 +131,72 @@ func TestUnauditedArtworkHasNoFallback(t *testing.T) {
 		}
 	}
 }
+
+func TestSelectorFlagSetValidation(t *testing.T) {
+	for _, args := range [][]string{
+		{"--gen=1,,2"}, {"--gen=0"}, {"--gen=+1"}, {"--gen=1.0"}, {"--gen=10"}, {"--stage=99"}, {"--type=fire,"}, {"--type-any=stellar"}, {"--color=silver"}, {"--form=base"}, {"--gender=default"},
+		{"--shiny=true", "--shiny=false"}, {"--baby", "--baby"}, {"--gen=1", "--gen=2"}, {"--type=fire", "--type=water"}, {"--shiny=1"}, {"--legendary=false", "--legendary"}, {"--shiny", "false"}, {"--gender="}, {"--form="},
+		{"--name", "charizard", "--unknown"}, {"--name", "--help"}, {"--color", "--shiny"},
+	} {
+		var out, errout bytes.Buffer
+		status := Run(append([]string{"print"}, args...), &out, &errout, "dev", catalog.DatasetID)
+		if status != 2 || out.Len() != 0 || errout.Len() == 0 {
+			t.Fatalf("%v: %d stdout=%q stderr=%q", args, status, out.String(), errout.String())
+		}
+	}
+	q, err := parsePrintFlags([]string{"--gen= 1,2,1 ", "--type= FIRE,fire ", "--legendary=false"})
+	if err != nil || len(q.selection.Generations) != 2 || len(q.selection.Types) != 1 || q.selection.Legendary {
+		t.Fatalf("options=%+v err=%v", q, err)
+	}
+}
+
+func TestSelectedVariantBytesAndHeadings(t *testing.T) {
+	t.Setenv("NO_COLOR", "1")
+	for _, tc := range []struct {
+		args    []string
+		key     catalog.VariantKey
+		heading string
+	}{
+		{[]string{"--name=charizard", "--form=mega-x", "--shiny"}, catalog.VariantKey{SpeciesID: 6, FormID: "mega-x", Gender: "default", Palette: "shiny"}, "#006 Charizard · Mega X · Shiny"},
+		{[]string{"--name=meowstic", "--gender=female", "--shiny"}, catalog.VariantKey{SpeciesID: 678, FormID: "standard", Gender: "female", Palette: "shiny"}, "#678 Meowstic · Female · Shiny"},
+		{[]string{"--name=hippowdon"}, catalog.VariantKey{SpeciesID: 450, FormID: "standard", Gender: "male", Palette: "regular"}, "#450 Hippowdon"},
+	} {
+		pixels, err := sprite.Decode(tc.key)
+		if err != nil {
+			t.Fatal(err)
+		}
+		art, err := render.Render(pixels, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, mode := range []string{"compact", "sprite"} {
+			var out, errout bytes.Buffer
+			args := append(append([]string{}, tc.args...), "--output="+mode)
+			status := runPrint(args, &out, &errout, func(int) (int, error) { t.Fatal("named variant randomized"); return 0, nil })
+			want := string(art)
+			if mode == "compact" {
+				want += "\n" + tc.heading + "\n"
+			}
+			if status != 0 || errout.Len() != 0 || out.String() != want {
+				t.Fatalf("%v: %d stderr=%q heading=%q", args, status, errout.String(), out.String())
+			}
+		}
+	}
+}
+
+func TestValidContradictionsAndUnsupportedAppearancesAreOperational(t *testing.T) {
+	for _, args := range [][]string{
+		{"--name=charizard", "--type=dragon"}, {"--name=charizard", "--form=hisui"}, {"--name=charizard", "--gender=female"}, {"--name=oinkologne", "--gender=female"}, {"--name=charizard", "--gen=2"}, {"--name=charizard", "--baby"}, {"--name=mew", "--legendary"}, {"--type=fire,water,grass"}, {"--name=minior", "--shiny"},
+	} {
+		var out, errout bytes.Buffer
+		status := Run(append([]string{"print"}, args...), &out, &errout, "dev", catalog.DatasetID)
+		if status != 1 || out.Len() != 0 || errout.Len() == 0 {
+			t.Fatalf("%v: %d stdout=%q stderr=%q", args, status, out.String(), errout.String())
+		}
+	}
+	var out, errout bytes.Buffer
+	status := Run([]string{"print", "--name=charizard", "--legendary=false", "--baby=false", "--mythical=false", "--shiny=false"}, &out, &errout, "dev", catalog.DatasetID)
+	if status != 0 || !strings.HasSuffix(out.String(), "#006 Charizard\n") {
+		t.Fatalf("false flags excluded species: %d %q", status, errout.String())
+	}
+}

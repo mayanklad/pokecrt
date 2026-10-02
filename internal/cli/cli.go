@@ -16,14 +16,14 @@ Usage:
   pokecrt
   pokecrt --help
   pokecrt --version
-  pokecrt print [--name <species>] [--output compact|sprite]
+  pokecrt print [selectors] [--output compact|sprite]
 
 Options:
   --help, -h   Show this help
   --version    Show application version and dataset identity
 
 Commands:
-  print       Print named or random standard regular artwork
+  print       Print named or uniformly random matching artwork
 
 Run 'pokecrt print --help' for print options.
 `

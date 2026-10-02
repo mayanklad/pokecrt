@@ -34,11 +34,12 @@ gameplay remains a later milestone. Coverage separately reports 53 pinned
 metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
-D06 is verified for the current reviewed inventory; public selection work is next.
+D06 is verified for the current reviewed inventory. D07 public selectors are
+implemented; catalog listing is next.
 
-Public filters and explicit form/shiny/gender printing flags arrive in D07;
-variants can currently be inspected through the developer preview tool. Catalog
-listing, trainers, encounters, achievements, and the TUI are not implemented yet.
+Public metadata filters and explicit form/shiny/gender printing are implemented.
+Catalog listing, trainers, encounters, achievements and the TUI are not
+implemented yet.
 Published v0.1 retains its original three-sprite coverage.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -124,6 +125,43 @@ Default `compact` output is the sprite, a blank line, and a heading such as
 `#006 Charizard`. `sprite` emits only artwork and line breaks. Name lookup is
 case-insensitive and accepts exact canonical names or generated unambiguous
 aliases; it does not guess partial names. Scalar flags may appear only once.
+
+Selection defaults to `standard`, regular palette and the selected form's declared
+default gender. Random printing samples matching renderable species uniformly;
+missing artwork never falls back to another form, gender or palette.
+
+```bash
+./bin/pokecrt print --name charizard --form mega-x --shiny
+./bin/pokecrt print --name meowstic --gender female --shiny
+./bin/pokecrt print --gen 1,2 --type fire --type-any flying,dragon
+./bin/pokecrt print --color red,blue --stage 1,2
+./bin/pokecrt print --legendary
+./bin/pokecrt print --mythical
+./bin/pokecrt print --baby
+```
+
+| Selector | Meaning |
+| --- | --- |
+| `--gen`, `--color`, `--stage` | Any listed introduction generation, species color or evolution stage |
+| `--type` | Selected form must contain every listed type |
+| `--type-any` | Selected form must contain at least one listed type |
+| `--form` | One exact canonical catalog form slug |
+| `--gender` | Exact distinct visual gender: male or female |
+| `--shiny` | Actual shiny artwork; default/false selects regular |
+| `--legendary`, `--mythical`, `--baby` | True requires the source trait; false imposes no restriction |
+
+Categories combine with AND. Comma lists trim, deduplicate and reject empty
+elements. Selector values are case-insensitive; numeric lists require positive
+decimal integers supported by bundled metadata. Long flags use `--`; `-h` is
+the help alias. Boolean values use `=true` or `=false`; bare flags mean true.
+Repeated flags, unknown static selectors and invalid values return status 2.
+Valid constraints without a matching renderable appearance return status 1.
+For example, standard Charizard does not match `--type dragon`; its Mega X form
+does. A globally known form absent on a species is a valid empty selection.
+Gender flags require distinct visual slots; biological gender alone is insufficient.
+
+Compact variant headings append form, explicitly requested gender, then Shiny:
+`#006 Charizard · Mega X · Shiny`. Unspecified/default gender stays omitted.
 
 Nonempty `NO_COLOR` disables ANSI colors while retaining block glyphs:
 
