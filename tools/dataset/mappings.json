@@ -1,5 +1,5 @@
 {
-  "rules_version": "d06-auto-7",
+  "rules_version": "d06-auto-8",
   "selection": {
     "generations": [
       1,
@@ -13,10 +13,7 @@
       9
     ],
     "family_seeds": [],
-    "visual_gender_species": [
-      668,
-      678
-    ]
+    "audited_inherited_genders": true
   },
   "source_standard_form": "base",
   "standard_form_reason": "The source-designated default maps to standard and must match its owning default Pok\u00e9API variety. Exact metadata variety/form identifiers resolve other forms; exceptions cannot create aliases or orientation duplicates.",

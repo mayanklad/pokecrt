@@ -46,15 +46,19 @@ Asset-index palette/provider provenance and pinned file hashes are also checked.
 Decoded PNGs are cropped only at transparent margins; distinct regular/shiny
 and gender pixels are required. There are no synthesized substitutes.
 
-Visual-gender policy currently covers only the reviewed Pyroar and Meowstic
-pairs. Their female paths come from the inherited gen-8 layout and require
-explicit female provenance; male is the default. This scope choice prevents
-unaudited female candidates from being added by the refactor. It is not a v1
-exclusion. Other gender pairs and providers remain D06 work.
+Visual-gender policy derives standard pairs automatically from the pinned
+inherited inventory. Require explicit `has_female`, exact species identity,
+nongenerated inherited base provenance, nonprovisional base/female flags, and
+separate locked gen-8 female paths. Both regular genders must have distinct pixels.
+Biological gender flags alone never create artwork slots. Male is the default.
+The eight accepted pairs are Hippopotas, Hippowdon, Unfezant, Frillish, Jellicent,
+Pyroar, Meowstic, and Indeedee. The acceptance logic maintains no species list.
+Provisional female candidates stay excluded; other providers/layouts and
+Oinkologne's separate source identities remain D06 review work.
 
 The current coverage is 1,025 catalog species, 1,447 metadata forms,
 1,013 standard-printable species, 1,017 eligible encounter species, 1,327
-collectible forms, and 2,657 assets. 120 appearances
+collectible forms, and 2,669 assets. 120 appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -139,10 +143,10 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-7`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-8`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated standard artwork remains unavailable. The community provider is
-reviewed below; visual-gender scope remains Pyroar/Meowstic.
+reviewed below; the automatic inherited-gender audit is documented below.
 
 Maximum cropped artwork dimensions in this batch are 67 columns by 56 source
 pixel rows (up to 28 half-block terminal rows). Narrow terminals may wrap.
@@ -390,3 +394,36 @@ inputs: 2,657 accepted v2 images, three existing excluded/alias evidence images,
 254 original-provider images, and 21 metadata/terms/import-evidence files.
 No additional source file, package, dependency or public flag is introduced.
 The maximum cropped dimensions remain 67×56. D06 remains open.
+
+
+## Automatic inherited visual genders increment
+
+Provider increment owner-committed at 7a901ba813188b7d33a1d155b427bbdf12c1ab6f.
+Rules `d06-auto-8` replace maintained `visual_gender_species` with the boolean
+`audited_inherited_genders` policy. Source declarations derive the accepted pairs;
+unsupported/provisional candidates are reported automatically. Tests reject wrong
+owners/slugs and mixed automatic/manual policies; no biological-only inference.
+
+Six newly reviewed pairs add 12 female PNGs. Their existing standard `default`
+identities become `male`, preserving all image bytes and default print output.
+They remain one collectible standard form per species. There is no trainer schema
+or persisted discovery data yet, so no storage migration is applicable. The
+published v0.1 starter identities are unchanged. This refinement changes dataset
+identity; it is an explicit reviewed dataset change, not a byte-only refactor.
+
+Before regeneration in an existing checkout, remove only these obsolete ignored
+asset names (generation rejects unexpected images instead of deleting them):
+
+```bash
+rm -f internal/sprite/assets/{0449,0450,0521,0592,0593,0876}-standard-default-{regular,shiny}.png
+```
+
+All 12 added images and the complete 24-image new-pair comparison were visually
+reviewed. All 2,657 preceding image contents are unchanged, with 12 male filenames
+refined. Totals: 2,669 exact assets, 1,327 collectible forms, 16 distinct gender
+slots, 1,021 standard regular slots across 1,013 printable species, and 2,947
+locked inputs. Missing standards/appearances remain 12/120. Source revisions,
+providers, maximum dimensions, dependencies and public commands are unchanged.
+No additional source files or packages. D06 remains open for remaining gender/form
+identity, provisional-source and achievement-tag review. D07 will use FlagSet
+and shared validation for the public selectors.

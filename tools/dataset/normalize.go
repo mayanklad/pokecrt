@@ -556,7 +556,7 @@ func metadataFormTyping(lock sourceLock, cache, rules string) (map[int]int, map[
 		}
 	}
 	if !pinned {
-		if rules == "d06-auto-4" || (rules == "d06-auto-5" || (rules == "d06-auto-6" || rules == "d06-auto-7")) {
+		if rules == "d06-auto-4" || (rules == "d06-auto-5" || (rules == "d06-auto-6" || (rules == "d06-auto-7" || rules == "d06-auto-8"))) {
 			return nil, nil, fmt.Errorf("automatic rules v4 require pinned pokemon_form_types.csv")
 		}
 		return owners, slots, nil

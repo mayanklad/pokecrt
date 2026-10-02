@@ -83,6 +83,31 @@
           "sha256": "91a3d95de780cccfc88b883b8d796a143961b29fc7c5f9e156200215682bca5a"
         },
         {
+          "path": "pokemon-gen8/regular/female/frillish.png",
+          "size": 314,
+          "sha256": "dd6110b18cf09730cff8111e66f39148136d2774caaafa6df171cbf482d68155"
+        },
+        {
+          "path": "pokemon-gen8/regular/female/hippopotas.png",
+          "size": 348,
+          "sha256": "ec481781c89dc8c6d80f88dbdce905b7af37a51264bd06ec02d93f31acfd9ccf"
+        },
+        {
+          "path": "pokemon-gen8/regular/female/hippowdon.png",
+          "size": 957,
+          "sha256": "082541b44037a974448d01de33372a4a9267b2307f36f6f460e7ded359b697ea"
+        },
+        {
+          "path": "pokemon-gen8/regular/female/indeedee.png",
+          "size": 681,
+          "sha256": "b15fb3cd5f9340da6660b1d2a653f0fd8534a4bf395ff7b346288249fe9f2568"
+        },
+        {
+          "path": "pokemon-gen8/regular/female/jellicent.png",
+          "size": 853,
+          "sha256": "2e92a7818c217c97228523fdbc48eb66ac216b20f8b475d10eccf53923f7e05d"
+        },
+        {
           "path": "pokemon-gen8/regular/female/meowstic.png",
           "size": 806,
           "sha256": "e168cb075e07bfd4caa643a7aa71ca2e3fe9aae8c0f93e73b0344558b15eb0cf"
@@ -93,6 +118,36 @@
           "sha256": "5a55b85bab2911ad636244e5670cabfdea11e5b4ab281b492335ed9bdb771824"
         },
         {
+          "path": "pokemon-gen8/regular/female/unfezant.png",
+          "size": 726,
+          "sha256": "6f3cd499108fef347e2caa47375681708d364ba468ea7b2f6054e4afce67f730"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/frillish.png",
+          "size": 313,
+          "sha256": "ac7e2841a047ceb51d1d8dd648d78326496e1ff538b0819d9b0982aeace105c3"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/hippopotas.png",
+          "size": 349,
+          "sha256": "a5fd2ae0fa5caf4552c051f2919890cffc88a4ad4a15c27642d6614a8a6a3ac5"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/hippowdon.png",
+          "size": 916,
+          "sha256": "155095e4e0c90dda88da1d00dbef6c6edf72ea74a83a9eb49504706cbdd8cf06"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/indeedee.png",
+          "size": 794,
+          "sha256": "d84e3883ca4101c54f47a66000a40cbd29650319cd3be910d2b736e5144c52bf"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/jellicent.png",
+          "size": 948,
+          "sha256": "4fb48f485ebf5b2151be1de7a8fa1ea5c2bec55793c3927843388402918f7266"
+        },
+        {
           "path": "pokemon-gen8/shiny/female/meowstic.png",
           "size": 843,
           "sha256": "20cf19234d3f7d01e4b5242be565cc0700fd9466f470ee7d3f6bd9d4fcc197f9"
@@ -101,6 +156,11 @@
           "path": "pokemon-gen8/shiny/female/pyroar.png",
           "size": 482,
           "sha256": "1179b9beeba03ac53f7ba8407db04d0cec5352be134cda078632921cdc12a160"
+        },
+        {
+          "path": "pokemon-gen8/shiny/female/unfezant.png",
+          "size": 797,
+          "sha256": "e812c809caaa63be13a46a92b19abbb01c7f74c6561df0496310a3b357cb788c"
         },
         {
           "path": "pokemon/regular/abomasnow-mega.png",

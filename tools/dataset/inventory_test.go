@@ -285,3 +285,62 @@ func TestReviewedDefaultAliasRequiresCompleteHashEvidence(t *testing.T) {
 		t.Fatal("accepted missing shiny hash evidence")
 	}
 }
+
+func TestAutomaticInheritedGenderDeclarations(t *testing.T) {
+	for _, name := range []string{"audited", "unofficial female", "unofficial base", "biological only", "wrong owner", "wrong slug"} {
+		t.Run(name, func(t *testing.T) {
+			lock, cache, m := automaticFixture(t)
+			m.RulesVersion = "d06-auto-8"
+			m.Selection.AuditedInheritedGenders = true
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("id,identifier,pokemon_id,is_default\n1,bulbasaur,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n100,bulbasaur-mega,100,1\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_form_types.csv", []byte("pokemon_form_id,type_id,slot\n"))
+			flags := `"has_female":true`
+			idx, slug := "001", "bulbasaur"
+			switch name {
+			case "unofficial female":
+				flags += `,"has_unofficial_female_icon":true`
+			case "unofficial base":
+				flags += `,"is_unofficial_icon":true`
+			case "biological only":
+				flags = `"has_female":false`
+			case "wrong owner":
+				idx = "002"
+			case "wrong slug":
+				slug = "other"
+			}
+			fixtureInput(t, &lock, cache, "pokesprite-v2", "sources/upstreams/msikma-pokemon.json", []byte(`{"001":{"idx":"`+idx+`","slug":{"eng":"`+slug+`"},"gen-8":{"forms":{"$":{`+flags+`},"mega":{}}}}}`))
+			got, err := deriveMappings(lock, cache, m)
+			if name == "wrong owner" || name == "wrong slug" {
+				if err == nil {
+					t.Fatal("accepted wrong inherited gender identity")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			var female int
+			for _, a := range got.Assets {
+				if a.Gender == "female" {
+					female++
+					if a.FormID != "standard" || a.SourceLayout != "gen8-female" {
+						t.Fatal("female became alternate collectible form")
+					}
+				}
+			}
+			if (female == 1) != (name == "audited") {
+				t.Fatalf("female assets=%d", female)
+			}
+			if len(got.Forms) != 4 {
+				t.Fatal("gender created another form")
+			}
+			if name == "audited" && got.Forms[0].DefaultGender != "male" {
+				t.Fatal("lost male default")
+			}
+		})
+	}
+	m := mappingConfig{RulesVersion: "d06-auto-8", Selection: &inventorySelection{Generations: []int{1}, AuditedInheritedGenders: true, VisualGenderSpecies: []int{1}}, SourceStandardForm: "base", StandardFormReason: "fixture"}
+	if validateSelection(m) == nil {
+		t.Fatal("accepted maintained list alongside automatic genders")
+	}
+}

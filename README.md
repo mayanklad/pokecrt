@@ -12,15 +12,15 @@ The development catalog contains all generation-1 through generation-9 species, 
 connected evolution families (including later-generation relatives):
 1,025 species and 1,447 metadata forms.
 
-Audited artwork covers 1,017 species and 1,327 collectible forms, with 2,657 exact
+Audited artwork covers 1,017 species and 1,327 collectible forms, with 2,669 exact
 regular/shiny assets. Standard regular printing covers 1,013 species; 12 species
 currently lack accepted standard artwork. 120 form appearances remain unavailable.
 Minior meteor has regular artwork only because its source shiny pixels are
 identical; the reviewed exclusion is hash-verified. Printing never substitutes
 another appearance.
 
-Pyroar and Meowstic retain distinct male/female regular and shiny slots within
-one standard form. There are 1,015 standard regular slots across 1,013 printable
+Eight species have distinct male/female regular and shiny slots within one
+standard form, derived from verified inherited source declarations. There are 1,021 standard regular slots across 1,013 printable
 species; random printing samples species uniformly. Reviewed community artwork
 from `bamq/pokemon-sprites` adds Generation 9 printing, verified against the exact
 commit imported by PokéSprite-v2. Generated candidates remain excluded. Some
@@ -200,6 +200,7 @@ It never records trainer state and fails if the exact asset is unavailable.
 Compare genuine visual gender variants in developer previews:
 
 ```bash
+go run ./tools/render-preview --name hippowdon --gender female
 go run ./tools/render-preview --name pyroar --gender male
 go run ./tools/render-preview --name pyroar --gender female
 go run ./tools/render-preview --name meowstic --gender female --palette shiny

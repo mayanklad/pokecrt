@@ -11,16 +11,21 @@ import (
 
 // Selection describes development scope, not a manually enumerated catalog.
 type inventorySelection struct {
-	Generations         []int `json:"generations"`
-	FamilySeeds         []int `json:"family_seeds"`
-	VisualGenderSpecies []int `json:"visual_gender_species"`
+	Generations             []int `json:"generations"`
+	FamilySeeds             []int `json:"family_seeds"`
+	VisualGenderSpecies     []int `json:"visual_gender_species,omitempty"`
+	AuditedInheritedGenders bool  `json:"audited_inherited_genders,omitempty"`
 }
 
 func validateSelection(m mappingConfig) error {
+	if m.Selection != nil && m.Selection.AuditedInheritedGenders && (m.RulesVersion != "d06-auto-8" || len(m.Selection.VisualGenderSpecies) != 0) {
+		return fmt.Errorf("automatic inherited genders require rules v8 and no maintained species list")
+	}
+
 	if !automaticRules(m.RulesVersion) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
-	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && m.RulesVersion != "d06-auto-7"))) {
+	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8")))) {
 		return fmt.Errorf("source-only exclusions require automatic rules v3")
 	}
 	for _, e := range m.SourceFormExclusions {
@@ -114,10 +119,10 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	if err := validateReviewedProviders(m); err != nil {
 		return m, err
 	}
-	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && (m.RulesVersion != "d06-auto-6" && m.RulesVersion != "d06-auto-7") {
+	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && (m.RulesVersion != "d06-auto-6" && (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8")) {
 		return m, fmt.Errorf("form suffix and default alias corrections require automatic rules v6")
 	}
-	if len(m.DuplicatePaletteExclusions) > 0 && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && m.RulesVersion != "d06-auto-7")) {
+	if len(m.DuplicatePaletteExclusions) > 0 && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8"))) {
 		return m, fmt.Errorf("duplicate palette exclusions require automatic rules v5")
 	}
 	if m.Selection == nil {
@@ -230,7 +235,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || (m.RulesVersion == "d06-auto-5" || (m.RulesVersion == "d06-auto-6" || m.RulesVersion == "d06-auto-7")))) && !foundFormTable {
+	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || (m.RulesVersion == "d06-auto-5" || (m.RulesVersion == "d06-auto-6" || (m.RulesVersion == "d06-auto-7" || m.RulesVersion == "d06-auto-8"))))) && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
 	}
 	formOwners, formTypes, err := metadataFormTyping(lock, cache, m.RulesVersion)
@@ -271,7 +276,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 		overrides[key] = f
 	}
 	m.CatalogSpecies = ids
-	m.Exclusions = []string{"Scope is selected generations and complete connected evolution families; wider coverage remains pending.", "Distinct visual genders are limited to the explicitly reviewed policy scope; other candidates remain pending audit."}
+	m.Exclusions = []string{"Scope is selected generations and complete connected evolution families; wider coverage remains pending.", "Visual genders require reviewed source declarations, exact identity, nonprovisional provenance and distinct pixels; additional providers/layouts remain pending audit."}
 	for _, a := range m.ReviewedDefaultAliases {
 		m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: %s Regular source/default SHA-256: %s/%s; shiny: %s/%s.", a.SpeciesID, a.SourceFormID, a.Reason, a.SourceHashes["regular"], a.DefaultHashes["regular"], a.SourceHashes["shiny"], a.DefaultHashes["shiny"]))
 	}
@@ -284,6 +289,25 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			return m, fmt.Errorf("unresolved standard identity %d", id)
 		}
 		gendered := slices.Contains(m.Selection.VisualGenderSpecies, id)
+		if m.Selection.AuditedInheritedGenders {
+			entry := inherited[fmt.Sprintf("%03d", id)]
+			flags := entry.Gen8.Forms["$"]
+			if flags.HasFemale != nil && *flags.HasFemale {
+				if entry.ID != fmt.Sprintf("%03d", id) || entry.Slug.English != sp.Slug {
+					return m, fmt.Errorf("inherited gender owner mismatch #%03d", id)
+				}
+				base, err := sourceFormByID(sp, "base")
+				if err != nil {
+					return m, err
+				}
+				if sp.DefaultForm != "base" || base.Source != "msikma/pokesprite" || base.IsGenerated == nil || *base.IsGenerated || flags.Unofficial || flags.UnofficialFemale {
+					m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/standard/female: declared inherited female candidate excluded by provider/layout/provisional policy.", id))
+				} else {
+					gendered = true
+				}
+			}
+		}
+
 		for _, sf := range sp.Forms {
 			if sf.CanonicalForm != nil {
 				continue
@@ -548,7 +572,7 @@ func applyFormSuffixRules(m mappingConfig, ids []int, byID map[int]sourceSpecies
 
 func automaticRules(version string) bool {
 	switch version {
-	case "d06-auto-1", "d06-auto-2", "d06-auto-3", "d06-auto-4", "d06-auto-5", "d06-auto-6", "d06-auto-7":
+	case "d06-auto-1", "d06-auto-2", "d06-auto-3", "d06-auto-4", "d06-auto-5", "d06-auto-6", "d06-auto-7", "d06-auto-8":
 		return true
 	}
 	return false

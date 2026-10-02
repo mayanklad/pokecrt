@@ -84,7 +84,7 @@ func TestSourceAliasesDoNotCreateCollectibleForms(t *testing.T) {
 }
 
 func TestVisualGenderSlotsBelongToStandardForm(t *testing.T) {
-	for _, id := range []int{668, 678} {
+	for _, id := range []int{449, 450, 521, 592, 593, 668, 678, 876} {
 		species, ok := ByNumber(id)
 		if !ok || len(species.Forms) != 1 {
 			t.Fatalf("species %d: %+v", id, species)

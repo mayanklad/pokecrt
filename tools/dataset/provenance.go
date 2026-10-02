@@ -15,8 +15,10 @@ type inheritedInventory map[string]struct {
 	} `json:"slug"`
 	Gen8 struct {
 		Forms map[string]struct {
-			Unofficial         bool `json:"is_unofficial_icon"`
-			PreviousGeneration bool `json:"is_prev_gen_icon"`
+			HasFemale          *bool `json:"has_female"`
+			UnofficialFemale   bool  `json:"has_unofficial_female_icon"`
+			Unofficial         bool  `json:"is_unofficial_icon"`
+			PreviousGeneration bool  `json:"is_prev_gen_icon"`
 		} `json:"forms"`
 	} `json:"gen-8"`
 }
@@ -121,7 +123,7 @@ func validateReviewedProviders(m mappingConfig) error {
 	if len(m.ReviewedProviders) == 0 {
 		return nil
 	}
-	if m.RulesVersion != "d06-auto-7" || len(m.ReviewedProviders) != 1 || m.ReviewedProviders[0] != "bamq/pokemon-sprites" {
+	if (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8") || len(m.ReviewedProviders) != 1 || m.ReviewedProviders[0] != "bamq/pokemon-sprites" {
 		return fmt.Errorf("unsupported or duplicate reviewed provider policy")
 	}
 	return nil
