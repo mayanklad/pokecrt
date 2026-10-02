@@ -33,7 +33,8 @@ D11 adds the storage foundation for the trainer CLI:
 - Atomic versioned migrations with protected, nonoverwriting consistent backups
   before nonempty upgrades; corrupt, newer and unknown unversioned state preserved.
 
-D12 implements profile commands. Encounters remain unimplemented. Public print/list/help/
+D12 implements profile commands. D13 adds internal encounter operations; the
+public encounter command remains pending. Public print/list/help/
 version do not resolve storage paths and remain usable with corrupt trainer state.
 No legacy JSON storage was present, so no import routine is introduced.
 
@@ -53,9 +54,36 @@ D12 adds explicit local profiles:
 
 Profile views currently show name, UTC creation time and active status. Complete
 statistics and achievement views are scheduled for D17. Profiles never create
-encounters, discoveries, XP or unlocks; encounter recording begins in D13.
+encounters, discoveries or XP awards. Encounter recording is an internal D13
+foundation until progression and output are complete.
 The SQLite schema and dataset are unchanged. Unicode handling pins
 `golang.org/x/text v0.42.0`.
+
+## Encounter foundation
+
+D13 adds internal encounter selection and atomic history/discovery recording:
+
+- Pool derived from current metadata and exact regular-artwork inventory:
+  1,017 eligible species, 1,327 forms and 2,669 regular/shiny variants.
+- Separate uniform species, form and supported visual-gender draws, with an
+  exact-combination 1/4096 shiny roll only when shiny artwork exists.
+- Lazy pool construction and crypto/rand-backed production selection; injectable
+  random source, clock and artwork preparation for deterministic verification.
+- Active trainer captured before selection; decode/render preparation completes
+  in memory before recording. Errors, empty preparation and cancellation record
+  nothing. Successful results own the prepared artwork buffer.
+- One immediate transaction verifies the captured profile, reads first-discovery
+  state, inserts the metadata snapshot, and upserts species/variant counts.
+  Times use MIN/MAX semantics; prior history timestamps are never rewritten.
+- Exact current artwork and form metadata validated before new records; no
+  palette/form/gender fallback or implicit regular discovery after shiny-first.
+- Returned first flags and counts come from transactional state, after commit.
+  Failed writes/commits return no successful record and are never retried.
+
+The production CLI does not expose encounters yet. D13's internal recording
+uses zero XP; progression and achievement evaluation are added in D14 before
+public encounter history can be created. All five output modes follow in D15.
+No database migration, dependency or generated dataset change is introduced.
 
 ## Dataset
 
@@ -84,7 +112,12 @@ Upgrade tests use synthetic schema 002 fixtures; no production schema 002 exists
 Profile tests cover canonical collisions, creation rollback, concurrent first/
 duplicate creation, selection isolation, missing-state guidance, syntax/help
 boundaries, installed execution and broken pipes after committed creation.
-Encounter aggregates are validated when encounter recording lands.
+D13 verifies history/discovery count equality, one first flag per identity,
+foreign keys, and XP/history equality for its zero-XP foundation. It also covers
+shiny-first/repeats, clock reversal, profile isolation, concurrent first records,
+profile switching during real artwork preparation, and rollback at insertion,
+upsert and deferred commit failures. XP bonus/unlock tests land in D14;
+committed-output mode/stream tests land in D15.
 Tests, vet, race checks and pinned dataset checks pass for the implementation
 baseline. Benchmark methods, environments, startup/memory tradeoffs and numeric
 budgets are recorded in [benchmarks.md](benchmarks.md).
@@ -97,6 +130,9 @@ D12 public startup, warm runtime, rendering and RSS checks stay within existing
 thresholds. The stripped binary is 11.043 MiB against the v0.3 trainer-inclusive
 16 MiB size threshold. The historical public-only 8 MiB baseline is retained;
 public latency and memory limits are unchanged.
+
+D13 public fresh-process checks pass the existing thresholds; its stripped
+binary size remains unchanged at 11.043 MiB. No new warm/RSS result is claimed.
 
 ## Roadmap
 

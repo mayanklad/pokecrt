@@ -342,7 +342,14 @@ and the database with mode 0600. Existing unsupported or corrupt state is never
 replaced automatically.
 
 Profile views currently show name, UTC creation time and active status. Full
-statistics and achievements arrive later; encounters begin in D13. Profile
+statistics and achievements arrive later; the public encounter command remains
+pending progression and output modes. Profile
 commands never record discoveries or encounters. Public print/list/help/version
 remain independent of trainer storage. Dependency licenses are retained in
 [LICENSING.md](LICENSING.md).
+
+The internal D13 encounter foundation selects uniformly by species, form and
+visual gender from accepted regular artwork, with a 1/4096 shiny chance when
+that exact appearance supports it. It prepares artwork before atomically
+recording history and discoveries for the captured trainer. This foundation
+is not yet exposed as a user command: progression is D14 and output modes D15.

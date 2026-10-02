@@ -448,3 +448,20 @@ process startup and SQLite initialization; they exercise unchanged public paths.
 All listed warm scenarios remain within their existing thresholds. These
 short review runs supplement the retained five-run D10 baselines; they do
 not replace those measurements or establish trainer encounter latency.
+
+
+## D13 public-path check
+
+D13's internal encounter foundation is checked against source
+`3a01880b76b2de76f708a154749cec906c282e4d`. It introduces no public encounter
+command, package initialization work, migration or dependency. With the same
+Go 1.27.1/EPYC environment, CGO-disabled stripped build and dataset as D12,
+the binary remains 11,579,552 bytes (11.043 MiB), within the v0.3 16 MiB limit.
+
+A sequential fresh-process check uses the same six public cases, both color
+modes, five warmups and 100 samples per row described above. Worst short-case
+P95 is 2.926 ms (8 ms limit); random/full-list P95 is 4.931 ms
+(25 ms limit). These measurements include executable startup and remain within
+existing thresholds. Warm/RSS rows above remain D12 observations; they are not
+relabeled as D13 measurements. Encounter latency at representative history sizes
+will be measured with completed progression before v0.3 publication.
