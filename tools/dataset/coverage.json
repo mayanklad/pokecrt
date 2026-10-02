@@ -1,8 +1,8 @@
 {
-  "dataset_id": "7b4c9f35addda4a07ba4463119dfbd981b382bfa9e6a291f264c9648bdfd45af",
-  "rules_version": "d06-auto-8",
+  "dataset_id": "f79ff2113136fb32aa28c4715c427988233ab3485d3d721a2bab214d4488462f",
+  "rules_version": "d06-auto-9",
   "catalog_species": 1025,
-  "catalog_forms": 1447,
+  "catalog_forms": 1449,
   "missing_regular_variants": [
     {
       "species_id": 58,
@@ -927,6 +927,22 @@
     {
       "species_id": 978,
       "name": "Tatsugiri",
+      "form_id": "curly-mega",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 978,
+      "name": "Tatsugiri",
+      "form_id": "droopy-mega",
+      "gender": "default",
+      "palette": "regular",
+      "reason": "No audited asset is mapped for this exact appearance."
+    },
+    {
+      "species_id": 978,
+      "name": "Tatsugiri",
       "form_id": "stretchy-mega",
       "gender": "default",
       "palette": "regular",
@@ -1177,6 +1193,8 @@
     "#964/standard: provider or generated status is outside the reviewed artwork policy.",
     "#970/mega: provider or generated status is outside the reviewed artwork policy.",
     "#978/standard: provider or generated status is outside the reviewed artwork policy.",
+    "#978/curly-mega: exact metadata transformation has a different owning variety; source aliases ordinary artwork. Retained as metadata-only with no substituted asset.",
+    "#978/droopy-mega: exact metadata transformation has a different owning variety; source aliases ordinary artwork. Retained as metadata-only with no substituted asset.",
     "#978/stretchy-mega: provider or generated status is outside the reviewed artwork policy.",
     "#982/standard: provider or generated status is outside the reviewed artwork policy.",
     "#998/mega: provider or generated status is outside the reviewed artwork policy.",

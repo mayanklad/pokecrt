@@ -155,8 +155,22 @@ func normalizeForms(id int, source sourceSpecies, m mappingConfig, defaultID int
 		if err != nil {
 			return nil, err
 		}
-		if form.CanonicalForm != nil || claimed[form.ID] {
+		if (form.CanonicalForm != nil && !mapping.MetadataOnlyAlias) || claimed[form.ID] {
 			return nil, fmt.Errorf("aliased or multiply mapped source form #%03d/%s", id, form.ID)
+		}
+		if mapping.MetadataOnlyAlias {
+			if automaticRuleLevel(m.RulesVersion) < 9 || form.CanonicalForm == nil || mapping.MetadataFormID <= 0 {
+				return nil, fmt.Errorf("invalid metadata-only alias #%03d/%s", id, form.ID)
+			}
+			target, err := sourceFormByID(source, *form.CanonicalForm)
+			if err != nil || target.CanonicalForm != nil || target.Slug != form.Slug {
+				return nil, fmt.Errorf("invalid metadata-only alias target #%03d/%s", id, form.ID)
+			}
+			for _, asset := range m.Assets {
+				if asset.SpeciesID == id && (asset.FormID == mapping.ID || asset.SourceFormID == form.ID) {
+					return nil, fmt.Errorf("metadata-only alias cannot claim artwork #%03d/%s", id, form.ID)
+				}
+			}
 		}
 		claimed[form.ID] = true
 		if owners[mapping.PokemonID] != id || slots[mapping.PokemonID][1] == "" {

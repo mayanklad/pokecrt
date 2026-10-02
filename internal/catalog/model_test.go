@@ -55,8 +55,8 @@ func TestNormalizedFormsKeepTheirOwnTyping(t *testing.T) {
 	for _, species := range All() {
 		count += len(species.Forms)
 	}
-	if count != 1447 {
-		t.Fatalf("form count=%d; want 1447 in the current mapping", count)
+	if count != 1449 {
+		t.Fatalf("form count=%d; want 1449 in the current mapping", count)
 	}
 }
 
@@ -386,6 +386,30 @@ func TestGenerationNineDefaultsAndTypes(t *testing.T) {
 		species, _ := ByNumber(tc.id)
 		if len(species.Forms) != 1 || !slices.Equal(species.Forms[0].Types, tc.types) || !slices.Contains(species.Forms[0].SourceAliases, tc.alias) {
 			t.Fatalf("source mode #%d: %+v", tc.id, species.Forms)
+		}
+	}
+}
+
+func TestTatsugiriTransformationsAreDistinctMetadata(t *testing.T) {
+	species, ok := ByNumber(978)
+	if !ok || len(species.Forms) != 6 {
+		t.Fatalf("Tatsugiri forms: %+v", species.Forms)
+	}
+	seen := map[string]bool{}
+	for _, f := range species.Forms {
+		seen[f.ID] = true
+		for _, alias := range f.SourceAliases {
+			if alias == "curly-mega" || alias == "droopy-mega" {
+				t.Fatal("transformation folded into ordinary artwork alias")
+			}
+		}
+		if !slices.Equal(f.Types, []string{"dragon", "water"}) && !slices.Equal(f.Types, []string{"water", "dragon"}) {
+			t.Fatalf("exact form typing: %+v", f)
+		}
+	}
+	for _, id := range []string{"standard", "curly-mega", "droopy", "droopy-mega", "stretchy", "stretchy-mega"} {
+		if !seen[id] {
+			t.Fatalf("missing %s", id)
 		}
 	}
 }

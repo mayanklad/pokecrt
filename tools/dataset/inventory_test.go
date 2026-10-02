@@ -344,3 +344,82 @@ func TestAutomaticInheritedGenderDeclarations(t *testing.T) {
 		t.Fatal("accepted maintained list alongside automatic genders")
 	}
 }
+
+func TestTransformationAliasUsesMetadataWithoutBorrowedArtwork(t *testing.T) {
+	for _, name := range []string{"distinct transformation", "ordinary alias", "wrong owner", "wrong filename", "unknown target", "invalid metadata flag"} {
+		t.Run(name, func(t *testing.T) {
+			lock, cache, m := automaticFixture(t)
+			m.RulesVersion = "d06-auto-9"
+			owner, mega := "1", "1"
+			if name == "wrong owner" {
+				owner = "2"
+			}
+			if name == "ordinary alias" {
+				mega = "0"
+			}
+			if name == "invalid metadata flag" {
+				mega = "2"
+			}
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon.csv", []byte("id,identifier,species_id,is_default\n1,bulbasaur,1,1\n2,ivysaur,2,1\n3,venusaur,3,1\n100,bulbasaur-mega,1,0\n101,bulbasaur-alternate-mega,"+owner+",0\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_forms.csv", []byte("id,identifier,pokemon_id,is_default,is_mega\n1,bulbasaur,1,1,0\n2,ivysaur,2,1,0\n3,venusaur,3,1,0\n100,bulbasaur-mega,100,1,1\n101,bulbasaur-alternate-mega,101,1,"+mega+"\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_form_types.csv", []byte("pokemon_form_id,type_id,slot\n"))
+			fixtureInput(t, &lock, cache, "pokeapi", "data/v2/csv/pokemon_types.csv", []byte("pokemon_id,type_id,slot\n1,12,1\n1,4,2\n2,12,1\n2,4,2\n3,12,1\n3,4,2\n100,12,1\n101,12,1\n"))
+			editManifest(t, &lock, cache, func(manifest *sourceManifest) {
+				target := "base"
+				slug := "bulbasaur"
+				yes, no := true, false
+				if name == "wrong filename" {
+					slug = "other"
+				}
+				if name == "unknown target" {
+					target = "missing"
+				}
+				manifest.Pokemon[0].Forms = append(manifest.Pokemon[0].Forms, sourceForm{ID: "alternate-mega", Label: "Alternate Mega", Slug: slug, CanonicalForm: &target, HasRegular: &yes, HasShiny: &yes, IsGenerated: &no, Source: "msikma/pokesprite"})
+			})
+			resolved, err := deriveMappings(lock, cache, m)
+			if name != "distinct transformation" && name != "ordinary alias" {
+				if err == nil {
+					t.Fatal("accepted invalid transformation alias evidence")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			var found *formMapping
+			for i := range resolved.Forms {
+				if resolved.Forms[i].SpeciesID == 1 && resolved.Forms[i].ID == "alternate-mega" {
+					found = &resolved.Forms[i]
+				}
+			}
+			if name == "ordinary alias" {
+				if found != nil {
+					t.Fatal("ordinary alias became a transformation")
+				}
+				return
+			}
+			if found == nil || !found.MetadataOnlyAlias || found.PokemonID != 101 || found.MetadataFormID != 101 {
+				t.Fatal("lost exact metadata-only transformation")
+			}
+			for _, a := range resolved.Assets {
+				if a.FormID == "alternate-mega" || a.SourceFormID == "alternate-mega" {
+					t.Fatal("borrowed ordinary artwork for transformation")
+				}
+			}
+			normalized, _, err := normalizeCatalog(lock, cache, resolved)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(normalized[0].Forms) != 3 {
+				t.Fatal("transformation not retained as distinct metadata")
+			}
+			borrowed := resolved.Assets[0]
+			borrowed.FormID = "alternate-mega"
+			borrowed.SourceFormID = "alternate-mega"
+			resolved.Assets = append(resolved.Assets, borrowed)
+			if _, _, err := normalizeCatalog(lock, cache, resolved); err == nil {
+				t.Fatal("metadata-only identity accepted borrowed artwork")
+			}
+		})
+	}
+}

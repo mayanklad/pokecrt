@@ -56,9 +56,9 @@ Pyroar, Meowstic, and Indeedee. The acceptance logic maintains no species list.
 Provisional female candidates stay excluded; other providers/layouts and
 Oinkologne's separate source identities remain D06 review work.
 
-The current coverage is 1,025 catalog species, 1,447 metadata forms,
+The current coverage is 1,025 catalog species, 1,449 metadata forms,
 1,013 standard-printable species, 1,017 eligible encounter species, 1,327
-collectible forms, and 2,669 assets. 120 appearances
+collectible forms, and 2,669 assets. 122 appearances
 remain unavailable. `coverage.json` and `coverage.md` enumerate the current
 availability, exclusion decisions, and retained-generation quality flags.
 
@@ -143,7 +143,7 @@ The previous generation-1 batch inspected all 450 added sprites. Generation 2 ad
 in 172 regular/shiny pairs.
 The published v0.1 tag and release remain intact; D06 is still incomplete.
 
-Current rules version: `d06-auto-8`. It requires pinned metadata form and form-type tables.
+Current rules version: `d06-auto-9`. It requires pinned metadata form and form-type tables.
 Dudunsparce’s non-base default maps to standard with exact metadata verification;
 its generated standard artwork remains unavailable. The community provider is
 reviewed below; the automatic inherited-gender audit is documented below.
@@ -427,3 +427,36 @@ providers, maximum dimensions, dependencies and public commands are unchanged.
 No additional source files or packages. D06 remains open for remaining gender/form
 identity, provisional-source and achievement-tag review. D07 will use FlagSet
 and shared validation for the public selectors.
+
+
+## Transformation alias semantics increment
+
+Automatic gender increment owner-committed at
+17558ae1a53b8288b870b4103d7b198ff735f114. Rules `d06-auto-9` require the pinned
+metadata form table's explicit `is_mega` flags when auditing source aliases.
+A Mega-marked exact metadata form owned by a different same-species variety
+cannot be folded into ordinary artwork merely because the source uses a canonical
+pointer and the same filename. Retain that form with its own checked metadata
+form/variety IDs and typing, report the source discrepancy, and accept no asset
+for that metadata-only identity. This is derived automatically; there is no
+maintained Tatsugiri list or manually assigned type. Missing targets, wrong
+owners, mismatched source slugs, invalid metadata flags and borrowed asset
+claims fail validation. Ordinary aliases retain their existing folding behavior.
+
+The current pinned inputs contain two such cases: Tatsugiri Curly Mega and
+Droopy Mega. Stretchy Mega was already separate metadata with excluded generated
+artwork. All six source Tatsugiri forms now have distinct metadata representation;
+the two ordinary aliases are removed. This adds two metadata forms and two
+reported unavailable appearances, with no new source pins, sprites, collectible
+forms, or printing candidates. Totals: 1,449 metadata forms, 122 unavailable
+appearances; other availability counts remain unchanged. All 2,669 PNGs and all
+2,947 source pins are unchanged. No trainer data exists and no stored identity
+migration applies; previously supported artwork identities are preserved.
+
+Tests cover exact metadata transformation ownership/typing, ordinary alias
+preservation, malformed evidence, forbidden borrowed artwork and absence of
+regular/shiny fallback in runtime lookup. Full tests/vet/race, build, deterministic
+generation and fresh preparation pass. No new source files, packages, dependency,
+or public flags added. Oinkologne source-encoded gender identity, other alias and
+provisional-source audits, and achievement tags remain D06 work. Parser conversion
+and public selectors remain D07.

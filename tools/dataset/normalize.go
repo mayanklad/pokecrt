@@ -81,16 +81,17 @@ type assetMapping struct {
 }
 
 type formMapping struct {
-	MetadataFormID int      `json:"metadata_form_id,omitempty"`
-	SpeciesID      int      `json:"species_id"`
-	ID             string   `json:"id"`
-	Name           string   `json:"name"`
-	SourceFormID   string   `json:"source_form_id"`
-	PokemonID      int      `json:"pokemon_id"`
-	DefaultGender  string   `json:"default_gender"`
-	Genders        []string `json:"genders"`
-	SourceAliases  []string `json:"source_aliases,omitempty"`
-	Reason         string   `json:"reason"`
+	MetadataOnlyAlias bool     `json:"metadata_only_alias,omitempty"`
+	MetadataFormID    int      `json:"metadata_form_id,omitempty"`
+	SpeciesID         int      `json:"species_id"`
+	ID                string   `json:"id"`
+	Name              string   `json:"name"`
+	SourceFormID      string   `json:"source_form_id"`
+	PokemonID         int      `json:"pokemon_id"`
+	DefaultGender     string   `json:"default_gender"`
+	Genders           []string `json:"genders"`
+	SourceAliases     []string `json:"source_aliases,omitempty"`
+	Reason            string   `json:"reason"`
 }
 
 type normalizedForm struct {
@@ -556,7 +557,7 @@ func metadataFormTyping(lock sourceLock, cache, rules string) (map[int]int, map[
 		}
 	}
 	if !pinned {
-		if rules == "d06-auto-4" || (rules == "d06-auto-5" || (rules == "d06-auto-6" || (rules == "d06-auto-7" || rules == "d06-auto-8"))) {
+		if automaticRuleLevel(rules) >= 4 {
 			return nil, nil, fmt.Errorf("automatic rules v4 require pinned pokemon_form_types.csv")
 		}
 		return owners, slots, nil

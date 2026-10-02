@@ -49,3 +49,17 @@ func TestSelectorFailures(t *testing.T) {
 func chooseStandard(selectIndex catalog.IndexSelector) (catalog.Species, catalog.VariantKey, error) {
 	return catalog.ChooseStandard(selectIndex, func(k catalog.VariantKey) bool { _, ok := sprite.Lookup(k); return ok })
 }
+
+func TestMetadataOnlyTransformationHasNoSpriteFallback(t *testing.T) {
+	for _, form := range []string{"curly-mega", "droopy-mega", "stretchy-mega"} {
+		for _, palette := range []string{"regular", "shiny"} {
+			key := catalog.VariantKey{SpeciesID: 978, FormID: form, Gender: "default", Palette: palette}
+			if _, ok := sprite.Lookup(key); ok {
+				t.Fatalf("unsupported transformation has artwork: %+v", key)
+			}
+		}
+	}
+	if _, ok := sprite.Lookup(catalog.VariantKey{SpeciesID: 978, FormID: "droopy", Gender: "default", Palette: "regular"}); !ok {
+		t.Fatal("lost ordinary artwork")
+	}
+}

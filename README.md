@@ -10,11 +10,11 @@ The current development branch targets v0.2.
 
 The development catalog contains all generation-1 through generation-9 species, their complete
 connected evolution families (including later-generation relatives):
-1,025 species and 1,447 metadata forms.
+1,025 species and 1,449 metadata forms.
 
 Audited artwork covers 1,017 species and 1,327 collectible forms, with 2,669 exact
 regular/shiny assets. Standard regular printing covers 1,013 species; 12 species
-currently lack accepted standard artwork. 120 form appearances remain unavailable.
+currently lack accepted standard artwork. 122 form appearances remain unavailable.
 Minior meteor has regular artwork only because its source shiny pixels are
 identical; the reviewed exclusion is hash-verified. Printing never substitutes
 another appearance.
@@ -220,3 +220,9 @@ to the dataset command for individual downloaded and cache-verified filenames.
 Arceus’s 18 supported type forms use exact pinned form-specific typing. Its
 unsupported `unknown` appearance is excluded explicitly; base Normal typing
 is never substituted for another type form.
+
+
+Transformation identity is checked against pinned metadata before source alias
+folding. Tatsugiri Curly Mega and Droopy Mega remain distinct metadata forms;
+the source's ordinary-image aliases do not provide accepted transformation art.
+Their artwork is explicitly unavailable, with no fallback to ordinary forms.

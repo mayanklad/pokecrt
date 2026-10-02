@@ -123,7 +123,7 @@ func validateReviewedProviders(m mappingConfig) error {
 	if len(m.ReviewedProviders) == 0 {
 		return nil
 	}
-	if (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8") || len(m.ReviewedProviders) != 1 || m.ReviewedProviders[0] != "bamq/pokemon-sprites" {
+	if automaticRuleLevel(m.RulesVersion) < 7 || len(m.ReviewedProviders) != 1 || m.ReviewedProviders[0] != "bamq/pokemon-sprites" {
 		return fmt.Errorf("unsupported or duplicate reviewed provider policy")
 	}
 	return nil

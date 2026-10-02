@@ -18,14 +18,14 @@ type inventorySelection struct {
 }
 
 func validateSelection(m mappingConfig) error {
-	if m.Selection != nil && m.Selection.AuditedInheritedGenders && (m.RulesVersion != "d06-auto-8" || len(m.Selection.VisualGenderSpecies) != 0) {
+	if m.Selection != nil && m.Selection.AuditedInheritedGenders && (automaticRuleLevel(m.RulesVersion) < 8 || len(m.Selection.VisualGenderSpecies) != 0) {
 		return fmt.Errorf("automatic inherited genders require rules v8 and no maintained species list")
 	}
 
 	if !automaticRules(m.RulesVersion) || m.Selection == nil || m.SourceStandardForm != "base" || m.StandardFormReason == "" || len(m.Selection.Generations)+len(m.Selection.FamilySeeds) == 0 {
 		return fmt.Errorf("automatic inventory requires a supported policy and selection")
 	}
-	if len(m.SourceFormExclusions) > 0 && m.RulesVersion != "d06-auto-3" && (m.RulesVersion != "d06-auto-4" && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8")))) {
+	if len(m.SourceFormExclusions) > 0 && automaticRuleLevel(m.RulesVersion) < 3 {
 		return fmt.Errorf("source-only exclusions require automatic rules v3")
 	}
 	for _, e := range m.SourceFormExclusions {
@@ -119,10 +119,10 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	if err := validateReviewedProviders(m); err != nil {
 		return m, err
 	}
-	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && (m.RulesVersion != "d06-auto-6" && (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8")) {
+	if len(m.FormSuffixRules)+len(m.ReviewedDefaultAliases) > 0 && automaticRuleLevel(m.RulesVersion) < 6 {
 		return m, fmt.Errorf("form suffix and default alias corrections require automatic rules v6")
 	}
-	if len(m.DuplicatePaletteExclusions) > 0 && (m.RulesVersion != "d06-auto-5" && (m.RulesVersion != "d06-auto-6" && (m.RulesVersion != "d06-auto-7" && m.RulesVersion != "d06-auto-8"))) {
+	if len(m.DuplicatePaletteExclusions) > 0 && automaticRuleLevel(m.RulesVersion) < 5 {
 		return m, fmt.Errorf("duplicate palette exclusions require automatic rules v5")
 	}
 	if m.Selection == nil {
@@ -192,6 +192,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 	// Exact metadata form identifiers resolve cosmetic states such as Unown.
 	// Optional only for legacy source locks and small test fixtures.
 	metadataIDs := map[string]int{}
+	metadataMega := map[string]bool{}
 	defaultMetadataIDs := map[int]int{}
 	foundFormTable := false
 	for _, src := range lock.Sources {
@@ -203,7 +204,11 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 				continue
 			}
 			foundFormTable = true
-			forms, e := readTable(lock, cache, "pokemon_forms.csv", "identifier", "pokemon_id")
+			required := []string{"identifier", "pokemon_id"}
+			if automaticRuleLevel(m.RulesVersion) >= 9 {
+				required = append(required, "id", "is_mega")
+			}
+			forms, e := readTable(lock, cache, "pokemon_forms.csv", required...)
 			if e != nil {
 				return m, e
 			}
@@ -215,6 +220,13 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 					return m, fmt.Errorf("invalid or duplicate metadata form %s", key)
 				}
 				seen[key] = true
+				if automaticRuleLevel(m.RulesVersion) >= 9 {
+					mega, e := sourceBool(row, "is_mega")
+					if e != nil {
+						return m, e
+					}
+					metadataMega[key] = mega
+				}
 				if row["id"] != "" {
 					formID, e := integer(row, "id", false)
 					if e != nil {
@@ -235,7 +247,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 	}
-	if (m.RulesVersion == "d06-auto-2" || m.RulesVersion == "d06-auto-3" || (m.RulesVersion == "d06-auto-4" || (m.RulesVersion == "d06-auto-5" || (m.RulesVersion == "d06-auto-6" || (m.RulesVersion == "d06-auto-7" || m.RulesVersion == "d06-auto-8"))))) && !foundFormTable {
+	if automaticRuleLevel(m.RulesVersion) >= 2 && !foundFormTable {
 		return m, fmt.Errorf("automatic rules v2 require pinned pokemon_forms.csv")
 	}
 	formOwners, formTypes, err := metadataFormTyping(lock, cache, m.RulesVersion)
@@ -308,8 +320,33 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 			}
 		}
 
+		metadataOnlyAliases := map[string]bool{}
+		if automaticRuleLevel(m.RulesVersion) >= 9 {
+			for _, alias := range sp.Forms {
+				key := sp.Slug + "-" + alias.ID
+				if alias.CanonicalForm == nil || !metadataMega[key] {
+					continue
+				}
+				target, err := sourceFormByID(sp, *alias.CanonicalForm)
+				if err != nil {
+					return m, err
+				}
+				targetKey := sp.Slug + "-" + target.ID
+				targetID := names[targetKey]
+				if target.ID == sp.DefaultForm {
+					targetID = defaults[id]
+				}
+				if metadataIDs[key] == 0 || owners[names[key]] != id || owners[targetID] != id || alias.Slug != target.Slug || target.CanonicalForm != nil {
+					return m, fmt.Errorf("invalid transformation alias evidence %d/%s", id, alias.ID)
+				}
+				if names[key] != targetID && !metadataMega[targetKey] {
+					metadataOnlyAliases[alias.ID] = true
+				}
+			}
+		}
 		for _, sf := range sp.Forms {
-			if sf.CanonicalForm != nil {
+			metadataOnly := metadataOnlyAliases[sf.ID]
+			if sf.CanonicalForm != nil && !metadataOnly {
 				continue
 			}
 			exclusionKey := fmt.Sprintf("%d/%s", id, sf.ID)
@@ -376,7 +413,7 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 				continue
 			}
 			for _, alias := range sp.Forms {
-				if alias.CanonicalForm != nil && *alias.CanonicalForm == sf.ID {
+				if alias.CanonicalForm != nil && *alias.CanonicalForm == sf.ID && !metadataOnlyAliases[alias.ID] {
 					if alias.Slug != sf.Slug {
 						return m, fmt.Errorf("alias artwork mismatch %d/%s", id, alias.ID)
 					}
@@ -387,7 +424,12 @@ func deriveMappings(lock sourceLock, cache string, m mappingConfig) (mappingConf
 				f.DefaultGender = "male"
 				f.Genders = []string{"male", "female"}
 			}
+			f.MetadataOnlyAlias = metadataOnly
 			m.Forms = append(m.Forms, f)
+			if metadataOnly {
+				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: exact metadata transformation has a different owning variety; source aliases ordinary artwork. Retained as metadata-only with no substituted asset.", id, f.ID))
+				continue
+			}
 			a := assetMapping{SpeciesID: id, SourceID: "pokesprite-v2", Provider: sf.Source, SourceSlug: sf.Slug, FormID: f.ID, SourceFormID: sf.ID, Gender: f.DefaultGender, Palette: "regular", Reason: "Derived from pinned manifest; reviewed provider and exact provenance required."}
 			if sf.IsGenerated == nil || *sf.IsGenerated || !providerReviewed(m, sf.Source) {
 				m.Exclusions = append(m.Exclusions, fmt.Sprintf("#%03d/%s: provider or generated status is outside the reviewed artwork policy.", id, f.ID))
@@ -570,10 +612,12 @@ func applyFormSuffixRules(m mappingConfig, ids []int, byID map[int]sourceSpecies
 	return nil
 }
 
-func automaticRules(version string) bool {
-	switch version {
-	case "d06-auto-1", "d06-auto-2", "d06-auto-3", "d06-auto-4", "d06-auto-5", "d06-auto-6", "d06-auto-7", "d06-auto-8":
-		return true
+func automaticRules(version string) bool { return automaticRuleLevel(version) > 0 }
+func automaticRuleLevel(version string) int {
+	for level := 1; level <= 9; level++ {
+		if version == fmt.Sprintf("d06-auto-%d", level) {
+			return level
+		}
 	}
-	return false
+	return 0
 }
