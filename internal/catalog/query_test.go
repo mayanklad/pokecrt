@@ -173,3 +173,24 @@ func TestQueryAvailabilityAndUniformSpeciesCandidates(t *testing.T) {
 		t.Fatal("query mutation changed bundled catalog")
 	}
 }
+
+func BenchmarkQuery(b *testing.B) {
+	for _, tc := range []struct {
+		name      string
+		selection catalog.Selection
+	}{
+		{"Standard", catalog.Selection{}},
+		{"Named", catalog.Selection{Name: "charizard"}},
+		{"Filtered", catalog.Selection{Generations: []int{1, 2}, Types: []string{"fire"}, TypesAny: []string{"flying", "dragon"}}},
+	} {
+		b.Run(tc.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				matches, err := catalog.Query(tc.selection, func(key catalog.VariantKey) bool { _, ok := sprite.Lookup(key); return ok })
+				if err != nil || len(matches) == 0 {
+					b.Fatalf("query: %v; %d matches", err, len(matches))
+				}
+			}
+		})
+	}
+}

@@ -35,7 +35,8 @@ metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
 D06 is verified for the current reviewed inventory. D07 public selectors and D08 catalog listing are
-implemented. D09 coverage/public behavior validation is complete. D10 benchmarks are next.
+implemented. D09 coverage/public behavior validation is complete. D10 performance baselines are
+recorded; the measured lookup optimization awaits owner confirmation.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 Trainers, encounters, achievements and the TUI are not implemented yet.
@@ -229,8 +230,12 @@ varieties lack resolved catalog/source identities, separately from 122
 unavailable catalog appearances. Public output never fills those gaps by guess.
 
 Run the existing generation/check pipeline, `go test ./...` and `go vet ./...`.
-`go test -race ./...` also passes for this increment. Performance budgets and
-release packaging are still pending D10; v0.2 is not yet published.
+`go test -race ./...` also passes for this increment. Measured performance baselines
+and initial regression budgets are recorded in
+[docs/benchmarks.md](docs/benchmarks.md), together with repeatable Go benchmarks,
+startup/memory measurements and measurement limits. The measured lookup
+optimization awaits owner confirmation; D10 and release packaging remain in
+progress. v0.2 is not yet published.
 
 ## Local installation
 

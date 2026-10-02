@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mayanklad/pokecrt/internal/catalog"
 	"github.com/mayanklad/pokecrt/internal/sprite"
 )
 
@@ -122,5 +123,40 @@ func TestBundledSprites(t *testing.T) {
 				t.Fatal("missing truecolor or final reset")
 			}
 		})
+	}
+}
+
+// Decode outside the timer: this measures rendering alone on actual bundled art.
+func BenchmarkRender(b *testing.B) {
+	species, _ := catalog.ByName("charizard")
+	key, _ := catalog.StandardKey(species)
+	largest := sprite.Inventory()[0]
+	for _, asset := range sprite.Inventory() {
+		if asset.Width*asset.Height > largest.Width*largest.Height {
+			largest = asset
+		}
+	}
+	for _, tc := range []struct {
+		name string
+		key  catalog.VariantKey
+	}{{"Charizard", key}, {"LargestArea", largest.Key}} {
+		pixels, err := sprite.Decode(tc.key)
+		if err != nil {
+			b.Fatal(err)
+		}
+		for _, colorEnabled := range []bool{true, false} {
+			name := "NoColor"
+			if colorEnabled {
+				name = "Color"
+			}
+			b.Run(tc.name+"/"+name, func(b *testing.B) {
+				b.ReportAllocs()
+				for b.Loop() {
+					if _, err := Render(pixels, colorEnabled); err != nil {
+						b.Fatal(err)
+					}
+				}
+			})
+		}
 	}
 }

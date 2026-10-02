@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D09 coverage/public behavior verified; D10 benchmarks are next.
-Verified baseline commit: fa578c03048c02961424514f782dcc042000ad4e.
-Baseline status: D08 catalog owner-committed and pushed; clean tree.
+Current step: D10a baseline measured; lookup optimization awaits owner confirmation.
+Verified baseline commit: 8490227efd6e7c5fd3782995acf7bfe739d4fda5.
+Baseline status: D09 validation owner-committed and GitHub commit verified; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -35,41 +35,46 @@ Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-D09 adds verification and documentation only; production behavior is unchanged.
-Coverage is checked against embedded catalog/manifest identities and public
-default queries, including asset ownership, palette/gender eligibility, missing
-artwork, generation/national targets and complete branching-family membership.
+D10a adds repeatable benchmarks to four existing test files and introduces the
+specified docs/benchmarks.md report. It measures fresh-process random/named/
+filtered/variant print and compact/detailed list, warm query/CLI/decode/render/
+lookup, binary size and peak child RSS. The report records machine, toolchain,
+dataset, commands, samples, initial regression budgets and limitations.
 
-The public command matrix checks generation OR, type AND/type-any OR, selected
-form typing, species color/stage across shiny/forms/genders, false status flags,
-empty intersections and unavailable combinations. Installed-binary tests verify
-print/list status differences, command-specific invalid flags, detail ANSI and
-NO_COLOR, real broken pipes and unchanged nonexistent trainer/data directories.
-README examples state exact status and availability behavior.
+All tested scenarios meet the initial measured budgets. True cold filesystem
+startup is not claimed; shared page caches are not evicted. Encounter/history
+latency remains deferred until the trainer implementation exists.
 
-No runtime code corrections were needed. No new files, packages, dependencies,
-flags or commands. Source revisions, dataset, all generated outputs and accepted
-artwork remain unchanged. Optional additions or optimizations require owner
-confirmation before implementation.
+The random-print CPU profile attributes 73.54% cumulative sampled CPU to repeated
+sprite.Lookup scans and key equality. An automatically derived exact-key index
+in the existing sprite package is proposed but awaits owner confirmation.
+Runtime code is unchanged; no new packages, dependencies, flags or commands.
+Only docs/benchmarks.md is a new tracked file. Source revisions, dataset,
+generated outputs and accepted artwork remain unchanged.
+
+D10 is split into baseline and any owner-approved optimization so the owner can
+review measured evidence before runtime changes, as requested. The initial
+baseline remains available for the follow-up comparison. No v0.2 release gate
+or publication is claimed by this measurement-only increment.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
 applies. Previously supported collectible identities and default printing remain.
 
-Checks: full tests, vet, race, build, deterministic generation, fresh asset
-preparation and twice-repeated pinned generation pass; artwork is unchanged.
-The complete public matrix passes without production-code changes.
+Checks: full tests, vet, race, release-style build and pinned dataset check pass.
+Five 500-ms benchmark runs per case, 100 process samples per case/mode and ten
+independent RSS measurements per case/mode are recorded. No timing assertion is
+added to correctness tests.
 
 ## Remaining work and next step
 
-D06–D08 are owner-committed for the reviewed supported inventory; its 53 metadata
-scope gaps and unsupported artwork remain explicit limitations. D09 is
-assistant-verified with owner application/verification/commit pending. D10
-measures startup/memory/rendering and establishes performance budgets before
-v0.2 release. Any suggested optimization will be presented for owner confirmation
-before code changes. No benchmark result or release gate is claimed yet.
+D06–D09 are owner-committed for the reviewed supported inventory; its 53 metadata
+scope gaps and unsupported artwork remain explicit limitations. D10a is
+assistant-verified with owner application/verification/commit pending.
+Next: obtain owner confirmation for the measured exact-key lookup optimization,
+then implement/compare/validate it if approved. Complete final terminal and
+release archive verification before owner publication of v0.2.
 Trainer CLI, storage, progression and TUI remain their specified later milestones.
-Performance measurements and budgets remain required before v0.2 release.
 
 Storage schema version: none.
 

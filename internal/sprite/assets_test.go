@@ -207,3 +207,42 @@ func TestCoverageAgreesWithEmbeddedPublicInventory(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkLookup(b *testing.B) {
+	inventory := Inventory()
+	for _, tc := range []struct {
+		name  string
+		key   catalog.VariantKey
+		found bool
+	}{
+		{"First", inventory[0].Key, true},
+		{"Last", inventory[len(inventory)-1].Key, true},
+		{"Missing", catalog.VariantKey{SpeciesID: -1}, false},
+	} {
+		b.Run(tc.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				if _, ok := Lookup(tc.key); ok != tc.found {
+					b.Fatal("lookup result changed")
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkDecode(b *testing.B) {
+	species, ok := catalog.ByName("charizard")
+	if !ok {
+		b.Fatal("missing benchmark species")
+	}
+	key, ok := catalog.StandardKey(species)
+	if !ok {
+		b.Fatal("missing benchmark form")
+	}
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, err := Decode(key); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

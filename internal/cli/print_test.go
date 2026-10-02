@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -198,5 +199,35 @@ func TestValidContradictionsAndUnsupportedAppearancesAreOperational(t *testing.T
 	status := Run([]string{"print", "--name=charizard", "--legendary=false", "--baby=false", "--mythical=false", "--shiny=false"}, &out, &errout, "dev", catalog.DatasetID)
 	if status != 0 || !strings.HasSuffix(out.String(), "#006 Charizard\n") {
 		t.Fatalf("false flags excluded species: %d %q", status, errout.String())
+	}
+}
+
+// BenchmarkPublic measures repeated in-process commands with output discarded.
+// Fresh-process startup is measured separately in docs/benchmarks.md.
+func BenchmarkPublic(b *testing.B) {
+	for _, mode := range []struct{ name, noColor string }{{"Color", ""}, {"NoColor", "1"}} {
+		b.Run(mode.name, func(b *testing.B) {
+			b.Setenv("NO_COLOR", mode.noColor)
+			for _, tc := range []struct {
+				name string
+				args []string
+			}{
+				{"RandomPrint", []string{"print"}},
+				{"NamedPrint", []string{"print", "--name", "charizard"}},
+				{"FilteredPrint", []string{"print", "--gen", "1,2", "--type", "fire", "--type-any", "flying,dragon"}},
+				{"VariantPrint", []string{"print", "--name", "charizard", "--form", "mega-x", "--shiny"}},
+				{"ListCompact", []string{"list"}},
+				{"ListDetails", []string{"list", "--name", "eevee", "--details"}},
+			} {
+				b.Run(tc.name, func(b *testing.B) {
+					b.ReportAllocs()
+					for b.Loop() {
+						if status := Run(tc.args, io.Discard, io.Discard, "bench", catalog.DatasetID); status != 0 {
+							b.Fatalf("command returned status %d", status)
+						}
+					}
+				})
+			}
+		})
 	}
 }
