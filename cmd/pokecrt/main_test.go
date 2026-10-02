@@ -58,7 +58,7 @@ func TestInstalledBinary(t *testing.T) {
 		}
 		return status, stdout.Bytes(), stderr.Bytes()
 	}
-	for _, args := range [][]string{nil, {"--help"}, {"--version"}, {"print", "--help"}, {"print"}, {"print", "--name", "charizard"}, {"print", "--name", "ivysaur"}, {"print", "--name", "blastoise"}, {"print", "--name", "charizard", "--form", "mega-x", "--shiny", "--type", "fire,dragon"}, {"print", "--name", "meowstic", "--gender", "female", "--shiny"}} {
+	for _, args := range [][]string{nil, {"--help"}, {"--version"}, {"print", "--help"}, {"print"}, {"print", "--name", "charizard"}, {"print", "--name", "ivysaur"}, {"print", "--name", "blastoise"}, {"print", "--name", "charizard", "--form", "mega-x", "--shiny", "--type", "fire,dragon"}, {"print", "--name", "meowstic", "--gender", "female", "--shiny"}, {"list", "--help"}, {"list", "--name", "charizard"}, {"list", "--name", "charizard", "--form", "mega-x", "--shiny", "--details"}, {"list", "--name", "oinkologne", "--details"}} {
 		status, stdout, stderr := invoke(args)
 		if status != 0 || len(stdout) == 0 || len(stderr) != 0 {
 			t.Fatalf("%v: status=%d stdout=%q stderr=%q", args, status, stdout, stderr)

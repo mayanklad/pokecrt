@@ -119,23 +119,28 @@ func runPrint(args []string, stdout, stderr io.Writer, selectIndex catalog.Index
 	var output bytes.Buffer
 	output.Write(artwork)
 	if options.output == "compact" {
-		fmt.Fprintf(&output, "\n#%03d %s", chosen.Species.ID, chosen.Species.Name)
-		if chosen.Form.ID != "standard" {
-			fmt.Fprintf(&output, " · %s", chosen.Form.Name)
-		}
-		if options.selection.Gender != "" {
-			gender := "Male"
-			if chosen.Key.Gender == "female" {
-				gender = "Female"
-			}
-			fmt.Fprintf(&output, " · %s", gender)
-		}
-		if chosen.Key.Palette == "shiny" {
-			output.WriteString(" · Shiny")
-		}
-		output.WriteByte('\n')
+		fmt.Fprintf(&output, "\n#%03d %s\n", chosen.Species.ID, variantLabel(chosen, options.selection.Gender != ""))
 	}
 	return writeOutput(stdout, stderr, output.Bytes())
+}
+
+// Public headings share the selected form/gender/palette, never another appearance.
+func variantLabel(m catalog.Match, explicitGender bool) string {
+	label := m.Species.Name
+	if m.Form.ID != "standard" {
+		label += " · " + m.Form.Name
+	}
+	if explicitGender {
+		gender := "Male"
+		if m.Key.Gender == "female" {
+			gender = "Female"
+		}
+		label += " · " + gender
+	}
+	if m.Key.Palette == "shiny" {
+		label += " · Shiny"
+	}
+	return label
 }
 
 func operationalError(stderr io.Writer, err error) int {

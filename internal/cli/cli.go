@@ -17,6 +17,7 @@ Usage:
   pokecrt --help
   pokecrt --version
   pokecrt print [selectors] [--output compact|sprite]
+  pokecrt list [selectors] [--details]
 
 Options:
   --help, -h   Show this help
@@ -24,8 +25,9 @@ Options:
 
 Commands:
   print       Print named or uniformly random matching artwork
+  list        List the public catalog or detailed entries
 
-Run 'pokecrt print --help' for print options.
+Run 'pokecrt print --help' or 'pokecrt list --help' for command options.
 `
 
 // Run executes one invocation and returns its process exit status.
@@ -33,6 +35,9 @@ Run 'pokecrt print --help' for print options.
 func Run(args []string, stdout, stderr io.Writer, version, datasetID string) int {
 	if len(args) > 0 && args[0] == "print" {
 		return runPrint(args[1:], stdout, stderr, catalog.CryptoIndex)
+	}
+	if len(args) > 0 && args[0] == "list" {
+		return runList(args[1:], stdout, stderr)
 	}
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		return invocationError(stderr, fmt.Errorf("unknown command %q", args[0]))

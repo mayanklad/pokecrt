@@ -34,12 +34,11 @@ gameplay remains a later milestone. Coverage separately reports 53 pinned
 metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
-D06 is verified for the current reviewed inventory. D07 public selectors are
-implemented; catalog listing is next.
+D06 is verified for the current reviewed inventory. D07 public selectors and D08 catalog listing are
+implemented. Public-engine coverage validation is next.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
-Catalog listing, trainers, encounters, achievements and the TUI are not
-implemented yet.
+Trainers, encounters, achievements and the TUI are not implemented yet.
 Published v0.1 retains its original three-sprite coverage.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -174,6 +173,36 @@ Transparent halves use the terminal's default background. Output does not clear
 the screen, move the cursor, or change the terminal title. Errors go to stderr;
 successful artwork goes to stdout. Invalid invocations return status 2,
 operational failures return 1, and broken pipes exit quietly with status 0.
+
+## Public catalog
+
+`list` uses the same selectors and exact appearance defaults as `print`. It is
+state-free, deterministic and sorted by National number. Compact rows contain
+number/name, introduction generation, selected-form types and artwork availability.
+Species names and form labels are never truncated to fit terminal width.
+
+```bash
+./bin/pokecrt list
+./bin/pokecrt list --name charizard
+./bin/pokecrt list --gen 1,2 --type fire --type-any flying,dragon
+./bin/pokecrt list --name charizard --form mega-x --shiny --details
+./bin/pokecrt list --name meowstic --gender female --shiny --details
+./bin/pokecrt list --name oinkologne --details
+```
+
+Regular metadata entries remain visible when selected artwork is unavailable.
+Explicit gender requires a declared distinct visual identity; shiny selection
+requires an actual shiny asset. A valid empty query prints
+`No Pokémon match the specified filters.` and exits successfully; invalid
+selectors still return status 2. `--output` is a print flag, not a list flag.
+
+`--details` displays the selected heading, one sprite or an unavailable message,
+verified generation/types/color/stage/status flags, the complete connected
+evolution family including branches, and all catalog form IDs/names with their
+available regular/shiny/gender slots. It never renders all form sprites or
+substitutes an alternate when standard artwork is missing. Broad detail queries
+can be long; no results are capped and no pager is launched. No trainer or
+discovery state limits the public catalog. `NO_COLOR` applies to detail sprites.
 
 ## Local installation
 

@@ -3,9 +3,9 @@
 Specification: v1, updated 2 October 2026; approved sections 25–27 apply.
 Current release target: v0.2 — Complete public engine.
 Last published milestone: v0.1; D01–D05 complete.
-Current step: D07 selectors verified; D08 public catalog is next.
-Verified baseline commit: b90dba38b7475c4d1d409bb5ec1114c68cd2f2d6.
-Baseline status: D06 closing audit owner-committed; clean tree.
+Current step: D08 public catalog verified; D09 coverage/public behavior is next.
+Verified baseline commit: 0e94a317fde4166de6adab1c3ca201a069121ecb.
+Baseline status: D07 selectors owner-committed and pushed; clean tree.
 Current increment: assistant verification complete; owner verification/commit pending.
 Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 
@@ -15,7 +15,8 @@ Published release: https://github.com/mayanklad/pokecrt/releases/tag/v0.1
 - Composable generation/type/color/stage/status and exact form/gender/shiny selectors.
 - Compact/sprite output, natural-size truecolor half blocks, transparency.
 - NO_COLOR, piped colors and quiet broken pipes.
-- No trainer storage or runtime downloads; public catalog listing remains D08.
+- Public compact catalog and detailed entries with shared selectors.
+- No trainer storage or runtime downloads; listing has no discovery restriction.
 - Pinned/hash-verified preparation, exact provenance and deterministic generation.
 - Routine inventory derived from source data; only policies/corrections maintained.
 
@@ -34,38 +35,38 @@ Rules: d06-auto-12. Coverage: tools/dataset/coverage.json and coverage.md.
 
 ## Current increment
 
-Print now uses flag.FlagSet with shared one-occurrence validation and selector
-registration. Root flags use the same duplicate/alias checks. Lists trim and
-deduplicate; bundled vocabulary validation rejects unknown static selectors.
-Boolean false status filters impose no restriction. No CLI framework dependency.
+Public list now uses the D07 shared FlagSet selector registration/validation and
+exact-appearance query. Compact rows are aligned, one per species, in National
+order; metadata-only regular entries remain visible and marked unavailable.
+Valid empty lists succeed, while invalid invocations return status 2.
 
-The shared query evaluates all constraints against one exact selected form,
-retains unavailable regular metadata entries for future listing, and requires
-actual shiny assets for shiny selection. Print selects matching renderable
-species uniformly and never borrows another appearance's artwork/typing.
-Headings show form, explicitly requested gender and shiny in the specified order.
-Defaults remain standard/regular/form-designated gender.
+Details show exactly one selected sprite or an unavailable message, verified
+metadata, the complete connected evolution family and all catalog forms with
+actual regular/shiny/gender availability. Public headings are shared with print.
+No alternate artwork is borrowed, results are uncapped and no pager is launched.
+Two files are added within internal/cli for the list command and its tests.
+No new packages or dependencies; this follows the existing print command layout.
 
-Tests cover selector composition, valid empty intersections versus invalid
-invocations, gender and palette absence, exact output bytes, uniform species
-weighting, boolean false, duplicate flags, isolated query results, offline
-installed variants and state-free public commands.
+Tests cover full sorted catalog coverage, exact selected sprite bytes/headings,
+NO_COLOR, missing standard/variant assets, shiny/gender inventory, connected
+branches, consistent entry separators, empty lists, invalid/repeated flags,
+broken pipes, state-free commands and an offline installed binary.
 
 All 2,669 PNGs and all 2,947 source pins remain unchanged. No ignored filenames
 need removal in this increment. No trainer data exists, so no storage migration
 applies. Previously supported collectible identities and default printing remain.
 
 Checks: full tests, vet, race, build, deterministic generation, fresh asset
-preparation pass; artwork is unchanged. No source files, packages, dependencies
-added. Public selector flags implement D07; no new commands. Original source revisions/provider scope unchanged.
+preparation pass; artwork is unchanged. Source revisions/provider scope and
+dataset identity are unchanged. D08 adds list and its --details flag.
 
 ## Remaining work and next step
 
 D06 is verified for the reviewed supported inventory; its 53 metadata scope gaps
-and unsupported artwork remain explicit limitations. D07 is assistant-verified
-with owner application/verification/commit pending. The handwritten print parser
-has been replaced by FlagSet and shared validation. D08 adds compact listing and
-detailed catalog entries using the same selected-appearance query.
+and unsupported artwork remain explicit limitations. D07 is owner-committed.
+D08 is assistant-verified with owner application/verification/commit pending.
+D09 validates the full public behavior matrix and coverage/help/examples. D10
+then measures startup/memory/rendering and establishes real performance budgets.
 Trainer CLI, storage, progression and TUI remain their specified later milestones.
 Performance measurements and budgets remain required before v0.2 release.
 
