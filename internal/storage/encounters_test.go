@@ -83,6 +83,9 @@ func TestEncounterShinyFirstRepeatedVariantAndClock(t *testing.T) {
 	if err != nil || !first.FirstSpecies || !first.FirstVariant || first.Species != 1 || first.Variants != 1 || first.Encounters != 1 {
 		t.Fatalf("first: %+v %v", first, err)
 	}
+	if first.RegularCollected || first.Completion.Species != 1 || first.Completion.Variants != 1 || first.Completion.SpeciesTotal != 1017 || first.Completion.VariantsTotal != 2669 {
+		t.Fatal("first shiny progress did not use transactional eligible counts")
+	}
 	if integer(t, r, "SELECT count(*) FROM variant_discoveries WHERE palette='regular'") != 0 {
 		t.Fatal("shiny first inferred regular")
 	}
@@ -90,9 +93,15 @@ func TestEncounterShinyFirstRepeatedVariantAndClock(t *testing.T) {
 	if err != nil || second.FirstSpecies || !second.FirstVariant || second.Variants != 2 {
 		t.Fatalf("regular: %+v %v", second, err)
 	}
+	if !second.RegularCollected || second.Completion.Variants != 2 {
+		t.Fatal("regular collection progress")
+	}
 	repeat, err := r.RecordEncounter(ctx, profile.ID, shiny, 75)
 	if err != nil || repeat.FirstSpecies || repeat.FirstVariant || repeat.Encounters != 3 {
 		t.Fatalf("repeat: %+v %v", repeat, err)
+	}
+	if !repeat.RegularCollected || repeat.Completion.Variants != 2 {
+		t.Fatal("known regular state not captured")
 	}
 	if integer(t, r, "SELECT first_seen_ms FROM species_discoveries") != 50 || integer(t, r, "SELECT last_seen_ms FROM species_discoveries") != 100 {
 		t.Fatal("clock MIN/MAX")

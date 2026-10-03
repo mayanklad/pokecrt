@@ -169,6 +169,8 @@ type Record struct {
 	ID, TrainerID, EncounteredAtMS int64
 	Choice                         Choice
 	FirstSpecies, FirstVariant     bool
+	RegularCollected               bool
+	Completion                     Completion
 	Encounters, Species, Variants  int64
 	XPAwarded                      int64
 	Before, After                  Progress

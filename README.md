@@ -27,10 +27,10 @@ commit imported by PokéSprite-v2. Generated candidates remain excluded. Some
 species have accepted alternate artwork but no accepted standard artwork.
 Oinkologne’s source male/female records are one standard metadata form; both
 artwork candidates remain excluded as generated. This adds no printable slots.
-Form tags and future achievement targets are generated from exact metadata and
+Form tags and achievement inventory are generated from exact metadata and
 accepted regular artwork: 38 eligible regional forms, 80 Mega/Gigantamax forms,
 18 supported types and 17 fully supported branching families. Achievement
-gameplay remains a later milestone. Coverage separately reports 53 pinned
+gameplay is available in development source. Coverage separately reports 53 pinned
 metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
@@ -39,7 +39,10 @@ Sprite lookup uses an exact-key index derived automatically from the generated
 manifest; performance measurements are documented in docs/benchmarks.md.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
-Trainers, encounters, achievements and the TUI are not implemented yet.
+The published v0.2 binary provides the public print/catalog engine. Development
+source adds profiles, encounters, XP and achievement evaluation for the upcoming
+v0.3 milestone; private Pokédex and full trainer views remain pending. The TUI
+is a later milestone.
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -96,15 +99,16 @@ go run ./tools/dataset \
 ## Build and verify
 
 ```bash
-gofmt -w cmd/pokecrt internal/cli internal/catalog
+gofmt -w cmd internal tools
 go test ./...
 go vet ./...
 go build -o ./bin/pokecrt ./cmd/pokecrt
 ```
 
-No external Go modules are required yet. The executable embeds artwork and
-metadata: runtime needs no source checkout, download cache, network, trainer,
-or data directory. Help and version also work without trainer state.
+The source pins CGO-free SQLite and Unicode modules in `go.mod`/`go.sum`.
+The executable embeds artwork and metadata: runtime needs no source checkout,
+download cache or network. Public print/list/help/version need no trainer or data
+directory. Profile creation and encounters use local SQLite storage.
 
 The Linux amd64 integration test builds a trimmed executable, runs it from an
 empty directory, checks piped output and a closed pipe, verifies version/dataset
@@ -342,17 +346,51 @@ and the database with mode 0600. Existing unsupported or corrupt state is never
 replaced automatically.
 
 Profile views currently show name, UTC creation time and active status. Full
-statistics and achievements arrive later; the public encounter command remains
-pending output modes. Profile
-commands never record discoveries or encounters. Public print/list/help/version
+statistics and achievement views follow in D17. Profile commands never record
+discoveries or encounters. Public print/list/help/version
 remain independent of trainer storage. Dependency licenses are retained in
 [LICENSING.md](LICENSING.md).
 
-The internal encounter foundation selects uniformly by species, form and
+The encounter service selects uniformly by species, form and
 visual gender from accepted regular artwork, with a 1/4096 shiny chance when
 that exact appearance supports it. It prepares artwork before atomically
 recording history, discoveries, XP and achievement unlocks for the captured
 trainer. Completion goals are derived from eligible catalog artwork and evolution
 relationships. Each encounter grants 10 XP, plus 40 for a first species, 20 for a
 first exact variant and 100 for shiny artwork. Levels advance every 1,000 XP.
-This foundation is not yet exposed as a user command; output modes follow in D15.
+
+## Encounters in development source
+
+An encounter requires an explicitly created, active trainer. These commands are
+available in development source and are not part of the published v0.2 binary:
+
+```bash
+pokecrt encounter --help
+pokecrt encounter
+pokecrt encounter --output compact
+pokecrt encounter --output no-title
+pokecrt encounter --output achievements
+pokecrt encounter --output sprite
+```
+
+| Output mode | Display |
+| --- | --- |
+| `full` (default) | Artwork, appearance heading, selected-form types, progress and new achievements |
+| `compact` | Artwork and appearance heading |
+| `no-title` | Artwork, progress and new achievements |
+| `achievements` | Artwork and only newly earned achievements |
+| `sprite` | Artwork alone |
+
+Every mode records one unrestricted encounter with the same discovery, XP and
+achievement rules. No name, generation, type, form, gender or shiny selector is
+accepted. `NO_COLOR` disables artwork color. Headings identify the exact form,
+visual gender and shiny palette where applicable; full output uses that form's
+types. Progress distinguishes new species, new exact variants and repeats, shows
+current eligible species/variant completion, and reports XP and level changes.
+A first shiny variant does not imply collection of its regular counterpart.
+
+All state commits before output. An output error leaves the encounter recorded;
+there is no automatic repeat. Broken pipes exit quietly. With no active trainer,
+the command fails with setup/selection guidance and creates no implicit profile.
+Help and invalid invocations do not open storage. Hidden notices still persist
+as achievements; their complete browsing view follows in D17.

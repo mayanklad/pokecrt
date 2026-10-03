@@ -33,9 +33,9 @@ D11 adds the storage foundation for the trainer CLI:
 - Atomic versioned migrations with protected, nonoverwriting consistent backups
   before nonempty upgrades; corrupt, newer and unknown unversioned state preserved.
 
-D12 implements profile commands. D13/D14 add internal encounter operations and progression; the
-public encounter command remains pending. Public print/list/help/
-version do not resolve storage paths and remain usable with corrupt trainer state.
+D12 implements profile commands. D13/D14 add encounter operations and progression;
+D15 exposes the encounter command and its five output modes. Public print/list/
+help/version do not resolve storage paths and remain usable with corrupt trainer state.
 No legacy JSON storage was present, so no import routine is introduced.
 
 ## Trainer profiles
@@ -54,8 +54,8 @@ D12 adds explicit local profiles:
 
 Profile views currently show name, UTC creation time and active status. Complete
 statistics and achievement views are scheduled for D17. Profiles never create
-encounters, discoveries or XP awards. Encounter recording is an internal D13
-foundation until output modes are complete.
+encounters, discoveries or XP awards. Encounter recording is available through
+the D15 encounter command.
 The SQLite schema and dataset are unchanged. Unicode handling pins
 `golang.org/x/text v0.42.0`.
 
@@ -80,7 +80,7 @@ D13 adds internal encounter selection and atomic history/discovery recording:
 - Returned first flags and counts come from transactional state, after commit.
   Failed writes/commits return no successful record and are never retried.
 
-The production CLI does not expose encounters yet. D14 now awards XP and
+D14 awards XP and
 checks numerical/themed achievements within that same transaction. Base XP is
 10, with 40 for first species, 20 for first exact variant and 100 for shiny.
 Levels advance every 1,000 XP without a cap or probability benefit. Completion
@@ -89,8 +89,25 @@ forms and branching goals require every catalog family member to be supported.
 Unlocks retain their timestamp, dataset and applicable target, with unique
 trainer/achievement identities. Only newly inserted unlocks are returned, in
 stable policy order. Overflow and any failed write roll back the whole action.
-All five output modes follow in D15.
+D15 implements all five encounter output modes.
 No database migration, dependency or generated dataset change is introduced.
+
+
+## Encounter command and output
+
+D15 adds `encounter [--output full|compact|no-title|achievements|sprite]`.
+Full is the default. Compact shows artwork and the exact appearance heading;
+no-title suppresses the identity/type block; achievements shows only artwork
+and newly earned notices; sprite shows artwork alone. All modes persist the
+same state and use a formatter that reads only the committed result. Progress
+contains current eligible completion intersections, the committed XP award and
+actual before/after level changes. Historical counts remain retained separately.
+Regular-counterpart collection status is read inside the same transaction for
+shiny-first guidance. No selector flags or sprite-only alias are accepted.
+First-run guidance requires explicit profile creation/selection; missing state
+is not initialized. Syntax and help precede path resolution. Public command
+independence and existing broken-pipe behavior remain intact.
+No schema, dependency, generated dataset or encounter probability changes.
 
 ## Dataset
 
@@ -129,7 +146,11 @@ type evidence, fully supported branching families, inventory-derived targets
 against generated coverage, one-time unlocks, concurrent bonuses/unlocks and
 XP/unlock rollback. Already satisfied new goals unlock on the next committed
 encounter;
-committed-output mode/stream tests land in D15.
+D15 tests exact output boundaries, identical state across modes, no repeated
+unlock announcements and no successful output before commit. Write errors and
+short writes preserve the committed state; broken pipes exit quietly. Installed
+binary tests cover every mode, NO_COLOR/color, first-run/help/syntax paths and a
+real closed pipe with exactly one committed encounter.
 Tests, vet, race checks and pinned dataset checks pass for the implementation
 baseline. Benchmark methods, environments, startup/memory tradeoffs and numeric
 budgets are recorded in [benchmarks.md](benchmarks.md).
@@ -148,11 +169,18 @@ binary size remains unchanged at 11.043 MiB. No new warm/RSS result is claimed.
 D14 fresh-process short-command P95 is at most 3.012 ms (8 ms limit), and
 random/list P95 at most 4.979 ms (25 ms limit). Size remains 11.043 MiB.
 
+D15 stripped size is 11.125 MiB against the approved 16 MiB limit. Public
+fresh-process P95 is at most 3.093 ms for short commands (8 ms limit) and
+4.589 ms for random/list (25 ms limit). Native peak child RSS is at most
+8.950 MiB (10 MiB limit). Warm public/render checks pass unchanged thresholds.
+
 ## Roadmap
 
 Published v0.2 provides the complete public print/catalog engine for the reviewed inventory.
 [Release notes](release-v0.2.md) describe its behavior and known limitations.
 v0.3 covers trainer profiles, SQLite storage, encounters, progression, achievements
 and private Pokédex CLI. The TUI and final hardening remain later milestones.
-Storage and profiles are implemented in development source; the remaining
-trainer features are pending. The published v0.2 feature set is unchanged.
+Storage, profiles, encounters, progression and achievement evaluation are
+implemented in development source. D16 adds private Pokédex browsing; D17 adds
+full trainer statistics and achievement views. The published v0.2 feature set
+is unchanged.

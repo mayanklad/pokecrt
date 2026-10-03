@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"os"
 	"os/exec"
@@ -11,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/mayanklad/pokecrt/internal/catalog"
+	"github.com/mayanklad/pokecrt/internal/storage"
 )
 
 // Exercise the executable from an empty directory with no source assets or
@@ -185,7 +187,7 @@ func TestInstalledBinary(t *testing.T) {
 
 	// Trainer commands run from the installed binary, with no checkout/cache.
 	profiles := filepath.Join(temp, "installed-profiles")
-	for _, helpArgs := range [][]string{{"trainer", "--help"}, {"trainer", "create", "--help"}, {"trainer", "list", "-h"}, {"trainer", "use", "--help"}} {
+	for _, helpArgs := range [][]string{{"encounter", "--help"}, {"trainer", "--help"}, {"trainer", "create", "--help"}, {"trainer", "list", "-h"}, {"trainer", "use", "--help"}} {
 		status, _, stderr := invoke(helpArgs, "POKECRT_DATA_DIR=relative-invalid")
 		if status != 0 || len(stderr) != 0 {
 			t.Fatalf("trainer help touched storage: %v: %d %q", helpArgs, status, stderr)
@@ -196,6 +198,16 @@ func TestInstalledBinary(t *testing.T) {
 		if status != 0 || len(stderr) != 0 || !bytes.Contains(stdout, []byte("No trainer profiles found.")) {
 			t.Fatalf("installed first run: %d %q %q", status, stdout, stderr)
 		}
+	}
+	for _, invalidArgs := range [][]string{{"encounter", "--name", "charizard"}, {"encounter", "--sprite-only"}, {"encounter", "--output", "invalid"}} {
+		status, stdout, stderr := invoke(invalidArgs, "POKECRT_DATA_DIR="+profiles)
+		if status != 2 || len(stdout) != 0 || len(stderr) == 0 {
+			t.Fatalf("installed encounter syntax %v: %d %q %q", invalidArgs, status, stdout, stderr)
+		}
+	}
+	status, stdout, stderr := invoke([]string{"encounter"}, "POKECRT_DATA_DIR="+profiles)
+	if status != 1 || len(stdout) != 0 || !bytes.Contains(stderr, []byte("trainer create <name>")) {
+		t.Fatalf("installed encounter first run: %d %q %q", status, stdout, stderr)
 	}
 	if _, err := os.Stat(profiles); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("first-run queries created profile storage")
@@ -243,5 +255,58 @@ func TestInstalledBinary(t *testing.T) {
 	after, err := os.ReadFile(profileDB)
 	if err != nil || !bytes.Equal(before, after) {
 		t.Fatal("public command mutated trainer database")
+	}
+
+	// Every installed mode uses embedded assets and records one encounter.
+	for _, mode := range []string{"full", "compact", "no-title", "achievements", "sprite"} {
+		status, out, errout := invoke([]string{"encounter", "--output", mode}, "POKECRT_DATA_DIR="+profiles, "NO_COLOR=1")
+		if status != 0 || len(out) == 0 || len(errout) != 0 || bytes.Contains(out, []byte("\x1b")) {
+			t.Fatalf("installed encounter %s: %d %q", mode, status, errout)
+		}
+		if (mode == "full" || mode == "no-title") && !bytes.Contains(out, []byte("XP gained:")) {
+			t.Fatal("installed encounter progress missing")
+		}
+		if mode == "sprite" && (bytes.Contains(out, []byte("#")) || bytes.Contains(out, []byte("XP")) || bytes.Contains(out, []byte("🏆"))) {
+			t.Fatal("installed sprite text")
+		}
+	}
+	status, colored, errout := invoke([]string{"encounter", "--output", "sprite"}, "POKECRT_DATA_DIR="+profiles)
+	if status != 0 || len(errout) != 0 || !bytes.Contains(colored, []byte("\x1b[38;2;")) {
+		t.Fatal("installed encounter color")
+	}
+	// Real SIGPIPE handling preserves the seventh committed encounter.
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader.Close()
+	command := exec.Command(binary, "encounter", "--output", "sprite")
+	command.Dir = empty
+	command.Env = append(append([]string{}, baseEnv...), "POKECRT_DATA_DIR="+profiles)
+	command.Stdout = writer
+	var pipeErrors bytes.Buffer
+	command.Stderr = &pipeErrors
+	runErr := command.Run()
+	closeErr := writer.Close()
+	if runErr != nil || closeErr != nil || pipeErrors.Len() != 0 {
+		t.Fatalf("installed encounter pipe %v %v %q", runErr, closeErr, pipeErrors.String())
+	}
+	repo, err := storage.ReadOnly(context.Background(), profileDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer repo.Close()
+	var encounters, wrongTrainer, invalidXP int
+	if err := repo.QueryRowContext(context.Background(), "SELECT count(*) FROM encounters").Scan(&encounters); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.QueryRowContext(context.Background(), "SELECT count(*) FROM encounters e JOIN trainers t ON t.id=e.trainer_id WHERE t.display_name!='Professor Oak'").Scan(&wrongTrainer); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.QueryRowContext(context.Background(), "SELECT count(*) FROM trainer_progress p WHERE xp_total!=COALESCE((SELECT sum(xp_awarded) FROM encounters e WHERE e.trainer_id=p.trainer_id),0)").Scan(&invalidXP); err != nil {
+		t.Fatal(err)
+	}
+	if encounters != 7 || wrongTrainer != 0 || invalidXP != 0 {
+		t.Fatalf("installed encounter counts %d %d %d", encounters, wrongTrainer, invalidXP)
 	}
 }

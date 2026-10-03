@@ -141,3 +141,15 @@ func TestTargetsMatchGeneratedCoverage(t *testing.T) {
 		}
 	}
 }
+
+func TestCompletionExcludesRemovedIdentitiesAndCountsExactPalettes(t *testing.T) {
+	targets := bundledTargets(t)
+	regular := catalog.VariantKey{SpeciesID: 25, FormID: "standard", Gender: "default", Palette: "regular"}
+	shiny := regular
+	shiny.Palette = "shiny"
+	removed := catalog.VariantKey{SpeciesID: 99999, FormID: "standard", Gender: "default", Palette: "regular"}
+	c := targets.Completion(map[int]bool{25: true, 99999: true}, []catalog.VariantKey{regular, regular, shiny, removed})
+	if c.Species != 1 || c.Variants != 2 || c.SpeciesTotal != 1017 || c.VariantsTotal != 2669 {
+		t.Fatalf("eligible completion %+v", c)
+	}
+}

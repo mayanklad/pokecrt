@@ -43,6 +43,12 @@ func (r *Repository) RecordEncounter(ctx context.Context, trainerID int64, choic
 		if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM variant_discoveries WHERE trainer_id = ? AND species_id = ? AND form_id = ? AND gender_key = ? AND palette = ?)", trainerID, key.SpeciesID, key.FormID, key.Gender, key.Palette).Scan(&variantExists); err != nil {
 			return err
 		}
+		regularCollected := key.Palette == "regular"
+		if key.Palette == "shiny" {
+			if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM variant_discoveries WHERE trainer_id = ? AND species_id = ? AND form_id = ? AND gender_key = ? AND palette = 'regular')", trainerID, key.SpeciesID, key.FormID, key.Gender).Scan(&regularCollected); err != nil {
+				return err
+			}
+		}
 		var total int64
 		if err := tx.QueryRowContext(ctx, "SELECT xp_total FROM trainer_progress WHERE trainer_id = ?", trainerID).Scan(&total); err != nil {
 			return err
@@ -97,7 +103,7 @@ func (r *Repository) RecordEncounter(ctx context.Context, trainerID int64, choic
 		if _, err := tx.ExecContext(ctx, "UPDATE trainer_progress SET xp_total = ? WHERE trainer_id = ?", after.Total, trainerID); err != nil {
 			return err
 		}
-		record = trainer.Record{XPAwarded: award, Before: before, After: after, ID: id, TrainerID: trainerID, EncounteredAtMS: whenMS, Choice: choice, FirstSpecies: !speciesExists, FirstVariant: !variantExists}
+		record = trainer.Record{RegularCollected: regularCollected, XPAwarded: award, Before: before, After: after, ID: id, TrainerID: trainerID, EncounteredAtMS: whenMS, Choice: choice, FirstSpecies: !speciesExists, FirstVariant: !variantExists}
 		// One snapshot of committed-result counts, still inside the write lock.
 		if err := tx.QueryRowContext(ctx, `SELECT
    (SELECT count(*) FROM encounters WHERE trainer_id = ?),
@@ -109,6 +115,11 @@ func (r *Repository) RecordEncounter(ctx context.Context, trainerID int64, choic
 		if err != nil {
 			return err
 		}
+		variants, err := encounteredVariants(ctx, tx, trainerID)
+		if err != nil {
+			return err
+		}
+		record.Completion = r.goals.Completion(state.SeenSpecies, variants)
 		var unlocks []trainer.Unlock
 		for _, goal := range r.goals.Goals(state) {
 			if !goal.Ready() {
@@ -216,4 +227,21 @@ func encounterAchievementState(ctx context.Context, tx *Tx, id int64, record tra
 	}
 	err = tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM encounters WHERE trainer_id=? AND palette='shiny'), EXISTS(SELECT 1 FROM encounters WHERE trainer_id=? AND regional_snapshot=1), EXISTS(SELECT 1 FROM encounters WHERE trainer_id=? AND transformation_snapshot=1)`, id, id, id).Scan(&state.Shiny, &state.Regional, &state.Transformation)
 	return state, err
+}
+
+func encounteredVariants(ctx context.Context, tx *Tx, id int64) ([]catalog.VariantKey, error) {
+	rows, err := tx.QueryContext(ctx, "SELECT species_id,form_id,gender_key,palette FROM variant_discoveries WHERE trainer_id = ?", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var variants []catalog.VariantKey
+	for rows.Next() {
+		var key catalog.VariantKey
+		if err := rows.Scan(&key.SpeciesID, &key.FormID, &key.Gender, &key.Palette); err != nil {
+			return nil, err
+		}
+		variants = append(variants, key)
+	}
+	return variants, rows.Err()
 }

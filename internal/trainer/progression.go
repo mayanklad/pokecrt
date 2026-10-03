@@ -65,7 +65,12 @@ type generationTarget struct {
 	generation int
 	species    []int
 }
+
+// Completion separates current eligible coverage from retained historical counts.
+type Completion struct{ Species, SpeciesTotal, Variants, VariantsTotal int64 }
+
 type AchievementTargets struct {
+	variantKeys                     map[catalog.VariantKey]bool
 	eligible                        []int
 	generations                     []generationTarget
 	types                           []string
@@ -81,7 +86,7 @@ func NewAchievementTargets(species []catalog.Species, available func(catalog.Var
 	if err != nil {
 		return nil, err
 	}
-	t := &AchievementTargets{variants: int64(pool.VariantCount())}
+	t := &AchievementTargets{variants: int64(pool.VariantCount()), variantKeys: make(map[catalog.VariantKey]bool, pool.VariantCount())}
 	eligible := map[int]bool{}
 	types := map[string]bool{}
 	for _, s := range pool.species {
@@ -89,6 +94,12 @@ func NewAchievementTargets(species []catalog.Species, available func(catalog.Var
 		t.eligible = append(t.eligible, s.id)
 		for _, f := range s.forms {
 			for _, g := range f.genders {
+				key := g.regular.Key()
+				t.variantKeys[key] = true
+				if g.shiny {
+					key.Palette = "shiny"
+					t.variantKeys[key] = true
+				}
 				snapshot := g.regular.Snapshot()
 				types[snapshot.Type1] = true
 				if snapshot.Type2 != "" {
@@ -268,4 +279,18 @@ func countSeen(ids []int, seen map[int]bool) int64 {
 		}
 	}
 	return n
+}
+
+// Completion counts only identities still eligible in this inventory. Duplicate
+// input variants do not inflate coverage; neither input collection is retained.
+func (t *AchievementTargets) Completion(seenSpecies map[int]bool, seenVariants []catalog.VariantKey) Completion {
+	c := Completion{Species: countSeen(t.eligible, seenSpecies), SpeciesTotal: int64(len(t.eligible)), VariantsTotal: t.variants}
+	counted := make(map[catalog.VariantKey]bool, len(seenVariants))
+	for _, key := range seenVariants {
+		if t.variantKeys[key] && !counted[key] {
+			c.Variants++
+			counted[key] = true
+		}
+	}
+	return c
 }

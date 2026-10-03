@@ -479,3 +479,48 @@ Short-command P95 is at most 3.012 ms against 8 ms; random/list P95 is at most
 (11.043 MiB), below the approved trainer-inclusive 16 MiB threshold.
 Prior warm/render/RSS results retain their original milestone labels. No new
 encounter latency or history-growth performance result is claimed here.
+
+
+## D15 encounter command and public regression check
+
+D15 exposes the encounter command and five output modes against source
+`223ff220a36e69df8da89600f4bfc083a0a34922`. Its formatter consumes only a committed
+result. Eligible progress intersects discoveries with inventory derived from
+exact accepted artwork; historical counts remain separate. Help and invalid
+invocations bypass storage, and public print/list/help/version do not open it.
+
+Measurements use the same Linux amd64 AMD EPYC 9V74, Go 1.27.1 environment and
+CGO-disabled, trimpath, stripped build as the prior checks. Size is 11,665,568
+bytes (11.125 MiB), within the approved trainer-inclusive 16 MiB threshold.
+Fresh-process timing retains six cases, color/NO_COLOR, GOMAXPROCS=1, five
+warmups and 100 samples per row. Short-command P95 is at most 3.093 ms (8 ms
+limit); random/full-list P95 is at most 4.589 ms (25 ms limit). Separate native
+wait4 RSS measurements use ten fresh children per case/mode: maximum 8.950 MiB
+against 10 MiB. Python launcher RSS is not used as child runtime memory.
+
+Warm checks use existing BenchmarkPublic/BenchmarkRender cases, three 200-ms
+runs per case, -cpu=1 and discarded output. Median ms/op results are:
+
+| Warm scenario | D15 median ms/op | Existing threshold ms/op |
+| --- | ---: | ---: |
+| Public/Color/RandomPrint | 1.847 | 12.00 |
+| Public/Color/NamedPrint | 0.496 | 0.85 |
+| Public/Color/FilteredPrint | 0.536 | 0.85 |
+| Public/Color/VariantPrint | 0.411 | 0.85 |
+| Public/Color/ListCompact | 2.030 | 12.00 |
+| Public/Color/ListDetails | 0.357 | 0.85 |
+| Public/NoColor/RandomPrint | 1.738 | 12.00 |
+| Public/NoColor/NamedPrint | 0.345 | 0.85 |
+| Public/NoColor/FilteredPrint | 0.381 | 0.85 |
+| Public/NoColor/VariantPrint | 0.324 | 0.85 |
+| Public/NoColor/ListCompact | 2.119 | 12.00 |
+| Public/NoColor/ListDetails | 0.323 | 0.85 |
+| Render/LargestArea/Color | 0.366 | 0.60 |
+
+All existing public timing/rendering/memory/size thresholds pass. These results
+are environment-specific and do not establish encounter latency at growing
+history sizes; that remains a v0.3 publication check. Installed-binary tests
+exercise the command away from source assets/cache, all output modes, truecolor/
+NO_COLOR and post-commit closed pipes. A separate network-namespace isolation
+attempt was unavailable because this environment denies user namespace mapping;
+no new network-isolated encounter result is claimed.
