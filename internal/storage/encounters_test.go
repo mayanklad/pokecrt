@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -448,4 +450,352 @@ func TestEncounterXPOverflowAndLevelBoundary(t *testing.T) {
 	if integer(t, r, "SELECT count(*) FROM encounters") != before {
 		t.Fatal("overflow wrote history")
 	}
+}
+
+func unlockIDs(record trainer.Record) []string {
+	ids := []string{}
+	for _, u := range record.NewUnlocks() {
+		ids = append(ids, u.ID)
+	}
+	return ids
+}
+
+func TestExpandedAchievementsSourceFlagsFamilyAndSimultaneousOrder(t *testing.T) {
+	r, _ := fresh(t)
+	profile := encounterProfile(t, r)
+	ctx := context.Background()
+	var last trainer.Record
+	for _, id := range []int{1, 2, 3} {
+		record, err := r.RecordEncounter(ctx, profile.ID, encounterChoice(t, id, "standard", "default", "regular"), int64(id))
+		if err != nil {
+			t.Fatal(err)
+		}
+		last = record
+		assertEncounterSums(t, r)
+	}
+	if got := unlockIDs(last); !reflect.DeepEqual(got, []string{"stages.complete", "evolution.family"}) {
+		t.Fatalf("simultaneous family/stages order %v", got)
+	}
+	if u := last.NewUnlocks(); u[0].Target != 3 || u[1].Target != 3 || u[1].UnlockedAtMS != 3 || u[1].DatasetID != catalog.DatasetID {
+		t.Fatalf("unlock targets %+v", u)
+	}
+	for _, c := range []struct {
+		species int
+		goal    string
+	}{{144, "legendary.first"}, {151, "mythical.first"}, {172, "baby.first"}} {
+		record, err := r.RecordEncounter(ctx, profile.ID, encounterChoice(t, c.species, "standard", "default", "regular"), 100)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !slices.Contains(unlockIDs(record), c.goal) {
+			t.Fatalf("source flag %s missing: %v", c.goal, unlockIDs(record))
+		}
+		for _, u := range record.NewUnlocks() {
+			if u.ID == c.goal && u.HasTarget {
+				t.Fatal("flag achievement target should be NULL")
+			}
+		}
+		repeated, err := r.RecordEncounter(ctx, profile.ID, record.Choice, 101)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if slices.Contains(unlockIDs(repeated), c.goal) {
+			t.Fatal("source flag announced twice")
+		}
+		assertEncounterSums(t, r)
+	}
+	if integer(t, r, "SELECT count(*) FROM achievement_unlocks WHERE achievement_id IN ('legendary.first','mythical.first','baby.first') AND target_at_unlock IS NULL") != 3 {
+		t.Fatal("source unlock persistence")
+	}
+}
+
+func TestExpandedShinyCollectionNeedsFiveExactVariants(t *testing.T) {
+	r, _ := fresh(t)
+	profile := encounterProfile(t, r)
+	ctx := context.Background()
+	for id := 1; id <= 5; id++ {
+		choice := encounterChoice(t, id, "standard", "default", "shiny")
+		record, err := r.RecordEncounter(ctx, profile.ID, choice, int64(id))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if slices.Contains(unlockIDs(record), "shiny.variants.5") != (id == 5) {
+			t.Fatalf("shiny boundary %d %v", id, unlockIDs(record))
+		}
+		if id == 4 {
+			repeat, err := r.RecordEncounter(ctx, profile.ID, choice, 50)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if slices.Contains(unlockIDs(repeat), "shiny.variants.5") {
+				t.Fatal("repeat reached distinct shiny goal")
+			}
+		}
+	}
+	if integer(t, r, "SELECT xp_total FROM trainer_progress") != 960 || integer(t, r, "SELECT target_at_unlock FROM achievement_unlocks WHERE achievement_id='shiny.variants.5'") != 5 {
+		t.Fatal("shiny XP/target")
+	}
+	assertEncounterSums(t, r)
+}
+
+func TestExpandedAchievementsConcurrentThreshold(t *testing.T) {
+	r, path := fresh(t)
+	profile := encounterProfile(t, r)
+	ctx := context.Background()
+	var choices []trainer.Choice
+	for _, species := range catalog.All() {
+		for _, form := range species.Forms {
+			if form.ID != "standard" || len(form.Types) != 2 || !slices.Contains(form.Types, "normal") {
+				continue
+			}
+			for _, gender := range form.Genders {
+				key := catalog.VariantKey{SpeciesID: species.ID, FormID: form.ID, Gender: gender, Palette: "regular"}
+				if _, ok := sprite.Lookup(key); ok {
+					choices = append(choices, encounterChoice(t, species.ID, form.ID, gender, "regular"))
+					break
+				}
+			}
+		}
+		if len(choices) == 10 {
+			break
+		}
+	}
+	if len(choices) != 10 {
+		t.Fatal("insufficient eligible normal dual-type species")
+	}
+	for i, choice := range choices[:9] {
+		record, err := r.RecordEncounter(ctx, profile.ID, choice, int64(i))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if slices.Contains(unlockIDs(record), "types.specialist.10") || slices.Contains(unlockIDs(record), "types.dual.10") {
+			t.Fatal("early type unlock")
+		}
+	}
+	other, err := Open(ctx, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer other.Close()
+	records := make(chan trainer.Record, 2)
+	errs := make(chan error, 2)
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	for _, repo := range []*Repository{r, other} {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-start
+			record, err := repo.RecordEncounter(ctx, profile.ID, choices[9], 100)
+			records <- record
+			errs <- err
+		}()
+	}
+	close(start)
+	wg.Wait()
+	close(records)
+	close(errs)
+	for err := range errs {
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	specialist, dual, first := 0, 0, 0
+	for record := range records {
+		for _, id := range unlockIDs(record) {
+			if id == "types.specialist.10" {
+				specialist++
+			}
+			if id == "types.dual.10" {
+				dual++
+			}
+		}
+		if record.FirstSpecies {
+			first++
+		}
+	}
+	if specialist != 1 || dual != 1 || first != 1 || integer(t, r, "SELECT xp_total FROM trainer_progress") != 710 {
+		t.Fatalf("concurrent awards %d %d %d", specialist, dual, first)
+	}
+	assertEncounterSums(t, r)
+}
+
+func TestExpandedPreviouslySatisfiedGoalNextEncounterAndRollback(t *testing.T) {
+	r, path := fresh(t)
+	profile := encounterProfile(t, r)
+	ctx := context.Background()
+	// Model a D15 history by retaining only its original achievement IDs
+	// from a committed fixture. This changes test state, never production history.
+	original := func(id string) bool {
+		return strings.HasPrefix(id, "encounters.") || strings.HasPrefix(id, "species.") || strings.HasPrefix(id, "variants.") || strings.HasPrefix(id, "generation.") || slices.Contains([]string{"shiny.first", "types.complete", "regional.first", "transformation.first", "evolution.branching", "national.complete"}, id)
+	}
+	choice := encounterChoice(t, 144, "standard", "default", "regular")
+	first, err := r.RecordEncounter(ctx, profile.ID, choice, 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, u := range first.NewUnlocks() {
+		if !original(u.ID) {
+			if err := r.Write(ctx, func(tx *Tx) error {
+				_, err := tx.ExecContext(ctx, "DELETE FROM achievement_unlocks WHERE trainer_id=? AND achievement_id=?", profile.ID, u.ID)
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	if err := r.Close(); err != nil {
+		t.Fatal(err)
+	}
+	updated, err := Open(ctx, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer updated.Close()
+	before := integer(t, updated, "SELECT count(*) FROM achievement_unlocks")
+	// Ordinary reads do not grant the new definition.
+	defs, err := trainer.NewAchievementTargets(catalog.All(), func(key catalog.VariantKey) bool { _, ok := sprite.Lookup(key); return ok })
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = defs.Definitions()
+	_ = defs.Goals(trainer.AchievementState{SeenSpecies: map[int]bool{144: true}})
+	if integer(t, updated, "SELECT count(*) FROM achievement_unlocks") != before {
+		t.Fatal("read granted achievement")
+	}
+	if err := updated.Write(ctx, func(tx *Tx) error {
+		_, err := tx.ExecContext(ctx, `CREATE TRIGGER fail_new_themed AFTER INSERT ON achievement_unlocks WHEN NEW.achievement_id='legendary.first' BEGIN SELECT RAISE(ABORT,'new themed failed'); END`)
+		return err
+	}); err != nil {
+		t.Fatal(err)
+	}
+	next := encounterChoice(t, 25, "standard", "default", "regular")
+	record, err := updated.RecordEncounter(ctx, profile.ID, next, 20)
+	if err == nil || record.ID != 0 || integer(t, updated, "SELECT count(*) FROM encounters") != 1 || integer(t, updated, "SELECT xp_total FROM trainer_progress") != 70 || integer(t, updated, "SELECT count(*) FROM achievement_unlocks") != before {
+		t.Fatal("themed insert failure partially committed")
+	}
+	if err := updated.Write(ctx, func(tx *Tx) error { _, err := tx.ExecContext(ctx, "DROP TRIGGER fail_new_themed"); return err }); err != nil {
+		t.Fatal(err)
+	}
+	record, err = updated.RecordEncounter(ctx, profile.ID, next, 30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := unlockIDs(record); !reflect.DeepEqual(got, []string{"legendary.first"}) {
+		t.Fatalf("next encounter unlocks %v", got)
+	}
+	if record.NewUnlocks()[0].UnlockedAtMS != 30 || record.XPAwarded != 70 || record.After.Total != 140 {
+		t.Fatal("new goal changed XP or unlock date")
+	}
+	repeat, err := updated.RecordEncounter(ctx, profile.ID, next, 40)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(repeat.NewUnlocks()) != 0 {
+		t.Fatal("new goal repeated")
+	}
+	assertEncounterSums(t, updated)
+}
+
+func TestExpandedUnlocksRetainInventorySnapshotAndTrainerIsolation(t *testing.T) {
+	r, _ := fresh(t)
+	one := encounterProfile(t, r)
+	ctx := context.Background()
+	record, err := r.RecordEncounter(ctx, one.ID, encounterChoice(t, 144, "standard", "default", "regular"), 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Contains(unlockIDs(record), "legendary.first") {
+		t.Fatal("legendary goal missing")
+	}
+	two, err := r.CreateProfile(ctx, profileName(t, "Oak"), 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	record, err = r.RecordEncounter(ctx, two.ID, encounterChoice(t, 25, "standard", "default", "regular"), 20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if slices.Contains(unlockIDs(record), "legendary.first") {
+		t.Fatal("other trainer inherited a discovery")
+	}
+	// A collected asset removed from current eligibility must not delete or
+	// rewrite an earned unlock; its stable definition remains nameable.
+	reduced, err := trainer.NewAchievementTargets(catalog.All(), func(key catalog.VariantKey) bool {
+		if key.SpeciesID == 144 {
+			return false
+		}
+		_, ok := sprite.Lookup(key)
+		return ok
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.goals = reduced
+	record, err = r.RecordEncounter(ctx, one.ID, encounterChoice(t, 25, "standard", "default", "regular"), 30)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if slices.Contains(unlockIDs(record), "legendary.first") {
+		t.Fatal("retained unlock reannounced")
+	}
+	if integer(t, r, "SELECT unlocked_at_ms FROM achievement_unlocks WHERE achievement_id='legendary.first'") != 10 || integer(t, r, "SELECT count(*) FROM achievement_unlocks WHERE achievement_id='legendary.first'") != 1 {
+		t.Fatal("inventory update rewrote unlock")
+	}
+	assertEncounterSums(t, r)
+}
+
+func TestExpandedFormEvidenceUsesFormsNotPaletteOrGender(t *testing.T) {
+	r, _ := fresh(t)
+	profile := encounterProfile(t, r)
+	ctx := context.Background()
+	var last trainer.Record
+	for _, gender := range []string{"male", "female"} {
+		for _, palette := range []string{"regular", "shiny"} {
+			record, err := r.RecordEncounter(ctx, profile.ID, encounterChoice(t, 678, "standard", gender, palette), 1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			last = record
+			if slices.Contains(unlockIDs(record), "forms.species.3") {
+				t.Fatal("gender/palette became new forms")
+			}
+		}
+	}
+	var goals []trainer.Goal
+	if err := r.Write(ctx, func(tx *Tx) error {
+		state, err := encounterAchievementState(ctx, tx, profile.ID, last)
+		if err != nil {
+			return err
+		}
+		state.SeenVariants, err = encounteredVariants(ctx, tx, profile.ID)
+		if err != nil {
+			return err
+		}
+		goals = r.goals.Goals(state)
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	for _, g := range goals {
+		if g.ID == "forms.species.3" && g.Current != 1 {
+			t.Fatalf("form evidence inflated %+v", g)
+		}
+		if g.ID == "shiny.variants.5" && g.Current != 2 {
+			t.Fatalf("distinct visual shiny variants collapsed %+v", g)
+		}
+	}
+	for i, form := range []string{"mega-x", "mega-y", "gmax"} {
+		record, err := r.RecordEncounter(ctx, profile.ID, encounterChoice(t, 6, form, "default", "regular"), int64(i+2))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if slices.Contains(unlockIDs(record), "forms.species.3") != (i == 2) {
+			t.Fatalf("form boundary %d %v", i, unlockIDs(record))
+		}
+		if slices.Contains(unlockIDs(record), "transformation.species.3") || slices.Contains(unlockIDs(record), "forms.nonstandard.5") {
+			t.Fatal("several forms became several species")
+		}
+	}
+	assertEncounterSums(t, r)
 }

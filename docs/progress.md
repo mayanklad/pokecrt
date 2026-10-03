@@ -109,6 +109,32 @@ is not initialized. Syntax and help precede path resolution. Public command
 independence and existing broken-pipe behavior remain intact.
 No schema, dependency, generated dataset or encounter probability changes.
 
+
+## Expanded achievements
+
+The development registry now supports 50 feasible achievements for the current
+inventory. It preserves the original 34 IDs/names and adds the 16 themed goals
+listed in [the achievement catalog](../README.md#achievement-catalog-in-development-source).
+One ordered domain registry supplies definitions and current progress; no
+presentation code evaluates awards. Unavailable policy definitions remain
+nameable for retained unlocks, while impossible current goals are suppressed.
+
+New goals cover generation/type/color/stage breadth, shared/dual-type encounters,
+regional/transformation/alternate-form collecting, ordinary evolution-family
+completion, source legendary/mythical/baby flags and distinct shiny collection.
+Target capacities derive automatically from eligible metadata/artwork. Actual
+committed form snapshots supply type and regional/transformation evidence;
+repeat encounters, gender and palette differences do not inflate form counts.
+New species/form exploration intersects current eligibility; numerical and
+shiny-variant historical collection counts remain retained. Earned unlocks are
+never deleted or re-earned after an inventory change.
+
+All evaluation stays in the same encounter transaction. A previously satisfied
+new goal unlocks on the next committed encounter, with no retroactive XP award.
+No schema migration, dependency, generated dataset, new source file or CLI flag
+is introduced. Private Pokédex remains D16; full trainer/achievement views remain
+D17. The published v0.2 feature set is unchanged.
+
 ## Dataset
 
 Dataset ID: `8e5073aeeff3f7761e26ccdf9f068189516ae7eded9c0998a9d970b7d37e6b60`.
@@ -151,6 +177,10 @@ unlock announcements and no successful output before commit. Write errors and
 short writes preserve the committed state; broken pipes exit quietly. Installed
 binary tests cover every mode, NO_COLOR/color, first-run/help/syntax paths and a
 real closed pipe with exactly one committed encounter.
+Expanded achievement tests cover 50 unique feasible definitions, below/at/above
+thresholds, distinct form/type/shiny evidence, missing family members, impossible
+goal suppression, retained metadata, per-trainer isolation, simultaneous notices,
+concurrent threshold unlocks and complete rollback at a new themed insertion.
 Tests, vet, race checks and pinned dataset checks pass for the implementation
 baseline. Benchmark methods, environments, startup/memory tradeoffs and numeric
 budgets are recorded in [benchmarks.md](benchmarks.md).
@@ -173,6 +203,13 @@ D15 stripped size is 11.125 MiB against the approved 16 MiB limit. Public
 fresh-process P95 is at most 3.093 ms for short commands (8 ms limit) and
 4.589 ms for random/list (25 ms limit). Native peak child RSS is at most
 8.950 MiB (10 MiB limit). Warm public/render checks pass unchanged thresholds.
+
+The approved achievement expansion passes public startup, warm-command, native
+RSS and stripped-size checks on a Xeon host: short P95 <=3.459 ms, random/list
+P95 <=6.254 ms, RSS <=9.020 MiB and size 11.152 MiB. An initial largest-render
+measurement exceeded budget; isolated same-host baseline/expanded checks resolve
+it at 0.509/0.510 ms against 0.60 ms, with identical renderer source/allocations.
+The full method and initial result are retained in [benchmarks.md](benchmarks.md).
 
 ## Roadmap
 

@@ -394,3 +394,70 @@ there is no automatic repeat. Broken pipes exit quietly. With no active trainer,
 the command fails with setup/selection guidance and creates no implicit profile.
 Help and invalid invocations do not open storage. Hidden notices still persist
 as achievements; their complete browsing view follows in D17.
+
+## Achievement catalog in development source
+
+Current inventory supports **50 achievements** per trainer: 19 numerical
+milestones, 21 themed goals, nine generation completions and National Researcher.
+All are optional, unlock once and grant no extra XP or encounter advantage.
+New unlocks appear in encounter output; the full achievement browsing view
+follows in D17 and is not available in the published v0.2 binary.
+
+| Numerical milestones | Thresholds |
+| --- | --- |
+| First Contact, then `<n> Encounters` | 1, 10, 25, 50, 100, 250, 500, 1,000 encounters |
+| `<n> Species Discovered` | 5, 10, 25, 50, 100, 250, 500 distinct species |
+| `<n> Variants Collected` | 10, 25, 50, 100 distinct exact variants |
+
+An exact variant includes species, form, visual gender and regular/shiny palette.
+Repeats advance encounter milestones but never distinct-species/variant goals.
+
+| Themed achievement | Requirement |
+| --- | --- |
+| Shiny Discovery | Record a shiny encounter. |
+| Type Explorer | Encounter forms covering all 18 currently supported types. |
+| Regional Discovery | Encounter a supported regional form. |
+| Transformation Discovery | Encounter a supported Mega or Gigantamax form. |
+| Branching Out | Discover every species in one fully supported branching evolution family. |
+| Across Generations | Discover species from five different generations. |
+| World Traveler | Discover a species from every supported generation, currently nine. |
+| Type Sampler | Encounter forms covering eight distinct types. |
+| Type Specialist | Discover ten species through encounters sharing one type. |
+| Dual-Type Collector | Discover ten species through dual-type form encounters. |
+| Rainbow Collection | Discover species covering six distinct Pokédex colors. |
+| Growing Collection | Discover a species at every supported evolution stage, currently 1, 2 and 3. |
+| Regional Explorer | Encounter regional forms of three distinct species. |
+| Transformation Explorer | Encounter Mega or Gigantamax forms of three distinct species. |
+| Changing Faces | Encounter nonstandard forms of five distinct species. |
+| Form Collector | Collect three distinct forms of one species. |
+| Family Reunion | Discover every species in one fully supported evolution family containing at least three species. |
+| Legendary Encounter | Encounter a species marked legendary by source metadata. |
+| Mythical Encounter | Encounter a species marked mythical by source metadata. |
+| Small Beginnings | Encounter a species marked baby by source metadata. |
+| Shiny Collection | Collect five distinct shiny variants. |
+
+Type goals use forms actually encountered, without inferring unseen alternate
+forms. Dual-Type Collector requires two types on one encountered form. Different
+genders and palettes do not become additional forms for Form Collector.
+Family Reunion includes ordinary evolution chains; Branching Out requires a
+branch. A completed branching family may earn both. Special discoveries and
+shiny collecting are longer-term rewards, not prerequisites for other goals.
+
+| Completion achievement | Current eligible species |
+| --- | ---: |
+| Generation 1 Researcher | 151 |
+| Generation 2 Researcher | 100 |
+| Generation 3 Researcher | 135 |
+| Generation 4 Researcher | 107 |
+| Generation 5 Researcher | 156 |
+| Generation 6 Researcher | 72 |
+| Generation 7 Researcher | 88 |
+| Generation 8 Researcher | 89 |
+| Generation 9 Researcher | 119 |
+| National Researcher | 1,017 |
+
+Any encountered variant satisfies its species membership. Qualifying targets
+are derived from catalog metadata and exact accepted regular-artwork inventory;
+unsupported goals are suppressed. Earned unlocks retain their date, dataset and
+applicable target across inventory updates. New goals already satisfied by
+history unlock on the next committed encounter; viewing alone grants nothing.

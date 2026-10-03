@@ -524,3 +524,59 @@ exercise the command away from source assets/cache, all output modes, truecolor/
 NO_COLOR and post-commit closed pipes. A separate network-namespace isolation
 attempt was unavailable because this environment denies user namespace mapping;
 no new network-isolated encounter result is claimed.
+
+## Achievement expansion after D15
+
+This increment adds 16 approved themed goals to the ordered registry against
+source `0d3c8b67638c398635a51da90d4807c6555956f3`, supporting 50 feasible current
+achievements. Evaluation still uses the existing atomic encounter transaction;
+public dispatch, renderer, catalog and sprite source files are unchanged.
+No new dependency, migration, generated dataset or source file is introduced.
+
+This check runs on **Intel Xeon Platinum 8370C at 2.80 GHz**, nine visible CPUs,
+Ubuntu 24.04.3 LTS, Linux 6.18.44, Go 1.27.1, Linux amd64. The hardware differs
+from the earlier EPYC D15 measurement; prior values retain their original labels.
+The CGO-disabled trimpath stripped executable is 11,694,240 bytes (11.152 MiB),
+within the approved 16 MiB trainer-inclusive threshold. Dataset remains
+`8e5073aeeff3f7761e26ccdf9f068189516ae7eded9c0998a9d970b7d37e6b60`.
+
+Fresh-process timing uses the same six public scenarios, color/NO_COLOR,
+GOMAXPROCS=1, five warmups and 100 samples per row. Maximum short-command P95
+is 3.459 ms against 8 ms; random/full-list P95 is 6.254 ms against 25 ms.
+Separate native wait4 measurements use ten fresh children per scenario/mode;
+maximum peak RSS is 9.020 MiB against 10 MiB.
+
+Warm public measurements retain three 200-ms runs per case, -cpu=1 and discarded
+output. Median ms/op results on this host are:
+
+| Warm scenario | Median ms/op | Existing threshold ms/op |
+| --- | ---: | ---: |
+| Public/Color/RandomPrint | 2.571 | 12.00 |
+| Public/Color/NamedPrint | 0.714 | 0.85 |
+| Public/Color/FilteredPrint | 0.748 | 0.85 |
+| Public/Color/VariantPrint | 0.579 | 0.85 |
+| Public/Color/ListCompact | 2.730 | 12.00 |
+| Public/Color/ListDetails | 0.443 | 0.85 |
+| Public/NoColor/RandomPrint | 2.519 | 12.00 |
+| Public/NoColor/NamedPrint | 0.433 | 0.85 |
+| Public/NoColor/FilteredPrint | 0.478 | 0.85 |
+| Public/NoColor/VariantPrint | 0.538 | 0.85 |
+| Public/NoColor/ListCompact | 3.262 | 12.00 |
+| Public/NoColor/ListDetails | 0.388 | 0.85 |
+
+The initial combined public/render package benchmark measured largest-area color
+rendering at 0.776 ms, exceeding 0.60 ms. The renderer and all catalog/sprite Go
+files match D15 byte-for-byte. To resolve that result rather than waive it,
+isolated same-host renderer checks used three 500-ms runs per build, -cpu=1,
+with decode outside the timed loop. D15 baseline median is 0.509 ms; expanded
+build median is 0.510 ms. Both retain 146,071 B/op and 3,764 allocations/op and
+meet the existing 0.60 ms budget. This longer isolated check avoids concurrent
+package benchmark work; the initial higher observation is retained here.
+No rendering optimization or threshold relaxation is made in this increment.
+
+Correctness tests cover all 50 unique attainable definitions, new threshold
+boundaries, unsupported-goal suppression, exact historical form evidence,
+concurrent one-time awards, per-trainer isolation and rollback after a new themed
+insert. Installed binary modes and post-commit output failure checks continue
+to pass. No new network-namespace isolation or history-growth encounter latency
+result is claimed; those remain checks before v0.3 publication.

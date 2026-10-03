@@ -119,6 +119,7 @@ func (r *Repository) RecordEncounter(ctx context.Context, trainerID int64, choic
 		if err != nil {
 			return err
 		}
+		state.SeenVariants = variants
 		record.Completion = r.goals.Completion(state.SeenSpecies, variants)
 		var unlocks []trainer.Unlock
 		for _, goal := range r.goals.Goals(state) {
@@ -208,17 +209,21 @@ func encounterAchievementState(ctx context.Context, tx *Tx, id int64, record tra
 	if err != nil {
 		return state, err
 	}
-	rows, err = tx.QueryContext(ctx, `SELECT type1_snapshot FROM encounters WHERE trainer_id = ? UNION SELECT type2_snapshot FROM encounters WHERE trainer_id = ? AND type2_snapshot IS NOT NULL`, id, id)
+	rows, err = tx.QueryContext(ctx, `SELECT DISTINCT species_id,form_id,type1_snapshot,COALESCE(type2_snapshot,''),regional_snapshot,transformation_snapshot FROM encounters WHERE trainer_id=?`, id)
 	if err != nil {
 		return state, err
 	}
 	for rows.Next() {
-		var typ string
-		if err := rows.Scan(&typ); err != nil {
+		var form trainer.FormEvidence
+		if err := rows.Scan(&form.SpeciesID, &form.FormID, &form.Type1, &form.Type2, &form.Regional, &form.Transformation); err != nil {
 			rows.Close()
 			return state, err
 		}
-		state.EncounteredTypes[typ] = true
+		state.Forms = append(state.Forms, form)
+		state.EncounteredTypes[form.Type1] = true
+		if form.Type2 != "" {
+			state.EncounteredTypes[form.Type2] = true
+		}
 	}
 	err = rows.Err()
 	rows.Close()
