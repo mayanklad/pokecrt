@@ -34,7 +34,7 @@ func ParseName(raw string) (Name, error) {
 	}
 	trimmed := strings.TrimSpace(raw)
 	if n := utf8.RuneCountInString(trimmed); n < 1 || n > 32 {
-		return Name{}, fmt.Errorf("%w: use 1–32 Unicode code points after trimming", ErrInvalidName)
+		return Name{}, fmt.Errorf("%w: use 1–32 Unicode characters, excluding leading/trailing spaces", ErrInvalidName)
 	}
 	for _, r := range trimmed {
 		if unicode.IsControl(r) || r == '\u2028' || r == '\u2029' {

@@ -107,7 +107,7 @@ func (t *AchievementTargets) Views(state AchievementState, unlocks []Unlock) Ach
 	sort.Strings(ids)
 	for _, id := range ids {
 		u := earned[id]
-		out.Unlocked = append(out.Unlocked, AchievementView{ID: id, Name: "Retained achievement", Description: "Earned under an earlier achievement definition.", EarnedAtMS: u.UnlockedAtMS, TargetAtUnlock: u.Target, HadTargetAtUnlock: u.HasTarget})
+		out.Unlocked = append(out.Unlocked, AchievementView{ID: id, Name: "Retained achievement", Description: "Earned in an earlier version.", EarnedAtMS: u.UnlockedAtMS, TargetAtUnlock: u.Target, HadTargetAtUnlock: u.HasTarget})
 	}
 	return out
 }

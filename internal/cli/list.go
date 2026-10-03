@@ -21,26 +21,26 @@ Usage:
   pokecrt list [selectors] [--details]
 
 Selectors:
-  --name         Exact species name or generated alias
-  --gen          Introduction generations, comma-separated
+  --name         Exact Pokémon name or accepted alias
+  --gen          Generations first introduced, comma-separated
   --type         Require ALL listed selected-form types
   --type-any     Require ANY listed selected-form types
   --color        Species Pokédex colors, comma-separated
   --stage        Evolution stages, comma-separated
-  --form         Exact form slug (default: standard)
+  --form         Exact form selector (default: standard; e.g. mega-x)
   --gender       Distinct visual gender: male or female
   --shiny        Require actual shiny artwork (default: regular)
-  --legendary    Require source legendary status
-  --mythical     Require source mythical status
-  --baby         Require source baby status
+  --legendary    Only Legendary Pokémon
+  --mythical     Only Mythical Pokémon
+  --baby         Only baby Pokémon
 
 Options:
-  --details      Metadata, evolution family, form/artwork inventory and one sprite
+  --details      Pokémon facts, evolution family, forms and artwork
   --help, -h     Show this help
 
 Selectors follow print's AND/OR rules. Results are in National number order.
-Regular metadata entries remain visible when artwork is unavailable. Valid empty
-queries succeed. No trainer, discovery state, random selection or pager is used.
+Pokémon remain listed when regular artwork is unavailable. No matches is a valid
+result. This public catalog does not depend on a trainer or discoveries.
 `
 
 type listOptions struct {

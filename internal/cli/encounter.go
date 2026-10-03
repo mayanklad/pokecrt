@@ -16,7 +16,7 @@ import (
 	"github.com/mayanklad/pokecrt/internal/trainer"
 )
 
-const encounterHelp = `Record one unrestricted Pokémon encounter
+const encounterHelp = `Encounter a Pokémon with the active trainer
 
 Usage:
   pokecrt encounter [--output full|compact|no-title|achievements|sprite]
@@ -36,8 +36,8 @@ Requires an active trainer. Species, supported forms and visual genders are
 selected uniformly in separate steps. An exact appearance with shiny artwork
 has a 1/4096 shiny chance. Filters and appearance selectors are not accepted.
 NO_COLOR disables artwork color. Every mode records the same encounter, XP,
-discoveries and unlocks. Output is written after commit; a failed write leaves
-that encounter recorded and never repeats it. Broken pipes exit quietly.
+discoveries and unlocks. Encounters are saved before displaying output. If output fails, the encounter
+remains saved and is not repeated. Closed output pipes exit quietly.
 `
 
 type encounterOptions struct {

@@ -28,10 +28,10 @@ Options:
   --name       View another profile without changing the active trainer
   --help, -h   Show this help
 
-Names use 1–32 Unicode code points after trimming. Internal spaces are allowed;
-quote them in the shell. NFC-normalized, case-folded names identify one profile.
-Only the first creation activates automatically. Listing and viewing create no
-storage. Profile commands never record encounters or discoveries. Viewing shows XP,
+Names use 1–32 Unicode characters after removing leading/trailing spaces. Quote
+names containing spaces. Names are case-insensitive; equivalent Unicode spellings
+identify the same profile. Only the first trainer is selected automatically.
+Listing and viewing do not create a database. Profile commands never record encounters or discoveries. Viewing shows XP,
 collection statistics and generation progress; achievements lists earned and
 locked goals for the active trainer without granting rewards.
 `
@@ -120,7 +120,8 @@ func executeTrainer(args []string, stdout, stderr io.Writer, resolve func() (str
 	if o.help {
 		output := trainerHelp
 		if o.action != "view" {
-			output = fmt.Sprintf("%s trainer profiles\n\nUsage:\n  pokecrt trainer %s", strings.ToUpper(o.action[:1])+o.action[1:], o.action)
+			titles := map[string]string{"create": "Create a trainer", "use": "Select the active trainer", "list": "List trainer profiles", "achievements": "View trainer achievements"}
+			output = fmt.Sprintf("%s\n\nUsage:\n  pokecrt trainer %s", titles[o.action], o.action)
 			if o.action == "create" || o.action == "use" {
 				output += " <trainer-name>"
 			}
@@ -224,7 +225,7 @@ func executeTrainer(args []string, stdout, stderr io.Writer, resolve func() (str
 			if err != nil {
 				return trainerError(stderr, err)
 			}
-			output = fmt.Sprintf("Trainer: %s\nCreated: %s\nActive: %s\n", p.Name, time.UnixMilli(p.CreatedAtMS).UTC().Format(time.RFC3339Nano), active) + formatTrainerStatistics(statistics)
+			output = fmt.Sprintf("Trainer: %s\nCreated: %s\nActive: %s\n\n", p.Name, time.UnixMilli(p.CreatedAtMS).UTC().Format(time.RFC3339Nano), active) + formatTrainerStatistics(statistics)
 		}
 	}
 	return writeOutput(stdout, stderr, []byte(output))
@@ -253,7 +254,7 @@ func trainerError(stderr io.Writer, err error) int {
 
 func formatTrainerStatistics(s trainer.Statistics) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "Level: %d\nTotal XP: %d\nLevel progress: %d / 1000 XP\nXP to next level: %d\nEncounters: %d\nSpecies discovered (historical): %d\nVariants collected (historical): %d\nShiny encounters: %d\nShiny variants collected (historical): %d\n", s.Progress.Level, s.Progress.Total, s.Progress.InLevel, s.Progress.ToNext, s.Encounters, s.Species, s.Variants, s.ShinyEncounters, s.ShinyCollections)
+	fmt.Fprintf(&b, "Level: %d\nTotal XP: %d\nLevel progress: %d / 1000 XP\nXP to next level: %d\nEncounters: %d\nSpecies discovered (all time): %d\nVariants collected (all time): %d\nShiny encounters: %d\nShiny variants collected (all time): %d\n", s.Progress.Level, s.Progress.Total, s.Progress.InLevel, s.Progress.ToNext, s.Encounters, s.Species, s.Variants, s.ShinyEncounters, s.ShinyCollections)
 	first, last := "None", "None"
 	if s.FirstEncounterMS != nil {
 		first = time.UnixMilli(*s.FirstEncounterMS).UTC().Format(time.RFC3339Nano)
@@ -261,12 +262,12 @@ func formatTrainerStatistics(s trainer.Statistics) string {
 	if s.LastEncounterMS != nil {
 		last = time.UnixMilli(*s.LastEncounterMS).UTC().Format(time.RFC3339Nano)
 	}
-	fmt.Fprintf(&b, "First encounter: %s\nLast encounter: %s\n\nCurrent eligible completion:\nSpecies: %d / %d\nVariants: %d / %d\n\nGeneration discoveries:\n", first, last, s.Completion.Species, s.Completion.SpeciesTotal, s.Completion.Variants, s.Completion.VariantsTotal)
+	fmt.Fprintf(&b, "First encounter: %s\nLast encounter: %s\n\nCollection progress (available artwork):\nSpecies: %d / %d\nVariants: %d / %d\n\nGeneration discoveries:\n", first, last, s.Completion.Species, s.Completion.SpeciesTotal, s.Completion.Variants, s.Completion.VariantsTotal)
 	for _, g := range s.Generations {
-		fmt.Fprintf(&b, "  Generation %d: %d discovered; eligible %d / %d\n", g.Generation, g.Discovered, g.Eligible, g.EligibleTotal)
+		fmt.Fprintf(&b, "  Generation %d: %d discovered; current collection %d / %d\n", g.Generation, g.Discovered, g.Eligible, g.EligibleTotal)
 	}
 	if s.UnclassifiedSpecies > 0 {
-		fmt.Fprintf(&b, "  Without current generation metadata: %d discovered species\n", s.UnclassifiedSpecies)
+		fmt.Fprintf(&b, "  Generation unknown: %d discovered species\n", s.UnclassifiedSpecies)
 	}
 	return b.String()
 }
@@ -291,7 +292,7 @@ func formatAchievementViews(name string, views trainer.AchievementViews) string 
 		if v.HasTarget {
 			fmt.Fprintf(&b, "    Progress: %d / %d\n", v.Current, v.Target)
 		} else if v.Current >= v.Target && v.Target > 0 {
-			b.WriteString("    Requirement met; unlocks on the next committed encounter.\n")
+			b.WriteString("    Requirement met; unlocks on your next encounter.\n")
 		} else {
 			b.WriteString("    Not yet earned.\n")
 		}

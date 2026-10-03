@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/mayanklad/pokecrt/internal/catalog"
@@ -332,6 +333,31 @@ func TestInstalledBinary(t *testing.T) {
 	if runErr != nil || achievementErrors.Len() != 0 {
 		t.Fatal("installed achievement pipe", runErr, achievementErrors.String())
 	}
+	// Separate installed processes must serialize writes without losing encounters.
+	const concurrentEncounters = 8
+	var wg sync.WaitGroup
+	failures := make(chan string, concurrentEncounters)
+	for range concurrentEncounters {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			command := exec.Command(binary, "encounter", "--output", "sprite")
+			command.Dir = empty
+			command.Env = append(append([]string{}, baseEnv...), "POKECRT_DATA_DIR="+profiles, "NO_COLOR=1")
+			if output, err := command.CombinedOutput(); err != nil {
+				failures <- string(output) + err.Error()
+			}
+		}()
+	}
+	wg.Wait()
+	close(failures)
+	for failure := range failures {
+		t.Fatal(failure)
+	}
+	status, summary, summaryErrors := invoke([]string{"trainer"}, "POKECRT_DATA_DIR="+profiles)
+	if status != 0 || len(summaryErrors) != 0 || !bytes.Contains(summary, []byte("Encounters: 15")) {
+		t.Fatal("concurrent installed summary", status, string(summary), string(summaryErrors))
+	}
 	repo, err := storage.ReadOnly(context.Background(), profileDB)
 	if err != nil {
 		t.Fatal(err)
@@ -347,7 +373,7 @@ func TestInstalledBinary(t *testing.T) {
 	if err := repo.QueryRowContext(context.Background(), "SELECT count(*) FROM trainer_progress p WHERE xp_total!=COALESCE((SELECT sum(xp_awarded) FROM encounters e WHERE e.trainer_id=p.trainer_id),0)").Scan(&invalidXP); err != nil {
 		t.Fatal(err)
 	}
-	if encounters != 7 || wrongTrainer != 0 || invalidXP != 0 {
+	if encounters != 7+concurrentEncounters || wrongTrainer != 0 || invalidXP != 0 {
 		t.Fatalf("installed encounter counts %d %d %d", encounters, wrongTrainer, invalidXP)
 	}
 }

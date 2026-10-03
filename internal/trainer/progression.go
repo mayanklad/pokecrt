@@ -295,20 +295,20 @@ func (t *AchievementTargets) buildRegistry() {
 		if n == 1 {
 			name = "First Contact"
 		}
-		add(fmt.Sprintf("encounters.%d", n), name, fmt.Sprintf("Recorded %d encounters.", n), "encounters", n, true, len(t.eligible) > 0)
+		add(fmt.Sprintf("encounters.%d", n), name, encounterDescription(n), "encounters", n, true, len(t.eligible) > 0)
 	}
 	for _, n := range []int64{5, 10, 25, 50, 100, 250, 500} {
-		add(fmt.Sprintf("species.%d", n), fmt.Sprintf("%d Species Discovered", n), fmt.Sprintf("Discovered %d distinct species.", n), "species", n, true, n <= int64(len(t.eligible)))
+		add(fmt.Sprintf("species.%d", n), fmt.Sprintf("%d Species Discovered", n), fmt.Sprintf("Discover %d different Pokémon species.", n), "species", n, true, n <= int64(len(t.eligible)))
 	}
 	for _, n := range []int64{10, 25, 50, 100} {
-		add(fmt.Sprintf("variants.%d", n), fmt.Sprintf("%d Variants Collected", n), fmt.Sprintf("Collected %d distinct visual variants.", n), "variants", n, true, n <= t.variants)
+		add(fmt.Sprintf("variants.%d", n), fmt.Sprintf("%d Variants Collected", n), fmt.Sprintf("Collect %d different appearance variants.", n), "variants", n, true, n <= t.variants)
 	}
 	// Original themed definitions retain their IDs and relative display order.
-	add("shiny.first", "Shiny Discovery", "Record a shiny encounter.", "shiny.first", 1, false, t.shiny)
-	add("types.complete", "Type Explorer", "Encounter forms covering all supported types.", "types", int64(len(t.types)), true, len(t.types) > 0)
+	add("shiny.first", "Shiny Discovery", "Encounter a Shiny Pokémon.", "shiny.first", 1, false, t.shiny)
+	add("types.complete", "Type Explorer", "Encounter Pokémon covering every type available through encounters.", "types", int64(len(t.types)), true, len(t.types) > 0)
 	add("regional.first", "Regional Discovery", "Encounter a regional form.", "regional.first", 1, false, t.regional)
-	add("transformation.first", "Transformation Discovery", "Encounter a supported Mega or Gigantamax form.", "transformation.first", 1, false, t.transformation)
-	add("evolution.branching", "Branching Out", "Discover every eligible species in a fully supported branching evolution family.", "evolution.branching", 0, true, len(t.families) > 0)
+	add("transformation.first", "Transformation Discovery", "Encounter a Mega or Gigantamax form.", "transformation.first", 1, false, t.transformation)
+	add("evolution.branching", "Branching Out", "Discover a complete branching evolution family.", "evolution.branching", 0, true, len(t.families) > 0)
 	generations := int64(0)
 	for _, gen := range t.generations {
 		if len(gen.species) > 0 {
@@ -324,25 +324,25 @@ func (t *AchievementTargets) buildRegistry() {
 		formCapacity = max(formCapacity, len(forms))
 	}
 	add("generations.5", "Across Generations", "Discover species from five different generations.", "generations", 5, true, generations >= 5)
-	add("generations.complete", "World Traveler", "Discover a species from every supported generation.", "generations", generations, true, generations > 0)
+	add("generations.complete", "World Traveler", "Discover a Pokémon from every generation available through encounters.", "generations", generations, true, generations > 0)
 	add("types.8", "Type Sampler", "Encounter forms covering eight distinct types.", "types", 8, true, len(t.types) >= 8)
 	add("types.specialist.10", "Type Specialist", "Discover ten species through encounters sharing one type.", "types.specialist.10", 10, true, specialistCapacity >= 10)
 	add("types.dual.10", "Dual-Type Collector", "Discover ten species through dual-type form encounters.", "types.dual.10", 10, true, len(t.dualCapacity) >= 10)
 	add("colors.6", "Rainbow Collection", "Discover species covering six distinct Pokédex colors.", "colors.6", 6, true, len(t.colors) >= 6)
-	add("stages.complete", "Growing Collection", "Discover a species at every supported evolution stage.", "stages.complete", int64(len(t.stages)), true, len(t.stages) > 0)
+	add("stages.complete", "Growing Collection", "Discover Pokémon at every available evolution stage.", "stages.complete", int64(len(t.stages)), true, len(t.stages) > 0)
 	add("regional.species.3", "Regional Explorer", "Encounter regional forms of three distinct species.", "regional.species.3", 3, true, len(t.regionalCapacity) >= 3)
 	add("transformation.species.3", "Transformation Explorer", "Encounter Mega or Gigantamax forms of three distinct species.", "transformation.species.3", 3, true, len(t.transformationCapacity) >= 3)
-	add("forms.nonstandard.5", "Changing Faces", "Encounter nonstandard forms of five distinct species.", "forms.nonstandard.5", 5, true, len(t.alternateCapacity) >= 5)
+	add("forms.nonstandard.5", "Changing Faces", "Encounter alternate forms of five different Pokémon species.", "forms.nonstandard.5", 5, true, len(t.alternateCapacity) >= 5)
 	add("forms.species.3", "Form Collector", "Collect three distinct forms of one species.", "forms.species.3", 3, true, formCapacity >= 3)
-	add("evolution.family", "Family Reunion", "Discover every species in a fully supported evolution family of at least three species.", "evolution.family", 0, true, len(t.reunionFamilies) > 0)
-	add("legendary.first", "Legendary Encounter", "Encounter a species marked legendary by the source metadata.", "legendary.first", 1, false, t.legendary)
-	add("mythical.first", "Mythical Encounter", "Encounter a species marked mythical by the source metadata.", "mythical.first", 1, false, t.mythical)
-	add("baby.first", "Small Beginnings", "Encounter a species marked baby by the source metadata.", "baby.first", 1, false, t.baby)
+	add("evolution.family", "Family Reunion", "Discover a complete evolution family with at least three species.", "evolution.family", 0, true, len(t.reunionFamilies) > 0)
+	add("legendary.first", "Legendary Encounter", "Encounter a Legendary Pokémon.", "legendary.first", 1, false, t.legendary)
+	add("mythical.first", "Mythical Encounter", "Encounter a Mythical Pokémon.", "mythical.first", 1, false, t.mythical)
+	add("baby.first", "Small Beginnings", "Encounter a baby Pokémon.", "baby.first", 1, false, t.baby)
 	add("shiny.variants.5", "Shiny Collection", "Collect five distinct shiny variants.", "shiny.variants.5", 5, true, t.shinyCapacity >= 5)
 	for _, gen := range t.generations {
-		add(fmt.Sprintf("generation.%d.complete", gen.generation), fmt.Sprintf("Generation %d Researcher", gen.generation), fmt.Sprintf("Discover every eligible species introduced in generation %d.", gen.generation), fmt.Sprintf("generation.%d.complete", gen.generation), int64(len(gen.species)), true, len(gen.species) > 0)
+		add(fmt.Sprintf("generation.%d.complete", gen.generation), fmt.Sprintf("Generation %d Researcher", gen.generation), fmt.Sprintf("Discover every Pokémon introduced in generation %d that is available through encounters.", gen.generation), fmt.Sprintf("generation.%d.complete", gen.generation), int64(len(gen.species)), true, len(gen.species) > 0)
 	}
-	add("national.complete", "National Researcher", "Discover every species in the current eligible inventory.", "national.complete", int64(len(t.eligible)), true, len(t.eligible) > 0)
+	add("national.complete", "National Researcher", "Discover every Pokémon available through encounters.", "national.complete", int64(len(t.eligible)), true, len(t.eligible) > 0)
 }
 
 // Definitions returns caller-owned metadata, including unavailable policy rules
@@ -518,4 +518,12 @@ func (t *AchievementTargets) Completion(seenSpecies map[int]bool, seenVariants [
 		}
 	}
 	return c
+}
+
+// Descriptions are requirements, so singular and plural both read naturally.
+func encounterDescription(n int64) string {
+	if n == 1 {
+		return "Record your first encounter."
+	}
+	return fmt.Sprintf("Record %d encounters.", n)
 }

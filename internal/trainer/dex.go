@@ -355,7 +355,7 @@ func (d *Dex) Entry(number int, q catalog.Selection) (DexEntry, error) {
 			if d.available(key) {
 				out.ArtworkKey = &key
 			} else {
-				out.Notice = "Collected artwork is unavailable in this dataset."
+				out.Notice = "Artwork for this collected appearance is unavailable in this version."
 			}
 			return out, nil
 		}
@@ -366,7 +366,7 @@ func (d *Dex) Entry(number int, q catalog.Selection) (DexEntry, error) {
 	if len(known[formID]) == 0 {
 		out.Notice = "LOCKED FORM - this form has not been discovered."
 	} else {
-		out.Notice = "LOCKED VARIANT - this exact appearance has not been collected; no fallback artwork is shown."
+		out.Notice = "LOCKED VARIANT - this appearance has not been collected."
 	}
 	return out, nil
 }

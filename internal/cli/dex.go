@@ -32,7 +32,7 @@ Commands:
 Options:
   --help, -h  Show this help
 
-The summary shows eligible species/variant completion, encounter count,
+The summary shows available species/variant collection progress, encounter count,
 shiny collections and generation progress for the active trainer.
 Run 'pokecrt dex list --help' or 'pokecrt dex show --help' for command options.
 Browsing requires an active trainer and never records encounters or rewards.
@@ -46,20 +46,20 @@ Usage:
 Filters:
   --seen         Include discovered species only
   --unseen       Include undiscovered slots only; cannot combine with --seen
-  --gen          Introduction generations, comma-separated
+  --gen          Generations first introduced, comma-separated
   --type         Require ALL listed types on one encountered form
   --type-any     Require ANY listed types on that same encountered form
   --color        Species Pokédex colors, comma-separated
   --stage        Evolution stages, comma-separated
-  --legendary    Require source legendary status
-  --mythical     Require source mythical status
-  --baby         Require source baby status
+  --legendary    Only Legendary Pokémon
+  --mythical     Only Mythical Pokémon
+  --baby         Only baby Pokémon
 
 Options:
   --help, -h     Show this help
 
 Results are in National number order. Undiscovered identities remain anonymous.
-Metadata filters include discovered species only and cannot accompany --unseen.
+Type, color, stage and status filters include discovered species only and cannot accompany --unseen.
 Generation filtering may include anonymous undiscovered slots. Categories combine
 with AND; values in gen/color/stage combine with OR. Boolean flags accept =true
 or =false; false flags impose no restriction.
@@ -72,11 +72,11 @@ Usage:
   pokecrt dex show (--name NAME | --number N) [appearance selectors]
 
 Entry selectors (exactly one required):
-  --name         Exact species name or generated alias
+  --name         Exact Pokémon name or accepted alias
   --number       National Pokédex number
 
 Appearance selectors:
-  --form         Exact form slug (default: standard)
+  --form         Exact form selector (default: standard; e.g. mega-x)
   --gender       Distinct visual gender: male or female (default: form default)
   --shiny        Select shiny instead of regular artwork
 
@@ -151,7 +151,7 @@ func parseDexFlags(args []string) (dexOptions, error) {
 			return o, fmt.Errorf("--seen and --unseen cannot be combined")
 		}
 		if o.filter.Unseen && o.filter.Metadata() {
-			return o, fmt.Errorf("--unseen cannot be combined with metadata filters")
+			return o, fmt.Errorf("--unseen cannot be combined with type, color, stage or status filters")
 		}
 	}
 	if o.action == "show" && !o.help {
@@ -204,7 +204,15 @@ func runDex(args []string, stdout, stderr io.Writer) int {
 	defer repo.Close()
 	p, err := repo.ActiveProfile(ctx)
 	if errors.Is(err, trainer.ErrNoActive) {
-		return operationalError(stderr, fmt.Errorf("no active trainer; select one with 'pokecrt trainer use <name>'"))
+		profiles, listErr := repo.ListProfiles(ctx)
+		if listErr != nil {
+			return operationalError(stderr, listErr)
+		}
+		fmt.Fprint(stderr, "pokecrt: no active trainer.\n", formatProfiles(profiles))
+		if len(profiles) > 0 {
+			fmt.Fprint(stderr, "Select a trainer:\n  pokecrt trainer use <name>\n")
+		}
+		return 1
 	}
 	if err != nil {
 		return operationalError(stderr, err)
@@ -271,13 +279,17 @@ func runDex(args []string, stdout, stderr io.Writer) int {
 		formatDexDiscovery(&b, "Species", e.Discovery)
 		b.WriteString("\nKnown forms:\n")
 		for _, f := range e.Forms {
-			fmt.Fprintf(&b, "  %s: %d encounters · %s\n", f.Name, f.Count, strings.Join(f.Types, " / "))
-			fmt.Fprintf(&b, "    Undiscovered gender slots: %d\n", f.UnknownGenders)
+			label := "encounters"
+			if f.Count == 1 {
+				label = "encounter"
+			}
+			fmt.Fprintf(&b, "  %s: %d %s · %s\n", f.Name, f.Count, label, strings.Join(f.Types, " / "))
+			fmt.Fprintf(&b, "    Undiscovered genders: %d\n", f.UnknownGenders)
 			for _, g := range f.Genders {
 				fmt.Fprintf(&b, "    %s: Regular %s; Shiny %s\n", g.Name, dexCollected(g.Regular), dexCollected(g.Shiny))
 			}
 		}
-		fmt.Fprintf(&b, "Undiscovered collectible forms: %d\n\nEvolution family:\n", e.UnknownForms)
+		fmt.Fprintf(&b, "\nUndiscovered collectible forms: %d\n\nEvolution family:\n", e.UnknownForms)
 		for _, n := range e.Evolution {
 			fmt.Fprintf(&b, "  #%03d %s", n.Number, n.Name)
 			if len(n.Children) > 0 {

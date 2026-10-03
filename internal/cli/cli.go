@@ -31,9 +31,9 @@ Options:
   --version    Show application version and dataset identity
 
 Commands:
-  print       Print named or uniformly random matching artwork
+  print       Print a named Pokémon or a random matching Pokémon
   list        List the public catalog or detailed entries
-  encounter   Record one unrestricted encounter for the active trainer
+  encounter   Encounter a Pokémon with the active trainer
   dex         Browse the active trainer’s discoveries
   trainer     Manage profiles, view statistics and achievement progress
 

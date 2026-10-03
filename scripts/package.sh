@@ -14,7 +14,8 @@ fi
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$project_root"
 
-for required_file in LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md docs/release-policy.md; do
+release_notes="docs/release-${release_tag}.md"
+for required_file in "$release_notes" LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md docs/release-policy.md; do
     if [ ! -s "$required_file" ]; then
         echo "package: missing required file: $required_file" >&2
         exit 1
@@ -47,8 +48,9 @@ chmod 0755 "$staging_dir/pokecrt"
 cp README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md "$staging_dir/"
 cp tools/dataset/coverage.md "$staging_dir/COVERAGE.md"
 cp docs/release-policy.md "$staging_dir/RELEASE_POLICY.md"
+cp "$release_notes" "$staging_dir/RELEASE_NOTES.md"
 tar -czf "dist/$archive_name" -C "$staging_dir" \
-    pokecrt README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md COVERAGE.md RELEASE_POLICY.md
+    pokecrt README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md COVERAGE.md RELEASE_POLICY.md RELEASE_NOTES.md
 # Include all local release archives so earlier checksum entries remain present.
 (cd dist && sha256sum pokecrt_*_linux_amd64.tar.gz > SHA256SUMS)
 printf 'Created dist/%s and dist/SHA256SUMS\n' "$archive_name"

@@ -103,8 +103,8 @@ type selectorValues struct {
 }
 
 func (v *selectorValues) register(fs *flag.FlagSet) {
-	fs.StringVar(&v.selection.Name, "name", "", "Exact species name or generated alias")
-	fs.StringVar(&v.gen, "gen", "", "Introduction generations, comma-separated")
+	fs.StringVar(&v.selection.Name, "name", "", "Exact Pokémon name or accepted alias")
+	fs.StringVar(&v.gen, "gen", "", "Generations first introduced, comma-separated")
 	fs.StringVar(&v.types, "type", "", "All selected-form types, comma-separated")
 	fs.StringVar(&v.typeAny, "type-any", "", "Any selected-form types, comma-separated")
 	fs.StringVar(&v.color, "color", "", "Species Pokédex colors, comma-separated")
@@ -112,9 +112,9 @@ func (v *selectorValues) register(fs *flag.FlagSet) {
 	fs.StringVar(&v.selection.Form, "form", "standard", "Exact form slug")
 	fs.StringVar(&v.selection.Gender, "gender", "", "Distinct visual gender: male or female")
 	fs.BoolVar(&v.selection.Shiny, "shiny", false, "Select shiny artwork")
-	fs.BoolVar(&v.selection.Legendary, "legendary", false, "Require source legendary status")
-	fs.BoolVar(&v.selection.Mythical, "mythical", false, "Require source mythical status")
-	fs.BoolVar(&v.selection.Baby, "baby", false, "Require source baby status")
+	fs.BoolVar(&v.selection.Legendary, "legendary", false, "Only Legendary Pokémon")
+	fs.BoolVar(&v.selection.Mythical, "mythical", false, "Only Mythical Pokémon")
+	fs.BoolVar(&v.selection.Baby, "baby", false, "Only baby Pokémon")
 	for _, name := range []string{"name", "gen", "type", "type-any", "color", "stage", "form", "gender", "shiny", "legendary", "mythical", "baby"} {
 		trackFlag(fs, name)
 	}

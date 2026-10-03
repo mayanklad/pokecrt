@@ -114,3 +114,39 @@ func TestDexCLICollectedAndLockedViews(t *testing.T) {
 	}
 
 }
+
+func TestDexNoActiveListsExistingProfiles(t *testing.T) {
+	ctx := context.Background()
+	dir := t.TempDir()
+	t.Setenv("POKECRT_DATA_DIR", dir)
+	r, err := storage.Initialize(ctx, filepath.Join(dir, "trainers.sqlite3"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	name, _ := trainer.ParseName("Mayank")
+	if _, err = r.CreateProfile(ctx, name, 0); err != nil {
+		t.Fatal(err)
+	}
+	if err = r.Write(ctx, func(tx *storage.Tx) error {
+		_, err := tx.ExecContext(ctx, "UPDATE app_state SET active_trainer_id=NULL")
+		return err
+	}); err != nil {
+		t.Fatal(err)
+	}
+	r.Close()
+	path := filepath.Join(dir, "trainers.sqlite3")
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{nil, {"list"}, {"show", "--number", "6"}} {
+		var out, stderr bytes.Buffer
+		if code := runDex(args, &out, &stderr); code != 1 || out.Len() != 0 || !strings.Contains(stderr.String(), "Mayank") || !strings.Contains(stderr.String(), "pokecrt trainer use <name>") {
+			t.Fatal(code, out.String(), stderr.String())
+		}
+	}
+	after, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("guidance mutated state", err)
+	}
+}

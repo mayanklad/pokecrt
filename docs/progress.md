@@ -2,7 +2,8 @@
 
 Published milestone: [v0.2 - Complete public engine](https://github.com/mayanklad/pokecrt/releases/tag/v0.2), 2 October 2026.
 Release source: `59fea7c10a1de45d5732f4bd84617757e6e57490`.
-Next planned milestone: v0.3 - Trainer CLI.
+Current source milestone: v0.3 - Trainer CLI.
+[Trainer release notes](release-v0.3.md). The TUI remains the next milestone.
 
 ## Implemented behavior
 
@@ -114,7 +115,7 @@ No schema, dependency, generated dataset or encounter probability changes.
 
 The development registry now supports 50 feasible achievements for the current
 inventory. It preserves the original 34 IDs/names and adds the 16 themed goals
-listed in [the achievement catalog](../README.md#achievement-catalog-in-development-source).
+listed in [the achievement catalog](../README.md#achievement-catalog).
 One ordered domain registry supplies definitions and current progress; no
 presentation code evaluates awards. Unavailable policy definitions remain
 nameable for retained unlocks, while impossible current goals are suppressed.
@@ -132,8 +133,8 @@ never deleted or re-earned after an inventory change.
 All evaluation stays in the same encounter transaction. A previously satisfied
 new goal unlocks on the next committed encounter, with no retroactive XP award.
 No schema migration, dependency, generated dataset, new source file or CLI flag
-is introduced. Private Pokédex remains D16; full trainer/achievement views remain
-D17. The published v0.2 feature set is unchanged.
+is introduced. Private Pokédex and trainer/achievement views are implemented in D16/D17.
+The published v0.2 feature set is unchanged.
 
 ## Dataset
 
@@ -213,15 +214,11 @@ The full method and initial result are retained in [benchmarks.md](benchmarks.md
 
 ## Roadmap
 
-Published v0.2 provides the complete public print/catalog engine for the reviewed inventory.
-[Release notes](release-v0.2.md) describe its behavior and known limitations.
-v0.3 covers trainer profiles, SQLite storage, encounters, progression, achievements
-and private Pokédex CLI. The TUI and final hardening remain later milestones.
-Storage, profiles, encounters, progression and achievement evaluation are
-implemented in development source. D16 implements private Pokédex browsing; D17
-implements full trainer statistics and achievement views. D18 is integration and
-release verification. The published v0.2 feature set
-is unchanged.
+v0.2 provides the public print/catalog engine for the reviewed inventory.
+v0.3 adds profiles, SQLite storage, encounters, progression, 50 achievements,
+private Pokédex and trainer statistics. [Trainer release notes](release-v0.3.md)
+describe the complete CLI milestone. The TUI remains v0.4; final acceptance,
+upgrade and resource audits remain v1.0 work.
 
 ## D16: private Pokédex
 
@@ -269,3 +266,42 @@ exercise summaries, achievements, first-run/help and quiet broken pipes.
 Fresh public startup and size checks pass existing thresholds; benchmarks.md
 records the method. D18 remains integration, offline and history-performance
 verification and release documentation before publication.
+
+## D18: trainer CLI integration and release documentation
+
+Source baseline: `43e0a34b35a792ad268e40407aa68e863f0aa763`.
+
+Achievement checks reuse persisted form flags and distinct shiny discoveries;
+old-predicate equivalence tests retain historical snapshot semantics. Schema 1,
+indexes, dependencies, dataset, encounter probabilities and reward rules are
+unchanged. History-growth benchmarks record remaining scan costs and workload
+limits. Dex no-active guidance now lists existing profiles before selection.
+
+Migration fixtures now preserve actual gameplay state through upgrade/backup and
+rollback. Installed-process concurrency, full tests/vet/race, CGO-free checks and
+all pinned inputs pass. An extracted release executable passes socket-denied
+public/trainer CLI, all five modes, discovery locks, profile isolation, read-only
+browsing, installation, Bash piping and corrupt-state independence.
+
+Public startup, warm-command, rendering, extracted native RSS and stripped size
+meet the existing budgets on this host. Initial RSS measurement sensitivity and
+all methods are retained in benchmarks.md. Fastfetch raw-input piping is verified on a separate Linux amd64 desktop.
+Fastfetch is unavailable on the benchmark host; JSONC command-raw examples are
+checked against official documentation, without claiming a runtime check.
+
+README and v0.3 release notes describe the complete trainer CLI before tagging.
+Archives include matching release notes and contain no trainer state. Public
+release records do not claim a v0.3 publication date or tag commit in advance.
+The interactive TUI remains the next milestone.
+
+### Player-facing text review
+
+Achievement requirements, root/subcommand help, profile statistics, Dex notices,
+name validation and artwork errors use player-facing language. Source
+classification and storage/evaluation details remain in technical documentation
+where they explain the rules. Achievement IDs, names, requirements and retained
+unlock behavior are unchanged. All-time counts remain distinct from current
+artwork collection progress. Single-command section spacing and singular
+encounter labels are consistent; no trailing spacing is added to separate
+independent commands. Full CLI/domain tests and installed execution cover the
+updated wording and presentation.

@@ -152,18 +152,18 @@ func TestEncounterFormatterFiveModesSameRecord(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	record := trainer.Record{Choice: choice, FirstVariant: true, XPAwarded: 130, Before: trainer.Progress{Level: 1}, After: trainer.Progress{Level: 3}, Completion: trainer.Completion{Species: 3, SpeciesTotal: 1017, Variants: 4, VariantsTotal: 2669}}.WithUnlocks([]trainer.Unlock{{Name: "10 Encounters", Description: "Recorded 10 encounters."}, {Name: "Shiny Discovery", Description: "Record a shiny encounter."}})
+	record := trainer.Record{Choice: choice, FirstVariant: true, XPAwarded: 130, Before: trainer.Progress{Level: 1}, After: trainer.Progress{Level: 3}, Completion: trainer.Completion{Species: 3, SpeciesTotal: 1017, Variants: 4, VariantsTotal: 2669}}.WithUnlocks([]trainer.Unlock{{Name: "10 Encounters", Description: "Record 10 encounters."}, {Name: "Shiny Discovery", Description: "Encounter a Shiny Pokémon."}})
 	artwork := []byte("[SPRITE]\n")
 	identity := "\n#006 Charizard · Mega X · Shiny\n"
 	typing := "Fire / Dragon\n"
 	progress := "\nNEW VARIANT DISCOVERED\nSHINY ENCOUNTER\nShiny variant collected; regular variant not yet collected.\nPokédex: 3 / 1017\nVariants: 4 / 2669\nXP gained: 130\nLEVEL UP - 1 → 3\n"
-	achievements := "\n🏆 10 Encounters\nRecorded 10 encounters.\n\n🏆 Shiny Discovery\nRecord a shiny encounter.\n"
+	achievements := "\n🏆 10 Encounters\nRecord 10 encounters.\n\n🏆 Shiny Discovery\nEncounter a Shiny Pokémon.\n"
 	for _, c := range []struct{ mode, want string }{{"full", string(artwork) + identity + typing + progress + achievements}, {"compact", string(artwork) + identity}, {"no-title", string(artwork) + progress + achievements}, {"achievements", string(artwork) + achievements}, {"sprite", string(artwork)}} {
 		if got := string(formatEncounter(record, artwork, c.mode)); got != c.want {
 			t.Fatalf("%s:\n%s\nwant:\n%s", c.mode, got, c.want)
 		}
 	}
-	for _, unlocks := range [][]trainer.Unlock{nil, {{Name: "First Contact", Description: "Recorded 1 encounters."}}, record.NewUnlocks()} {
+	for _, unlocks := range [][]trainer.Unlock{nil, {{Name: "First Contact", Description: "Record your first encounter."}}, record.NewUnlocks()} {
 		got := formatEncounter(record.WithUnlocks(unlocks), artwork, "achievements")
 		if bytes.Count(got, []byte("🏆 ")) != len(unlocks) {
 			t.Fatal("achievement notices")

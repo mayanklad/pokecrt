@@ -237,7 +237,7 @@ func TestTrainerStatisticsAchievementsAndNamedProfile(t *testing.T) {
 		want   []string
 		hidden []string
 	}{
-		{nil, []string{"Trainer: Collector", "Level: 1", "Total XP: 280", "Encounters: 2", "Shiny encounters: 2", "Shiny variants collected (historical): 1", "First encounter: 1970-01-01T00:00:00Z", "Generation 1: 1 discovered; eligible 1 / 151"}, []string{"Charizard", "Mega X"}},
+		{nil, []string{"Trainer: Collector", "Level: 1", "Total XP: 280", "Encounters: 2", "Shiny encounters: 2", "Shiny variants collected (all time): 1", "First encounter: 1970-01-01T00:00:00Z", "Generation 1: 1 discovered; current collection 1 / 151"}, []string{"Charizard", "Mega X"}},
 		{[]string{"--name", "Other"}, []string{"Trainer: Other", "Active: No", "Total XP: 0", "First encounter: None"}, []string{"Charizard", "Mega X"}},
 		{[]string{"achievements"}, []string{"Achievements: Collector", "First Contact", "Shiny Discovery", "Earned: 1970-01-01T00:00:03Z", "10 Encounters", "Progress: 2 / 10", "Type Explorer", "Progress: 2 / 18", "Locked ("}, []string{"Charizard", "Charmander", "Mega X"}},
 	} {

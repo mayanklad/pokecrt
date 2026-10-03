@@ -19,18 +19,18 @@ Usage:
   pokecrt print [selectors] [--output compact|sprite]
 
 Selectors:
-  --name         Exact species name or generated alias
-  --gen          Introduction generations, comma-separated
+  --name         Exact Pokémon name or accepted alias
+  --gen          Generations first introduced, comma-separated
   --type         Require ALL listed selected-form types
   --type-any     Require ANY listed selected-form types
   --color        Species Pokédex colors, comma-separated
   --stage        Evolution stages, comma-separated
-  --form         Exact form slug (default: standard)
+  --form         Exact form selector (default: standard; e.g. mega-x)
   --gender       Distinct visual gender: male or female
   --shiny        Select shiny artwork (default: regular)
-  --legendary    Require source legendary status
-  --mythical     Require source mythical status
-  --baby         Require source baby status
+  --legendary    Only Legendary Pokémon
+  --mythical     Only Mythical Pokémon
+  --baby         Only baby Pokémon
 
 Options:
   --output       compact (default) or sprite
@@ -97,11 +97,11 @@ func runPrint(args []string, stdout, stderr io.Writer, selectIndex catalog.Index
 			regular.Shiny = false
 			identities, _ := catalog.Query(regular, nil)
 			if len(identities) > 0 {
-				return operationalError(stderr, fmt.Errorf("No Pokémon match the specified filters. selected shiny artwork unavailable for %s; no fallback applied", identities[0].Species.Name))
+				return operationalError(stderr, fmt.Errorf("No Pokémon match the specified filters. Selected shiny artwork unavailable for %s in this appearance.", identities[0].Species.Name))
 			}
 		}
 		if len(matches) == 1 && !matches[0].Available {
-			return operationalError(stderr, fmt.Errorf("No Pokémon match the specified filters. selected artwork unavailable for %s; no fallback applied", matches[0].Species.Name))
+			return operationalError(stderr, fmt.Errorf("No Pokémon match the specified filters. Selected artwork unavailable for %s in this appearance.", matches[0].Species.Name))
 		}
 	}
 	chosen, err := catalog.Choose(matches, selectIndex)

@@ -3,8 +3,8 @@
 Offline Pokémon terminal artwork, written in Go. Print one named or randomly
 selected Pokémon with truecolor Unicode half blocks at the original pixel scale.
 
-Published release: [v0.2](https://github.com/mayanklad/pokecrt/releases/tag/v0.2) - Complete public engine.
-The next planned milestone is v0.3 - Trainer CLI.
+Current milestone: **v0.3 - Trainer CLI**. [Release notes](docs/release-v0.3.md).
+The [v0.2 public-engine release](https://github.com/mayanklad/pokecrt/releases/tag/v0.2) remains available.
 
 ## Current coverage
 
@@ -30,7 +30,7 @@ artwork candidates remain excluded as generated. This adds no printable slots.
 Form tags and achievement inventory are generated from exact metadata and
 accepted regular artwork: 38 eligible regional forms, 80 Mega/Gigantamax forms,
 18 supported types and 17 fully supported branching families. Achievement
-gameplay is available in development source. Coverage separately reports 53 pinned
+gameplay is included in the trainer CLI. Coverage separately reports 53 pinned
 metadata varieties without resolved catalog/source identities, in addition to
 122 unavailable catalog appearances. These are different categories; the 53
 varieties do not imply 53 distinct missing sprites. No artwork is inferred.
@@ -39,11 +39,9 @@ Sprite lookup uses an exact-key index derived automatically from the generated
 manifest; performance measurements are documented in docs/benchmarks.md.
 
 Public metadata filters and explicit form/shiny/gender printing are implemented.
-The published v0.2 binary provides the public print/catalog engine. Development
-source adds profiles, encounters, XP and achievement evaluation for the upcoming
-v0.3 milestone, including private Pokédex browsing, full trainer statistics and
-achievement views. Integration and release verification remain before v0.3;
-the TUI is a later milestone.
+v0.3 adds local trainer profiles, fair encounters, XP/levels, 50 achievements,
+private Pokédex browsing and trainer statistics. Public printing and listing
+remain independent of trainer state. The interactive TUI is a later milestone.
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -103,6 +101,8 @@ go run ./tools/dataset \
 gofmt -w cmd internal tools
 go test ./...
 go vet ./...
+go test -race ./...
+CGO_ENABLED=0 go test ./internal/trainer ./internal/storage
 go build -o ./bin/pokecrt ./cmd/pokecrt
 ```
 
@@ -268,6 +268,7 @@ Installation and removal do not erase trainer data.
 ## Project documents
 
 - [Implementation progress](docs/progress.md)
+- [v0.3 release notes](docs/release-v0.3.md)
 - [v0.2 release notes](docs/release-v0.2.md)
 - [Performance baseline and comparison](docs/benchmarks.md)
 - [v0.1 release record](docs/release-v0.1.md)
@@ -319,10 +320,9 @@ folding. Tatsugiri Curly Mega and Droopy Mega remain distinct metadata forms;
 the source's ordinary-image aliases do not provide accepted transformation art.
 Their artwork is explicitly unavailable, with no fallback to ordinary forms.
 
-## Trainer profiles in development source
+## Trainer profiles
 
-The development source includes local SQLite trainer profiles. These commands
-are not part of the published v0.2 binary:
+Create and select local SQLite trainer profiles explicitly:
 
 ```bash
 pokecrt trainer --help
@@ -362,10 +362,9 @@ trainer. Completion goals are derived from eligible catalog artwork and evolutio
 relationships. Each encounter grants 10 XP, plus 40 for a first species, 20 for a
 first exact variant and 100 for shiny artwork. Levels advance every 1,000 XP.
 
-## Encounters in development source
+## Encounters
 
-An encounter requires an explicitly created, active trainer. These commands are
-available in development source and are not part of the published v0.2 binary:
+An encounter requires an explicitly created, active trainer:
 
 ```bash
 pokecrt encounter --help
@@ -398,7 +397,7 @@ the command fails with setup/selection guidance and creates no implicit profile.
 Help and invalid invocations do not open storage. Hidden notices still persist
 as achievements and remain visible in `trainer achievements`.
 
-## Achievement catalog in development source
+## Achievement catalog
 
 Current inventory supports **50 achievements** per trainer: 19 numerical
 milestones, 21 themed goals, nine generation completions and National Researcher.
@@ -406,8 +405,7 @@ All are optional, unlock once and grant no extra XP or encounter advantage.
 New unlocks appear in encounter output. `trainer achievements` groups earned
 entries with UTC dates and locked goals with current progress. Browsing does
 not award a newly introduced goal already satisfied by old history; it unlocks
-on the next committed encounter. Trainer gameplay is not available in the
-published v0.2 binary.
+on the next committed encounter. The v0.2 binary contains only the public engine.
 
 | Numerical milestones | Thresholds |
 | --- | --- |
@@ -437,9 +435,9 @@ Repeats advance encounter milestones but never distinct-species/variant goals.
 | Changing Faces | Encounter nonstandard forms of five distinct species. |
 | Form Collector | Collect three distinct forms of one species. |
 | Family Reunion | Discover every species in one fully supported evolution family containing at least three species. |
-| Legendary Encounter | Encounter a species marked legendary by source metadata. |
-| Mythical Encounter | Encounter a species marked mythical by source metadata. |
-| Small Beginnings | Encounter a species marked baby by source metadata. |
+| Legendary Encounter | Encounter a Legendary Pokémon. |
+| Mythical Encounter | Encounter a Mythical Pokémon. |
+| Small Beginnings | Encounter a baby Pokémon. |
 | Shiny Collection | Collect five distinct shiny variants. |
 
 Type goals use forms actually encountered, without inferring unseen alternate
@@ -494,7 +492,7 @@ for an uncollected standard regular selection. Removed artwork retains its
 collection record with an explicit unavailable notice. Browsing requires an
 active trainer, opens storage read-only and never grants XP or achievements.
 
-## Trainer statistics in development source
+## Trainer statistics
 
 `pokecrt trainer` and `pokecrt trainer --name NAME` show total XP, level,
 progress to the next level, encounters, historical species/variant collections,
@@ -509,3 +507,37 @@ the application does not infer missing metadata. Statistics and achievement
 progress reveal counts and generic goal descriptions, never unseen identities
 or form names. Earned dates and targets are retained across inventory updates.
 All browsing opens existing storage read-only and grants no rewards.
+
+## Shell and Fastfetch
+
+For artwork without recording trainer activity:
+
+```bash
+pokecrt print --output sprite
+pokecrt print --output sprite | fastfetch --file-raw -
+```
+
+For one recorded encounter, select a trainer first and use:
+
+```bash
+pokecrt encounter --output sprite | fastfetch --file-raw -
+```
+
+Each execution records an encounter, including when Fastfetch runs on shell
+startup. Use public `print` when shell startup should leave trainer data unchanged.
+Fastfetch's JSONC configuration also supports a raw command logo:
+
+```json
+{
+  "logo": {
+    "type": "command-raw",
+    "source": "pokecrt print --output sprite"
+  }
+}
+```
+
+Merge the logo object into an existing configuration. `command-raw` is a JSONC
+configuration option; piping uses `--file-raw -`. Both forms are documented in
+[Fastfetch's logo options](https://github.com/fastfetch-cli/fastfetch/wiki/Logo-options).
+PokéCRT preserves ANSI colors through pipes; nonempty `NO_COLOR` disables color.
+Natural-size artwork can wrap if the terminal has too few columns.

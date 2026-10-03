@@ -220,6 +220,8 @@ func encounterAchievementState(ctx context.Context, tx readQueries, id int64, re
 			return state, err
 		}
 		state.Forms = append(state.Forms, form)
+		state.Regional = state.Regional || form.Regional
+		state.Transformation = state.Transformation || form.Transformation
 		state.EncounteredTypes[form.Type1] = true
 		if form.Type2 != "" {
 			state.EncounteredTypes[form.Type2] = true
@@ -230,7 +232,9 @@ func encounterAchievementState(ctx context.Context, tx readQueries, id int64, re
 	if err != nil {
 		return state, err
 	}
-	err = tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM encounters WHERE trainer_id=? AND palette='shiny'), EXISTS(SELECT 1 FROM encounters WHERE trainer_id=? AND regional_snapshot=1), EXISTS(SELECT 1 FROM encounters WHERE trainer_id=? AND transformation_snapshot=1)`, id, id, id).Scan(&state.Shiny, &state.Regional, &state.Transformation)
+	// Discoveries are upserted atomically with history, including shiny-first records.
+	// Reuse persisted form flags above and query bounded distinct variants here.
+	err = tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM variant_discoveries WHERE trainer_id=? AND palette='shiny')`, id).Scan(&state.Shiny)
 	return state, err
 }
 

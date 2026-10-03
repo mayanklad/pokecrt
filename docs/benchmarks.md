@@ -626,3 +626,100 @@ Statistics/achievement query tests establish snapshot consistency and no
 mutation, not large-history performance. Network-namespace offline testing is
 not claimed for this increment. Existing installed-binary tests run from an
 empty directory without source artwork/cache and cover trainer browsing.
+
+## D18 trainer CLI integration - 3 October 2026
+
+Source baseline: `43e0a34b35a792ad268e40407aa68e863f0aa763`.
+Host: Intel Xeon Platinum 8370C at 2.80 GHz, Ubuntu 24.04.3, Linux 6.18.44,
+nine visible logical CPUs; Go 1.27.1, module minimum 1.27.0. Dataset and public
+budgets remain unchanged. No database index or schema migration is added.
+
+### History growth
+
+`BenchmarkTrainerHistory` uses real first-encounter metadata/artwork and bulk
+repeat fixtures with consistent history, discovery counts and XP. Each case
+starts with the named history size plus one untimed repeat to settle unlocks.
+Recording appends repeats during timing; reads reuse a warm repository. Results
+exclude database opening, process startup, artwork rendering and formatting.
+Three samples per case use `-benchtime=100ms -count=3 -cpu=1`; values below are
+medians. The baseline runs the same fixture against unchanged D17 source.
+
+| History rows | Record before / after ms | Trainer records before / after ms | Dex records before / after ms |
+| ---: | ---: | ---: | ---: |
+| 1,000 | 2.317 / 1.334 | 2.855 / 1.135 | 0.297 / 0.173 |
+| 10,000 | 13.438 / 5.970 | 18.223 / 8.774 | 0.833 / 0.750 |
+| 100,000 | 155.713 / 64.254 | 197.977 / 105.656 | 6.844 / 6.804 |
+
+The change reuses already loaded historical regional/transformation flags and
+checks distinct stored shiny variants. Both discovery tables and history are
+updated atomically. Equivalence tests compare the old predicates and all goal
+results across empty, repeated, shiny-first, isolated and retained-snapshot
+histories. It does not replace historical evidence with current catalog metadata.
+The 100,000-row medians improve by about 59%/47% for recording/trainer records.
+Dex source is unchanged; its timing differences are not an optimization claim.
+A repeated single-appearance fixture is a history-growth test, not a benchmark
+of every possible collection. No trainer latency threshold or universal speedup
+is claimed; remaining history scans still grow with history length.
+
+Reproduce from prepared source:
+
+```bash
+go test ./internal/storage -run '^$' -bench '^BenchmarkTrainerHistory$' \
+  -benchtime=100ms -count=3 -cpu=1
+```
+
+### Public warm and render checks
+
+Existing benchmarks use three 200 ms samples, one Go processor, output discarded.
+The maximum short-command median is 0.721 ms against 0.85 ms; random/list median
+is at most 2.735 ms against 12 ms. Largest-area color rendering median is
+0.526 ms against 0.60 ms. Its individual samples are 0.511, 0.619 and 0.526 ms;
+the budget applies to the median. Terminal painting and process startup are excluded.
+
+```bash
+go test ./internal/cli ./internal/render -run '^$' \
+  -bench 'Benchmark(Public|Render)$' -benchtime=200ms -count=3 -cpu=1
+```
+
+### Installed/offline integration and limits
+
+Full tests, vet, race tests, CGO-free trainer/storage tests and all 2,947 pinned
+input checks pass. Actual gameplay migration fixtures preserve profiles, active
+selection, history, discoveries, XP and unlocks in successful upgrades, protected
+backups and failed-upgrade rollback. Schema 002 exists only in synthetic tests.
+Eight concurrent installed CLI processes preserve all committed encounters and XP.
+
+The package executable is extracted into an empty directory and checked with
+Linux seccomp denying socket creation and network operations. A negative-control
+socket call fails with EPERM. Public commands create no trainer state; isolated
+profile creation, every encounter mode, Dex locks, achievements, reopening,
+read-only bytes, installation, shell piping and corrupt-state independence pass.
+Network namespaces are unavailable on this host; no namespace success is claimed.
+
+Native C fork/exec/wait4 measures peak child RSS over ten samples per public case
+and color mode. The archive-extracted binary reaches 8.950 MiB against 10 MiB.
+An initial verification-file reading reached 13.637 MiB. Copying the identical
+binary removed that discrepancy; extracted and installed-style copies remain
+within budget. This file/runtime measurement sensitivity is retained rather than
+interpreted as a source regression or proof that every host will match the result.
+Release binary size is 11,821,216 bytes (11.274 MiB) against the approved 16 MiB
+trainer-inclusive budget.
+
+Real Bash piping and installation are verified. Fastfetch is not installed on
+this benchmark host; raw-input piping was subsequently verified on a separate
+Linux amd64 desktop with zsh and kitty. JSONC command-raw configuration examples
+are checked against official documentation, without claiming a runtime test.
+Cold filesystem startup and platform binaries beyond Linux amd64 are unverified.
+
+Fresh-process measurements use the extracted release executable, six public
+cases in color/plain modes, five discarded warmups and 100 samples per case.
+Timing uses posix_spawn/wait4, GOMAXPROCS=1 and /dev/null output. Short-command
+P95 is at most 4.311 ms (8 ms budget); random/list P95 at most 7.050 ms (25 ms).
+The filesystem cache is warm; the first invocation is not a cold-disk claim.
+
+The subsequent player-facing wording/layout review changes no queries, artwork,
+selection or rewards. Full tests/vet/race and CGO-free trainer/storage checks pass.
+The same 12-case fresh-process method gives short-command P95 <= 7.660 ms and
+random/list P95 <= 9.300 ms. The stripped binary is 11,821,216 bytes (11.274 MiB).
+Warm/render measurements above precede this presentation-only review; those
+paths are unchanged and no new warm/render result is claimed.
