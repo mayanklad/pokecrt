@@ -1,4 +1,4 @@
-# v0.1 — Basic offline printer
+# v0.1 - Basic offline printer
 
 Published 30 September 2026 for Linux amd64, with an archive and SHA256SUMS.
 [Release](https://github.com/mayanklad/pokecrt/releases/tag/v0.1).

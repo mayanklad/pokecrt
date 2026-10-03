@@ -581,7 +581,7 @@ insert. Installed binary modes and post-commit output failure checks continue
 to pass. No new network-namespace isolation or history-growth encounter latency
 result is claimed; those remain checks before v0.3 publication.
 
-## D16 private Pokédex regression check — 3 October 2026
+## D16 private Pokédex regression check - 3 October 2026
 
 Go 1.27.1, Linux amd64, Intel Xeon Platinum 8370C @ 2.80 GHz; dataset
 `8e5073aeeff3f7761e26ccdf9f068189516ae7eded9c0998a9d970b7d37e6b60`.

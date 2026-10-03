@@ -177,7 +177,7 @@ func formatEncounter(record trainer.Record, artwork []byte, mode string) []byte 
 		c := record.Completion
 		fmt.Fprintf(&output, "Pokédex: %d / %d\nVariants: %d / %d\nXP gained: %d\n", c.Species, c.SpeciesTotal, c.Variants, c.VariantsTotal, record.XPAwarded)
 		if record.After.Level != record.Before.Level {
-			fmt.Fprintf(&output, "LEVEL UP — %d → %d\n", record.Before.Level, record.After.Level)
+			fmt.Fprintf(&output, "LEVEL UP - %d → %d\n", record.Before.Level, record.After.Level)
 		}
 	}
 	if mode == "full" || mode == "no-title" || mode == "achievements" {

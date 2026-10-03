@@ -156,7 +156,7 @@ func TestEncounterFormatterFiveModesSameRecord(t *testing.T) {
 	artwork := []byte("[SPRITE]\n")
 	identity := "\n#006 Charizard · Mega X · Shiny\n"
 	typing := "Fire / Dragon\n"
-	progress := "\nNEW VARIANT DISCOVERED\nSHINY ENCOUNTER\nShiny variant collected; regular variant not yet collected.\nPokédex: 3 / 1017\nVariants: 4 / 2669\nXP gained: 130\nLEVEL UP — 1 → 3\n"
+	progress := "\nNEW VARIANT DISCOVERED\nSHINY ENCOUNTER\nShiny variant collected; regular variant not yet collected.\nPokédex: 3 / 1017\nVariants: 4 / 2669\nXP gained: 130\nLEVEL UP - 1 → 3\n"
 	achievements := "\n🏆 10 Encounters\nRecorded 10 encounters.\n\n🏆 Shiny Discovery\nRecord a shiny encounter.\n"
 	for _, c := range []struct{ mode, want string }{{"full", string(artwork) + identity + typing + progress + achievements}, {"compact", string(artwork) + identity}, {"no-title", string(artwork) + progress + achievements}, {"achievements", string(artwork) + achievements}, {"sprite", string(artwork)}} {
 		if got := string(formatEncounter(record, artwork, c.mode)); got != c.want {

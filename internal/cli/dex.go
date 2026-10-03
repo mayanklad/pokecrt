@@ -235,7 +235,7 @@ func runDex(args []string, stdout, stderr io.Writer) int {
 				if !r.Eligible {
 					status += " · Encounter unavailable"
 				}
-				fmt.Fprintf(&b, "#%03d %s — %s\n", r.Number, r.Name, status)
+				fmt.Fprintf(&b, "#%03d %s - %s\n", r.Number, r.Name, status)
 			}
 		}
 	case "show":
@@ -244,7 +244,7 @@ func runDex(args []string, stdout, stderr io.Writer) int {
 			return operationalError(stderr, err)
 		}
 		if !e.Seen {
-			fmt.Fprintf(&b, "#%03d ????? — UNDISCOVERED\n\n%s\n", e.Number, e.Notice)
+			fmt.Fprintf(&b, "#%03d ????? - UNDISCOVERED\n\n%s\n", e.Number, e.Notice)
 			break
 		}
 		fmt.Fprintf(&b, "#%03d %s\n", e.Number, e.Name)

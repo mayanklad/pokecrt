@@ -3,8 +3,8 @@
 Offline Pokémon terminal artwork, written in Go. Print one named or randomly
 selected Pokémon with truecolor Unicode half blocks at the original pixel scale.
 
-Published release: [v0.2](https://github.com/mayanklad/pokecrt/releases/tag/v0.2) — Complete public engine.
-The next planned milestone is v0.3 — Trainer CLI.
+Published release: [v0.2](https://github.com/mayanklad/pokecrt/releases/tag/v0.2) - Complete public engine.
+The next planned milestone is v0.3 - Trainer CLI.
 
 ## Current coverage
 

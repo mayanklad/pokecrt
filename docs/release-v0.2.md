@@ -1,4 +1,4 @@
-# v0.2 — Complete public engine
+# v0.2 - Complete public engine
 
 Published 2 October 2026 for Linux amd64, with an archive and SHA256SUMS.
 [Release](https://github.com/mayanklad/pokecrt/releases/tag/v0.2).

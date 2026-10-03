@@ -1,8 +1,8 @@
 # Implementation progress
 
-Published milestone: [v0.2 — Complete public engine](https://github.com/mayanklad/pokecrt/releases/tag/v0.2), 2 October 2026.
+Published milestone: [v0.2 - Complete public engine](https://github.com/mayanklad/pokecrt/releases/tag/v0.2), 2 October 2026.
 Release source: `59fea7c10a1de45d5732f4bd84617757e6e57490`.
-Next planned milestone: v0.3 — Trainer CLI.
+Next planned milestone: v0.3 - Trainer CLI.
 
 ## Implemented behavior
 

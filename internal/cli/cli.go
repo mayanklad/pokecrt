@@ -10,7 +10,7 @@ import (
 	"github.com/mayanklad/pokecrt/internal/catalog"
 )
 
-const rootHelp = `PokéCRT — offline Pokémon terminal artwork
+const rootHelp = `PokéCRT - offline Pokémon terminal artwork
 
 Usage:
   pokecrt

@@ -92,7 +92,7 @@ func TestDexCLICollectedAndLockedViews(t *testing.T) {
 	checks := []struct {
 		args         []string
 		want, hidden string
-	}{{nil, "Species: 1 / 1017", "Mega X"}, {[]string{"list", "--seen"}, "Charizard", "Charmander"}, {[]string{"list", "--unseen", "--gen", "1"}, "#004 ?????", "Charizard"}, {[]string{"show", "--number", "4", "--form", "mega-x"}, "#004 ????? — UNDISCOVERED", "Charmander"}, {[]string{"show", "--name", "charizard"}, "LOCKED FORM", "Fire / Flying"}, {[]string{"show", "--name", "charizard", "--form", "mega-x"}, "LOCKED VARIANT", "\x1b["}, {[]string{"show", "--name", "charizard", "--form", "mega-x", "--shiny"}, "Appearance: Mega X", "Charmander"}}
+	}{{nil, "Species: 1 / 1017", "Mega X"}, {[]string{"list", "--seen"}, "Charizard", "Charmander"}, {[]string{"list", "--unseen", "--gen", "1"}, "#004 ?????", "Charizard"}, {[]string{"show", "--number", "4", "--form", "mega-x"}, "#004 ????? - UNDISCOVERED", "Charmander"}, {[]string{"show", "--name", "charizard"}, "LOCKED FORM", "Fire / Flying"}, {[]string{"show", "--name", "charizard", "--form", "mega-x"}, "LOCKED VARIANT", "\x1b["}, {[]string{"show", "--name", "charizard", "--form", "mega-x", "--shiny"}, "Appearance: Mega X", "Charmander"}}
 	for _, c := range checks {
 		var out, stderr bytes.Buffer
 		if code := runDex(c.args, &out, &stderr); code != 0 || !strings.Contains(out.String(), c.want) || strings.Contains(out.String(), c.hidden) {

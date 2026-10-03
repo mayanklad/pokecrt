@@ -364,9 +364,9 @@ func (d *Dex) Entry(number int, q catalog.Selection) (DexEntry, error) {
 		return DexEntry{}, fmt.Errorf("unsupported appearance selection")
 	}
 	if len(known[formID]) == 0 {
-		out.Notice = "LOCKED FORM — this form has not been discovered."
+		out.Notice = "LOCKED FORM - this form has not been discovered."
 	} else {
-		out.Notice = "LOCKED VARIANT — this exact appearance has not been collected; no fallback artwork is shown."
+		out.Notice = "LOCKED VARIANT - this exact appearance has not been collected; no fallback artwork is shown."
 	}
 	return out, nil
 }
