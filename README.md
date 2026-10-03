@@ -41,9 +41,9 @@ manifest; performance measurements are documented in docs/benchmarks.md.
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 The published v0.2 binary provides the public print/catalog engine. Development
 source adds profiles, encounters, XP and achievement evaluation for the upcoming
-v0.3 milestone, including private Pokédex browsing. Full trainer statistics and
-achievement views remain pending. The TUI
-is a later milestone.
+v0.3 milestone, including private Pokédex browsing, full trainer statistics and
+achievement views. Integration and release verification remain before v0.3;
+the TUI is a later milestone.
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -332,6 +332,7 @@ pokecrt trainer list
 pokecrt trainer use "Professor Oak"
 pokecrt trainer
 pokecrt trainer --name Mayank
+pokecrt trainer achievements
 ```
 
 Only the first creation automatically selects a trainer. Names accept 1–32
@@ -346,9 +347,10 @@ XDG base uses the home fallback. The data directory is protected with mode 0700
 and the database with mode 0600. Existing unsupported or corrupt state is never
 replaced automatically.
 
-Profile views currently show name, UTC creation time and active status. Full
-statistics and achievement views follow in D17. Profile commands never record
-discoveries or encounters. Public print/list/help/version
+Profile views show name, UTC creation time, active status, XP/level, collection
+statistics and generation progress. `trainer --name` views another profile without
+switching. `trainer achievements` shows the active trainer’s earned and locked
+goals. Profile commands never record discoveries or encounters. Public print/list/help/version
 remain independent of trainer storage. Dependency licenses are retained in
 [LICENSING.md](LICENSING.md).
 
@@ -394,15 +396,18 @@ All state commits before output. An output error leaves the encounter recorded;
 there is no automatic repeat. Broken pipes exit quietly. With no active trainer,
 the command fails with setup/selection guidance and creates no implicit profile.
 Help and invalid invocations do not open storage. Hidden notices still persist
-as achievements; their complete browsing view follows in D17.
+as achievements and remain visible in `trainer achievements`.
 
 ## Achievement catalog in development source
 
 Current inventory supports **50 achievements** per trainer: 19 numerical
 milestones, 21 themed goals, nine generation completions and National Researcher.
 All are optional, unlock once and grant no extra XP or encounter advantage.
-New unlocks appear in encounter output; the full achievement browsing view
-follows in D17 and is not available in the published v0.2 binary.
+New unlocks appear in encounter output. `trainer achievements` groups earned
+entries with UTC dates and locked goals with current progress. Browsing does
+not award a newly introduced goal already satisfied by old history; it unlocks
+on the next committed encounter. Trainer gameplay is not available in the
+published v0.2 binary.
 
 | Numerical milestones | Thresholds |
 | --- | --- |
@@ -488,3 +493,19 @@ appearance. A shiny-first or alternate-form discovery does not substitute artwor
 for an uncollected standard regular selection. Removed artwork retains its
 collection record with an explicit unavailable notice. Browsing requires an
 active trainer, opens storage read-only and never grants XP or achievements.
+
+## Trainer statistics in development source
+
+`pokecrt trainer` and `pokecrt trainer --name NAME` show total XP, level,
+progress to the next level, encounters, historical species/variant collections,
+shiny encounter count, distinct shiny collections and UTC first/last encounter
+times. An empty history displays `None` for encounter times.
+
+Current eligible completion is separate from historical discoveries: removing
+artwork does not erase collection history. Generation rows show discovered
+species and current eligible completion by species introduction generation.
+Historical species without current generation metadata are counted separately;
+the application does not infer missing metadata. Statistics and achievement
+progress reveal counts and generic goal descriptions, never unseen identities
+or form names. Earned dates and targets are retained across inventory updates.
+All browsing opens existing storage read-only and grants no rewards.

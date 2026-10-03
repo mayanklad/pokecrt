@@ -607,3 +607,22 @@ These are public-path regression checks, not representative large-history Dex
 or encounter latency claims. Network-namespace testing remains unavailable in
 this execution environment as recorded for D15. Release offline and
 representative trainer-history performance gates remain required before v0.3.
+
+## D17 trainer views regression check - 3 October 2026
+
+Go 1.27.1, Linux amd64, Intel Xeon Platinum 8370C @ 2.80 GHz; unchanged
+2947-input dataset. CGO-free stripped/trimpath binary: 11,821,216 bytes
+(11.274 MiB), within the approved 16 MiB trainer-inclusive budget.
+
+The existing six public cases in color/NO_COLOR mode use GOMAXPROCS=1,
+five warmups and 100 measured samples per row. Maximum short-command P95 is
+4.891 ms against 8 ms; random/full-list P95 is 6.574 ms against
+25 ms. These measurements follow functional/race validation, without overlapping
+benchmark or dataset workloads. No fresh warm-render or native RSS result is
+claimed for D17. Previous results remain dated observations; complete release
+regression and representative history-growth checks remain D18 gates.
+
+Statistics/achievement query tests establish snapshot consistency and no
+mutation, not large-history performance. Network-namespace offline testing is
+not claimed for this increment. Existing installed-binary tests run from an
+empty directory without source artwork/cache and cover trainer browsing.

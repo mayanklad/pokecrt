@@ -187,7 +187,7 @@ func TestInstalledBinary(t *testing.T) {
 
 	// Trainer commands run from the installed binary, with no checkout/cache.
 	profiles := filepath.Join(temp, "installed-profiles")
-	for _, helpArgs := range [][]string{{"encounter", "--help"}, {"trainer", "--help"}, {"trainer", "create", "--help"}, {"trainer", "list", "-h"}, {"trainer", "use", "--help"}} {
+	for _, helpArgs := range [][]string{{"encounter", "--help"}, {"trainer", "--help"}, {"trainer", "create", "--help"}, {"trainer", "list", "-h"}, {"trainer", "use", "--help"}, {"trainer", "achievements", "--help"}} {
 		status, _, stderr := invoke(helpArgs, "POKECRT_DATA_DIR=relative-invalid")
 		if status != 0 || len(stderr) != 0 {
 			t.Fatalf("trainer help touched storage: %v: %d %q", helpArgs, status, stderr)
@@ -208,6 +208,10 @@ func TestInstalledBinary(t *testing.T) {
 	status, stdout, stderr := invoke([]string{"encounter"}, "POKECRT_DATA_DIR="+profiles)
 	if status != 1 || len(stdout) != 0 || !bytes.Contains(stderr, []byte("trainer create <name>")) {
 		t.Fatalf("installed encounter first run: %d %q %q", status, stdout, stderr)
+	}
+	status, stdout, stderr = invoke([]string{"trainer", "achievements"}, "POKECRT_DATA_DIR="+profiles)
+	if status != 1 || len(stdout) != 0 || !bytes.Contains(stderr, []byte("trainer create")) {
+		t.Fatalf("installed achievement first run: %d %q %q", status, stdout, stderr)
 	}
 	if _, err := os.Stat(profiles); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("first-run queries created profile storage")
@@ -290,6 +294,43 @@ func TestInstalledBinary(t *testing.T) {
 	closeErr := writer.Close()
 	if runErr != nil || closeErr != nil || pipeErrors.Len() != 0 {
 		t.Fatalf("installed encounter pipe %v %v %q", runErr, closeErr, pipeErrors.String())
+	}
+	beforeViews, err := os.ReadFile(profileDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, view := range []struct {
+		args []string
+		want string
+	}{
+		{[]string{"trainer"}, "Encounters: 7"},
+		{[]string{"trainer", "--name", "Mayank"}, "Encounters: 0"},
+		{[]string{"trainer", "achievements"}, "First Contact"},
+	} {
+		status, out, stderr := invoke(view.args, "POKECRT_DATA_DIR="+profiles)
+		if status != 0 || len(stderr) != 0 || !bytes.Contains(out, []byte(view.want)) {
+			t.Fatalf("installed trainer view %v: %d %q %q", view.args, status, out, stderr)
+		}
+	}
+	afterViews, err := os.ReadFile(profileDB)
+	if err != nil || !bytes.Equal(beforeViews, afterViews) {
+		t.Fatal("installed browsing mutated state")
+	}
+	reader2, writer2, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader2.Close()
+	achievementPipe := exec.Command(binary, "trainer", "achievements")
+	achievementPipe.Dir = empty
+	achievementPipe.Env = append(append([]string{}, baseEnv...), "POKECRT_DATA_DIR="+profiles)
+	achievementPipe.Stdout = writer2
+	var achievementErrors bytes.Buffer
+	achievementPipe.Stderr = &achievementErrors
+	runErr = achievementPipe.Run()
+	writer2.Close()
+	if runErr != nil || achievementErrors.Len() != 0 {
+		t.Fatal("installed achievement pipe", runErr, achievementErrors.String())
 	}
 	repo, err := storage.ReadOnly(context.Background(), profileDB)
 	if err != nil {

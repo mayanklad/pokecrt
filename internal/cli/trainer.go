@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mayanklad/pokecrt/internal/catalog"
+	"github.com/mayanklad/pokecrt/internal/sprite"
 	"github.com/mayanklad/pokecrt/internal/storage"
 	"github.com/mayanklad/pokecrt/internal/trainer"
 )
@@ -20,6 +22,7 @@ Usage:
   pokecrt trainer create <trainer-name>
   pokecrt trainer list
   pokecrt trainer use <trainer-name>
+  pokecrt trainer achievements
 
 Options:
   --name       View another profile without changing the active trainer
@@ -28,7 +31,9 @@ Options:
 Names use 1–32 Unicode code points after trimming. Internal spaces are allowed;
 quote them in the shell. NFC-normalized, case-folded names identify one profile.
 Only the first creation activates automatically. Listing and viewing create no
-storage. Profile commands never record encounters or discoveries.
+storage. Profile commands never record encounters or discoveries. Viewing shows XP,
+collection statistics and generation progress; achievements lists earned and
+locked goals for the active trainer without granting rewards.
 `
 
 const noProfiles = "No trainer profiles found.\nCreate your first trainer:\n  pokecrt trainer create <name>\n"
@@ -44,7 +49,7 @@ func parseTrainerFlags(args []string) (trainerOptions, error) {
 	o := trainerOptions{action: "view"}
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		o.action, args = args[0], args[1:]
-		if o.action != "create" && o.action != "list" && o.action != "use" {
+		if o.action != "create" && o.action != "list" && o.action != "use" && o.action != "achievements" {
 			return o, fmt.Errorf("unknown trainer subcommand %q", o.action)
 		}
 	}
@@ -87,6 +92,7 @@ func parseTrainerFlags(args []string) (trainerOptions, error) {
 
 type profileRepository interface {
 	trainer.Profiles
+	TrainerRecords(context.Context, int64) (trainer.TrainerRecords, error)
 	Close() error
 }
 type profileOpener func(context.Context, string, string) (profileRepository, error)
@@ -115,10 +121,16 @@ func executeTrainer(args []string, stdout, stderr io.Writer, resolve func() (str
 		output := trainerHelp
 		if o.action != "view" {
 			output = fmt.Sprintf("%s trainer profiles\n\nUsage:\n  pokecrt trainer %s", strings.ToUpper(o.action[:1])+o.action[1:], o.action)
-			if o.action != "list" {
+			if o.action == "create" || o.action == "use" {
 				output += " <trainer-name>"
 			}
-			output += "\n\nOptions:\n  --help, -h   Show this help\n\nFlags precede the name. Quote names containing spaces.\n"
+			output += "\n\nOptions:\n  --help, -h   Show this help\n"
+			if o.action == "create" || o.action == "use" {
+				output += "\nFlags precede the name. Quote names containing spaces.\n"
+			}
+			if o.action == "achievements" {
+				output += "\nRequires an active trainer. Groups unlocked and locked achievements. Earned\ndates are UTC; locked goals show progress. Reading never grants rewards.\n"
+			}
 		}
 		return writeOutput(stdout, stderr, []byte(output))
 	}
@@ -134,6 +146,9 @@ func executeTrainer(args []string, stdout, stderr io.Writer, resolve func() (str
 	if errors.Is(err, storage.ErrNoState) {
 		if o.action == "list" || (o.action == "view" && !o.named) {
 			return writeOutput(stdout, stderr, []byte(noProfiles))
+		}
+		if o.action == "achievements" {
+			return trainerError(stderr, fmt.Errorf("no trainer profiles; create your first trainer with 'pokecrt trainer create <name>'"))
 		}
 		return trainerError(stderr, fmt.Errorf("%w; create your first trainer with 'pokecrt trainer create <name>'", trainer.ErrNotFound))
 	}
@@ -177,6 +192,10 @@ func executeTrainer(args []string, stdout, stderr io.Writer, resolve func() (str
 				return trainerError(stderr, listErr)
 			}
 			if len(profiles) == 0 {
+				if o.action == "achievements" {
+					fmt.Fprint(stderr, "pokecrt: no active trainer.\n", noProfiles)
+					return 1
+				}
 				return writeOutput(stdout, stderr, []byte(noProfiles))
 			}
 			fmt.Fprint(stderr, "pokecrt: no active trainer.\n", formatProfiles(profiles), "Select a trainer:\n  pokecrt trainer use <name>\n")
@@ -189,7 +208,24 @@ func executeTrainer(args []string, stdout, stderr io.Writer, resolve func() (str
 		if p.Active {
 			active = "Yes"
 		}
-		output = fmt.Sprintf("Trainer: %s\nCreated: %s\nActive: %s\n", p.Name, time.UnixMilli(p.CreatedAtMS).UTC().Format(time.RFC3339Nano), active)
+		records, readErr := repo.TrainerRecords(ctx, p.ID)
+		if readErr != nil {
+			return trainerError(stderr, readErr)
+		}
+		available := func(k catalog.VariantKey) bool { _, ok := sprite.Lookup(k); return ok }
+		if o.action == "achievements" {
+			targets, err := trainer.NewAchievementTargets(catalog.All(), available)
+			if err != nil {
+				return trainerError(stderr, err)
+			}
+			output = formatAchievementViews(p.Name, targets.Views(records.AchievementState, records.Unlocks))
+		} else {
+			statistics, err := trainer.TrainerStatistics(records, catalog.All(), available)
+			if err != nil {
+				return trainerError(stderr, err)
+			}
+			output = fmt.Sprintf("Trainer: %s\nCreated: %s\nActive: %s\n", p.Name, time.UnixMilli(p.CreatedAtMS).UTC().Format(time.RFC3339Nano), active) + formatTrainerStatistics(statistics)
+		}
 	}
 	return writeOutput(stdout, stderr, []byte(output))
 }
@@ -213,4 +249,52 @@ func formatProfiles(profiles []trainer.Profile) string {
 func trainerError(stderr io.Writer, err error) int {
 	fmt.Fprintf(stderr, "pokecrt: %v\n", err)
 	return 1
+}
+
+func formatTrainerStatistics(s trainer.Statistics) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "Level: %d\nTotal XP: %d\nLevel progress: %d / 1000 XP\nXP to next level: %d\nEncounters: %d\nSpecies discovered (historical): %d\nVariants collected (historical): %d\nShiny encounters: %d\nShiny variants collected (historical): %d\n", s.Progress.Level, s.Progress.Total, s.Progress.InLevel, s.Progress.ToNext, s.Encounters, s.Species, s.Variants, s.ShinyEncounters, s.ShinyCollections)
+	first, last := "None", "None"
+	if s.FirstEncounterMS != nil {
+		first = time.UnixMilli(*s.FirstEncounterMS).UTC().Format(time.RFC3339Nano)
+	}
+	if s.LastEncounterMS != nil {
+		last = time.UnixMilli(*s.LastEncounterMS).UTC().Format(time.RFC3339Nano)
+	}
+	fmt.Fprintf(&b, "First encounter: %s\nLast encounter: %s\n\nCurrent eligible completion:\nSpecies: %d / %d\nVariants: %d / %d\n\nGeneration discoveries:\n", first, last, s.Completion.Species, s.Completion.SpeciesTotal, s.Completion.Variants, s.Completion.VariantsTotal)
+	for _, g := range s.Generations {
+		fmt.Fprintf(&b, "  Generation %d: %d discovered; eligible %d / %d\n", g.Generation, g.Discovered, g.Eligible, g.EligibleTotal)
+	}
+	if s.UnclassifiedSpecies > 0 {
+		fmt.Fprintf(&b, "  Without current generation metadata: %d discovered species\n", s.UnclassifiedSpecies)
+	}
+	return b.String()
+}
+func formatAchievementViews(name string, views trainer.AchievementViews) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "Achievements: %s\n\nUnlocked (%d):\n", name, len(views.Unlocked))
+	if len(views.Unlocked) == 0 {
+		b.WriteString("  None yet.\n")
+	}
+	for _, v := range views.Unlocked {
+		fmt.Fprintf(&b, "  %s\n    %s\n    Earned: %s\n", v.Name, v.Description, time.UnixMilli(v.EarnedAtMS).UTC().Format(time.RFC3339Nano))
+		if v.HadTargetAtUnlock {
+			fmt.Fprintf(&b, "    Target at unlock: %d\n", v.TargetAtUnlock)
+		}
+	}
+	fmt.Fprintf(&b, "\nLocked (%d):\n", len(views.Locked))
+	if len(views.Locked) == 0 {
+		b.WriteString("  None.\n")
+	}
+	for _, v := range views.Locked {
+		fmt.Fprintf(&b, "  %s\n    %s\n", v.Name, v.Description)
+		if v.HasTarget {
+			fmt.Fprintf(&b, "    Progress: %d / %d\n", v.Current, v.Target)
+		} else if v.Current >= v.Target && v.Target > 0 {
+			b.WriteString("    Requirement met; unlocks on the next committed encounter.\n")
+		} else {
+			b.WriteString("    Not yet earned.\n")
+		}
+	}
+	return b.String()
 }

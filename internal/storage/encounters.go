@@ -190,7 +190,7 @@ func validateEncounterChoice(choice trainer.Choice) error {
 	return fmt.Errorf("encounter form/gender is unavailable for species #%03d", key.SpeciesID)
 }
 
-func encounterAchievementState(ctx context.Context, tx *Tx, id int64, record trainer.Record) (trainer.AchievementState, error) {
+func encounterAchievementState(ctx context.Context, tx readQueries, id int64, record trainer.Record) (trainer.AchievementState, error) {
 	state := trainer.AchievementState{Encounters: record.Encounters, Species: record.Species, Variants: record.Variants, SeenSpecies: map[int]bool{}, EncounteredTypes: map[string]bool{}}
 	rows, err := tx.QueryContext(ctx, "SELECT species_id FROM species_discoveries WHERE trainer_id = ?", id)
 	if err != nil {
@@ -234,7 +234,7 @@ func encounterAchievementState(ctx context.Context, tx *Tx, id int64, record tra
 	return state, err
 }
 
-func encounteredVariants(ctx context.Context, tx *Tx, id int64) ([]catalog.VariantKey, error) {
+func encounteredVariants(ctx context.Context, tx readQueries, id int64) ([]catalog.VariantKey, error) {
 	rows, err := tx.QueryContext(ctx, "SELECT species_id,form_id,gender_key,palette FROM variant_discoveries WHERE trainer_id = ?", id)
 	if err != nil {
 		return nil, err

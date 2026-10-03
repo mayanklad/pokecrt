@@ -24,6 +24,7 @@ Usage:
   pokecrt trainer create <trainer-name>
   pokecrt trainer list
   pokecrt trainer use <trainer-name>
+  pokecrt trainer achievements
 
 Options:
   --help, -h   Show this help
@@ -34,7 +35,7 @@ Commands:
   list        List the public catalog or detailed entries
   encounter   Record one unrestricted encounter for the active trainer
   dex         Browse the active trainer’s discoveries
-  trainer     Create, list, select or view local trainer profiles
+  trainer     Manage profiles, view statistics and achievement progress
 
 Run 'pokecrt <command> --help' for command options.
 `

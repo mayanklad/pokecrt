@@ -52,8 +52,8 @@ D12 adds explicit local profiles:
 - Read-only viewing/listing create no missing state; command help and syntax
   validation precede path resolution and database construction.
 
-Profile views currently show name, UTC creation time and active status. Complete
-statistics and achievement views are scheduled for D17. Profiles never create
+D17 profile views include name, UTC creation time, active status, full statistics
+and achievement progress. Profiles never create
 encounters, discoveries or XP awards. Encounter recording is available through
 the D15 encounter command.
 The SQLite schema and dataset are unchanged. Unicode handling pins
@@ -218,8 +218,9 @@ Published v0.2 provides the complete public print/catalog engine for the reviewe
 v0.3 covers trainer profiles, SQLite storage, encounters, progression, achievements
 and private Pokédex CLI. The TUI and final hardening remain later milestones.
 Storage, profiles, encounters, progression and achievement evaluation are
-implemented in development source. D16 implements private Pokédex browsing; D17 adds
-full trainer statistics and achievement views. The published v0.2 feature set
+implemented in development source. D16 implements private Pokédex browsing; D17
+implements full trainer statistics and achievement views. D18 is integration and
+release verification. The published v0.2 feature set
 is unchanged.
 
 ## D16: private Pokédex
@@ -239,3 +240,32 @@ bytes are covered by tests. Full tests, vet, race tests, CGO-free domain/storage
 checks and 2947 pinned inputs pass. Public regression measurements and their
 initial contaminated timing runs are recorded in benchmarks.md. D17 remains
 full trainer statistics and achievement browsing; interactive views remain later.
+
+## D17: trainer statistics and achievement browsing
+
+Development baseline: `9678c29edfa80cbcd0bd3bbbdb14c726f49d17f8`.
+
+Trainer summaries now include XP/level, next-level progress, encounter and
+collection counts, repeated versus distinct shiny counts, UTC first/last times,
+current eligible completion and generation discoveries. Named viewing preserves
+the active trainer. Historical identities remain counted if artwork or metadata
+is removed; unknown generation metadata is not fabricated.
+
+`trainer achievements` groups earned and locked entries in the existing registry
+order. Earned dates/targets persist; newly satisfied definitions remain locked
+until the next committed encounter. Unsupported locked goals are suppressed,
+while previously earned definitions remain readable. Safe models contain counts
+and generic descriptions, without unseen species or form identities.
+
+Reads share existing discovery/evidence queries and use one consistent SQLite
+transaction. No new migration, dependency, dataset or achievement policy is
+introduced. All prior dash formatting fixes are preserved.
+
+Full tests, vet, race, CGO-free domain/storage and pinned-input checks pass.
+Fixtures cover repeated shiny encounters, empty and epoch-zero timestamps,
+named/active isolation, removed inventory, retained unlocks, pending goals,
+concurrent encounter snapshots and unchanged database bytes. Installed binaries
+exercise summaries, achievements, first-run/help and quiet broken pipes.
+Fresh public startup and size checks pass existing thresholds; benchmarks.md
+records the method. D18 remains integration, offline and history-performance
+verification and release documentation before publication.

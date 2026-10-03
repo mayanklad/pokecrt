@@ -2,8 +2,15 @@ package storage
 
 import (
 	"context"
+	"database/sql"
 	"github.com/mayanklad/pokecrt/internal/trainer"
 )
+
+// readQueries is shared by an encounter write transaction and a read transaction.
+type readQueries interface {
+	QueryContext(context.Context, string, ...any) (*sql.Rows, error)
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
 
 // DexRecords reads one trainer's discoveries and recorded form facts in a single
 // read transaction. It performs no writes, migration, reward evaluation or lookup.
@@ -14,6 +21,17 @@ func (r *Repository) DexRecords(ctx context.Context, trainerID int64) (trainer.D
 		return out, err
 	}
 	defer tx.Rollback()
+	out, err = dexRecords(ctx, tx, trainerID)
+	if err != nil {
+		return out, err
+	}
+	err = tx.Commit()
+	return out, err
+}
+
+func dexRecords(ctx context.Context, tx readQueries, trainerID int64) (trainer.DexRecords, error) {
+	out := trainer.DexRecords{Species: map[int]trainer.Discovery{}}
+	var err error
 	if err = tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM encounters WHERE trainer_id=?", trainerID).Scan(&out.Encounters); err != nil {
 		return out, err
 	}
@@ -59,6 +77,5 @@ func (r *Repository) DexRecords(ctx context.Context, trainerID int64) (trainer.D
 	if err != nil {
 		return out, err
 	}
-	err = tx.Commit()
-	return out, err
+	return out, nil
 }
