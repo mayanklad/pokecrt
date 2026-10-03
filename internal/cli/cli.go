@@ -19,6 +19,7 @@ Usage:
   pokecrt print [selectors] [--output compact|sprite]
   pokecrt list [selectors] [--details]
   pokecrt encounter [--output full|compact|no-title|achievements|sprite]
+  pokecrt dex [list|show]
   pokecrt trainer [--name <trainer-name>]
   pokecrt trainer create <trainer-name>
   pokecrt trainer list
@@ -32,6 +33,7 @@ Commands:
   print       Print named or uniformly random matching artwork
   list        List the public catalog or detailed entries
   encounter   Record one unrestricted encounter for the active trainer
+  dex         Browse the active trainer’s discoveries
   trainer     Create, list, select or view local trainer profiles
 
 Run 'pokecrt <command> --help' for command options.
@@ -48,6 +50,9 @@ func Run(args []string, stdout, stderr io.Writer, version, datasetID string) int
 	}
 	if len(args) > 0 && args[0] == "encounter" {
 		return runEncounter(args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "dex" {
+		return runDex(args[1:], stdout, stderr)
 	}
 	if len(args) > 0 && args[0] == "trainer" {
 		return runTrainer(args[1:], stdout, stderr)

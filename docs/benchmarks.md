@@ -580,3 +580,30 @@ concurrent one-time awards, per-trainer isolation and rollback after a new theme
 insert. Installed binary modes and post-commit output failure checks continue
 to pass. No new network-namespace isolation or history-growth encounter latency
 result is claimed; those remain checks before v0.3 publication.
+
+## D16 private Pokédex regression check — 3 October 2026
+
+Go 1.27.1, Linux amd64, Intel Xeon Platinum 8370C @ 2.80 GHz; dataset
+`8e5073aeeff3f7761e26ccdf9f068189516ae7eded9c0998a9d970b7d37e6b60`.
+CGO-free stripped/trimpath binary: 11,784,352 bytes (11.238 MiB), within
+the approved 16 MiB trainer-inclusive limit.
+
+An initial startup run overlapping other validation reached short-command P95
+14.948 ms. A subsequent run reached 9.326 ms. Both exceed the 8 ms budget and
+are retained as observations, not passing evidence. After other validation
+finished, the isolated six-case color/NO_COLOR startup run (GOMAXPROCS=1,
+five warmups and 100 measured samples per row) measured maximum short-command
+P95 4.392 ms and random/full-list P95 10.010 ms, within 8/25 ms.
+No timing budget or public command implementation was changed.
+
+An overlapping warm run also exceeded named/filtered/variant/list budgets.
+The isolated follow-up uses three 500 ms repetitions on one Go CPU. Median
+warm short cases are at most 0.686 ms against 0.85 ms; random/full-list at most
+3.225 ms against 12 ms. Isolated render measurement, three 500 ms repetitions,
+measures largest-area color median 0.589 ms against 0.60 ms. Native wait4 child
+RSS (ten repetitions per case/mode) reaches 9.039 MiB against 10 MiB.
+
+These are public-path regression checks, not representative large-history Dex
+or encounter latency claims. Network-namespace testing remains unavailable in
+this execution environment as recorded for D15. Release offline and
+representative trainer-history performance gates remain required before v0.3.

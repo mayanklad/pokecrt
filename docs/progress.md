@@ -218,6 +218,24 @@ Published v0.2 provides the complete public print/catalog engine for the reviewe
 v0.3 covers trainer profiles, SQLite storage, encounters, progression, achievements
 and private Pokédex CLI. The TUI and final hardening remain later milestones.
 Storage, profiles, encounters, progression and achievement evaluation are
-implemented in development source. D16 adds private Pokédex browsing; D17 adds
+implemented in development source. D16 implements private Pokédex browsing; D17 adds
 full trainer statistics and achievement views. The published v0.2 feature set
 is unchanged.
+
+## D16: private Pokédex
+
+Development baseline: `c4d171d9c5877147cea74ec96061c9690180299e`.
+
+Summary, National list and exact entry commands now use safe trainer view models.
+Hidden identities, form names, gender identities and artwork are absent from
+those models until discovered. Encountered-form type conditions apply to one
+form; evolution nodes obscure undiscovered names. Read-only queries retrieve
+one trainer's persisted discoveries and form snapshots in a single transaction.
+No schema, dependency, dataset, encounter probability or reward policy changes.
+
+Disclosure, shiny-first/alternate-first locks, removed-artwork history, gender
+locks, trainer isolation, cancellation, command parsing and unchanged database
+bytes are covered by tests. Full tests, vet, race tests, CGO-free domain/storage
+checks and 2947 pinned inputs pass. Public regression measurements and their
+initial contaminated timing runs are recorded in benchmarks.md. D17 remains
+full trainer statistics and achievement browsing; interactive views remain later.

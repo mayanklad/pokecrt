@@ -41,7 +41,8 @@ manifest; performance measurements are documented in docs/benchmarks.md.
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 The published v0.2 binary provides the public print/catalog engine. Development
 source adds profiles, encounters, XP and achievement evaluation for the upcoming
-v0.3 milestone; private Pokédex and full trainer views remain pending. The TUI
+v0.3 milestone, including private Pokédex browsing. Full trainer statistics and
+achievement views remain pending. The TUI
 is a later milestone.
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
@@ -461,3 +462,29 @@ are derived from catalog metadata and exact accepted regular-artwork inventory;
 unsupported goals are suppressed. Earned unlocks retain their date, dataset and
 applicable target across inventory updates. New goals already satisfied by
 history unlock on the next committed encounter; viewing alone grants nothing.
+
+## Trainer Pokédex
+
+`pokecrt dex` summarizes the active trainer's eligible species and appearance
+collection, encounters, shiny collections and generation progress.
+
+```bash
+pokecrt dex list --seen
+pokecrt dex list --unseen --gen 1,2
+pokecrt dex list --type fire --type-any dragon,flying
+pokecrt dex show --number 6
+pokecrt dex show --name charizard --form mega-x --shiny
+```
+
+Lists include anonymous National slots for undiscovered species. Generation is
+safe to filter before discovery; type, color, stage and source status filters
+include discovered species only and cannot accompany `--unseen`. Type conditions
+must match one actually encountered form.
+
+Entry views reveal species facts after discovery, known forms and observed
+genders, collection counts and UTC first/last seen times. Evolution nodes remain
+anonymous until discovered. Artwork appears only for the exact collected
+appearance. A shiny-first or alternate-form discovery does not substitute artwork
+for an uncollected standard regular selection. Removed artwork retains its
+collection record with an explicit unavailable notice. Browsing requires an
+active trainer, opens storage read-only and never grants XP or achievements.
