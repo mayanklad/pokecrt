@@ -1,9 +1,12 @@
 # Implementation progress
 
-Published milestone: [v0.2 - Complete public engine](https://github.com/mayanklad/pokecrt/releases/tag/v0.2), 2 October 2026.
-Release source: `59fea7c10a1de45d5732f4bd84617757e6e57490`.
-Current source milestone: v0.3 - Trainer CLI.
-[Trainer release notes](release-v0.3.md). The TUI remains the next milestone.
+Current milestone: [v0.3 - Trainer CLI](https://github.com/mayanklad/pokecrt/releases/tag/v0.3).
+Source: [v0.3 tag](https://github.com/mayanklad/pokecrt/tree/v0.3).
+[Release notes](release-v0.3.md).
+
+Implemented through D18: public printing/catalog, trainer profiles, encounters,
+progression, 50 achievements, private Pokédex and trainer statistics.
+Next milestone: v0.4 - TUI.
 
 ## Implemented behavior
 
@@ -113,7 +116,7 @@ No schema, dependency, generated dataset or encounter probability changes.
 
 ## Expanded achievements
 
-The development registry now supports 50 feasible achievements for the current
+The achievement registry supports 50 feasible achievements for the current
 inventory. It preserves the original 34 IDs/names and adds the 16 themed goals
 listed in [the achievement catalog](../README.md#achievement-catalog).
 One ordered domain registry supplies definitions and current progress; no
@@ -235,8 +238,8 @@ Disclosure, shiny-first/alternate-first locks, removed-artwork history, gender
 locks, trainer isolation, cancellation, command parsing and unchanged database
 bytes are covered by tests. Full tests, vet, race tests, CGO-free domain/storage
 checks and 2947 pinned inputs pass. Public regression measurements and their
-initial contaminated timing runs are recorded in benchmarks.md. D17 remains
-full trainer statistics and achievement browsing; interactive views remain later.
+initial contaminated timing runs are recorded in benchmarks.md. D17 implements
+full trainer statistics and achievement browsing; interactive views remain v0.4 work.
 
 ## D17: trainer statistics and achievement browsing
 
@@ -256,7 +259,7 @@ and generic descriptions, without unseen species or form identities.
 
 Reads share existing discovery/evidence queries and use one consistent SQLite
 transaction. No new migration, dependency, dataset or achievement policy is
-introduced. All prior dash formatting fixes are preserved.
+introduced.
 
 Full tests, vet, race, CGO-free domain/storage and pinned-input checks pass.
 Fixtures cover repeated shiny encounters, empty and epoch-zero timestamps,
@@ -264,8 +267,8 @@ named/active isolation, removed inventory, retained unlocks, pending goals,
 concurrent encounter snapshots and unchanged database bytes. Installed binaries
 exercise summaries, achievements, first-run/help and quiet broken pipes.
 Fresh public startup and size checks pass existing thresholds; benchmarks.md
-records the method. D18 remains integration, offline and history-performance
-verification and release documentation before publication.
+records the method. D18 integration, offline and history-performance results
+are recorded below.
 
 ## D18: trainer CLI integration and release documentation
 
@@ -289,10 +292,9 @@ all methods are retained in benchmarks.md. Fastfetch raw-input piping is verifie
 Fastfetch is unavailable on the benchmark host; JSONC command-raw examples are
 checked against official documentation, without claiming a runtime check.
 
-README and v0.3 release notes describe the complete trainer CLI before tagging.
-Archives include matching release notes and contain no trainer state. Public
-release records do not claim a v0.3 publication date or tag commit in advance.
-The interactive TUI remains the next milestone.
+The v0.3 archive includes the executable, product documentation, release notes,
+coverage and licensing notices. It contains no trainer state. The interactive
+TUI remains the v0.4 milestone.
 
 ### Player-facing text review
 
@@ -305,3 +307,10 @@ artwork collection progress. Single-command section spacing and singular
 encounter labels are consistent; no trailing spacing is added to separate
 independent commands. Full CLI/domain tests and installed execution cover the
 updated wording and presentation.
+
+## Previous releases
+
+[v0.2 - Complete public engine](https://github.com/mayanklad/pokecrt/releases/tag/v0.2)
+was published 2 October 2026. Its source is
+[`59fea7c10a1de45d5732f4bd84617757e6e57490`](https://github.com/mayanklad/pokecrt/commit/59fea7c10a1de45d5732f4bd84617757e6e57490).
+It contains the public print/catalog engine; trainer gameplay is included in v0.3.

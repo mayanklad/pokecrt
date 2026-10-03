@@ -1,5 +1,8 @@
 # PokéCRT v0.3 - Trainer CLI
 
+[Release](https://github.com/mayanklad/pokecrt/releases/tag/v0.3) ·
+[Source tag](https://github.com/mayanklad/pokecrt/tree/v0.3).
+
 PokéCRT v0.3 adds persistent trainer gameplay to the offline public engine.
 Linux amd64 is the supported binary platform; UTF-8 is required and truecolor
 is recommended. The interactive TUI remains a later milestone.
