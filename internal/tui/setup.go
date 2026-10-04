@@ -17,6 +17,8 @@ const (
 	mainScreen setupScreen = iota
 	createScreen
 	profilesScreen
+	dexScreen
+	dexSearchScreen
 )
 
 type profileResult struct {
@@ -144,7 +146,7 @@ func (m *Model) editName(k tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 func (m *Model) handleSetup(msg tea.Msg) (tea.Cmd, bool) {
-	if m.settings || m.screen == mainScreen {
+	if m.settings || (m.screen != createScreen && m.screen != profilesScreen) {
 		return nil, false
 	}
 	switch msg := msg.(type) {

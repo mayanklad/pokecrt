@@ -102,3 +102,34 @@ func TestDexObservedGenderOnlyAndUnsupportedSelection(t *testing.T) {
 		t.Fatal("unsupported seen selection accepted")
 	}
 }
+
+func TestDexAppearancesExposeOnlyObservedFormsAndGenders(t *testing.T) {
+	d := NewDex(catalog.All(), DexRecords{}, dexAvailable)
+	if len(d.Appearances(6)) != 0 {
+		t.Fatal("unseen selectors disclosed")
+	}
+	r := dexFixture("mega-x", "shiny")
+	d = NewDex(catalog.All(), r, dexAvailable)
+	opts := d.Appearances(6)
+	if len(opts) != 2 || opts[0].Collected || !opts[1].Collected || opts[0].Selection.Form != "mega-x" {
+		t.Fatal(opts)
+	}
+	for _, o := range opts {
+		e, err := d.Entry(6, o.Selection)
+		if err != nil || o.Collected != (e.ArtworkKey != nil) {
+			t.Fatal("exact selection", o, e, err)
+		}
+	}
+	r = DexRecords{Species: map[int]Discovery{678: {Count: 1}}, Variants: []VariantDiscovery{{Key: catalog.VariantKey{SpeciesID: 678, FormID: "standard", Gender: "female", Palette: "shiny"}, FormName: "Standard"}}}
+	d = NewDex(catalog.All(), r, dexAvailable)
+	for _, o := range d.Appearances(678) {
+		if o.Selection.Gender != "female" || strings.Contains(o.Label, "male ·") && !strings.Contains(o.Label, "female ·") {
+			t.Fatal("unobserved gender disclosed", o)
+		}
+	}
+	d = NewDex(catalog.All(), dexFixture("mega-x", "shiny"), func(catalog.VariantKey) bool { return false })
+	opts = d.Appearances(6)
+	if len(opts) != 1 || !opts[0].Collected {
+		t.Fatal("removed collected variant lost", opts)
+	}
+}

@@ -403,3 +403,49 @@ statistics/achievements; D23 complete integration, resources and release review.
 D20 navigation correction: arrow keys enter and navigate every on-screen letter row; Enter preserves letter focus. Tab reaches all letter keys. Trainer list arrows leave at boundaries and reach the paired action buttons. Regression coverage includes wide, compact, and minimum supported terminal dimensions.
 
 D20 full TUI review correction: focus-specific setup guidance replaces the fixed keyboard hint; mouse actions retain their visible focus, and returning from Appearance restores setup focus. Appearance displays navigation guidance. Trainer wheel scrolling stops at boundaries; refresh clamps stale selection. Busy name fields allow vertical focus movement. Unsupported small windows accept only visible Quit, preventing hidden mutations. Reviewed keyboard/mouse setup, two-column controls, all appearance palettes, NO_COLOR, three keyboard pages, resizing, asynchronous operations and terminal restoration.
+
+
+## D21: interactive disclosure-safe Pokédex
+
+Baseline: owner-committed D20 `5ad62fd5d1e896eec24cb360e685038052f7e176`.
+Adds National list, All/Seen/Unseen and generation filters, safe name/number
+search with mouse-accessible on-screen keyboard, entry facts and counts/times,
+known form/gender/palette selector, original-size artwork scrolling, and clickable/
+keyboard-accessible evolution nodes. Wide list/detail panes and compact switching
+preserve selection, active pane and focus on resize down to 40×12. Existing
+appearance modes, setup behavior and Adventure Menu styling are preserved.
+
+Domain Dex produces selector options for observed forms/genders only. Missing
+palettes remain locked; removed collected assets retain history with a notice.
+Unsupported exact selections retain safe species facts for UI recovery while CLI
+error behavior remains unchanged. Hidden names cannot match search. No catalog
+identity join or sprite fallback is introduced in presentation.
+
+Storage reads use existing ReadOnly/current-schema APIs. Data loads and exact
+sprite decoding/rendering are commands with stale-result guards. Reopening clears
+trainer-scoped data. Public command paths never construct the Dex. No schema,
+dataset, dependency, encounter/XP/achievement rule or asset pin changes.
+
+Full tests/vet/race pass; frame/mouse/disclosure tests cover all modes, NO_COLOR,
+all keyboard pages, list/picker/detail/search, minimum and undersized windows,
+async results, trainer isolation and unchanged database bytes. Terminal review
+covers keyboard and mouse-only search/artwork, exact locks, evolution, creation,
+resize, Native/NO_COLOR, live Follow Terminal and terminal restoration. Resource
+measurements and unresolved shared-host timing gates are in benchmarks.md.
+
+Next: D22 explicit encounters/history, trainer statistics and achievement views;
+D23 full integration, terminal compatibility, resource and release review.
+
+
+D21 approved device redesign: replaces the initial long-report presentation with
+a framed Overview plus separate Variants, Evolution and Records tabs. Status
+filters, selected tabs and footer actions have consistent visual grouping. Wide
+index/detail panes and compact two-row tabs share one frame geometry; short
+windows retain a View cycle control. Compact filters can be opened and closed
+with a mouse. Arrow navigation follows visible rows/columns; Tab reaches all
+controls and safe evolution nodes without duplicate focus targets. Native sprite
+proportions and exact collection locks are preserved. Tab switching does not
+perform a data read or sprite render, and an explicitly selected appearance
+survives filtering when the same entry remains selected. Times remain precise
+UTC records. Supersedes the earlier D21 layout ZIP; the complete replacement is
+against committed D20 `5ad62fd5d1e896eec24cb360e685038052f7e176`.

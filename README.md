@@ -41,7 +41,7 @@ manifest; performance measurements are documented in docs/benchmarks.md.
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 v0.3 adds local trainer profiles, fair encounters, XP/levels, 50 achievements,
 private Pokédex browsing and trainer statistics. Public printing and listing
-remain independent of trainer state. The interactive TUI is a later milestone.
+remain independent of trainer state. The interactive TUI is being completed through the v0.4 milestones.
 The development branch now includes the first Adventure Menu interface increment:
 `pokecrt tui`. It provides responsive navigation, arrow/Tab and mouse controls,
 live session appearance choices and read-only trainer status. Interactive
@@ -617,3 +617,38 @@ The device shows a clean `?` instead of pixel artwork. First-run status is
 Featured discovered artwork is planned for a later increment. Missing/corrupt trainer
 data leaves navigation, appearance and quit usable. See docs/progress.md for
 implemented scope and docs/benchmarks.md for measured verification limits.
+
+
+D21 connects **Pokédex** to the active trainer's collection with a framed device
+display and **Overview / Variants / Evolution / Records** tabs. Overview keeps
+artwork and concise appearance/type/count readings; Records holds timestamps,
+observed forms, species facts and generation/collection progress. Variants offers
+only observed form/gender identities, with clear collected and locked palettes.
+An exact uncollected appearance never falls back to another sprite. Evolution
+nodes remain anonymous until discovered and can be opened with mouse or keyboard.
+
+Wide windows (at least 100 columns and 24 rows) show the National index beside
+the entry. Compact windows use **Index** to return from the device to the list,
+two rows of tabs, and **Filters** to open/close filters. Short windows retain a
+clickable **View** selector that cycles through all four tabs. Artwork keeps
+original source proportions; clipped displays have scroll/pan controls integrated
+into their borders. Below 40×12, only the resize hint and Quit are available.
+
+**All / Seen / Unseen** and generation filters organize the index. **Search** or
+`/` opens editable safe name/number search with an on-screen keyboard. Clearing
+the text restores the filtered list. Search never matches an unseen name. An
+explicit chosen appearance survives filtering when the same entry remains selected.
+
+Arrows navigate the focused list, tab row or display; Enter activates. Tab and
+Shift+Tab reach every control, appearance list and evolution node; `[` and `]`
+switch tabs directly. On the display, Up/Down scroll and leave at its boundaries;
+Left/Right pan artwork, with Left leaving at the left edge. Mouse wheel, clickable
+scroll/pan controls, tabs and footer actions support mouse-only use. Appearance
+keeps the existing live/saved modes. **Back** returns to the Adventure Menu.
+
+Data reads and sprite decode/render are asynchronous; stale results are ignored.
+Tab switching reuses the current entry and artwork. Refresh rereads the active
+trainer; reopening clears the previous trainer's view. Browsing never records
+encounters, XP, discoveries, achievements or migrations. Encounters, full trainer
+statistics and achievement interaction remain D22. The Adventure Menu device
+preview remains neutral.

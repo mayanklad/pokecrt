@@ -18,8 +18,13 @@ func (m Model) paintCreate(c *canvas) {
 	p := m.palette()
 	w, h := min(c.width, 88), min(c.height, 18)
 	x, y := (c.width-w)/2, (c.height-h)/2
-	c.box(x, y, w, h, "NEW TRAINER", p.accent)
-	c.put(x+2, y+1, ansi.Truncate("Name · 1–32 Unicode characters", w-14, "…"), p.muted)
+	title, subtitle := "NEW TRAINER", "Name · 1–32 Unicode characters"
+	if m.screen == dexSearchScreen {
+		title = "POKÉDEX SEARCH"
+		subtitle = "Visible name or National number"
+	}
+	c.box(x, y, w, h, title, p.accent)
+	c.put(x+2, y+1, ansi.Truncate(subtitle, w-14, "…"), p.muted)
 	c.button(x+w-10, y+1, 8, 7, "Quit", m)
 	prefix, suffix := string(m.name[:m.cursor]), string(m.name[m.cursor:])
 	fieldW := w - 8
@@ -47,9 +52,15 @@ func (m Model) paintCreate(c *canvas) {
 		if m.snapshot.Profiles > 0 {
 			message = "Additional trainers need a separate Use action to become active."
 		}
+		if m.screen == dexSearchScreen {
+			message = "Search only revealed names and National numbers. An empty search restores the filtered list."
+		}
 		c.wrap(x+2, y+10, w-4, 3, message, p.muted)
 	}
 	create := "Create trainer"
+	if m.screen == dexSearchScreen {
+		create = "Apply search"
+	}
 	if m.busy {
 		create = "Working…"
 	}
@@ -127,6 +138,9 @@ func (m Model) createHelp(width int) string {
 		}
 		if width < 35 {
 			return "↓ Keys · Enter"
+		}
+		if m.screen == dexSearchScreen {
+			return "↓ Keyboard · ←→ Cursor · Enter Search · Tab Focus"
 		}
 		return "↓ Keyboard · ←→ Cursor · Enter Create · Tab Focus"
 	}

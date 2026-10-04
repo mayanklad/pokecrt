@@ -74,6 +74,7 @@ func Run(input *os.File, output io.Writer, appearance Appearance) error {
 		appearance = FollowTerminal
 	}
 	m := New(ctx, LoadProfile, appearance, noColor)
+	m.dexLoader = loadDex
 	m.actions = &profileActions{create: createProfile, use: useProfile}
 	m.configLoad = loadAppearance
 	m.configSave = saveAppearance

@@ -361,7 +361,7 @@ func (d *Dex) Entry(number int, q catalog.Selection) (DexEntry, error) {
 		}
 	}
 	if form.ID == "" || q.Gender != "" && (len(form.Genders) < 2 || !slices.Contains(form.Genders, gender)) || !d.available(key) {
-		return DexEntry{}, fmt.Errorf("unsupported appearance selection")
+		return out, fmt.Errorf("unsupported appearance selection")
 	}
 	if len(known[formID]) == 0 {
 		out.Notice = "LOCKED FORM - this form has not been discovered."
@@ -406,5 +406,64 @@ func (d *Dex) evolution(number int) []DexNode {
 		out = append(out, DexNode{Number: s.ID, Name: name, Children: slices.Clone(s.EvolvesTo)})
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Number < out[j].Number })
+	return out
+}
+
+// DexAppearance reveals selectors only for observed forms and visual genders.
+// Unobserved forms/genders remain anonymous counts in DexEntry. A palette label
+// may be offered locked, but its artwork is gated by Entry's exact collection.
+type DexAppearance struct {
+	Label     string
+	Selection catalog.Selection
+	Collected bool
+}
+
+func (d *Dex) Appearances(number int) []DexAppearance {
+	out := []DexAppearance{}
+	if _, seen := d.records.Species[number]; !seen {
+		return out
+	}
+	observed := map[catalog.VariantKey]VariantDiscovery{}
+	for _, v := range d.records.Variants {
+		if v.Key.SpeciesID == number {
+			observed[v.Key] = v
+		}
+	}
+	bases := map[catalog.VariantKey]string{}
+	for k, v := range observed {
+		k.Palette = "regular"
+		bases[k] = v.FormName
+	}
+	keys := []catalog.VariantKey{}
+	for k := range bases {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if keys[i].FormID != keys[j].FormID {
+			return keys[i].FormID < keys[j].FormID
+		}
+		return keys[i].Gender < keys[j].Gender
+	})
+	for _, base := range keys {
+		for _, palette := range []string{"regular", "shiny"} {
+			k := base
+			k.Palette = palette
+			_, collected := observed[k]
+			if !collected && !d.available(k) {
+				continue
+			}
+			label := bases[base]
+			if k.Gender != "default" {
+				label += " · " + k.Gender
+			}
+			label += " · " + palette
+			q := catalog.Selection{Form: k.FormID, Shiny: palette == "shiny"}
+			// Default is an internal exact gender, whereas CLI's explicit default is invalid.
+			if k.Gender != "default" {
+				q.Gender = k.Gender
+			}
+			out = append(out, DexAppearance{Label: label, Selection: q, Collected: collected})
+		}
+	}
 	return out
 }

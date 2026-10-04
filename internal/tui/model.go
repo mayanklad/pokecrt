@@ -19,6 +19,9 @@ type activateMsg int
 type nameCursorMsg int
 
 type Model struct {
+	dex       dexState
+	dexLoader dexLoader
+
 	configWriteStarted                              bool
 	screen                                          setupScreen
 	actions                                         *profileActions
@@ -101,12 +104,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	if cmd, handled := m.handleDex(msg); handled {
+		return m, cmd
+	}
 	if cmd, handled := m.handleSetup(msg); handled {
 		return m, cmd
 	}
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
+		if m.screen == dexScreen && !m.dexWide() && (m.focus == 10 || m.focus == 15 || m.focus >= 2000 || m.settings && (m.settingsReturnFocus == 10 || m.settingsReturnFocus == 15 || m.settingsReturnFocus >= 2000)) {
+			m.dex.detail = true
+		}
 	case activateMsg:
 		if msg == -1 {
 			var cfg tea.Cmd
@@ -120,7 +129,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd := m.activate(int(msg))
 		return m, cmd
 	case nameCursorMsg:
-		if m.screen == createScreen && !m.busy {
+		if (m.screen == createScreen || m.screen == dexSearchScreen) && !m.busy {
 			m.focus = 0
 			m.cursor = max(0, min(len(m.name), int(msg)))
 		}
@@ -206,11 +215,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "esc":
 			if m.settings {
-				m.settings = false
-				m.focus = 4
-				if m.screen != mainScreen {
-					m.focus = m.settingsReturnFocus
-				}
+				m.closeSettings()
 			} else {
 				return m, tea.Quit
 			}
@@ -243,7 +248,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 func (m *Model) moveFocus(delta int) {
 	order := []int{0, 1, 2, 3, 4, 5, 6}
-	if !m.settings && m.screen == createScreen {
+	if !m.settings && (m.screen == createScreen || m.screen == dexSearchScreen) {
 		order = append(order, 7)
 		for i := range m.keyboardLetters() {
 			order = append(order, 100+i)
@@ -284,15 +289,14 @@ func (m *Model) activate(id int) tea.Cmd {
 		case id == 4:
 			return m.saveSettings()
 		case id == 5:
-			m.settings = false
-			m.focus = 4
-			if m.screen != mainScreen {
-				m.focus = m.settingsReturnFocus
-			}
+			m.closeSettings()
 		case id == 6:
 			return tea.Quit
 		}
 		return nil
+	}
+	if m.screen == dexScreen || m.screen == dexSearchScreen {
+		return m.activateDex(id)
 	}
 	if m.screen != mainScreen {
 		return m.activateSetup(id)
@@ -304,6 +308,9 @@ func (m *Model) activate(id int) tea.Cmd {
 	switch id {
 	case 0, 1, 2, 3:
 		m.section = id
+		if id == 0 && m.dexLoader != nil {
+			return m.openDex()
+		}
 		if id == 2 && m.actions != nil {
 			m.openProfiles()
 			return m.reload()
@@ -316,4 +323,12 @@ func (m *Model) activate(id int) tea.Cmd {
 		return tea.Quit
 	}
 	return nil
+}
+
+func (m *Model) closeSettings() {
+	m.settings = false
+	m.focus = 4
+	if m.screen != mainScreen {
+		m.focus = m.settingsReturnFocus
+	}
 }

@@ -873,3 +873,79 @@ profiles without an active trainer, duplicate names, corrupt state, blocked/canc
 requests, stale results, atomic saves, concurrent saves, invalid/future/symlinked
 settings and late-load precedence. Actual desktop/terminal translucency and
 multiplexer compatibility remain manual checks; no new network-isolation claim.
+
+
+## D21 initial browse prototype measurements (superseded layout)
+
+Owner baseline: `5ad62fd5d1e896eec24cb360e685038052f7e176` (D20). Go 1.27.1,
+Linux amd64, Intel Xeon Platinum 8370C shared host. CGO_ENABLED=0 with
+-buildvcs=false -trimpath and -ldflags '-s -w'. No added dependency or global
+Dex initialization. Public measurements used the browse candidate before the
+final focus/resize-only corrections; final binary size is listed separately.
+
+Final stripped binary: 13,385,888 bytes (12.766 MiB), below 16 MiB.
+Measured D20 binary: 13,316,256 bytes.
+
+Fresh public process checks: five warmups, 100 timed samples per case/mode,
+ten native wait4 RSS samples, GOMAXPROCS=1; output discarded.
+
+| Case / mode | D20 P95 ms | D21 P95 ms | D21 peak RSS MiB |
+| --- | ---: | ---: | ---: |
+| color/random | 10.498 | 13.595 | 9.684 |
+| color/named | 10.024 | 7.036 | 7.305 |
+| color/filtered | 6.327 | 6.204 | 7.309 |
+| color/variant | 5.268 | 13.107 | 7.367 |
+| color/list | 8.995 | 14.381 | 8.930 |
+| color/details | 3.995 | 5.302 | 7.180 |
+| plain/random | 13.899 | 8.362 | 9.559 |
+| plain/named | 13.221 | 4.978 | 7.180 |
+| plain/filtered | 14.263 | 4.577 | 7.184 |
+| plain/variant | 11.988 | 5.128 | 7.367 |
+| plain/list | 20.520 | 10.242 | 8.930 |
+| plain/details | 9.873 | 6.561 | 7.180 |
+
+Maximum public RSS: 9.684 MiB (10 MiB limit). Random/full-list P95: at most
+14.381 ms (25 ms limit). Short-command P95: at most 13.107 ms, **above the
+unchanged 8 ms threshold**; D20 also exceeds that threshold in this run.
+Shared-host scheduling prevents a clean latency clearance; no threshold is relaxed.
+
+Warm command checks, three 300 ms samples and one processor: worst short median
+0.789 ms (0.85 ms limit), random/full-list median 3.099 ms (12 ms limit).
+Largest-area truecolor renderer median was 0.601 ms, slightly above the 0.600 ms
+limit. A follow-up three one-second-sample run reached 0.918 ms; the renderer
+source is unchanged. A same-host D20 comparison gave a 0.720 ms median (also
+over the threshold). These render measurements do **not** clear the render gate.
+A comparable owner-machine D20/D21 check remains part of D23 performance review.
+
+120×40 Pokédex with collected Mega X shiny artwork: three 300 ms one-processor
+View samples 1.294/1.383/2.558 ms, median 1.383 ms, approximately 442.4 kB/op
+and 1,964 allocations/op. This measures frame construction, not input-to-display
+latency. Sprite decode/render occurs in a worker only when selection changes;
+View imports the renderer's SGR cells and preserves original source proportions.
+
+Dark-mode active Pokédex idle sample: three seconds, 0 emitted bytes and 0 CPU
+ticks at the host's clock resolution; process peak RSS 8,344 KiB (8.148 MiB).
+This single sample does not guarantee zero resource use in every session.
+Follow Terminal retains its deliberate focused background-color checks.
+
+Full tests/vet/race and CGO-free build pass. Terminal cases cover keyboard/mouse
+search and exact variant selection, uncollected form/palette locks, anonymous
+evolution navigation, fresh creation, 40×12 and compact/wide/resize, Native,
+NO_COLOR, live Follow Terminal and restoration. The seeded test database remains
+byte-identical across browsing; trainer-switch tests verify no cross-profile
+collection retention. Automated frame/hit tests exercise all modes and search
+keyboard pages. Multiplexer and real terminal translucency remain owner checks;
+no new network-isolation verification is claimed.
+
+
+## D21 approved device revision measurements
+
+Measured on Intel Xeon Platinum 8573C against committed D20 (`5ad62fd5d1e896eec24cb360e685038052f7e176`), using stripped CGO-disabled builds, GOMAXPROCS=1, five warmups and 100 fresh-process samples per public command/mode, plus ten peak-RSS samples. These results are not directly comparable to the earlier host.
+
+- Binary: 13,422,752 bytes (12.80 MiB), below 16 MiB; D20: 13,316,256 bytes.
+- Public peak RSS: at most 9,836 KiB, below 10 MiB.
+- Random/full-list P95: at most 6.126 ms, below 25 ms.
+- Short-command P95: at most 8.143 ms (color exact-variant command), narrowly above the 8 ms target. Other short cases ranged 3.347–4.034 ms. This gate remains unresolved; no blanket performance pass is claimed.
+- Device View benchmark: three runs, median 1.040 ms/frame, 552,676 B/op and 2,859 allocations/op. This measures frame construction, not end-to-end terminal latency.
+- Warm-command and largest-render budgets were not remeasured for this layout revision; previous renderer findings remain unresolved.
+- Seventeen PTY scenarios passed: keyboard/mouse browsing, compact and minimum layouts, safe search, exact appearance locks, evolution locks, resizing, NO_COLOR, Native, and live Follow Terminal changes. Terminal state was restored and the seeded database remained byte-identical. Full tests and vet passed; full race checks passed during the redesign and affected TUI/CLI race checks passed after final code changes.

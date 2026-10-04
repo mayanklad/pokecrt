@@ -142,7 +142,11 @@ func (m Model) View() tea.View {
 			quitID = 6
 		}
 		if !m.settings {
-			if m.screen == createScreen {
+			if m.screen == dexScreen {
+				quitID = 8
+			} else if m.screen == dexSearchScreen {
+				quitID = 7
+			} else if m.screen == createScreen {
 				quitID = 7
 			} else if m.screen == profilesScreen {
 				quitID = 5
@@ -152,6 +156,8 @@ func (m Model) View() tea.View {
 		c.button(0, h-1, min(w, 12), quitID, "Quit", m)
 	} else if m.settings {
 		m.paintSettings(c)
+	} else if m.screen == dexScreen || m.screen == dexSearchScreen {
+		m.paintDex(c)
 	} else if m.screen != mainScreen {
 		m.paintSetup(c)
 	} else {
@@ -172,7 +178,7 @@ func (m Model) View() tea.View {
 		for _, target := range c.hits {
 			if click.Y == target.y && click.X >= target.x && click.X < target.x+target.width {
 				id := target.id
-				if id == 0 && !m.settings && m.screen == createScreen {
+				if id == 0 && !m.settings && (m.screen == createScreen || m.screen == dexSearchScreen) {
 					cursor := m.clickedNameCursor(click.X-target.x-4, min(w, 88)-8)
 					return func() tea.Msg { return nameCursorMsg(cursor) }
 				}
