@@ -314,3 +314,47 @@ updated wording and presentation.
 was published 2 October 2026. Its source is
 [`59fea7c10a1de45d5732f4bd84617757e6e57490`](https://github.com/mayanklad/pokecrt/commit/59fea7c10a1de45d5732f4bd84617757e6e57490).
 It contains the public print/catalog engine; trainer gameplay is included in v0.3.
+
+## D19: Adventure Menu interface shell
+
+Implemented against `0fc3efd8feefd56be46bdbcd981773e42c097d4e`. The chosen
+visual direction is Adventure Menu: a Pokédex device, dialogue and four-section
+menu. `pokecrt tui` starts the interface explicitly; the root command still
+prints help. D19 is the interface foundation, not the completed v0.4 product.
+
+The shell implements arrows, Tab/Shift+Tab, Enter/Space, j/k, clickable controls
+and mouse-wheel focus navigation. Wide, compact, short and too-small layouts
+preserve section/focus on resize; mouse hit targets derive from the displayed
+frame. Small-screen Quit remains clickable. Settings apply Dark, Light, Follow
+Terminal or Terminal Native immediately for the session. NO_COLOR keeps focus
+and selected mode visible without styling. Terminal Native leaves default
+colors untouched; transparency belongs to terminal configuration.
+
+Follow Terminal uses asynchronous background-color queries with a 750 ms
+response timeout. Successful replies enable a two-second focused refresh chain.
+Unsupported queries fall back to native colors and stop periodic queries;
+focus regain/reselection retry detection. Stale timeout/poll/load messages are
+ignored. No global terminal palette is overwritten or desktop theme inferred.
+
+Profile status is read asynchronously through storage.ReadOnly and closed in
+the worker. Missing storage stays absent; existing/corrupt databases are not
+modified. Errors leave shell controls usable. After visual review, the owner
+selected the Pokédex device alternative and a clean `?` screen. Landscape and
+pixel Poké Ball decoration were removed. No hidden identities
+or uncollected sprites are displayed, and no gameplay action is connected yet.
+
+Next: D20 interactive welcome/create/select and settings; D21 safe Pokédex; D22
+encounters/history/statistics/achievements; D23 complete scenario, resource,
+terminal compatibility and release checks. Bubble Tea v2.0.10 and compatible
+exact dependency versions are pinned. Dependency notices for the final v0.4
+binary must be reviewed before release packaging.
+
+Fresh full tests, vet, race, CGO-free tui/trainer/storage and 2,947 pinned-input
+checks pass. PTY exercises verify arrow/mouse/resize/Ctrl+C and restoration;
+model tests verify all shell controls and disclosure-safe neutral framing.
+Public latency/RSS, warm rendering and binary size remain within existing
+budgets in the initial D19 measurements. The revised device binary is 12.633 MiB;
+its 120×36 frame assembly median is 0.817 ms in three shared-host samples.
+Detailed measurements and limits are in benchmarks.md. Real terminal theme
+changes/transparency still require user verification; network isolation was
+unavailable on this host and is not newly claimed.

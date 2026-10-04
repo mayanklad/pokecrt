@@ -42,6 +42,12 @@ Public metadata filters and explicit form/shiny/gender printing are implemented.
 v0.3 adds local trainer profiles, fair encounters, XP/levels, 50 achievements,
 private Pokédex browsing and trainer statistics. Public printing and listing
 remain independent of trainer state. The interactive TUI is a later milestone.
+The development branch now includes the first Adventure Menu interface increment:
+`pokecrt tui`. It provides responsive navigation, arrow/Tab and mouse controls,
+live session appearance choices and read-only trainer status. Interactive
+setup, collection browsing and gameplay views are subsequent v0.4 increments;
+use the existing CLI commands for those operations today.
+
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
 truecolor support gives the intended artwork. Narrow terminals may wrap the
@@ -541,3 +547,45 @@ configuration option; piping uses `--file-raw -`. Both forms are documented in
 [Fastfetch's logo options](https://github.com/fastfetch-cli/fastfetch/wiki/Logo-options).
 PokéCRT preserves ANSI colors through pipes; nonempty `NO_COLOR` disables color.
 Natural-size artwork can wrap if the terminal has too few columns.
+
+## Interactive interface development
+
+```bash
+pokecrt tui
+pokecrt tui --appearance dark
+pokecrt tui --appearance light
+pokecrt tui --appearance follow-terminal
+pokecrt tui --appearance terminal-native
+```
+
+The Adventure Menu uses a Pokédex device display, dialogue area and four-section
+menu. Wide terminals (at least 90 columns and 28 rows) place dialogue beside the
+menu; compact terminals with at least 28 rows stack them beneath the device.
+Short terminals retain all controls and omit the device. The stage is bounded
+to 120 columns by 40 rows and centered in larger windows. Below 40 columns or 12 rows, a resize
+hint and clickable Quit remain available. Selection survives resizing.
+
+Arrows, Tab/Shift+Tab and j/k move focus; Enter or Space activates it. Click any
+control, or use the mouse wheel to move focus. A opens appearance settings. Esc
+returns from settings and quits at the main menu; Q quits at the main menu, and
+Ctrl+C quits anywhere. The shell restores terminal modes on exit.
+
+Dark and Light select fixed palettes. Follow Terminal requests the terminal
+background without changing its palette; supported replies update the app live.
+After a successful reply, it checks about every two seconds while focused. A
+missing reply falls back to default terminal colors and stops periodic queries;
+focus regain or reselecting Follow Terminal probes again. Terminal Native uses
+default foreground/background colors, preserving terminal-configured
+transparency; the application does not create transparency. Nonempty NO_COLOR
+removes styling while retaining visible focus and selection markers. Choices
+are session-local in this increment; no configuration file is written.
+
+Both stdin and stdout must be usable terminals. Help and redirected invocation
+never open trainer data. The D19 shell reads current-schema trainer status
+asynchronously with an existing read-only database open; navigation does not
+create profiles, migrate data, change the active trainer or record encounters.
+The device shows a clean `?` instead of pixel artwork. First-run status is
+“Awaiting first discovery”; existing trainers see “Entry preview coming next.”
+Featured discovered artwork is planned for a later increment. Missing/corrupt trainer
+data leaves navigation, appearance and quit usable. See docs/progress.md for
+implemented scope and docs/benchmarks.md for measured verification limits.

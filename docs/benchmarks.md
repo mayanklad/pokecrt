@@ -723,3 +723,90 @@ The same 12-case fresh-process method gives short-command P95 <= 7.660 ms and
 random/list P95 <= 9.300 ms. The stripped binary is 11,821,216 bytes (11.274 MiB).
 Warm/render measurements above precede this presentation-only review; those
 paths are unchanged and no new warm/render result is claimed.
+
+## D19 Adventure Menu shell — 4 October 2026
+
+Baseline: `0fc3efd8feefd56be46bdbcd981773e42c097d4e`; candidate adds
+Bubble Tea v2.0.10, responsive shell controls and async read-only profile status.
+AMD EPYC 9V74, Linux 6.18.44, Go 1.27.1, Linux amd64; same unchanged dataset
+and 2,669 accepted embedded assets. Both measured binaries use CGO_ENABLED=0,
+`-buildvcs=false -trimpath -ldflags '-s -w'` and version `dev`.
+
+Fresh-process method: GOMAXPROCS=1, five discarded warmups and 100 samples per
+case/mode, stdout to /dev/null. P95 is sorted sample 95. Each binary is measured
+sequentially across the six existing cases in color and NO_COLOR=1. These are
+warm-filesystem spawn-and-exit observations, not cold-disk timings. RSS uses ten
+additional executions per case through a native fork/exec/wait4 launcher,
+avoiding Python's inherited pre-exec high-water RSS.
+
+| Case / mode | Baseline P95 ms | D19 P95 ms | D19 peak RSS MiB |
+| --- | ---: | ---: | ---: |
+| color/random | 4.999 | 4.049 | 9.742 |
+| color/named | 2.614 | 2.565 | 7.363 |
+| color/filtered | 3.687 | 2.631 | 7.367 |
+| color/variant | 2.871 | 2.381 | 7.426 |
+| color/list | 4.839 | 4.708 | 8.863 |
+| color/details | 2.510 | 2.500 | 7.113 |
+| plain/random | 4.259 | 3.842 | 9.617 |
+| plain/named | 2.511 | 2.325 | 7.238 |
+| plain/filtered | 2.446 | 2.373 | 7.242 |
+| plain/variant | 2.229 | 2.843 | 7.426 |
+| plain/list | 4.581 | 4.988 | 8.863 |
+| plain/details | 2.344 | 2.608 | 7.113 |
+
+The short cases remain under 8 ms, random/full-list under 25 ms and public
+RSS under 10 MiB. Baseline stripped size is 11,821,216 bytes (11.274 MiB);
+D19 is 13,250,720 bytes (12.637 MiB), within the approved 16 MiB limit.
+No public performance threshold is changed.
+
+Warm public/render review: three 500 ms runs per sub-benchmark, one processor.
+The largest median across named/filtered/variant/details cases is 0.519 ms
+(0.85 ms limit), random/full-list 2.199 ms (12 ms limit), and largest-area
+truecolor render 0.364 ms (0.60 ms limit). The shared host and scheduler affect
+these observations; they are not a universal input-to-display latency promise.
+
+Wide shell View benchmark, three runs on one processor at 120×36: 358,497,
+364,927 and 352,072 ns/op; median 0.358 ms, 316,481 B/op and 1,153 allocs/op.
+This includes frame assembly and neutral motif rendering, not physical terminal
+painting or storage. It establishes an initial shell measurement, not a final
+TUI budget. There is no application animation loop.
+
+A native wait4 launcher observed the Dark shell in a pseudo-terminal for one
+second of startup plus three seconds idle: 41.213 ms total user+system CPU,
+11,636 KiB peak RSS, zero output bytes during the idle interval. CPU/RSS include
+startup and shutdown, not isolated steady-state consumption. This TUI RSS is
+reported separately from the public-command 10 MiB threshold.
+
+Verification: fresh full tests, vet, race tests, CGO-free tui/trainer/storage
+tests and all 2,947 pinned inputs pass. Model tests check resize bounds, every
+shell control's mouse target, focus/activation, NO_COLOR, theme replies/fallback,
+async/stale results and unchanged/missing/corrupt trainer databases. Real PTY
+process checks cover 120×36, 100×32, 80×24/16, 48×22, 40×12 and 32×8,
+arrows, mouse-only appearance/quit, Ctrl+C, resize and a simulated light
+background reply. Terminal attributes, alternate screen and mouse reporting
+restore on exit; first-run storage stays absent.
+
+PTY frames were inspected at wide, compact and appearance-settings sizes.
+Real-emulator transparency, native theme notifications and terminal/multiplexer
+compatibility still need the owner's terminal checks; unit/PTY tests do not
+establish those. Network namespace isolation could not be repeated: unshare
+failed to write uid_map in this environment. No new offline-isolation claim is
+made. The shell performs no HTTP/network operation at runtime.
+
+### D19 visual revision: Pokédex device
+
+The owner selected the device after terminal-rendered review, then rejected its
+pixel Poké Ball. The shipped revision uses a clean question mark and text,
+with a bounded centered stage and filled focus bar. The previous D19 tables
+above describe the initial shell measurements; they are retained as historical
+samples, not fresh measurements of this revision.
+
+Same CGO-free, stripped build flags: 13,246,624 bytes (12.633 MiB), below 16 MiB.
+Revised 120×36 View assembly: 539,489 / 1,114,590 / 817,305 ns/op; median
+0.817 ms, approximately 397.7 kB/op and 2,468 allocations/op, shared-host
+GOMAXPROCS=8. This is frame construction, not end-to-end key response. The
+interface has no decorative tick or continuous animation. Wide/compact,
+190×50, light, short-window, native, NO_COLOR, resize, arrows and mouse appearance
+runs verify restoration and absent first-run state. Public CLI/render paths are
+unchanged by this visual revision; their prior measurements are not rerun or
+represented as newly measured. Theme/translucency still need real-terminal review.

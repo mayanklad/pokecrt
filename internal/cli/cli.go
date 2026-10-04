@@ -25,6 +25,7 @@ Usage:
   pokecrt trainer list
   pokecrt trainer use <trainer-name>
   pokecrt trainer achievements
+  pokecrt tui [--appearance <mode>]
 
 Options:
   --help, -h   Show this help
@@ -36,6 +37,7 @@ Commands:
   encounter   Encounter a Pokémon with the active trainer
   dex         Browse the active trainer’s discoveries
   trainer     Manage profiles, view statistics and achievement progress
+  tui         Open the interactive Adventure Menu
 
 Run 'pokecrt <command> --help' for command options.
 `
@@ -43,6 +45,9 @@ Run 'pokecrt <command> --help' for command options.
 // Run executes one invocation and returns its process exit status.
 // Public commands bypass trainer path resolution and storage entirely.
 func Run(args []string, stdout, stderr io.Writer, version, datasetID string) int {
+	if len(args) > 0 && args[0] == "tui" {
+		return runTUI(args[1:], stdout, stderr)
+	}
 	if len(args) > 0 && args[0] == "print" {
 		return runPrint(args[1:], stdout, stderr, catalog.CryptoIndex)
 	}
