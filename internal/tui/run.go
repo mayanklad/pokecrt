@@ -16,6 +16,7 @@ import (
 )
 
 type Snapshot struct {
+	Level    int64
 	Name     string
 	Profiles int
 	Active   bool
@@ -45,7 +46,11 @@ func LoadProfile(ctx context.Context) (Snapshot, error) {
 	}
 	for _, p := range profiles {
 		if p.Active {
-			return Snapshot{Name: p.Name, Profiles: len(profiles), Active: true, Entries: profiles}, nil
+			progress, err := repo.TrainerProgress(ctx, p.ID)
+			if err != nil {
+				return Snapshot{}, err
+			}
+			return Snapshot{Level: progress.Level, Name: p.Name, Profiles: len(profiles), Active: true, Entries: profiles}, nil
 		}
 	}
 	return Snapshot{Profiles: len(profiles), Entries: profiles}, nil
@@ -75,6 +80,8 @@ func Run(input *os.File, output io.Writer, appearance Appearance) error {
 	}
 	m := New(ctx, LoadProfile, appearance, noColor)
 	m.dexLoader = loadDex
+	m.activityLoader = loadActivity
+	m.encounterAction = recordActivity
 	m.actions = &profileActions{create: createProfile, use: useProfile}
 	m.configLoad = loadAppearance
 	m.configSave = saveAppearance

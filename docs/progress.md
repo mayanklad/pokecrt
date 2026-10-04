@@ -449,3 +449,47 @@ perform a data read or sprite render, and an explicitly selected appearance
 survives filtering when the same entry remains selected. Times remain precise
 UTC records. Supersedes the earlier D21 layout ZIP; the complete replacement is
 against committed D20 `5ad62fd5d1e896eec24cb360e685038052f7e176`.
+
+
+## D22: trainer activity and progression views
+
+Baseline: owner-committed D21 `a33df3f7e1c7284ff7c44f8cf603ad470b7df5b1`.
+GitHub access remains read-only; this is a complete local proposal against D21.
+
+Connects Encounters, Trainer and Achievements to the existing domain services.
+Explicit encounters use the shared atomic engine, exact sprite preparation,
+captured trainer identity, an in-flight guard and recoverable errors. Browsing,
+scrolling, resizing and appearance changes never record an encounter. History
+reads at most 50 indexed rows using persisted identities and stable time/ID
+ordering; selected rows open the exact safe Dex appearance. Current-schema
+read-only workers supply statistics and disclosure-safe achievement views.
+Opening a screen clears previous trainer state; refreshed results from another
+trainer clear old artwork/results. The Adventure Menu includes trainer level.
+
+Wide cards separate trainer facts/generation progress and earned/locked goals.
+Compact screens scroll and offer artwork/Info switching without scaling pixels.
+Keyboard and mouse controls share geometry. Screen transitions request one clear
+redraw after terminal review found retained frame fragments. Existing live
+appearance modes and setup controls remain unchanged. No new dependency,
+dataset change or schema migration is introduced.
+
+Validation: full tests, vet and full race suite passed; affected TUI/storage race
+checks passed after final view changes. New tests cover explicit-only writes,
+duplicate requests, recoverable failure, stale messages, read-only/no-init
+behavior, trainer isolation, exact history appearance, and 50-row snapshot
+ordering/isolation. Device resource measurements are recorded in benchmarks.md.
+The remaining arrow-navigation refinement is deferred to D23 as requested.
+
+D22 final interaction refinement: navigation remains available during an encounter;
+a model-wide single-flight token blocks duplicate encounters even after leaving
+and reopening a section. Completion refreshes the current screen without showing
+another trainer’s result. Minimum-height views reserve separate content and
+control rows so controls cannot overwrite records/artwork.
+
+D22 terminal verification: 21 running PTY scenarios passed, including mouse-only
+encounter/history entry navigation, compact/minimum layouts, NO_COLOR artwork,
+resize, live Follow Terminal replies and appearance return. All exits restored
+terminal state. The five explicit test encounters added exactly five database
+rows; the separate read-only browsing/theme/profile-chooser cases left the
+seeded database byte-identical. Real terminal translucency and multiplexer
+compatibility remain manual checks for D23.

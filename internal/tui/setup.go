@@ -19,6 +19,7 @@ const (
 	profilesScreen
 	dexScreen
 	dexSearchScreen
+	activityScreen
 )
 
 type profileResult struct {

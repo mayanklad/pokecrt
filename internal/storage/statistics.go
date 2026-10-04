@@ -70,3 +70,12 @@ func (r *Repository) TrainerRecords(ctx context.Context, id int64) (trainer.Trai
 	err = tx.Commit()
 	return out, err
 }
+
+// TrainerProgress reads only the small XP row for the Adventure Menu.
+func (r *Repository) TrainerProgress(ctx context.Context, id int64) (trainer.Progress, error) {
+	var xp int64
+	if err := r.QueryRowContext(ctx, "SELECT xp_total FROM trainer_progress WHERE trainer_id=?", id).Scan(&xp); err != nil {
+		return trainer.Progress{}, err
+	}
+	return trainer.XPProgress(xp)
+}

@@ -19,8 +19,14 @@ type activateMsg int
 type nameCursorMsg int
 
 type Model struct {
-	dex       dexState
-	dexLoader dexLoader
+	encounterPending bool
+	encounterID      uint64
+	encounterNotice  string
+	activity         activityState
+	activityLoader   activityLoader
+	encounterAction  encounterAction
+	dex              dexState
+	dexLoader        dexLoader
 
 	configWriteStarted                              bool
 	screen                                          setupScreen
@@ -104,6 +110,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	if cmd, handled := m.handleActivity(msg); handled {
+		return m, cmd
+	}
 	if cmd, handled := m.handleDex(msg); handled {
 		return m, cmd
 	}
@@ -216,6 +225,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "esc":
 			if m.settings {
 				m.closeSettings()
+				if m.screen == activityScreen {
+					return m, tea.ClearScreen
+				}
 			} else {
 				return m, tea.Quit
 			}
@@ -290,10 +302,16 @@ func (m *Model) activate(id int) tea.Cmd {
 			return m.saveSettings()
 		case id == 5:
 			m.closeSettings()
+			if m.screen == activityScreen {
+				return tea.ClearScreen
+			}
 		case id == 6:
 			return tea.Quit
 		}
 		return nil
+	}
+	if m.screen == activityScreen {
+		return m.activateActivity(id)
 	}
 	if m.screen == dexScreen || m.screen == dexSearchScreen {
 		return m.activateDex(id)
@@ -310,6 +328,9 @@ func (m *Model) activate(id int) tea.Cmd {
 		m.section = id
 		if id == 0 && m.dexLoader != nil {
 			return m.openDex()
+		}
+		if id != 0 && m.activityLoader != nil {
+			return m.openActivity(id)
 		}
 		if id == 2 && m.actions != nil {
 			m.openProfiles()

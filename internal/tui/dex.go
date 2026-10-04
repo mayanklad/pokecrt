@@ -34,6 +34,7 @@ type dexEntryMsg struct {
 	err     error
 }
 type dexState struct {
+	pendingKey                         *catalog.VariantKey
 	generation, entryGeneration        uint64
 	cancel                             context.CancelFunc
 	snapshot                           dexSnapshot
@@ -405,6 +406,19 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			return nil, true
 		}
 		m.dex.snapshot = msg.snapshot
+		if key := m.dex.pendingKey; key != nil {
+			m.dex.rows = msg.snapshot.data.List(trainer.DexFilter{})
+			for i, row := range m.dex.rows {
+				if row.Number == key.SpeciesID {
+					m.dex.selected = i
+					break
+				}
+			}
+			m.dex.detail = true
+			m.focus = 10
+			m.dex.pendingKey = nil
+			return m.loadDexEntry(catalog.Selection{Form: key.FormID, Gender: key.Gender, Shiny: key.Palette == "shiny"}), true
+		}
 		return m.filterDex(), true
 	case dexEntryMsg:
 		if msg.id != m.dex.entryGeneration || !m.dex.entryLoading {

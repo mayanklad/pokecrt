@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
@@ -142,7 +143,9 @@ func (m Model) View() tea.View {
 			quitID = 6
 		}
 		if !m.settings {
-			if m.screen == dexScreen {
+			if m.screen == activityScreen {
+				quitID = 14
+			} else if m.screen == dexScreen {
 				quitID = 8
 			} else if m.screen == dexSearchScreen {
 				quitID = 7
@@ -156,6 +159,8 @@ func (m Model) View() tea.View {
 		c.button(0, h-1, min(w, 12), quitID, "Quit", m)
 	} else if m.settings {
 		m.paintSettings(c)
+	} else if m.screen == activityScreen {
+		m.paintActivity(c)
 	} else if m.screen == dexScreen || m.screen == dexSearchScreen {
 		m.paintDex(c)
 	} else if m.screen != mainScreen {
@@ -260,7 +265,7 @@ func (m Model) profileLabel() string {
 		return "Trainer unavailable · refresh to retry"
 	}
 	if m.snapshot.Active {
-		return "Trainer: " + clean(m.snapshot.Name)
+		return "Trainer: " + clean(m.snapshot.Name) + fmt.Sprintf(" · Level %d", max(1, m.snapshot.Level))
 	}
 	if m.snapshot.Profiles > 0 {
 		return "Choose an active trainer with 'pokecrt trainer use <name>'."
@@ -280,7 +285,7 @@ func (m Model) dialogue() string {
 		}
 		return "Welcome, future trainer.\nOpen Trainer to create or select a profile."
 	}
-	return descriptions[m.section] + " Browse this section with '" + cliActions[m.section] + "'."
+	return m.encounterNotice + " " + descriptions[m.section] + " Select a section to begin."
 }
 
 func (m Model) paintSettings(c *canvas) {

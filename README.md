@@ -649,6 +649,40 @@ keeps the existing live/saved modes. **Back** returns to the Adventure Menu.
 Data reads and sprite decode/render are asynchronous; stale results are ignored.
 Tab switching reuses the current entry and artwork. Refresh rereads the active
 trainer; reopening clears the previous trainer's view. Browsing never records
-encounters, XP, discoveries, achievements or migrations. Encounters, full trainer
-statistics and achievement interaction remain D22. The Adventure Menu device
+encounters, XP, discoveries, achievements or migrations. The Adventure Menu device
 preview remains neutral.
+
+
+### Trainer activity screens (D22)
+
+**Encounters** has an explicit Encounter button and a committed-result display.
+The existing shared engine prepares exact artwork before committing the encounter,
+discovery, XP and achievement unlocks together. Only that button records an
+encounter; it is disabled while reading or saving. Held Enter repeats are ignored.
+The displayed trainer is captured for the action so an external trainer switch
+cannot redirect it. Navigation remains available while saving, with one global
+in-flight guard preventing another encounter across screens. Ctrl+C exits gracefully. Errors leave a recoverable message and allow retry.
+
+**History** shows the newest 50 encounters, ordered by recorded time then ID.
+Names/forms use stored encounter snapshots; removed artwork does not erase
+history. Click a row or use Previous/Next and Up/Down on the selected-entry control,
+then Open selected entry to browse that exact appearance in the safe Pokédex.
+Browsing never creates another encounter.
+
+**Trainer** displays creation time, level, XP bar, encounter/collection counts,
+shiny counts, eligible completion, generation progress, and encounter dates.
+Choose / create trainer opens the existing trainer chooser. The Adventure Menu
+also displays the active trainer's level. **Achievements** separates earned
+badges and their dates from locked goals and current progress, using the same
+disclosure-safe registry as the CLI. Reading never awards a badge.
+
+Wide views use framed device/card panes; compact views scroll, and compact
+encounter results switch between natural-size artwork and Info. Tab selects
+controls; arrows follow their positions, scroll focused records or pan focused
+artwork. Clickable scroll/pan controls and mouse wheel support mouse-only use.
+PageUp/PageDown scroll records. Appearance remains live in all screens.
+Unsupported terminals retain the existing resize hint and Quit action. Screen
+transitions clear once before redraw to avoid stale frame fragments.
+
+D23 will review the remaining arrow-navigation polish, terminal compatibility,
+and resource/release gates.

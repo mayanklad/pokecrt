@@ -949,3 +949,35 @@ Measured on Intel Xeon Platinum 8573C against committed D20 (`5ad62fd5d1e896eec2
 - Device View benchmark: three runs, median 1.040 ms/frame, 552,676 B/op and 2,859 allocations/op. This measures frame construction, not end-to-end terminal latency.
 - Warm-command and largest-render budgets were not remeasured for this layout revision; previous renderer findings remain unresolved.
 - Seventeen PTY scenarios passed: keyboard/mouse browsing, compact and minimum layouts, safe search, exact appearance locks, evolution locks, resizing, NO_COLOR, Native, and live Follow Terminal changes. Terminal state was restored and the seeded database remained byte-identical. Full tests and vet passed; full race checks passed during the redesign and affected TUI/CLI race checks passed after final code changes.
+
+
+## D22 activity view measurements
+
+Intel Xeon Platinum 8573C, Go 1.27.1, Linux amd64; three 300 ms runs, one CPU.
+View construction uses a 120×40 frame; encounter history and locked-goal
+benchmarks contain 50 rows/goals. Trainer uses the empty collection state.
+These measure frame construction, not terminal end-to-end latency.
+
+| View | Median ns/op | B/op | Allocations/op |
+| --- | ---: | ---: | ---: |
+| Encounter history | 1,149,215 | 504,492 | 4,084 |
+| Trainer | 765,412 | 388,805 | 1,800 |
+| Achievements | 915,892 | 468,331 | 3,213 |
+
+Stripped CGO-disabled binary: 13,508,768 bytes (12.88 MiB), below 16 MiB.
+Navigation/scrolling runs no database work and prepares no new sprite. Worker
+reads and explicit encounters run outside Update/View. No animation/timer was
+added; the existing Follow Terminal focused polling remains unchanged. Screen
+transition clears happen once per transition rather than every frame.
+
+Public command startup/RSS and renderer budgets were not remeasured in D22.
+The D21 8.143 ms short-command P95 and previous warm/render budget findings
+remain open for the resource review; no blanket resource-budget pass is claimed.
+
+D22 terminal verification: 21 running PTY scenarios passed, including mouse-only
+encounter/history entry navigation, compact/minimum layouts, NO_COLOR artwork,
+resize, live Follow Terminal replies and appearance return. All exits restored
+terminal state. The five explicit test encounters added exactly five database
+rows; the separate read-only browsing/theme/profile-chooser cases left the
+seeded database byte-identical. Real terminal translucency and multiplexer
+compatibility remain manual checks for D23.
