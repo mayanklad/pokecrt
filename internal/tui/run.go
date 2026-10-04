@@ -12,12 +12,14 @@ import (
 	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/term"
 	"github.com/mayanklad/pokecrt/internal/storage"
+	"github.com/mayanklad/pokecrt/internal/trainer"
 )
 
 type Snapshot struct {
 	Name     string
 	Profiles int
 	Active   bool
+	Entries  []trainer.Profile
 }
 type Loader func(context.Context) (Snapshot, error)
 
@@ -43,10 +45,10 @@ func LoadProfile(ctx context.Context) (Snapshot, error) {
 	}
 	for _, p := range profiles {
 		if p.Active {
-			return Snapshot{Name: p.Name, Profiles: len(profiles), Active: true}, nil
+			return Snapshot{Name: p.Name, Profiles: len(profiles), Active: true, Entries: profiles}, nil
 		}
 	}
-	return Snapshot{Profiles: len(profiles)}, nil
+	return Snapshot{Profiles: len(profiles), Entries: profiles}, nil
 }
 
 var ErrTerminal = errors.New("the interactive interface requires terminal input and output; run 'pokecrt tui --help' for usage")
@@ -67,7 +69,15 @@ func Run(input *os.File, output io.Writer, appearance Appearance) error {
 	if noColor {
 		options = append(options, tea.WithColorProfile(colorprofile.NoTTY))
 	}
+	override := appearance != ""
+	if !override {
+		appearance = FollowTerminal
+	}
 	m := New(ctx, LoadProfile, appearance, noColor)
+	m.actions = &profileActions{create: createProfile, use: useProfile}
+	m.configLoad = loadAppearance
+	m.configSave = saveAppearance
+	m.appearanceOverride = override
 	_, err := tea.NewProgram(m, options...).Run()
 	if errors.Is(err, tea.ErrInterrupted) {
 		return nil

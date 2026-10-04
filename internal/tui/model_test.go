@@ -142,7 +142,7 @@ func TestEveryFrameFitsAndEveryControlClickable(t *testing.T) {
 				if size[0] >= 40 && size[1] >= 12 {
 					count := 7
 					if settings {
-						count = 6
+						count = 7
 					}
 					for id := 0; id < count; id++ {
 						if !ids[id] {
@@ -152,7 +152,7 @@ func TestEveryFrameFitsAndEveryControlClickable(t *testing.T) {
 				} else {
 					id := 6
 					if settings {
-						id = 5
+						id = 6
 					}
 					if !ids[id] {
 						t.Fatal("small screen has no clickable Quit")

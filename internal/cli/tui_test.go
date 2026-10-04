@@ -12,6 +12,8 @@ import (
 func TestTUIHelpAndRedirectDoNotTouchState(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "must-not-exist")
 	t.Setenv("POKECRT_DATA_DIR", dir)
+	configDir := filepath.Join(t.TempDir(), "config-must-not-exist")
+	t.Setenv("POKECRT_CONFIG_DIR", configDir)
 	for _, args := range [][]string{{"tui", "--help"}, {"tui", "-h"}, {"tui"}} {
 		var out, err bytes.Buffer
 		status := Run(args, &out, &err, "dev", "test")
@@ -27,6 +29,9 @@ func TestTUIHelpAndRedirectDoNotTouchState(t *testing.T) {
 	}
 	if _, err := os.Stat(dir); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("tui help/redirection initialized data")
+	}
+	if _, err := os.Stat(configDir); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("help/redirection touched config")
 	}
 }
 func TestTUIRejectsInvalidArguments(t *testing.T) {

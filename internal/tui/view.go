@@ -139,11 +139,21 @@ func (m Model) View() tea.View {
 		c.wrap(0, 0, w, min(3, h), "Resize to at least 40 columns × 12 rows.", p.accent)
 		quitID := 6
 		if m.settings {
-			quitID = 5
+			quitID = 6
 		}
+		if !m.settings {
+			if m.screen == createScreen {
+				quitID = 7
+			} else if m.screen == profilesScreen {
+				quitID = 5
+			}
+		}
+		m.focus = quitID
 		c.button(0, h-1, min(w, 12), quitID, "Quit", m)
 	} else if m.settings {
 		m.paintSettings(c)
+	} else if m.screen != mainScreen {
+		m.paintSetup(c)
 	} else {
 		m.paintMain(c)
 	}
@@ -162,6 +172,10 @@ func (m Model) View() tea.View {
 		for _, target := range c.hits {
 			if click.Y == target.y && click.X >= target.x && click.X < target.x+target.width {
 				id := target.id
+				if id == 0 && !m.settings && m.screen == createScreen {
+					cursor := m.clickedNameCursor(click.X-target.x-4, min(w, 88)-8)
+					return func() tea.Msg { return nameCursorMsg(cursor) }
+				}
 				return func() tea.Msg { return activateMsg(id) }
 			}
 		}
@@ -256,33 +270,41 @@ func (m Model) dialogue() string {
 	}
 	if !m.snapshot.Active {
 		if m.snapshot.Profiles > 0 {
-			return "Select your trainer with 'pokecrt trainer use <name>', then refresh here."
+			return "Open Trainer to select or create a profile."
 		}
-		return "Welcome, future trainer.\nYour adventure starts here."
+		return "Welcome, future trainer.\nOpen Trainer to create or select a profile."
 	}
 	return descriptions[m.section] + " Browse this section with '" + cliActions[m.section] + "'."
 }
 
 func (m Model) paintSettings(c *canvas) {
-	w, h := c.width, c.height
+	w, h := min(c.width, 88), min(c.height, 20)
+	x, y := (c.width-w)/2, (c.height-h)/2
 	p := m.palette()
-	c.put(1, 0, "APPEARANCE", p.accent)
-	c.button(w-8, 0, 7, 5, "Quit", m)
+	c.box(x, y, w, h, "APPEARANCE", p.accent)
+	c.button(x+w-11, y+1, 8, 6, "Quit", m)
 	for i, label := range appearanceNames {
 		marker := "○ "
 		if appearances[i] == m.appearance {
 			marker = "● "
 		}
-		c.button(2, 2+i, w-4, i, marker+label, m)
+		c.button(x+2, y+2+i, w-4, i, marker+label, m)
 	}
-	message := "Switch modes with Enter or a click. Terminal Native preserves your terminal's default background and configured transparency."
+	message := "Switch with Enter or a click. Terminal Native preserves your terminal background and configured transparency."
 	if m.appearance == FollowTerminal {
-		message = "Follow Terminal checks the terminal background. Supported replies update the palette live, checked about every 2 seconds while focused. Without replies, default terminal colors are used."
+		message = "Follow Terminal checks background replies about every 2 seconds while focused. Without replies, terminal defaults are used."
 	}
 	if m.noColor {
-		message = "NO_COLOR is enabled. Focus and selected mode remain visible without color. The four appearance choices take effect when color is enabled."
+		message = "NO_COLOR is enabled. Focus and selection remain visible. Color choices apply when color is enabled."
 	}
-	c.wrap(2, 7, w-4, max(0, h-11), message, "")
-	c.button(2, h-3, w-4, 4, "Back", m)
-	c.put(1, h-1, ansi.Truncate(m.appearanceStatus(), w-2, "…"), p.muted)
+	c.put(x+2, y+6, ansi.Truncate("↑↓ Choose · Enter Apply · Tab Focus", w-4, "…"), p.muted)
+	c.wrap(x+2, y+7, w-4, max(0, h-13), message, "")
+	c.wrap(x+2, y+h-5, w-4, 1, m.configStatus(), p.accent)
+	label := "Save appearance"
+	if m.savingConfig {
+		label = "Saving…"
+	}
+	c.button(x+2, y+h-4, w-4, 4, label, m)
+	c.button(x+2, y+h-3, w-4, 5, "Back", m)
+	c.put(x+2, y+h-2, ansi.Truncate(m.appearanceStatus(), w-4, "…"), p.muted)
 }

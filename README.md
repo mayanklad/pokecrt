@@ -577,13 +577,41 @@ missing reply falls back to default terminal colors and stops periodic queries;
 focus regain or reselecting Follow Terminal probes again. Terminal Native uses
 default foreground/background colors, preserving terminal-configured
 transparency; the application does not create transparency. Nonempty NO_COLOR
-removes styling while retaining visible focus and selection markers. Choices
-are session-local in this increment; no configuration file is written.
+removes styling while retaining visible focus and selection markers. Ordinary
+text in Native mode uses your terminal foreground; the red device outline and
+cyan selection accent remain. Changes apply live. **Save appearance** explicitly
+remembers the choice; browsing alone never creates a configuration file.
+
+Without `--appearance`, startup uses the saved choice, then Follow Terminal if
+none exists. An explicit flag overrides the saved choice for that run until you
+save it. Preferences live in `$XDG_CONFIG_HOME/pokecrt/appearance.conf`, falling
+back to `~/.config/pokecrt/appearance.conf`; absolute `POKECRT_CONFIG_DIR` overrides
+the containing directory. The tiny versioned text file is saved atomically with
+0600 permissions. Malformed, oversized, symlinked or unsupported-version files
+are left unchanged; Appearance displays the error and live switching still works.
 
 Both stdin and stdout must be usable terminals. Help and redirected invocation
-never open trainer data. The D19 shell reads current-schema trainer status
-asynchronously with an existing read-only database open; navigation does not
-create profiles, migrate data, change the active trainer or record encounters.
+never open trainer data or appearance settings. The interface reads trainer
+status asynchronously through an existing read-only database. Merely navigating
+or typing does not initialize or modify trainer data.
+
+D20 adds interactive setup and selection. First run opens **New Trainer**;
+Enter in the name field or **Create trainer** submits the name. The first profile
+becomes active; additional profiles remain inactive until **Use trainer**. Open
+**Trainer** from the main menu to create or switch profiles. Arrows and mouse
+wheel scroll the chooser; click a row to select, then click **Use trainer**, or
+press Enter on the focused list. Refresh rereads existing trainer state.
+
+Names use the same Unicode validation and duplicate-name rules as the CLI.
+The field supports typing, paste, arrows, Home/End, Backspace/Delete and Ctrl+U.
+`q`, `a`, `j` and `k` are literal while typing. Tab moves focus. The on-screen
+keyboard supplies lowercase/uppercase letters, digits, punctuation, Space and
+Backspace for mouse-only creation; clicking the field places the cursor. Esc or
+Cancel before submission leaves trainer paths absent. During an in-flight
+request, Cancel requests cancellation and refreshes status; a completed commit
+is retained. No uncertain operation is automatically retried. Setup/select never
+records encounters, discoveries, XP awards or achievements. Appearance and quit
+remain available while requests run.
 The device shows a clean `?` instead of pixel artwork. First-run status is
 “Awaiting first discovery”; existing trainers see “Entry preview coming next.”
 Featured discovered artwork is planned for a later increment. Missing/corrupt trainer

@@ -16,12 +16,31 @@ type snapshotMsg struct {
 type probeTimeoutMsg uint64
 type pollMsg uint64
 type activateMsg int
+type nameCursorMsg int
 
 type Model struct {
+	configWriteStarted                              bool
+	screen                                          setupScreen
+	actions                                         *profileActions
+	selected                                        int
+	name                                            []rune
+	cursor, keyboardPage                            int
+	busy                                            bool
+	opID                                            uint64
+	opCancel                                        context.CancelFunc
+	formError, notice                               string
+	routed                                          bool
+	configLoad                                      func(context.Context) (Appearance, error)
+	configSave                                      func(context.Context, Appearance) error
+	configLoaded, appearanceOverride, savingConfig  bool
+	appearanceRevision                              uint64
+	savedAppearance                                 Appearance
+	configError                                     string
 	ctx                                             context.Context
 	load                                            Loader
 	width, height                                   int
 	section, focus                                  int
+	settingsReturnFocus                             int
 	settings                                        bool
 	appearance                                      Appearance
 	noColor, terminalDark, backgroundKnown, focused bool
@@ -42,7 +61,7 @@ func (m Model) loadCommand() tea.Cmd {
 	return func() tea.Msg { s, err := load(ctx); return snapshotMsg{id, s, err} }
 }
 func (m *Model) reload() tea.Cmd {
-	if m.loading || m.load == nil {
+	if m.loading || m.busy || m.load == nil {
 		return nil
 	}
 	m.loadID++
@@ -68,16 +87,56 @@ func (m *Model) poll() tea.Cmd {
 	return tea.Tick(2*time.Second, func(time.Time) tea.Msg { return pollMsg(id) })
 }
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Below the supported size, only the displayed Quit action is available.
+	if m.width > 0 && m.height > 0 && (m.width < 40 || m.height < 12) {
+		switch k := msg.(type) {
+		case tea.KeyPressMsg:
+			switch k.String() {
+			case "ctrl+c", "q", "esc", "enter", "space":
+				return m, tea.Quit
+			}
+			return m, nil
+		case tea.PasteMsg, tea.MouseWheelMsg:
+			return m, nil
+		}
+	}
+
+	if cmd, handled := m.handleSetup(msg); handled {
+		return m, cmd
+	}
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
 	case activateMsg:
 		if msg == -1 {
-			cmd := tea.Batch(m.reload(), m.probe())
+			var cfg tea.Cmd
+			if m.configLoad != nil {
+				load, ctx := m.configLoad, m.ctx
+				cfg = func() tea.Msg { a, err := load(ctx); return configResult{a, err} }
+			}
+			cmd := tea.Batch(m.reload(), m.probe(), cfg)
 			return m, cmd
 		}
 		cmd := m.activate(int(msg))
 		return m, cmd
+	case nameCursorMsg:
+		if m.screen == createScreen && !m.busy {
+			m.focus = 0
+			m.cursor = max(0, min(len(m.name), int(msg)))
+		}
+	case profileResult:
+		m.profileDone(msg)
+	case configResult:
+		cmd := m.applyConfig(msg)
+		return m, cmd
+	case savedConfigMsg:
+		m.savingConfig = false
+		if msg.err != nil {
+			m.configError = clean(msg.err.Error())
+		} else {
+			m.savedAppearance = msg.appearance
+			m.configError = ""
+		}
 	case snapshotMsg:
 		if msg.generation != m.loadID {
 			return m, nil
@@ -88,6 +147,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.snapshot = Snapshot{}
 		} else {
 			m.snapshot = msg.snapshot
+			if m.screen == profilesScreen {
+				m.selected = min(m.selected, max(0, len(m.snapshot.Entries)-1))
+			}
+			if !m.routed && m.actions != nil {
+				m.routed = true
+				if !m.settings && m.screen == mainScreen && !m.snapshot.Active {
+					if m.snapshot.Profiles == 0 {
+						m.openCreate()
+					} else {
+						m.openProfiles()
+					}
+				}
+			}
 		}
 	case tea.BackgroundColorMsg:
 		if msg.Color == nil {
@@ -136,6 +208,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.settings {
 				m.settings = false
 				m.focus = 4
+				if m.screen != mainScreen {
+					m.focus = m.settingsReturnFocus
+				}
 			} else {
 				return m, tea.Quit
 			}
@@ -167,13 +242,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 func (m *Model) moveFocus(delta int) {
-	count := 7
-	if m.settings {
-		count = 6
+	order := []int{0, 1, 2, 3, 4, 5, 6}
+	if !m.settings && m.screen == createScreen {
+		order = append(order, 7)
+		for i := range m.keyboardLetters() {
+			order = append(order, 100+i)
+		}
 	}
-	m.focus = (m.focus + delta + count) % count
+	for i, id := range order {
+		if id == m.focus {
+			m.focus = order[(i+delta+len(order))%len(order)]
+			return
+		}
+	}
+	m.focus = 0
 }
 func (m *Model) openSettings() {
+	m.settingsReturnFocus = m.focus
 	m.settings = true
 	m.focus = 0
 	for i, a := range appearances {
@@ -188,6 +273,7 @@ func (m *Model) activate(id int) tea.Cmd {
 		case id >= 0 && id < 4:
 			m.focus = id
 			m.appearance = appearances[id]
+			m.appearanceRevision++
 			m.pollID++
 			// Invalidate a pending timeout; switching away never resets terminal defaults.
 			m.probeID++
@@ -196,12 +282,20 @@ func (m *Model) activate(id int) tea.Cmd {
 				return m.probe()
 			}
 		case id == 4:
+			return m.saveSettings()
+		case id == 5:
 			m.settings = false
 			m.focus = 4
-		case id == 5:
+			if m.screen != mainScreen {
+				m.focus = m.settingsReturnFocus
+			}
+		case id == 6:
 			return tea.Quit
 		}
 		return nil
+	}
+	if m.screen != mainScreen {
+		return m.activateSetup(id)
 	}
 	if id < 0 || id > 6 {
 		return nil
@@ -210,6 +304,10 @@ func (m *Model) activate(id int) tea.Cmd {
 	switch id {
 	case 0, 1, 2, 3:
 		m.section = id
+		if id == 2 && m.actions != nil {
+			m.openProfiles()
+			return m.reload()
+		}
 	case 4:
 		m.openSettings()
 	case 5:

@@ -358,3 +358,48 @@ its 120×36 frame assembly median is 0.817 ms in three shared-host samples.
 Detailed measurements and limits are in benchmarks.md. Real terminal theme
 changes/transparency still require user verification; network isolation was
 unavailable on this host and is not newly claimed.
+
+
+## D20: interactive trainer setup, selection and saved appearance
+
+Baseline: owner-committed D19 `742ac3248883ccacf396c1533deff0ebb65ad560`.
+The approved Pokédex device and Terminal Native foreground/accent behavior are
+preserved. Fresh setup opens a name form; profiles without an active selection
+open the chooser; active trainers enter the Adventure Menu. Trainer opens
+chooser/create controls. Existing domain parsing and storage create/use methods
+are reused. Only the first profile activates on creation. Additional creation
+selects the new row but offers a separate Use action.
+
+Typing/paste supports Unicode names, cursor editing and literal shortcut letters.
+A three-page on-screen keyboard and clickable field cursor support mouse-only
+creation/editing. Lists scroll around selected rows, including long lists; short
+lists use a compact panel. 40×12 remains usable; smaller windows retain Quit.
+Resize preserves form text, cursor, focus and selection.
+
+Profile actions run asynchronously with one in-flight request. Validation happens
+before initialization. Navigation/cancellation before submission creates no
+state. Cancel during a request cancels its context and refreshes from storage;
+a committed result is retained, never retried automatically. Busy controls cannot
+queue duplicate writes, and stale reads/results cannot replace the new selection.
+Corrupt/newer trainer state is not recreated. Setup has no gameplay write path.
+
+Appearance remains live; explicit Save remembers it in a tiny versioned
+appearance.conf with protected atomic replacement. Startup honors explicit flag,
+then saved choice, then Follow Terminal. Startup reads cannot replace a newer
+manual choice/save. Invalid settings remain unchanged and errors are recoverable.
+Help/public commands/redirection do not read or write either store. No new
+module dependency, trainer migration or generated-data change is introduced.
+
+Full tests, vet and race checks pass, with CGO-free UI/domain/storage checks.
+Terminal runs cover keyboard/mouse creation and selection, Unicode paste,
+empty/invalid names, first-run cancellation, live/saved appearance and flag
+precedence, resizing, minimum size, Native/NO_COLOR and terminal restoration.
+Database checks verify no encounters, discoveries or achievement unlocks.
+Resource measurements and the noisy-host startup limitation are in benchmarks.md.
+
+Next: D21 disclosure-safe interactive Pokédex; D22 encounters/history/trainer
+statistics/achievements; D23 complete integration, resources and release review.
+
+D20 navigation correction: arrow keys enter and navigate every on-screen letter row; Enter preserves letter focus. Tab reaches all letter keys. Trainer list arrows leave at boundaries and reach the paired action buttons. Regression coverage includes wide, compact, and minimum supported terminal dimensions.
+
+D20 full TUI review correction: focus-specific setup guidance replaces the fixed keyboard hint; mouse actions retain their visible focus, and returning from Appearance restores setup focus. Appearance displays navigation guidance. Trainer wheel scrolling stops at boundaries; refresh clamps stale selection. Busy name fields allow vertical focus movement. Unsupported small windows accept only visible Quit, preventing hidden mutations. Reviewed keyboard/mouse setup, two-column controls, all appearance palettes, NO_COLOR, three keyboard pages, resizing, asynchronous operations and terminal restoration.

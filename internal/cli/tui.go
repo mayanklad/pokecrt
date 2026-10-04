@@ -15,22 +15,22 @@ Usage:
   pokecrt tui [--appearance dark|light|follow-terminal|terminal-native]
 
 Options:
-  --appearance  Starting appearance (default: follow-terminal)
+  --appearance  Starting appearance (default: saved choice, then follow-terminal)
   --help, -h    Show this help without opening the interface or trainer data
 
 Arrows and Tab/Shift+Tab move focus; Enter activates the focused control.
 Click controls or use the mouse wheel to move focus. A opens appearance;
 Esc closes appearance or quits at the main menu. Q and Ctrl+C quit.
 
-Appearance changes apply live for this session. Follow Terminal uses supported
+Appearance changes apply live. Save appearance remembers the choice. Follow Terminal uses supported
 background replies, with default terminal colors as its fallback. Terminal Native
 preserves the terminal's default background and configured transparency.
 NO_COLOR keeps the interface uncolored. A usable terminal is required on both
 stdin and stdout; redirected streams are rejected before any terminal changes.
 
-This first interface increment provides navigation, appearance and read-only
-trainer status. Collection and gameplay remain available through the CLI;
-interactive setup and section views are added in subsequent increments.
+Trainer setup and selection are interactive. Mouse-only name entry uses an
+on-screen keyboard. Additional trainers need a separate Use action. Collection
+and gameplay remain available through the CLI; interactive section views follow.
 `
 
 func runTUI(args []string, stdout, stderr io.Writer) int {
@@ -52,6 +52,15 @@ func runTUI(args []string, stdout, stderr io.Writer) int {
 	}
 	if help {
 		return writeOutput(stdout, stderr, []byte(tuiHelp))
+	}
+	explicit := false
+	fs.Visit(func(f *flag.Flag) {
+		if f.Name == "appearance" {
+			explicit = true
+		}
+	})
+	if !explicit {
+		appearance = ""
 	}
 	if err = tui.Run(os.Stdin, stdout, appearance); err != nil {
 		fmt.Fprintf(stderr, "pokecrt: %v\n", err)

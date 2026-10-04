@@ -810,3 +810,66 @@ interface has no decorative tick or continuous animation. Wide/compact,
 runs verify restoration and absent first-run state. Public CLI/render paths are
 unchanged by this visual revision; their prior measurements are not rerun or
 represented as newly measured. Theme/translucency still need real-terminal review.
+
+
+## D20 setup and appearance persistence — 4 October 2026
+
+Source baseline: D19 `742ac3248883ccacf396c1533deff0ebb65ad560`. Host:
+Linux amd64, Intel Xeon Platinum 8370C, Go 1.27.1. Both comparison binaries
+use CGO_ENABLED=0, -buildvcs=false, -trimpath and -ldflags '-s -w', version dev,
+and the same bundled dataset. No module or generated-data changes.
+The final candidate is 13,308,064 bytes (12.692 MiB), within 16 MiB.
+
+Fresh processes: GOMAXPROCS=1, five warmups and 100 samples per command/mode,
+stdout discarded; native wait4 launcher used for ten RSS samples. Warm filesystem
+cache, not true cold startup or physical terminal drawing.
+
+| Case / mode | D19 P95 ms | D20 P95 ms | D20 peak RSS MiB |
+| --- | ---: | ---: | ---: |
+| color/random | 9.835 | 8.303 | 9.863 |
+| color/named | 6.057 | 5.565 | 7.359 |
+| color/filtered | 3.985 | 13.367 | 7.363 |
+| color/variant | 4.436 | 15.497 | 7.484 |
+| color/list | 22.005 | 23.722 | 8.984 |
+| color/details | 8.833 | 4.835 | 7.234 |
+| plain/random | 17.499 | 18.559 | 9.613 |
+| plain/named | 11.494 | 5.459 | 7.234 |
+| plain/filtered | 15.230 | 11.333 | 7.238 |
+| plain/variant | 5.434 | 6.220 | 7.484 |
+| plain/list | 15.288 | 7.379 | 8.984 |
+| plain/details | 4.359 | 4.262 | 7.234 |
+
+Maximum public RSS is 9.863 MiB,
+within 10 MiB. Random/full-list P95 is at most
+23.722 ms,
+within 25 ms. Short-command P95 is at most
+15.497 ms,
+**above the unchanged 8 ms threshold**. D19 itself reaches
+15.230 ms
+on this host. This run does not establish a passing startup gate or attribute
+the noise to D20; controlled/local timing remains required. No threshold is raised.
+
+Warm in-process benchmarks, one processor and three 300 ms samples per case:
+worst short-command median 0.703 ms (0.85 ms limit), random/full-list
+median 6.333 ms (12 ms limit), largest-area color render median
+0.515 ms (0.60 ms limit). All meet those warm-work budgets.
+Wide View at 120×36, three GOMAXPROCS=8 samples: 748,252 / 714,803 / 848,931
+ns/op; median 0.748 ms, about 398.2 kB/op and 2,470 allocations/op. This is
+frame assembly, not end-to-end response latency.
+
+A startup + three-second idle + shutdown PTY sample used
+49.842 ms total CPU and 11.484 MiB
+peak RSS; idle output was 0 bytes. Session CPU is not
+isolated idle CPU. The TUI memory figure is separate from the public-path cap.
+Appearance file parsing is bounded to 256 bytes; no JSON dependency, decorative
+ticks or animation is added. Supported Follow Terminal queries remain deliberate.
+
+Full tests/vet/race and CGO-free UI/domain/storage checks pass. PTY checks cover
+first-run wide/compact/40×12, invalid and Unicode input, cancel, mouse-only
+creation/cursor edit/quit, separate additional-profile activation, selection,
+flag/saved-theme precedence, resize, Native/NO_COLOR and restoration. State checks
+find no gameplay records after setup/switching. Model tests cover long lists,
+profiles without an active trainer, duplicate names, corrupt state, blocked/cancelled
+requests, stale results, atomic saves, concurrent saves, invalid/future/symlinked
+settings and late-load precedence. Actual desktop/terminal translucency and
+multiplexer compatibility remain manual checks; no new network-isolation claim.
