@@ -23,7 +23,7 @@ func (m Model) paintCreate(c *canvas) {
 		title = "POKÉDEX SEARCH"
 		subtitle = "Visible name or National number"
 	}
-	c.box(x, y, w, h, title, p.accent)
+	c.pageBox(x, y, w, h, title, m)
 	c.put(x+2, y+1, ansi.Truncate(subtitle, w-14, "…"), p.muted)
 	if m.screen == dexSearchScreen {
 		if h >= 24 {
@@ -122,7 +122,7 @@ func (m Model) paintCreate(c *canvas) {
 		c.button(x+2, y+h-2, 16, 6, "Appearance", m)
 	}
 	if h >= 24 {
-		c.navigationHints(x+2, y+h-5, w-4, m, false, "Select")
+		c.navigationHints(x+2, y+h-4, w-4, m, false, "Select")
 	} else {
 		c.put(x+19, y+h-2, ansi.Truncate(m.createHelp(w-21), w-21, "…"), p.muted)
 	}
@@ -131,7 +131,7 @@ func (m Model) paintProfiles(c *canvas) {
 	p := m.palette()
 	w, h := min(c.width, 88), min(c.height, max(28, min(36, len(m.snapshot.Entries)+16)))
 	x, y := (c.width-w)/2, (c.height-h)/2
-	c.box(x, y, w, h, "TRAINERS", p.accent)
+	c.pageBox(x, y, w, h, "TRAINERS", m)
 	label := "Choose a trainer, then Use trainer."
 	if m.busy {
 		label = "Working… navigation remains available."
@@ -198,7 +198,7 @@ func (m Model) paintProfiles(c *canvas) {
 		c.button(x+2+half, y+h-3, half, 5, "Quit", m)
 	}
 	if h >= 24 {
-		c.navigationHints(x+2, y+h-5, w-4, m, false, "Select")
+		c.navigationHints(x+2, y+h-4, w-4, m, false, "Select")
 	} else {
 		c.put(x+2, y+h-2, ansi.Truncate(m.profilesHelp(), w-4, "…"), p.muted)
 	}

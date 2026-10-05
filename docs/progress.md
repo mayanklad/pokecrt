@@ -561,3 +561,17 @@ Validation covers Go tests, vet, TUI race checks and running-terminal scenarios,
 including wide/compact/minimum Search, footer Quit, trainer-entry hints and
 History. Browsing leaves reference trainer data unchanged; exits restore
 terminal state. No new timers, background work or dependencies are introduced.
+
+## D23 Header and navigation guidance
+
+Wide Pokédex headers allocate trainer names from the space remaining before the
+right-aligned discovery count. Discovery counts use ordinary integers; Dex
+entry identifiers retain their padded numbering.
+
+Text page headers use the same red POKÉCRT branding. The home wordmark uses the normal E; other page headers retain É. Navigation guidance uses muted
+single-line bracket keycaps, separated vertically from the action controls.
+Action-button geometry, frame treatment and the town map remain unchanged.
+
+Validation covers Go tests, vet, TUI race checks and terminal scenarios across
+wide, compact and minimum layouts, appearance modes, keyboard and mouse exits.
+No dependencies, timers or background work are added.

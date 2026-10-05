@@ -92,13 +92,13 @@ func (m Model) listFocusStyle() string {
 }
 
 func (c *canvas) navigationHints(x, y, w int, m Model, compact bool, action string) {
-	p := m.palette()
+	guide := m.hintStyle()
 	if compact && !m.settings && (m.screen == createScreen || m.screen == dexSearchScreen) {
-		c.put(x, y, ansi.Truncate(m.createHelp(w), w, "…"), p.muted)
+		c.put(x, y, ansi.Truncate(m.createHelp(w), w, "…"), guide)
 		return
 	}
 	if compact {
-		c.put(x, y, ansi.Truncate("[↑↓←→] Move  [Enter] "+action+"  [Tab] Focus", w, "…"), p.muted)
+		c.put(x, y, ansi.Truncate("[↑↓←→] Move  [Enter] "+action+"  [Tab] Focus", w, "…"), guide)
 		return
 	}
 	items := [][2]string{{"↑↓←→", "Move"}, {"Enter", action}, {"Tab", "Focus"}, {"Esc", "Back"}}
@@ -138,8 +138,8 @@ func (c *canvas) navigationHints(x, y, w int, m Model, compact bool, action stri
 		if pos+kw+ansi.StringWidth(item[1])+2 > x+w {
 			break
 		}
-		c.keycap(pos, y, kw, item[0], p.muted)
-		c.put(pos+kw+1, y+1, item[1], p.foreground)
+		c.put(pos, y+2, "[ "+item[0]+" ]", guide)
+		c.put(pos+kw+1, y+2, item[1], guide)
 		pos += kw + ansi.StringWidth(item[1]) + 3
 	}
 }
@@ -275,4 +275,30 @@ func balancedControlWidth(w int, label string) int {
 		return w - 1
 	}
 	return w
+}
+
+func (m Model) brandStyle() string {
+	if m.noColor {
+		return ""
+	}
+	if m.lightPalette() {
+		return fg(164, 48, 62)
+	}
+	return fg(232, 97, 109)
+}
+func (m Model) hintStyle() string {
+	if m.noColor {
+		return ""
+	}
+	if m.nativePalette() {
+		return "\x1b[2m"
+	}
+	if m.lightPalette() {
+		return fg(85, 105, 111)
+	}
+	return fg(132, 155, 168)
+}
+func (c *canvas) pageBox(x, y, w, h int, title string, m Model) {
+	c.box(x, y, w, h, "POKÉCRT / "+title, m.palette().accent)
+	c.put(x+3, y, "POKÉCRT", m.brandStyle())
 }

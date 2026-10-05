@@ -192,6 +192,7 @@ func (m Model) paintActivity(c *canvas) {
 	c.box(g.x, g.y, g.w, g.h, "", p.accent)
 	title := strings.ToUpper(sections[m.section])
 	c.put(g.x+2, g.y+1, "POKÉCRT / "+title, p.accent)
+	c.put(g.x+2, g.y+1, "POKÉCRT", m.brandStyle())
 	if g.wide {
 		c.put(g.x+g.w/2, g.y+1, "TRAINER "+clean(a.data.profile.Name), p.muted)
 	}

@@ -273,7 +273,8 @@ func (m Model) paintMain(c *canvas) {
 		c.put(px+2, top+3, ansi.Truncate(status, cardW-4, "…"), p.muted)
 
 	} else {
-		c.put(left+3, top+1, "◈ POKÉCRT ◈", p.accent)
+		c.put(left+3, top+1, "◈ POKECRT ◈", p.accent)
+		c.put(left+5, top+1, "POKECRT", m.brandStyle())
 		c.put(left+3, top+2, "TRAINER HUB", p.gold)
 		c.put(left+3, top+3, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
 	}
@@ -386,7 +387,7 @@ func (m Model) paintSettings(c *canvas) {
 	w, h := min(c.width, 88), min(c.height, 28)
 	x, y := (c.width-w)/2, (c.height-h)/2
 	p := m.palette()
-	c.box(x, y, w, h, "APPEARANCE", p.accent)
+	c.pageBox(x, y, w, h, "APPEARANCE", m)
 	if h >= 24 {
 		c.framedControl(x+w-14, y+1, 12, 6, "Quit", m, false)
 	} else {
@@ -435,7 +436,7 @@ func (m Model) paintSettings(c *canvas) {
 	if h >= 26 {
 		c.outlinedButton(x+2, y+h-8, (w-4)/2-1, 4, label, m)
 		c.outlinedButton(x+3+min((w-4)/2-1, 21), y+h-8, min((w-4)/2-1, 21), 5, "Back", m)
-		c.navigationHints(x+2, y+h-5, w-4, m, false, "Apply")
+		c.navigationHints(x+2, y+h-4, w-4, m, false, "Apply")
 	} else {
 		c.button(x+2, y+h-3, (w-4)/2-1, 4, label, m)
 		c.button(x+2+(w-4)/2, y+h-3, (w-4)/2-1, 5, "Back", m)

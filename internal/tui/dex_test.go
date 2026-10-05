@@ -548,3 +548,17 @@ func TestDeviceFilteringKeepsExplicitAppearanceForSameEntry(t *testing.T) {
 		t.Fatal("search clearing lost explicit appearance")
 	}
 }
+
+func TestDexHeaderUsesAvailableTrainerWidth(t *testing.T) {
+	m := dexModel(t, collectedDex())
+	m.dex.snapshot.name = "User with long name"
+	m.dex.snapshot.summary.Completion.Species = 9
+	m.dex.snapshot.summary.Completion.SpeciesTotal = 1017
+	for _, width := range []int{100, 120, 160} {
+		m.width = width
+		content := ansi.Strip(m.View().Content)
+		if !strings.Contains(content, "TRAINER User with long name") || !strings.Contains(content, "9 / 1017 DISCOVERED") {
+			t.Fatalf("header loses available information at width %d", width)
+		}
+	}
+}

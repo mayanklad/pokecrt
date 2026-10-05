@@ -370,10 +370,6 @@ func (m Model) paintDex(c *canvas) {
 	g := m.dexGeometry()
 	p := m.palette()
 	c.box(g.x, g.y, g.w, g.h, "", p.accent)
-	if g.wide {
-
-	}
-
 	brand := "POKÉCRT / POKÉDEX"
 	if !g.wide {
 		brand = "POKÉDEX"
@@ -385,13 +381,10 @@ func (m Model) paintDex(c *canvas) {
 		}
 	}
 	c.put(g.x+2, g.y+1, brand, p.accent)
-	if g.wide && !m.noColor {
-		red := fg(232, 97, 109)
-		if m.appearance == Light || m.appearance == FollowTerminal && m.backgroundKnown && !m.terminalDark {
-			red = fg(164, 48, 62)
-		}
-		c.put(g.x+2, g.y+1, "POKÉCRT", red)
+	if g.wide {
+		c.put(g.x+2, g.y+1, "POKÉCRT", m.brandStyle())
 	}
+
 	if g.wide {
 		c.put(g.x+23, g.y+1, "● ● ●", p.muted)
 	}
@@ -404,15 +397,18 @@ func (m Model) paintDex(c *canvas) {
 		}
 	}
 	if g.wide {
-		c.put(g.x+g.w-53, g.y+1, ansi.Truncate("TRAINER "+trainerLabel, 24, "…"), p.muted)
-		summary := fmt.Sprintf("%03d / %d DISCOVERED", s.Completion.Species, s.Completion.SpeciesTotal)
+
+		summary := fmt.Sprintf("%d / %d DISCOVERED", s.Completion.Species, s.Completion.SpeciesTotal)
 		if m.dex.snapshot.data == nil {
 			summary = "READING COLLECTION…"
 			if m.dex.error != "" {
 				summary = "COLLECTION UNAVAILABLE"
 			}
 		}
-		c.put(g.x+g.w-27, g.y+1, summary, p.muted)
+		summaryX := g.x + g.w - 2 - ansi.StringWidth(summary)
+		trainerX := g.x + 34
+		c.put(trainerX, g.y+1, ansi.Truncate("TRAINER "+trainerLabel, max(0, summaryX-trainerX-3), "…"), p.muted)
+		c.put(summaryX, g.y+1, summary, p.muted)
 	} else if !g.short {
 		label := fmt.Sprintf("%s   %d/%d discovered", trainerLabel, s.Completion.Species, s.Completion.SpeciesTotal)
 		if m.dex.detail {
