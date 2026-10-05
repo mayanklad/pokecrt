@@ -24,7 +24,7 @@ func TestFramedControlMouseBorderAndSelection(t *testing.T) {
 		for _, cell := range c.rows[4] {
 			line.WriteString(cell.text)
 		}
-		if !strings.Contains(line.String(), "▶●") {
+		if !strings.Contains(line.String(), "▶") || !strings.Contains(line.String(), "●") {
 			t.Fatal("focus must not erase selection", line.String())
 		}
 	}
@@ -153,5 +153,118 @@ func TestHomeDescriptionFollowsFocus(t *testing.T) {
 	m.focus = 2
 	if m.dialogue() == first || m.homeTitle() != "Trainer" {
 		t.Fatal("home preview does not follow focus")
+	}
+}
+
+func TestFilterLabelsFitWithFocusAndSelection(t *testing.T) {
+	for _, width := range []int{64, 120} {
+		m := New(context.Background(), nil, Dark, true)
+		m.width, m.height, m.screen = width, 40, dexScreen
+		for _, id := range []int{31, 32, 33, 3} {
+			m.focus = id
+			c := newCanvas(width, 40)
+			m.paintDex(c)
+			for _, control := range m.dexControls() {
+				if control.id != id {
+					continue
+				}
+				var row strings.Builder
+				for x := control.x; x < control.x+control.w-1; x++ {
+					row.WriteString(c.rows[control.y][x].text)
+				}
+				label := strings.Trim(control.label, "[]")
+				if !strings.Contains(row.String(), label) || strings.Contains(row.String(), "…") {
+					t.Fatal("filter truncated", width, id, row.String())
+				}
+			}
+		}
+	}
+}
+
+func TestButtonLabelDoesNotMoveWithFocus(t *testing.T) {
+	m := New(context.Background(), nil, Dark, true)
+	positions := []int{}
+	for _, focus := range []int{0, 4} {
+		m.focus = focus
+		c := newCanvas(40, 12)
+		c.framedControl(2, 3, 18, 4, "Refresh", m, false)
+		for x, v := range c.rows[4] {
+			if v.text == "R" {
+				positions = append(positions, x)
+			}
+		}
+	}
+	if len(positions) != 2 || positions[0] != positions[1] {
+		t.Fatal("focus moves label", positions)
+	}
+}
+
+func TestEncounterFrameFocusFollowsScrollOwner(t *testing.T) {
+	m := New(context.Background(), nil, Dark, false)
+	m.width, m.height, m.screen, m.section = 120, 40, activityScreen, 1
+	m.activity.art = []string{"art"}
+	styles := [][2]string{}
+	for _, focus := range []int{22, 21} {
+		m.focus = focus
+		c := newCanvas(120, 40)
+		p := m.palette()
+		c.box(0, 0, 120, 40, "", p.accent)
+		c.box(2, 6, 56, m.activityBodyHeight(), "DEVICE DISPLAY", p.accent)
+		c.box(60, 6, 58, m.activityBodyHeight(), "ENCOUNTER DETAILS", p.accent)
+		m.styleFrames(c)
+		styles = append(styles, [2]string{c.rows[7][2].style, c.rows[7][60].style})
+	}
+	if styles[0][0] == styles[0][1] || styles[0][0] != styles[1][1] || styles[0][1] != styles[1][0] {
+		t.Fatal("scroll focus accents the wrong panel", styles)
+	}
+}
+
+func TestDexFooterAndTabsHaveEqualLabelPadding(t *testing.T) {
+	m := New(context.Background(), nil, Dark, true)
+	m.width, m.height, m.screen, m.focus = 120, 40, dexScreen, 0
+	c := newCanvas(120, 40)
+	m.paintDex(c)
+	for _, id := range []int{5, 6, 7, 8, 21, 22, 23} {
+		for _, control := range m.dexControls() {
+			if control.id != id {
+				continue
+			}
+			left, right := -1, -1
+			for _, hit := range c.hits {
+				if hit.id == id && hit.y == control.y {
+					left, right = hit.x+1, hit.x+hit.width-2
+					break
+				}
+			}
+			if left < 0 {
+				t.Fatal("missing button", id)
+			}
+			for left <= right && c.rows[control.y][left].text == " " {
+				left++
+			}
+			for right >= left && c.rows[control.y][right].text == " " {
+				right--
+			}
+			var hit hit
+			for _, h := range c.hits {
+				if h.id == id && h.y == control.y {
+					hit = h
+					break
+				}
+			}
+			if left-hit.x-1 != hit.x+hit.width-2-right {
+				t.Fatal("unequal label padding", id)
+			}
+		}
+	}
+}
+
+func TestTrainerEntryHintsIncludeHorizontalButtonNavigation(t *testing.T) {
+	for _, width := range []int{40, 64, 120} {
+		m := New(context.Background(), nil, Dark, true)
+		m.width, m.height, m.screen, m.focus = width, 36, profilesScreen, 0
+		if !strings.Contains(m.View().Content, "←→") || !strings.Contains(m.View().Content, "Buttons") {
+			t.Fatal("trainer-list horizontal guidance missing", width)
+		}
 	}
 }

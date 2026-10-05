@@ -134,7 +134,9 @@ func (m *Model) editName(k tea.KeyPressMsg) tea.Cmd {
 	case "down":
 		m.focus = 100
 	case "up":
-		m.focus = 7
+		if m.screen != dexSearchScreen {
+			m.focus = 7
+		}
 	default:
 		if k.Text != "" {
 			m.insertName(k.Text)
@@ -518,6 +520,20 @@ func (m *Model) navigateSetup(direction string) {
 		case "right":
 			if i%10 < 9 && i+1 < n {
 				m.focus++
+			} else if i < 10 {
+				// The top-right keyboard edge leads to the visible header Quit.
+				targets := m.createFocusTargets()
+				for _, current := range targets {
+					if current.id != m.focus {
+						continue
+					}
+					for _, q := range targets {
+						if q.id == 7 && q.x >= current.x+current.w && q.y < current.y {
+							m.focus = 7
+							break
+						}
+					}
+				}
 			}
 		case "up":
 			if i >= 10 {
@@ -540,7 +556,22 @@ func (m *Model) navigateSetup(direction string) {
 		}
 		return
 	}
-	m.focus = directionalTarget(m.createFocusTargets(), m.focus, direction)
+	targets := m.createFocusTargets()
+	next := directionalTarget(targets, m.focus, direction)
+	if next == m.focus && direction == "right" && m.focus >= 1 && m.focus <= 6 {
+		for _, current := range targets {
+			if current.id != m.focus {
+				continue
+			}
+			for _, q := range targets {
+				if q.id == 7 && q.x >= current.x+current.w && q.y < current.y {
+					next = 7
+					break
+				}
+			}
+		}
+	}
+	m.focus = next
 }
 
 func (m Model) createFocusTargets() []dexControl {

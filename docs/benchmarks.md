@@ -1011,3 +1011,12 @@ Median DexView: 1,134,458 ns/op, 606,507 B/op, 3,720 allocs/op.
 These measure local View construction, not end-to-end latency, startup or RSS.
 Hardware differs from the earlier measurements; direct timing comparisons are
 not controlled. Full release resource gates remain separate.
+
+## D23 control and frame corrections
+
+Go 1.27.1, linux/amd64, AMD EPYC 9V74; three 200 ms runs with `-cpu=1`.
+Median WideView: 717,185 ns/op, 469,458 B/op, 3,058 allocs/op.
+Median DexView: 1,226,916 ns/op, 599,546 B/op, 3,581 allocs/op.
+These are local frame-construction benchmarks. They do not establish terminal
+latency, startup or RSS acceptance. The separate release resource gates remain
+open. Focused frame styling adds no background work or timers.

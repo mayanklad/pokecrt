@@ -139,23 +139,23 @@ func (m Model) activityControls() []dexControl {
 		if m.activity.loading {
 			label = "Reading…"
 		}
-		add(g.x+2, y, 14, 10, label)
-		add(g.x+16, y, g.w-18, 30, map[bool]string{true: "Show result", false: "History"}[m.activity.historyMode])
+		add(g.x+2, y, 16, 10, label)
+		add(g.x+18, y, g.w-20, 30, map[bool]string{true: "Show result", false: "History"}[m.activity.historyMode])
 	} else if m.section == 2 {
 		add(g.x+2, y, g.w-4, 15, "Choose / create trainer")
 	}
 	if m.activityMaxScroll() > 0 {
 		if !(m.section == 1 && m.activity.historyMode && len(m.activity.data.history) > 0) {
-			add(g.x+2, g.y+g.h-6, min(18, g.w-14), 22, "Scroll")
+			add(g.x+2, g.y+g.h-6, min(13, g.w-14), 22, "Scroll")
 		}
 		add(g.x+g.w-12, g.y+g.h-6, 5, 16, "↑")
 		add(g.x+g.w-7, g.y+g.h-6, 5, 17, "↓")
 	}
 	if m.section == 1 {
 		if m.activity.historyMode && len(m.activity.data.history) > 0 {
-			add(g.x+2, g.y+g.h-6, g.w-14, 20, "Open selected entry")
-			add(g.x+2, g.y+g.h-5, (g.w-4)/2, 31, "Previous")
-			add(g.x+2+(g.w-4)/2, g.y+g.h-5, (g.w-4)/2, 32, "Next")
+			add(g.x+2, g.y+g.h-6, min(26, g.w-14), 20, "Open selected entry")
+			add(g.x+2, g.y+g.h-5, min(15, (g.w-4)/2), 31, "Previous")
+			add(g.x+2+min(15, (g.w-4)/2), g.y+g.h-5, min(11, (g.w-4)/2), 32, "Next")
 		} else if len(m.activity.art) > 0 {
 
 			pan := m.activityMaxPan() > 0
@@ -216,7 +216,7 @@ func (m Model) paintActivity(c *canvas) {
 	if g.h < 18 {
 		bodyY = g.y + 3
 	}
-	if g.h >= 18 && !(g.wide && m.section != 1) {
+	if g.h >= 18 && !(g.wide && (m.section != 1 || !a.historyMode && len(a.art) > 0 && a.error == "")) {
 		c.box(g.x+2, bodyY, bodyW, bodyH, " "+map[int]string{1: "ENCOUNTER LOG", 2: "TRAINER CARD", 3: "ACHIEVEMENT JOURNAL"}[m.section]+" ", p.accent)
 	}
 	textX, textW := g.x+4, bodyW-4
@@ -236,8 +236,11 @@ func (m Model) paintActivity(c *canvas) {
 		artW := g.w/2 - 4
 		c.box(g.x+2, bodyY, artW, bodyH, " DEVICE DISPLAY ", p.accent)
 		m.paintActivityArt(c, g.x+3, bodyY+1, artW-2, bodyH-2)
-		textX = g.x + g.w/2 + 1
-		textW = g.w/2 - 5
+		detailsX := g.x + g.w/2
+		c.box(detailsX, bodyY, g.w/2-2, bodyH, "ENCOUNTER DETAILS", p.accent)
+		textX = detailsX + 2
+		textW = g.w/2 - 6
+
 	} else if m.section == 1 && !a.historyMode && len(a.art) > 0 && a.error == "" {
 		// Compact results retain the full natural sprite in a pannable viewport.
 		if !a.resultDetails {
@@ -276,7 +279,11 @@ func (m Model) paintActivity(c *canvas) {
 		} else if !g.short && (control.y == g.y+g.h-3 || g.h >= 24 && control.y == g.y+g.h-6) {
 			c.outlinedButton(control.x, control.y-1, max(3, control.w-1), control.id, label, m)
 		} else {
-			c.button(control.x, control.y, max(3, control.w-1), control.id, label, m)
+			width := max(3, control.w-1)
+			if control.label == "↑" || control.label == "↓" || control.label == "←" || control.label == "→" {
+				width = control.w
+			}
+			c.button(control.x, control.y, width, control.id, label, m)
 		}
 	}
 

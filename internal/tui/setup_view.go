@@ -25,7 +25,19 @@ func (m Model) paintCreate(c *canvas) {
 	}
 	c.box(x, y, w, h, title, p.accent)
 	c.put(x+2, y+1, ansi.Truncate(subtitle, w-14, "…"), p.muted)
-	c.button(x+w-10, y+1, 8, 7, "Quit", m)
+	if m.screen == dexSearchScreen {
+		if h >= 24 {
+			c.framedControl(x+3+min((w-4)/2-1, 22), y+h-8, 12, 7, "Quit", m, false)
+		}
+	} else if h >= 24 {
+		quitY := y + 1
+		if w < 72 {
+			quitY = y + h - 8
+		}
+		c.framedControl(x+w-14, quitY, 12, 7, "Quit", m, false)
+	} else {
+		c.button(x+w-10, y+1, 8, 7, "Quit", m)
+	}
 	prefix, suffix := string(m.name[:m.cursor]), string(m.name[m.cursor:])
 	fieldBoxW := min(w-4, 52)
 	fieldW := fieldBoxW - 2
@@ -98,8 +110,15 @@ func (m Model) paintCreate(c *canvas) {
 		c.outlinedButton(x+3+actionW, y+h-11, actionW, 2, cancel, m)
 		c.outlinedButton(x+2, y+h-8, 16, 6, "Appearance", m)
 	} else {
-		c.button(x+2, y+h-3, (w-4)/2-1, 1, create, m)
-		c.button(x+2+(w-4)/2, y+h-3, (w-4)/2-1, 2, cancel, m)
+		if m.screen == dexSearchScreen {
+			buttonW := min(18, (w-6)/3)
+			c.button(x+2, y+h-3, buttonW, 1, "Search", m)
+			c.button(x+3+buttonW, y+h-3, buttonW, 2, cancel, m)
+			c.button(x+4+2*buttonW, y+h-3, buttonW, 7, "Quit", m)
+		} else {
+			c.button(x+2, y+h-3, (w-4)/2-1, 1, create, m)
+			c.button(x+2+(w-4)/2, y+h-3, (w-4)/2-1, 2, cancel, m)
+		}
 		c.button(x+2, y+h-2, 16, 6, "Appearance", m)
 	}
 	if h >= 24 {

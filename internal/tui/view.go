@@ -20,10 +20,15 @@ var cliActions = []string{"pokecrt dex", "pokecrt encounter", "pokecrt trainer",
 
 type hit struct{ x, y, width, id int }
 type cell struct{ text, style string }
+type panelFrame struct {
+	x, y, w, h int
+	style      string
+}
 type canvas struct {
 	width, height int
 	rows          [][]cell
 	hits          []hit
+	frames        []panelFrame
 }
 
 func newCanvas(w, h int) *canvas {
@@ -93,19 +98,7 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		if m.screen == dexScreen && !m.settings {
 			selected = id >= 20 && id <= 23 && m.dex.tab == id-20 || id >= 31 && id <= 33 && m.dex.status == id-31
 		}
-		marker := ""
-		if selected {
-			marker = "● "
-		}
-		if m.focus == id {
-			marker = "▶ "
-			if selected {
-				marker = "▶● "
-			}
-		}
 		label = strings.TrimPrefix(strings.TrimPrefix(label, "○ "), "● ")
-		text := ansi.Truncate(marker+label, w-2, "…")
-		left := max(0, (w-2-ansi.StringWidth(text))/2)
 		style, _, _ = m.controlColours(id, label)
 		if m.focus == id {
 			style = m.controlStyle(true, selected)
@@ -113,7 +106,9 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		if selected && m.focus != id {
 			style += m.palette().gold
 		}
-		c.put(x, y, "❨"+strings.Repeat(" ", left)+text+strings.Repeat(" ", max(0, w-2-left-ansi.StringWidth(text)))+"❩", style)
+		c.put(x, y, "❨", style)
+		c.put(x+w-1, y, "❩", style)
+		c.controlText(x+1, y, w-2, label, style, m.focus == id, selected)
 		c.hits = append(c.hits, hit{x, y, w, id})
 		return
 	}
@@ -146,8 +141,14 @@ func (c *canvas) box(x, y, w, h int, title, style string) {
 	}
 
 	if title != "" {
-		c.put(x+2, y, ansi.Truncate(" "+strings.TrimSpace(title)+" ", w-4, "…"), style)
+		titleStyle := style
+		if style != "" {
+			titleStyle += "\x1b[1m"
+		}
+		c.put(x+2, y, ansi.Truncate(" "+strings.TrimSpace(title)+" ", w-4, "…"), titleStyle)
 	}
+	c.frames = append(c.frames, panelFrame{x, y, w, h, style})
+
 }
 func (c *canvas) content(p palette) string {
 	var out strings.Builder
@@ -212,6 +213,7 @@ func (m Model) View() tea.View {
 	} else {
 		m.paintMain(c)
 	}
+	m.styleFrames(c)
 	content := c.content(p)
 	v := tea.NewView(content)
 	v.AltScreen = true
@@ -252,8 +254,6 @@ func (m Model) paintMain(c *canvas) {
 		lx := left + (frameW-41)/2
 		m.paintLogo(c, lx, top+1)
 		c.put(lx+14, top+4, "TRAINER HUB", p.gold)
-		px := left + frameW - 30
-		c.box(px, top+1, 28, 4, "", p.accent)
 		name := clean(m.snapshot.Name)
 		if name == "" {
 			name = "No trainer yet"
@@ -261,12 +261,17 @@ func (m Model) paintMain(c *canvas) {
 		if m.loading {
 			name = "Reading trainer…"
 		}
-		c.put(px+2, top+2, ansi.Truncate("♟ "+name, 24, "…"), p.foreground)
+		name = "♟ " + name
 		status := "Create or choose a trainer"
 		if m.snapshot.Active {
 			status = fmt.Sprintf("Level %d", max(1, m.snapshot.Level))
 		}
-		c.put(px+2, top+3, ansi.Truncate(status, 24, "…"), p.muted)
+		cardW := min(28, (frameW-41)/2-4, max(ansi.StringWidth(name), ansi.StringWidth(status))+4)
+		px := left + frameW - cardW - 2
+		c.box(px, top+1, cardW, 4, "", p.accent)
+		c.put(px+2, top+2, ansi.Truncate(name, cardW-4, "…"), p.foreground)
+		c.put(px+2, top+3, ansi.Truncate(status, cardW-4, "…"), p.muted)
+
 	} else {
 		c.put(left+3, top+1, "◈ POKÉCRT ◈", p.accent)
 		c.put(left+3, top+2, "TRAINER HUB", p.gold)
@@ -382,16 +387,24 @@ func (m Model) paintSettings(c *canvas) {
 	x, y := (c.width-w)/2, (c.height-h)/2
 	p := m.palette()
 	c.box(x, y, w, h, "APPEARANCE", p.accent)
-	c.button(x+w-11, y+1, 8, 6, "Quit", m)
+	if h >= 24 {
+		c.framedControl(x+w-14, y+1, 12, 6, "Quit", m, false)
+	} else {
+		c.button(x+w-11, y+1, 8, 6, "Quit", m)
+	}
 	for i, label := range appearanceNames {
 		marker := "○ "
 		if appearances[i] == m.appearance {
 			marker = "● "
 		}
-		if h >= 24 {
-			c.framedControl(x+2, y+2+i*3, w-4, i, label, m, appearances[i] == m.appearance)
+		if h >= 26 {
+			c.framedControl(x+2, y+4+i*3, w-4, i, label, m, appearances[i] == m.appearance)
 		} else {
-			c.button(x+2, y+2+i, w-4, i, marker+label, m)
+			modeY := y + 2
+			if h >= 24 {
+				modeY = y + 4
+			}
+			c.button(x+2, modeY+i, w-4, i, marker+label, m)
 		}
 	}
 	message := "Switch with Enter or a click. Terminal Native preserves your terminal background and configured transparency."
@@ -402,13 +415,16 @@ func (m Model) paintSettings(c *canvas) {
 		message = "NO_COLOR is enabled. Focus and selection remain visible. Color choices apply when color is enabled."
 	}
 	helpY := y + 6
-	if h >= 24 {
-		helpY = y + 14
+	if h >= 24 && h < 26 {
+		helpY = y + 8
+	}
+	if h >= 26 {
+		helpY = y + 16
 	}
 	c.put(x+2, helpY, ansi.Truncate("Changes preview immediately.", w-4, "…"), p.muted)
-	c.wrap(x+2, helpY+1, w-4, max(0, y+h-10-helpY-1), message, "")
+	c.wrap(x+2, helpY+1, w-4, max(0, y+h-9-helpY-1), message, "")
 	statusY := y + h - 5
-	if h >= 24 {
+	if h >= 26 {
 		statusY = y + h - 9
 	}
 	c.wrap(x+2, statusY, w-4, 1, m.configStatus(), p.accent)
@@ -416,7 +432,7 @@ func (m Model) paintSettings(c *canvas) {
 	if m.savingConfig {
 		label = "Saving…"
 	}
-	if h >= 24 {
+	if h >= 26 {
 		c.outlinedButton(x+2, y+h-8, (w-4)/2-1, 4, label, m)
 		c.outlinedButton(x+3+min((w-4)/2-1, 21), y+h-8, min((w-4)/2-1, 21), 5, "Back", m)
 		c.navigationHints(x+2, y+h-5, w-4, m, false, "Apply")

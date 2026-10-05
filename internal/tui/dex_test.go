@@ -183,7 +183,12 @@ func TestDexEveryScreenFitsEveryModeAndControlsHaveMouseTargets(t *testing.T) {
 					}
 					expected := []int{1, 5, 6, 7, 8}
 					if m.height >= 20 && (m.dexWide() || !m.dex.detail) {
-						expected = append(expected, 3, 31, 32, 33)
+						expected = append(expected, 3)
+						if m.width >= 64 {
+							expected = append(expected, 31, 32, 33)
+						} else {
+							expected = append(expected, 2)
+						}
 					}
 					if m.height >= 20 && (m.dexWide() || m.dex.detail) {
 						expected = append(expected, 20, 21, 22, 23)

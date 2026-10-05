@@ -99,19 +99,28 @@ func (m Model) dexControls() []dexControl {
 		cs = append(cs, dexControl{x, y, w, id, label})
 	}
 	fullFilters := g.wide || !m.dex.detail || m.dex.filters
-	if g.short {
-		add(g.x+2, g.y+2, 9, 2, []string{"All", "Seen", "Unseen"}[m.dex.status])
-		add(g.x+11, g.y+2, 11, 3, m.dexGenLabel())
+	if g.short || g.w < 64 && fullFilters {
+		y := g.y + 3
+		if g.short {
+			y = g.y + 2
+		}
+		add(g.x+2, y, 15, 2, []string{"All", "Seen", "Unseen"}[m.dex.status])
+		add(g.x+17, y, g.w-19, 3, m.dexGenLabel())
 
-		add(g.x+2, g.y+3, g.w-4, 1, m.dexSearchLabel())
+		add(g.x+2, y+1, g.w-4, 1, m.dexSearchLabel())
+		if !g.short && m.dex.detail && m.dex.filters {
+			add(g.x+2, g.y+5, 10, 4, "Index")
+			add(g.x+12, g.y+5, g.w-14, 25, "Close filters")
+		}
+
 	} else if fullFilters {
 		y := g.y + 3
-		add(g.x+2, y, 8, 31, m.dexStatusLabel(0))
-		add(g.x+10, y, 8, 32, m.dexStatusLabel(1))
-		add(g.x+18, y, 10, 33, m.dexStatusLabel(2))
-		add(g.x+28, y, min(12, g.w-30), 3, m.dexGenLabel())
+		add(g.x+2, y, 12, 31, m.dexStatusLabel(0))
+		add(g.x+14, y, 13, 32, m.dexStatusLabel(1))
+		add(g.x+27, y, 15, 33, m.dexStatusLabel(2))
+		add(g.x+42, y, 16, 3, m.dexGenLabel())
 		if g.wide {
-			add(g.x+40, y, g.w-42, 1, m.dexSearchLabel())
+			add(g.x+58, y, g.w-60, 1, m.dexSearchLabel())
 		} else {
 			add(g.x+2, g.y+4, g.w-4, 1, m.dexSearchLabel())
 		}
@@ -159,7 +168,7 @@ func (m Model) dexControls() []dexControl {
 		add(g.listX+g.listW-14, g.bodyY+g.bodyH-1, 6, 16, "↑")
 		add(g.listX+g.listW-8, g.bodyY+g.bodyH-1, 6, 17, "↓")
 	}
-	widths := []int{10, 18, 13, 10}
+	widths := []int{11, 19, 14, 11}
 	labels := []string{"Back", "Appearance", "Refresh", "Quit"}
 	if !g.wide {
 		widths = []int{8, 15, 12, g.w - 39}
@@ -436,9 +445,13 @@ func (m Model) paintDex(c *canvas) {
 	for _, control := range m.dexControls() {
 		selected := control.id >= 20 && control.id <= 23 && m.dex.tab == control.id-20 || control.id >= 31 && control.id <= 33 && m.dex.status == control.id-31
 		if g.wide && (control.y == g.y+3 || control.id >= 20 && control.id <= 23) {
-			c.framedControl(control.x, control.y-1, max(3, control.w-1), control.id, control.label, m, selected)
+			width := max(3, control.w-1)
+			if control.id >= 20 && control.id <= 23 {
+				width = balancedControlWidth(width, control.label)
+			}
+			c.framedControl(control.x, control.y-1, width, control.id, control.label, m, selected)
 		} else if !g.short && (control.y == g.y+g.h-3 || g.h >= 24 && control.y == g.y+g.h-6) {
-			c.outlinedButton(control.x, control.y-1, max(3, control.w-1), control.id, control.label, m)
+			c.outlinedButton(control.x, control.y-1, balancedControlWidth(max(3, control.w-1), control.label), control.id, control.label, m)
 		} else {
 			c.button(control.x, control.y, max(3, control.w-1), control.id, control.label, m)
 		}
@@ -501,7 +514,7 @@ func (m Model) paintDexIndex(c *canvas, g dexLayout) {
 			style = m.controlStyle(false, true)
 			if m.focus == 0 {
 				marker = "▶ "
-				style = m.controlStyle(true, true)
+				style = m.listFocusStyle()
 			}
 		}
 		suffix := ""

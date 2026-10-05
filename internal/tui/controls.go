@@ -24,7 +24,7 @@ func (m Model) controlStyle(focused, selected bool) string {
 		if m.noColor {
 			return ""
 		}
-		return m.palette().accent + "\x1b[1m"
+		return m.palette().muted + "\x1b[1m"
 	}
 	if selected {
 		return m.palette().gold
@@ -39,16 +39,7 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 		return
 	}
 	label = strings.TrimSpace(strings.Trim(label, "[]"))
-	marker := ""
-	if selected {
-		marker = "● "
-	}
-	if m.focus == id {
-		marker = "▶ "
-		if selected {
-			marker = "▶● "
-		}
-	}
+
 	style, border, _ := m.controlColours(id, label)
 	if selected {
 		border = m.palette().gold
@@ -58,12 +49,46 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 		style = m.controlStyle(true, selected)
 	}
 	c.keycap(x, y, w, "", border)
-	text := ansi.Truncate(marker+label, w-2, "…")
-	left := max(0, (w-2-ansi.StringWidth(text))/2)
-	c.put(x+1, y+1, strings.Repeat(" ", left)+text+strings.Repeat(" ", max(0, w-2-left-ansi.StringWidth(text))), style)
+	c.controlText(x+1, y+1, w-2, label, style, m.focus == id, selected)
 	for row := y; row < y+3; row++ {
 		c.hits = append(c.hits, hit{x, row, w, id})
 	}
+}
+
+// Keep the label centred independently of focus and selection markers.
+func (c *canvas) controlText(x, y, w int, label, style string, focused, selected bool) {
+	text := ansi.Truncate(label, w, "…")
+	left := max(0, (w-ansi.StringWidth(text))/2)
+	c.put(x, y, strings.Repeat(" ", w), style)
+	c.put(x+left, y, text, style)
+	if focused && left >= 1 {
+		c.put(x, y, "▶", style)
+	}
+	if selected {
+		if left >= 2 {
+			offset := 0
+			if focused {
+				offset = 1
+			}
+			c.put(x+offset, y, "●", style)
+		} else if w-left-ansi.StringWidth(text) >= 1 {
+			c.put(x+w-1, y, "●", style)
+		}
+	}
+
+}
+
+func (m Model) listFocusStyle() string {
+	if m.noColor {
+		return ""
+	}
+	if m.nativePalette() {
+		return "\x1b[7m\x1b[1m"
+	}
+	if m.lightPalette() {
+		return fg(246, 245, 237) + bg(20, 102, 117) + "\x1b[1m"
+	}
+	return fg(2, 19, 33) + bg(73, 213, 236) + "\x1b[1m"
 }
 
 func (c *canvas) navigationHints(x, y, w int, m Model, compact bool, action string) {
@@ -80,7 +105,11 @@ func (c *canvas) navigationHints(x, y, w int, m Model, compact bool, action stri
 	if !m.settings && m.screen == profilesScreen {
 		items = [][2]string{{"↑↓", "Column"}, {"←→", "Row"}, {"Enter", "Select"}}
 		if m.focus == 0 {
-			items = [][2]string{{"↑↓", "Choose / leave"}, {"Enter", "Use"}, {"Tab", "Focus"}}
+			choose := "Choose / leave"
+			if w < 65 {
+				choose = "Choose"
+			}
+			items = [][2]string{{"↑↓", choose}, {"←→", "Buttons"}, {"Enter", "Use"}, {"Tab", "Focus"}}
 		}
 	}
 	if !m.settings && (m.screen == createScreen || m.screen == dexSearchScreen) {
@@ -163,4 +192,87 @@ func directionalTarget(controls []dexControl, currentID int, direction string) i
 		}
 	}
 	return best
+}
+
+// Quiet structural borders; only the panel containing keyboard focus is accented.
+func (m Model) styleFrames(c *canvas) {
+	quiet, active := "", ""
+	if !m.noColor {
+		quiet, active = fg(64, 88, 104), fg(105, 165, 182)
+		if m.lightPalette() {
+			quiet, active = fg(157, 172, 175), fg(54, 109, 121)
+		}
+		if m.nativePalette() {
+			quiet, active = "\x1b[2m", "\x1b[1m"
+		}
+	}
+	fx, fy := -1, -1
+	for _, hit := range c.hits {
+		if hit.id == m.focus {
+			fx, fy = hit.x+hit.width/2, hit.y
+			break
+		}
+	}
+	if !m.settings && m.screen == dexScreen {
+		for _, target := range m.dexTargets() {
+			if target.id == m.focus {
+				fx, fy = target.x+target.w/2, target.y
+				break
+			}
+		}
+	}
+	best, area, largest := -1, int(^uint(0)>>1), 0
+	for _, f := range c.frames {
+		largest = max(largest, f.w*f.h)
+	}
+	for i, f := range c.frames {
+		inside := fx >= f.x && fx < f.x+f.w && fy >= f.y && fy < f.y+f.h
+		if !m.settings && m.screen == activityScreen {
+			if m.focus == 22 || m.focus == 16 || m.focus == 17 {
+				inside = f.h == m.activityBodyHeight()
+				if m.section == 1 && m.dexGeometry().wide && len(m.activity.art) > 0 && !m.activity.historyMode && m.activity.error == "" {
+					inside = inside && f.x == m.dexGeometry().x+m.dexGeometry().w/2
+				}
+			}
+			if m.focus == 21 || m.focus == 18 || m.focus == 19 || m.focus == 33 || m.focus == 34 {
+				inside = f.x == m.dexGeometry().x+2 && f.h == m.activityBodyHeight()
+			}
+		}
+		if inside && f.w*f.h < largest && f.w*f.h < area {
+			best, area = i, f.w*f.h
+		}
+	}
+	for i, f := range c.frames {
+		style := quiet
+		if i == best {
+			style = active
+		}
+		if !m.settings && m.screen == activityScreen && m.section != 1 && (m.focus == 22 || m.focus == 16 || m.focus == 17) && f.h == m.activityBodyHeight() {
+			style = active
+		}
+		for row := f.y; row < f.y+f.h; row++ {
+			for col := f.x; col < f.x+f.w; col++ {
+				if row != f.y && row != f.y+f.h-1 && col != f.x && col != f.x+f.w-1 {
+					continue
+				}
+				if row < 0 || row >= c.height || col < 0 || col >= c.width {
+					continue
+				}
+				v := &c.rows[row][col]
+				if v.style == f.style {
+					v.style = style
+				}
+			}
+		}
+
+	}
+}
+
+// Equal whole-cell padding for Dex actions and tabs, without changing other screens.
+func balancedControlWidth(w int, label string) int {
+	label = strings.TrimSpace(strings.Trim(label, "[]"))
+	if w > 3 && (w-2-ansi.StringWidth(label))%2 == 1 {
+		return w - 1
+	}
+	return w
 }

@@ -201,3 +201,17 @@ func BenchmarkActivityView(b *testing.B) {
 		})
 	}
 }
+
+func TestHistoryActionsHaveBoundedWidths(t *testing.T) {
+	m := New(context.Background(), nil, Dark, true)
+	m.width, m.height, m.section = 120, 40, 1
+	m.activity.historyMode = true
+	m.activity.data.history = make([]storage.HistoryEntry, 1)
+	for _, control := range m.activityControls() {
+		if control.id == 20 || control.id == 31 || control.id == 32 {
+			if control.w > 30 {
+				t.Fatal("history action stretches across panel", control)
+			}
+		}
+	}
+}

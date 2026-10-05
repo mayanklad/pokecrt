@@ -511,3 +511,53 @@ terminal background. Light mode uses warm surfaces and darker accents.
 
 Validation covers Go tests, vet, race checks and actual terminal scenarios.
 Remaining release performance and terminal compatibility gates are separate.
+
+## D23 control and frame corrections
+
+Filter widths reserve focus/selection marker space; labels remain centred when
+focus changes. Narrow filters use a status cycle and generation selector.
+Search and Appearance use full outlined Quit controls where height permits.
+The National Index has a contrasting focused row, with inverse terminal colours
+in Native mode and a pointer in NO_COLOR. Encounter artwork and details have
+separate complete frames and a consistent gutter. The home trainer card fits
+its contents without overlapping the logo. Scroll controls use bounded padding
+and centred arrow glyphs. Structural borders are subdued; the panel containing
+keyboard focus receives a restrained accent. Panel titles remain readable.
+
+Validation: full Go tests, vet, TUI race checks and actual terminal cases cover
+wide/compact/minimum layouts, all appearance modes, focused filters, input,
+resize, mouse Quit and recorded test encounters in an isolated database.
+Browsing leaves the reference database unchanged and exits restore terminal
+state. No animation, polling, image assets or dependencies are added.
+
+## D23 Search arrow access and Dex label alignment
+
+The accepted control/frame styling remains the visual baseline. Right Arrow
+from the top-right on-screen keyboard key or a rightmost editing action reaches
+header Quit. Input Left/Right still edits the cursor; narrow layouts retain the
+footer route from Appearance to Quit. Navigation uses visible hit geometry.
+
+Pokédex footer actions and tabs use widths that allow equal whole-cell padding
+around labels. Labels retain their centre when focus/selection markers change.
+Other screens, colours, frames and the town map are unchanged.
+
+Validation includes Go tests, vet, TUI race checks and running-terminal scenarios,
+with an explicit arrow-only Search Quit exit. Reference trainer data remains
+unchanged by browsing, and terminal state is restored on exit.
+
+## D23 Search footer, trainer hints and History spacing
+
+Search Quit is in the lower action area alongside Appearance on roomy layouts;
+short layouts keep Search, Cancel and Quit together in the lower action row.
+Input Up stays in the field, while Left/Right retain cursor editing. The Search
+header Quit route described in the previous checkpoint is superseded.
+
+Trainer-list focus guidance includes Left/Right to reach the action buttons,
+including narrow layouts. History Open, Previous and Next controls fit their
+labels with bounded padding instead of stretching across the available width.
+The accepted colours, frames, town map and remaining controls are retained.
+
+Validation covers Go tests, vet, TUI race checks and running-terminal scenarios,
+including wide/compact/minimum Search, footer Quit, trainer-entry hints and
+History. Browsing leaves reference trainer data unchanged; exits restore
+terminal state. No new timers, background work or dependencies are introduced.

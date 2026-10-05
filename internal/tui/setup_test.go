@@ -542,7 +542,7 @@ func TestInputFocusIsBoundedAndArrowsDoNotWrapKeyboardRows(t *testing.T) {
 	m := New(context.Background(), nil, Dark, false)
 	m.width, m.height = 80, 30
 	m.openCreate()
-	if m.View().OnMouse(tea.MouseClickMsg{X: 70, Y: 3, Button: tea.MouseLeft}) != nil {
+	if m.View().OnMouse(tea.MouseClickMsg{X: 60, Y: 3, Button: tea.MouseLeft}) != nil {
 		t.Fatal("blank row outside field must not focus input")
 	}
 	m.focus = 100
@@ -552,7 +552,39 @@ func TestInputFocusIsBoundedAndArrowsDoNotWrapKeyboardRows(t *testing.T) {
 	}
 	m.focus = 109
 	m.navigateSetup("right")
-	if m.focus != 109 {
-		t.Fatal("right edge moved to unrelated row")
+	if m.focus != 7 {
+		t.Fatal("top-right edge did not reach header Quit")
+	}
+}
+
+func TestSearchFooterQuitPreservesCursorEditing(t *testing.T) {
+	for _, size := range [][2]int{{120, 40}, {64, 28}, {40, 12}} {
+		m := New(context.Background(), nil, Dark, true)
+		m.width, m.height, m.screen = size[0], size[1], dexSearchScreen
+		m.name = []rune("abc")
+		m.cursor = 1
+		m.focus = 0
+		m, _ = update(m, key(tea.KeyRight))
+		if m.focus != 0 || m.cursor != 2 {
+			t.Fatal("Right stopped editing the search cursor")
+		}
+		m.focus = 0
+		m.editName(key(tea.KeyUp))
+		if m.focus != 0 {
+			t.Fatal("Up jumps to a footer button")
+		}
+		if size[1] >= 24 {
+			m.focus = 6
+		} else {
+			m.focus = 2
+		}
+		m.navigateSetup("right")
+		if m.focus != 7 {
+			t.Fatal("footer cannot reach Quit", size, m.focus)
+		}
+		m.navigateSetup("left")
+		if m.focus == 7 {
+			t.Fatal("Quit cannot return to adjacent action", size)
+		}
 	}
 }
