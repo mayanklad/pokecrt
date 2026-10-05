@@ -41,12 +41,12 @@ manifest; performance measurements are documented in docs/benchmarks.md.
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 v0.3 adds local trainer profiles, fair encounters, XP/levels, 50 achievements,
 private Pokédex browsing and trainer statistics. Public printing and listing
-remain independent of trainer state. The interactive TUI is being completed through the v0.4 milestones.
-The development branch now includes the first Adventure Menu interface increment:
-`pokecrt tui`. It provides responsive navigation, arrow/Tab and mouse controls,
-live session appearance choices and read-only trainer status. Interactive
-setup, collection browsing and gameplay views are subsequent v0.4 increments;
-use the existing CLI commands for those operations today.
+remain independent of trainer state. The development branch implements the v0.4
+Adventure Menu: interactive trainer creation/selection, private Pokédex,
+encounters/history, trainer statistics, achievements and saved live appearance
+choices. v0.4 release verification is in progress; the published v0.3 release
+remains the Trainer CLI milestone. Compact-mode issues remain known and further
+refinement is deferred to v2. Use a wide terminal for the best interface.
 
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
@@ -282,7 +282,8 @@ Installation and removal do not erase trainer data.
 - [Generated coverage](tools/dataset/coverage.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 - [Code and artwork licensing](LICENSING.md)
-- The specification is maintained locally and excluded from Git history.
+- Local project documents, including the specification, live under `docs/local/`
+  and are excluded from Git history.
 
 ## Developer variant preview
 
@@ -558,12 +559,17 @@ pokecrt tui --appearance follow-terminal
 pokecrt tui --appearance terminal-native
 ```
 
-The Adventure Menu uses a Pokédex device display, dialogue area and four-section
-menu. Wide terminals (at least 90 columns and 28 rows) place dialogue beside the
-menu; compact terminals with at least 28 rows stack them beneath the device.
-Short terminals retain all controls and omit the device. The stage is bounded
-to 120 columns by 40 rows and centered in larger windows. Below 40 columns or 12 rows, a resize
-hint and clickable Quit remain available. Selection survives resizing.
+The Adventure Menu shows a static Town Map above dialogue and a four-section
+menu. Wide Home layouts (at least 90 columns and 28 rows) put outlined Refresh
+and Quit controls above a single-line trainer card in the top right. Taller
+compact layouts stack the dialogue and menu below the map. Short layouts omit
+the map. The interface fills the terminal; below 40 columns or 12 rows it shows
+a resize instruction and clickable Quit. Pokédex and activity wide layouts
+require at least 100 columns and 24 rows.
+
+Compact mode has known layout and navigation issues that are deferred to v2;
+the 40×12 minimum indicates the resize fallback, not that every compact flow
+has release-quality validation. Wide layouts are the preferred v0.4 experience.
 
 Arrows, Tab/Shift+Tab and j/k move focus; Enter or Space activates it. Click any
 control, or use the mouse wheel to move focus. A opens appearance settings. Esc
@@ -612,46 +618,10 @@ request, Cancel requests cancellation and refreshes status; a completed commit
 is retained. No uncertain operation is automatically retried. Setup/select never
 records encounters, discoveries, XP awards or achievements. Appearance and quit
 remain available while requests run.
-The device shows a clean `?` instead of pixel artwork. First-run status is
-“Awaiting first discovery”; existing trainers see “Entry preview coming next.”
-Featured discovered artwork is planned for a later increment. Missing/corrupt trainer
-data leaves navigation, appearance and quit usable. See docs/progress.md for
-implemented scope and docs/benchmarks.md for measured verification limits.
-
-
-D21 connects **Pokédex** to the active trainer's collection with a framed device
-display and **Overview / Variants / Evolution / Records** tabs. Overview keeps
-artwork and concise appearance/type/count readings; Records holds timestamps,
-observed forms, species facts and generation/collection progress. Variants offers
-only observed form/gender identities, with clear collected and locked palettes.
-An exact uncollected appearance never falls back to another sprite. Evolution
-nodes remain anonymous until discovered and can be opened with mouse or keyboard.
-
-Wide windows (at least 100 columns and 24 rows) show the National index beside
-the entry. Compact windows use **Index** to return from the device to the list,
-two rows of tabs, and **Filters** to open/close filters. Short windows retain a
-clickable **View** selector that cycles through all four tabs. Artwork keeps
-original source proportions; clipped displays have scroll/pan controls integrated
-into their borders. Below 40×12, only the resize hint and Quit are available.
-
-**All / Seen / Unseen** and generation filters organize the index. **Search** or
-`/` opens editable safe name/number search with an on-screen keyboard. Clearing
-the text restores the filtered list. Search never matches an unseen name. An
-explicit chosen appearance survives filtering when the same entry remains selected.
-
-Arrows navigate the focused list, tab row or display; Enter activates. Tab and
-Shift+Tab reach every control, appearance list and evolution node; `[` and `]`
-switch tabs directly. On the display, Up/Down scroll and leave at its boundaries;
-Left/Right pan artwork, with Left leaving at the left edge. Mouse wheel, clickable
-scroll/pan controls, tabs and footer actions support mouse-only use. Appearance
-keeps the existing live/saved modes. **Back** returns to the Adventure Menu.
-
-Data reads and sprite decode/render are asynchronous; stale results are ignored.
-Tab switching reuses the current entry and artwork. Refresh rereads the active
-trainer; reopening clears the previous trainer's view. Browsing never records
-encounters, XP, discoveries, achievements or migrations. The Adventure Menu device
-preview remains neutral.
-
+Home uses static town artwork; it never previews an uncollected Pokémon.
+Missing/corrupt trainer data leaves navigation, appearance and quit usable.
+See docs/progress.md for implementation status and docs/benchmarks.md for
+measured verification limits.
 
 ### Trainer activity screens (D22)
 
@@ -677,15 +647,15 @@ badges and their dates from locked goals and current progress, using the same
 disclosure-safe registry as the CLI. Reading never awards a badge.
 
 Wide views use framed device/card panes; compact views scroll, and compact
-encounter results switch between natural-size artwork and Info. Tab selects
+encounter results switch between natural-size artwork and Details. Tab selects
 controls; arrows follow their positions, scroll focused records or pan focused
 artwork. Clickable scroll/pan controls and mouse wheel support mouse-only use.
 PageUp/PageDown scroll records. Appearance remains live in all screens.
 Unsupported terminals retain the existing resize hint and Quit action. Screen
 transitions clear once before redraw to avoid stale frame fragments.
 
-D23 will review the remaining arrow-navigation polish, terminal compatibility,
-and resource/release gates.
+Navigation and Home refinements are implemented through D27. The current
+release audit records remaining packaging, compatibility and verification gates.
 
 
 ### Terminal controls and appearance

@@ -202,3 +202,25 @@ func TestEncounterReadyHeadingUsesFullLogWidth(t *testing.T) {
 		}
 	}
 }
+
+func TestWideTrainerAndAchievementHeadingsIgnoreEncounterArtwork(t *testing.T) {
+	for _, width := range []int{100, 120, 180} {
+		for _, art := range [][]string{nil, {"sprite"}} {
+			m := activityModel()
+			m.width = width
+			m.activity.art = art
+			left, right := m.trainerInformationColumns()
+			for _, row := range []string{left[0], right[0]} {
+				if ansi.StringWidth(row) != m.dexGeometry().w/2-7 {
+					t.Fatal("trainer column width depends on encounter state", width)
+				}
+			}
+			left, right = m.achievementInformationColumns()
+			for _, row := range []string{left[0], right[0]} {
+				if ansi.StringWidth(row) != m.dexGeometry().w/2-7 {
+					t.Fatal("achievement column width depends on encounter state", width)
+				}
+			}
+		}
+	}
+}

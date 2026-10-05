@@ -1020,3 +1020,66 @@ Median DexView: 1,226,916 ns/op, 599,546 B/op, 3,581 allocs/op.
 These are local frame-construction benchmarks. They do not establish terminal
 latency, startup or RSS acceptance. The separate release resource gates remain
 open. Focused frame styling adds no background work or timers.
+
+## D28 release audit — 6 October 2026
+
+Source baseline `6cded0c045a1be51c2314ce609d902adeeba6ebe`, with the
+Trainer/Achievements width regression restored in the audit candidate.
+Go 1.27.1, Linux 6.18.44 amd64, AMD EPYC 9V74 shared host, eight-CPU
+cgroup quota and 8 GiB memory limit. Public process runs use GOMAXPROCS=1;
+five discarded warmups and 100 measured fresh processes per scenario/mode,
+stdout /dev/null, warm filesystem cache. This is not a cold-disk benchmark.
+RSS uses the wait4 child-rusage wrapper, ten independent processes per row.
+CGO-disabled build uses -trimpath -buildvcs=false, -s -w and an audit version
+string; final tagged artifact must still be checked. Dataset is unchanged.
+
+| Case | Median ms | P95 ms | Max ms | Peak RSS KiB |
+| --- | ---: | ---: | ---: | ---: |
+| color/random | 3.898 | 5.506 | 9.675 | 9972 |
+| color/named | 2.338 | 2.887 | 4.514 | 7536 |
+| color/filtered | 2.37 | 3.039 | 3.378 | 7540 |
+| color/variant | 2.258 | 3.008 | 5.212 | 7536 |
+| color/list | 3.821 | 5.136 | 10.328 | 9200 |
+| color/details | 2.173 | 2.743 | 3.182 | 7408 |
+| plain/random | 3.809 | 4.536 | 5.093 | 9844 |
+| plain/named | 2.208 | 2.739 | 3.679 | 7408 |
+| plain/filtered | 2.622 | 3.25 | 8.356 | 7412 |
+| plain/variant | 2.238 | 2.687 | 3.311 | 7536 |
+| plain/list | 4.0 | 5.004 | 8.074 | 9200 |
+| plain/details | 2.185 | 2.854 | 5.541 | 7408 |
+
+Binary: 13,705,376 bytes (13.070 MiB),
+within the approved 16 MiB linked limit. Worst short-command P95 3.250 ms
+(8 ms); random/full-list P95 5.506 ms (25 ms). Public peak RSS 9,972 KiB
+(9.738 MiB) remains below 10 MiB. These current samples clear the
+previous host-specific unresolved public thresholds without rewriting history
+or relaxing budgets.
+
+Warm benchmarks: `go test ./internal/cli ./internal/render -run '^$'
+-bench 'BenchmarkPublic|BenchmarkRender/LargestArea/Color' -benchtime=300ms
+-count=3 -cpu=1`. Median of three samples: worst short command 0.550 ms
+(0.85 ms); worst random/full list 2.419 ms (12 ms); largest-area truecolor
+render 0.407 ms (0.60 ms). Renderer allocations remain approximately
+146,071 B/op and 3,764 allocations/op. Timing covers in-process command work
+or renderer work, not terminal rendering.
+
+History diagnostics use the existing invariant-preserving benchmark with
+`-benchtime=3x -count=1 -cpu=1`; three operations per row, so interpret these
+as diagnostics rather than distribution tails or a new formal budget.
+
+| Initial history rows | Encounter ms/op | TrainerView ms/op | DexView ms/op |
+| ---: | ---: | ---: | ---: |
+| 1,000 | 0.899 | 0.907 | 0.150 |
+| 10,000 | 4.903 | 7.111 | 0.755 |
+| 100,000 | 49.511 | 86.985 | 6.722 |
+
+Dark-mode fresh TUI at 120×40: 3 idle seconds produce zero output bytes;
+session peak RSS 12,144 KiB and total CPU 45.263 ms, including startup/shutdown.
+Terminal state restores and absent state/config paths remain absent. Public
+10 MiB RSS threshold does not define a TUI session limit. Follow Terminal
+probes and gameplay I/O are outside this idle observation.
+
+Pinned-source regeneration, final tagged archive checks and real-terminal
+acceptance remain pending. Compact refinement is deferred to v2. These
+measurements establish the scoped performance results, not final v1 or
+archive acceptance.

@@ -4,9 +4,14 @@ Current milestone: [v0.3 - Trainer CLI](https://github.com/mayanklad/pokecrt/rel
 Source: [v0.3 tag](https://github.com/mayanklad/pokecrt/tree/v0.3).
 [Release notes](release-v0.3.md).
 
-Implemented through D18: public printing/catalog, trainer profiles, encounters,
-progression, 50 achievements, private Pokédex and trainer statistics.
-Next milestone: v0.4 - TUI.
+Development source baseline: `6cded0c045a1be51c2314ce609d902adeeba6ebe`.
+Implemented through D27: complete Trainer CLI and Adventure Menu, setup,
+private Pokédex, encounters/history, statistics, achievements and appearance.
+D28 release blocker audit is prepared against that baseline.
+Next milestone in the specification: v0.4 - TUI; final product target: v1.0.
+Release clearance is pending source-cache, final archive/tag and terminal/compact
+acceptance checks, recorded below. Further compact
+refinement is deferred to v2 by owner decision. No new release is published.
 
 ## Implemented behavior
 
@@ -749,3 +754,34 @@ coverage checks full and split heading widths at 100, 120 and 180 columns.
 Tests, vet and build pass; wide running-terminal capture verifies the divider.
 This cumulative ZIP includes all uncommitted D27 Home and Encounter changes
 against a9136edc and replaces every earlier D27 ZIP.
+
+
+## D28 — release blocker audit
+
+Restored independent wide Trainer/Achievements column widths after the D27
+Encounter Log fix accidentally made them depend on artwork state. Preserve the
+requested full-width READY TO EXPLORE behavior. New tests cover both panel
+headings at 100/120/180 columns with/without encounter art.
+README reflects implemented Home/setup/activity views, actual full-terminal
+geometry and known compact limitations. Candidate v0.4 notes are supplied.
+The published release remains v0.3; v0.4/v1 clearance is not claimed.
+
+All 112 tracked baseline files matched GitHub. Go 1.27.1 test/vet/full race,
+module verification and CGO-disabled storage/trainer tests pass. Embedded
+asset/hash/coverage tests pass. 34 socket-blocked offline executable cases,
+seven wide PTY captures and idle restoration checks pass. Measurements meet
+existing public process/warm/render/RSS and approved 16 MiB size thresholds
+on this host; representative history timing is recorded without new budgets.
+
+The old available pinned-input cache is incomplete; raw regeneration and
+package.sh remain pending, as do final archive/tag and real-terminal acceptance.
+Owner-reported remaining compact issues are not individually classified; wide
+layouts are recommended and further refinement stays deferred to v2.
+Only a reproduced crash, blocked essential action, disclosure or integrity
+defect requires current-release correction. No gameplay/schema/budget changes
+or GitHub writes. Next development step: complete source-cache verification
+and final milestone archive smoke tests before publication.
+
+Local document organization: the specification and detailed release audit are
+under docs/local/, ignored as a folder. Progress, benchmarks and release notes
+remain tracked; repository documentation has no links to the local audit.
