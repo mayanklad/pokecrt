@@ -132,6 +132,12 @@ func (m *Model) openActivity(section int) tea.Cmd {
 	m.section = section
 	m.screen = activityScreen
 	m.focus = 10
+	if section == 2 {
+		m.focus = 15
+	}
+	if section == 3 {
+		m.focus = 12
+	}
 	return tea.Batch(tea.ClearScreen, m.reloadActivity())
 }
 func (m *Model) reloadActivity() tea.Cmd {
@@ -282,6 +288,16 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	if m.settings || m.screen != activityScreen {
 		return nil, false
 	}
+	controlsNow := m.activityControls()
+	found := false
+	for _, c := range controlsNow {
+		if c.id == m.focus {
+			found = true
+		}
+	}
+	if !found && len(controlsNow) > 0 {
+		m.focus = controlsNow[0].id
+	}
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
@@ -327,7 +343,12 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 				}
 			} else if m.focus == 21 {
 				if msg.String() == "left" || msg.String() == "right" {
-					m.activity.artPan = max(0, min(m.activityMaxPan(), m.activity.artPan+delta*4))
+					next := max(0, min(m.activityMaxPan(), m.activity.artPan+delta*4))
+					if next == m.activity.artPan {
+						m.activityMove(msg.String())
+					} else {
+						m.activity.artPan = next
+					}
 				} else {
 					next := max(0, min(max(0, len(m.activity.art)-m.activityBodyHeight()+2), m.activity.artScroll+delta))
 					if next == m.activity.artScroll {
@@ -336,6 +357,8 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 						m.activity.artScroll = next
 					}
 				}
+			} else if m.focus == 22 && (msg.String() == "left" || msg.String() == "right") {
+				m.activityMove(msg.String())
 			} else if m.focus == 22 {
 				next := max(0, min(m.activityMaxScroll(), m.activity.scroll+delta))
 				if next == m.activity.scroll {
@@ -363,41 +386,11 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m *Model) activityMove(key string) {
-	controls := m.activityControls()
-	var current dexControl
-	for _, c := range controls {
-		if c.id == m.focus {
-			current = c
-		}
+	if key == "k" {
+		key = "up"
 	}
-	best, score := -1, int(^uint(0)>>1)
-	for i, c := range controls {
-		if c.id == m.focus {
-			continue
-		}
-		dx, dy := c.x-current.x, c.y-current.y
-		valid := false
-		s := 0
-		switch key {
-		case "left":
-			valid = dx < 0
-			s = -dx + abs(dy)*100
-		case "right":
-			valid = dx > 0
-			s = dx + abs(dy)*100
-		case "up", "k":
-			valid = dy < 0
-			s = -dy*100 + abs(dx)
-		default:
-			valid = dy > 0
-			s = dy*100 + abs(dx)
-		}
-		if valid && s < score {
-			best = i
-			score = s
-		}
+	if key == "j" {
+		key = "down"
 	}
-	if best >= 0 {
-		m.focus = controls[best].id
-	}
+	m.focus = directionalTarget(m.activityControls(), m.focus, key)
 }

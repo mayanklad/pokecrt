@@ -36,7 +36,7 @@ func TestArrowFocusAndExplicitActivation(t *testing.T) {
 	if !m.settings {
 		t.Fatal("appearance did not open")
 	}
-	m, _ = update(m, key(tea.KeyRight))
+	m, _ = update(m, key(tea.KeyDown))
 	m, _ = update(m, key(tea.KeyEnter))
 	if m.appearance != Light || !m.settings {
 		t.Fatal("appearance not applied live")
@@ -55,7 +55,7 @@ func TestLiveFollowFallbackAndFixedModes(t *testing.T) {
 	}
 	id := m.probeID
 	m, _ = update(m, tea.BackgroundColorMsg{Color: color.White})
-	if !m.backgroundKnown || m.terminalDark || m.palette().background != bg(241, 237, 220) {
+	if !m.backgroundKnown || m.terminalDark || m.palette().background != bg(246, 245, 237) {
 		t.Fatal("did not follow light reply")
 	}
 	m, _ = update(m, probeTimeoutMsg(id))
@@ -68,7 +68,7 @@ func TestLiveFollowFallbackAndFixedModes(t *testing.T) {
 	}
 	m.appearance = Light
 	m, _ = update(m, tea.BackgroundColorMsg{Color: color.Black})
-	if m.palette().background != bg(241, 237, 220) {
+	if m.palette().background != bg(246, 245, 237) {
 		t.Fatal("terminal changed fixed light mode")
 	}
 	m.appearance = FollowTerminal
@@ -239,10 +239,10 @@ func TestDeviceHasNoBallAndFitsCompactScreen(t *testing.T) {
 		c := newCanvas(size[0], size[1])
 		m.paintScene(c, 0, 0, size[0], size[1]-15)
 		s := c.content(m.palette())
-		if !strings.Contains(s, "ENTRY ???") || strings.Contains(s, "▀") || strings.Contains(s, "▄") {
+		if !strings.Contains(s, "ROUTE 01") || strings.Contains(s, "▀") || strings.Contains(s, "▄") {
 			t.Fatalf("unexpected first-run artwork at %v", size)
 		}
-		if size[1] >= 36 && !strings.Contains(s, "Awaiting first discovery") {
+		if size[1] >= 36 && !strings.Contains(s, "◆") {
 			t.Fatalf("missing status at %v", size)
 		}
 	}

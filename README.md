@@ -578,8 +578,8 @@ focus regain or reselecting Follow Terminal probes again. Terminal Native uses
 default foreground/background colors, preserving terminal-configured
 transparency; the application does not create transparency. Nonempty NO_COLOR
 removes styling while retaining visible focus and selection markers. Ordinary
-text in Native mode uses your terminal foreground; the red device outline and
-cyan selection accent remain. Changes apply live. **Save appearance** explicitly
+text in Native mode uses your terminal foreground; purpose-colour borders and
+visible focus markers remain. Changes apply live. **Save as default** explicitly
 remembers the choice; browsing alone never creates a configuration file.
 
 Without `--appearance`, startup uses the saved choice, then Follow Terminal if
@@ -686,3 +686,15 @@ transitions clear once before redraw to avoid stale frame fragments.
 
 D23 will review the remaining arrow-navigation polish, terminal compatibility,
 and resource/release gates.
+
+
+### Terminal controls and appearance
+
+Controls use flat rounded borders and purpose colours. Focus and
+selection have separate visible markers, including with NO_COLOR. Action rows
+precede bottom navigation hints. Compact screens use rounded single-row caps.
+
+Appearance changes apply live. **Save as default** remembers the selected mode
+for later launches. **Refresh** rereads local records without creating a discovery.
+The Route 01 home scene is static character artwork; no image protocol or new
+animation timer is required. Terminal fonts determine glyph shape and joins.

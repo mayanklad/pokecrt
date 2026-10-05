@@ -235,10 +235,44 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if !m.settings {
 				m.openSettings()
 			}
-		case "tab", "down", "right", "j":
+		case "tab":
 			m.moveFocus(1)
-		case "shift+tab", "up", "left", "k":
+		case "shift+tab":
 			m.moveFocus(-1)
+		case "down", "up", "left", "right", "j", "k":
+			direction := msg.String()
+			if direction == "j" {
+				direction = "down"
+			}
+			if direction == "k" {
+				direction = "up"
+			}
+			if m.settings {
+				m.navigateSettings(direction)
+			} else {
+				if m.height >= 28 && direction == "right" && m.focus == 5 {
+					m.focus = 6
+				}
+				if m.height >= 28 && direction == "left" && m.focus == 6 {
+					m.focus = 5
+				}
+				if direction == "down" {
+					if m.height >= 28 {
+						if m.focus < 5 {
+							m.focus++
+						}
+					} else {
+						m.focus = min(6, m.focus+1)
+					}
+				}
+				if direction == "up" {
+					if m.height >= 28 && m.focus >= 5 {
+						m.focus = 4
+					} else {
+						m.focus = max(0, m.focus-1)
+					}
+				}
+			}
 		case "enter", "space":
 			cmd := m.activate(m.focus)
 			return m, cmd
@@ -250,20 +284,36 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case tea.MouseWheelMsg:
 		if msg.Button == tea.MouseWheelDown || msg.Button == tea.MouseWheelRight {
-			m.moveFocus(1)
+			if m.settings {
+				m.navigateSettings("down")
+			} else {
+				m.focus = min(6, m.focus+1)
+			}
 		}
 		if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
-			m.moveFocus(-1)
+			if m.settings {
+				m.navigateSettings("up")
+			} else {
+				m.focus = max(0, m.focus-1)
+			}
 		}
 	}
 	return m, nil
 }
 func (m *Model) moveFocus(delta int) {
 	order := []int{0, 1, 2, 3, 4, 5, 6}
-	if !m.settings && (m.screen == createScreen || m.screen == dexSearchScreen) {
-		order = append(order, 7)
+	if m.settings {
+		order = []int{6, 0, 1, 2, 3, 4, 5}
+	} else if m.screen == profilesScreen {
+		order = []int{0, 1, 2, 3, 4, 6, 5}
+	} else if m.screen == createScreen || m.screen == dexSearchScreen {
+		order = []int{7, 0}
 		for i := range m.keyboardLetters() {
 			order = append(order, 100+i)
+		}
+		order = append(order, 3, 4, 5, 1, 2, 6)
+		if m.busy {
+			order = []int{0, 2, 6, 7}
 		}
 	}
 	for i, id := range order {
@@ -351,5 +401,47 @@ func (m *Model) closeSettings() {
 	m.focus = 4
 	if m.screen != mainScreen {
 		m.focus = m.settingsReturnFocus
+	}
+}
+
+func (m *Model) navigateSettings(direction string) {
+	// Appearance choices are a vertical group; Save and Back share the next row.
+	if m.focus < 4 {
+		if direction == "down" {
+			if m.focus < 3 {
+				m.focus++
+			} else {
+				m.focus = 4
+			}
+		}
+		if direction == "up" {
+			if m.focus > 0 {
+				m.focus--
+			} else {
+				m.focus = 6
+			}
+		}
+
+		return
+	}
+	switch direction {
+	case "up":
+		if m.focus == 4 || m.focus == 5 {
+			m.focus = 3
+		}
+	case "down":
+		if m.focus == 6 {
+			m.focus = 0
+		}
+	case "left":
+		if m.focus == 5 {
+			m.focus = 4
+		} else if m.focus == 6 {
+			m.focus = 0
+		}
+	case "right":
+		if m.focus == 4 {
+			m.focus = 5
+		}
 	}
 }

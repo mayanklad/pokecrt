@@ -212,8 +212,6 @@ func (m *Model) handleSetup(msg tea.Msg) (tea.Cmd, bool) {
 				d = -1
 			}
 			m.selected = max(0, min(m.selected+d, len(m.snapshot.Entries)-1))
-		} else {
-			m.moveFocus(1)
 		}
 		return nil, true
 	}
@@ -408,13 +406,13 @@ func (m Model) configStatus() string {
 		return "Saving appearance…"
 	}
 	if m.configError != "" {
-		return "Settings: " + m.configError + " · current mode remains usable."
+		return "Settings: " + m.configError + "   current mode remains usable."
 	}
 	if m.savedAppearance == "" {
-		return "Live preview · Save appearance to remember it."
+		return "Live preview   Save as default to remember it."
 	}
 	if m.savedAppearance != m.appearance {
-		return "Saved: " + string(m.savedAppearance) + " · current choice is not saved."
+		return "Saved: " + string(m.savedAppearance) + "   current choice is not saved."
 	}
 	return "Saved: " + string(m.savedAppearance)
 }
@@ -447,8 +445,6 @@ func (m *Model) navigateSetup(direction string) {
 			case "up":
 				if m.selected > 0 {
 					m.selected--
-				} else {
-					m.focus = 6
 				}
 			case "down":
 				if m.selected+1 < len(m.snapshot.Entries) {
@@ -488,22 +484,25 @@ func (m *Model) navigateSetup(direction string) {
 			case 4:
 				m.focus = 5
 			case 5, 6:
-				m.focus = 0
+				// Bottom edge: stay in the same column.
 			}
-		case "left", "right":
+		case "left":
+			switch m.focus {
+			case 2:
+				m.focus = 1
+			case 4:
+				m.focus = 3
+			case 5:
+				m.focus = 6
+			}
+		case "right":
 			switch m.focus {
 			case 1:
 				m.focus = 2
-			case 2:
-				m.focus = 1
 			case 3:
 				m.focus = 4
-			case 4:
-				m.focus = 3
 			case 6:
 				m.focus = 5
-			case 5:
-				m.focus = 6
 			}
 		}
 		return
@@ -515,14 +514,10 @@ func (m *Model) navigateSetup(direction string) {
 		case "left":
 			if i%10 > 0 {
 				m.focus--
-			} else {
-				m.focus = 0
 			}
 		case "right":
 			if i%10 < 9 && i+1 < n {
 				m.focus++
-			} else {
-				m.focus = 3
 			}
 		case "up":
 			if i >= 10 {
@@ -534,66 +529,36 @@ func (m *Model) navigateSetup(direction string) {
 			if i+10 < n {
 				m.focus += 10
 			} else {
-				m.focus = 3 + min(i%10/4, 2)
+				targets := []dexControl{}
+				for _, target := range m.createFocusTargets() {
+					if target.id == m.focus || target.id >= 3 && target.id <= 5 {
+						targets = append(targets, target)
+					}
+				}
+				m.focus = directionalTarget(targets, m.focus, "down")
 			}
 		}
 		return
 	}
-	switch direction {
-	case "up":
-		switch m.focus {
-		case 3, 4, 5:
-			m.focus = 100 + min(20+(m.focus-3)*4, n-1)
-		case 1:
-			m.focus = 3
-		case 2:
-			m.focus = 5
-		case 6:
-			m.focus = 1
-		case 7:
-			m.focus = 6
+	m.focus = directionalTarget(m.createFocusTargets(), m.focus, direction)
+}
+
+func (m Model) createFocusTargets() []dexControl {
+	c := newCanvas(max(40, min(m.width, 240)), max(12, min(m.height, 100)))
+	m.paintCreate(c)
+	targets := []dexControl{}
+	positions := map[int]int{}
+	for _, h := range c.hits {
+		if m.busy && h.id != 0 && h.id != 2 && h.id != 6 && h.id != 7 {
+			continue
 		}
-	case "down":
-		switch m.focus {
-		case 0:
-			m.focus = 100
-		case 7:
-			m.focus = 0
-		case 3, 4:
-			m.focus = 1
-		case 5:
-			m.focus = 2
-		case 1, 2:
-			m.focus = 6
-		case 6:
-			m.focus = 7
-		}
-	case "left", "right":
-		switch m.focus {
-		case 1:
-			m.focus = 2
-		case 2:
-			m.focus = 1
-		case 3:
-			if direction == "right" {
-				m.focus = 4
-			} else {
-				m.focus = 100 + n - 1
-			}
-		case 4:
-			if direction == "right" {
-				m.focus = 5
-			} else {
-				m.focus = 3
-			}
-		case 5:
-			if direction == "right" {
-				m.focus = 3
-			} else {
-				m.focus = 4
-			}
-		default:
-			m.moveFocus(1)
+		if index, ok := positions[h.id]; ok {
+			// Store the centre row of the whole framed control, not its top border.
+			targets[index].y = (targets[index].y + h.y) / 2
+		} else {
+			positions[h.id] = len(targets)
+			targets = append(targets, dexControl{h.x, h.y, h.width, h.id, ""})
 		}
 	}
+	return targets
 }

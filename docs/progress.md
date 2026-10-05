@@ -338,8 +338,8 @@ ignored. No global terminal palette is overwritten or desktop theme inferred.
 
 Profile status is read asynchronously through storage.ReadOnly and closed in
 the worker. Missing storage stays absent; existing/corrupt databases are not
-modified. Errors leave shell controls usable. After visual review, the owner
-selected the Pokédex device alternative and a clean `?` screen. Landscape and
+modified. Errors leave shell controls usable. The initial design used the
+Pokédex device alternative and a clean `?` screen. Landscape and
 pixel Poké Ball decoration were removed. No hidden identities
 or uncollected sprites are displayed, and no gameplay action is connected yet.
 
@@ -362,7 +362,7 @@ unavailable on this host and is not newly claimed.
 
 ## D20: interactive trainer setup, selection and saved appearance
 
-Baseline: owner-committed D19 `742ac3248883ccacf396c1533deff0ebb65ad560`.
+Baseline: committed D19 `742ac3248883ccacf396c1533deff0ebb65ad560`.
 The approved Pokédex device and Terminal Native foreground/accent behavior are
 preserved. Fresh setup opens a name form; profiles without an active selection
 open the chooser; active trainers enter the Adventure Menu. Trainer opens
@@ -407,7 +407,7 @@ D20 full TUI review correction: focus-specific setup guidance replaces the fixed
 
 ## D21: interactive disclosure-safe Pokédex
 
-Baseline: owner-committed D20 `5ad62fd5d1e896eec24cb360e685038052f7e176`.
+Baseline: committed D20 `5ad62fd5d1e896eec24cb360e685038052f7e176`.
 Adds National list, All/Seen/Unseen and generation filters, safe name/number
 search with mouse-accessible on-screen keyboard, entry facts and counts/times,
 known form/gender/palette selector, original-size artwork scrolling, and clickable/
@@ -453,8 +453,8 @@ against committed D20 `5ad62fd5d1e896eec24cb360e685038052f7e176`.
 
 ## D22: trainer activity and progression views
 
-Baseline: owner-committed D21 `a33df3f7e1c7284ff7c44f8cf603ad470b7df5b1`.
-GitHub access remains read-only; this is a complete local proposal against D21.
+Baseline: committed D21 `a33df3f7e1c7284ff7c44f8cf603ad470b7df5b1`.
+Implementation baseline: D21.
 
 Connects Encounters, Trainer and Achievements to the existing domain services.
 Explicit encounters use the shared atomic engine, exact sprite preparation,
@@ -493,3 +493,21 @@ terminal state. The five explicit test encounters added exactly five database
 rows; the separate read-only browsing/theme/profile-chooser cases left the
 seeded database byte-identical. Real terminal translucency and multiplexer
 compatibility remain manual checks for D23.
+
+
+
+
+## D23 visual controls and appearance
+
+Flat rounded buttons use purpose colours in outlines and text, without surface
+tints or shadow edges. Focus and selection have separate markers. Action groups
+use bounded widths. The home town map uses static terminal characters; the
+adjacent description follows the focused activity. Refresh and Quit occupy the
+home footer. Search and trainer creation use one contextual hint strip.
+
+Scroll and artwork controls appear only when their content exceeds the available
+space. Decorative dot separators are removed. Terminal Native preserves the
+terminal background. Light mode uses warm surfaces and darker accents.
+
+Validation covers Go tests, vet, race checks and actual terminal scenarios.
+Remaining release performance and terminal compatibility gates are separate.

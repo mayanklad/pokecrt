@@ -519,7 +519,7 @@ func TestDeviceNoColorCollectedArtworkAndBorders(t *testing.T) {
 			lines := strings.Split(s, "\n")
 			for _, line := range lines {
 				r := []rune(line)
-				if len(r) == 0 || r[0] != '║' && r[0] != '╔' && r[0] != '╚' {
+				if len(r) == 0 || r[0] != '│' && r[0] != '╭' && r[0] != '╰' {
 					t.Fatal("outer border overwritten", line)
 				}
 			}

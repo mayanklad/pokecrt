@@ -145,7 +145,7 @@ func TestBusyOperationResponsiveAndStaleReadRejected(t *testing.T) {
 	<-started
 	m, _ = update(m, tea.WindowSizeMsg{Width: 40, Height: 12})
 	m, _ = update(m, key(tea.KeyTab))
-	if m.width != 40 || m.focus != 1 || !m.busy || m.reload() != nil {
+	if m.width != 40 || m.focus != 2 || !m.busy || m.reload() != nil {
 		t.Fatal("busy state blocked navigation or raced a read")
 	}
 	m, _ = update(m, snapshotMsg{generation: staleID, snapshot: Snapshot{Name: "Stale", Active: true}})
@@ -270,7 +270,7 @@ func TestMouseCanPlaceNameCursor(t *testing.T) {
 	m.width, m.height = 80, 30
 	m.openCreate()
 	m.insertName("ABCD")
-	cmd := m.View().OnMouse(tea.MouseClickMsg{X: 7, Y: 8, Button: tea.MouseLeft})
+	cmd := m.View().OnMouse(tea.MouseClickMsg{X: 4, Y: 3, Button: tea.MouseLeft})
 	if cmd == nil {
 		t.Fatal("field has no hit target")
 	}
@@ -398,8 +398,8 @@ func TestTrainerListArrowsLeaveAtBoundaries(t *testing.T) {
 	}
 	m.selected = 0
 	m.navigateSetup("up")
-	if m.focus == 0 {
-		t.Fatal("list trapped Up")
+	if m.focus != 0 {
+		t.Fatal("Up wrapped from top of list")
 	}
 	for _, direction := range []string{"left", "right"} {
 		m.focus = 0
@@ -443,11 +443,11 @@ func TestHelpTracksFocusAndMouseActions(t *testing.T) {
 	for _, size := range [][2]int{{120, 40}, {80, 24}, {40, 12}} {
 		m := setupModel(t)
 		m.width, m.height = size[0], size[1]
-		if !strings.Contains(m.View().Content, "↓ K") {
+		if !strings.Contains(m.View().Content, "Keyboard") && !strings.Contains(m.View().Content, "↓ K") {
 			t.Fatal("name help missing")
 		}
 		m, _ = update(m, key(tea.KeyDown))
-		if !strings.Contains(m.View().Content, "↑↓←→") || !strings.Contains(m.View().Content, "Enter Type") {
+		if !strings.Contains(m.View().Content, "↑↓←→") || !strings.Contains(m.View().Content, "Type") {
 			t.Fatal("grid help did not change")
 		}
 		m.activateSetup(3)
@@ -525,7 +525,7 @@ func TestSetupAllModesPagesAndFocusFit(t *testing.T) {
 								t.Fatal("width")
 							}
 						}
-						if !strings.Contains(v.Content, "Enter Type") || !strings.Contains(v.Content, "▶") {
+						if !strings.Contains(v.Content, "Type") || !strings.Contains(v.Content, "▶") {
 							t.Fatal("missing focus/help")
 						}
 						if nc && strings.Contains(v.Content, "\x1b") {
@@ -535,5 +535,24 @@ func TestSetupAllModesPagesAndFocusFit(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+func TestInputFocusIsBoundedAndArrowsDoNotWrapKeyboardRows(t *testing.T) {
+	m := New(context.Background(), nil, Dark, false)
+	m.width, m.height = 80, 30
+	m.openCreate()
+	if m.View().OnMouse(tea.MouseClickMsg{X: 70, Y: 3, Button: tea.MouseLeft}) != nil {
+		t.Fatal("blank row outside field must not focus input")
+	}
+	m.focus = 100
+	m.navigateSetup("left")
+	if m.focus != 100 {
+		t.Fatal("left edge moved to unrelated control")
+	}
+	m.focus = 109
+	m.navigateSetup("right")
+	if m.focus != 109 {
+		t.Fatal("right edge moved to unrelated row")
 	}
 }

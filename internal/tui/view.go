@@ -77,32 +77,76 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 	}
 	indicator := "  "
 	style := ""
+	// Text fields keep their editing delimiters and cursor mapping.
+	if strings.HasPrefix(label, "[") && strings.HasSuffix(label, "]") && !strings.Contains(label, "▏") {
+		label = strings.TrimSpace(label[1 : len(label)-1])
+	}
+	menuIcon := ""
+	menu := m.screen == mainScreen && !m.settings && id >= 0 && id <= 5
+	if menu {
+		icons := []string{"▤", "◆", "♟", "★", "◇", "↻"}
+		menuIcon = icons[id]
+		style, _, _ = m.controlColours(id, label)
+		label = "[" + menuIcon + "]  " + label
+	} else if w >= 3 && !strings.Contains(label, "▏") && id < 1000 && !(id >= 100 && id < 200) {
+		selected := m.settings && id < 4 && appearances[id] == m.appearance
+		if m.screen == dexScreen && !m.settings {
+			selected = id >= 20 && id <= 23 && m.dex.tab == id-20 || id >= 31 && id <= 33 && m.dex.status == id-31
+		}
+		marker := ""
+		if selected {
+			marker = "● "
+		}
+		if m.focus == id {
+			marker = "▶ "
+			if selected {
+				marker = "▶● "
+			}
+		}
+		label = strings.TrimPrefix(strings.TrimPrefix(label, "○ "), "● ")
+		text := ansi.Truncate(marker+label, w-2, "…")
+		left := max(0, (w-2-ansi.StringWidth(text))/2)
+		style, _, _ = m.controlColours(id, label)
+		if m.focus == id {
+			style = m.controlStyle(true, selected)
+		}
+		if selected && m.focus != id {
+			style += m.palette().gold
+		}
+		c.put(x, y, "❨"+strings.Repeat(" ", left)+text+strings.Repeat(" ", max(0, w-2-left-ansi.StringWidth(text)))+"❩", style)
+		c.hits = append(c.hits, hit{x, y, w, id})
+		return
+	}
 	if m.focus == id {
 		indicator = "▶ "
 		style = m.palette().accent
 		if !m.noColor {
-			style = fg(6, 25, 36) + bg(87, 221, 233) + "\x1b[1m"
+			style = m.controlStyle(true, false)
 		}
 	}
 	label = ansi.Truncate(indicator+label, max(0, min(w, c.width-x)), "…")
-	if m.focus == id {
+	if m.focus == id || menu {
 		label += strings.Repeat(" ", max(0, min(w, c.width-x)-ansi.StringWidth(label)))
 	}
 	c.put(x, y, label, style)
+	if menu && m.focus != id {
+		c.put(x+3, y, menuIcon, m.palette().gold)
+	}
 	c.hits = append(c.hits, hit{x, y, min(w, c.width-x), id})
 }
 func (c *canvas) box(x, y, w, h int, title, style string) {
 	if w < 2 || h < 2 {
 		return
 	}
-	c.put(x, y, "╔"+strings.Repeat("═", w-2)+"╗", style)
-	c.put(x, y+h-1, "╚"+strings.Repeat("═", w-2)+"╝", style)
+	c.put(x, y, "╭"+strings.Repeat("─", w-2)+"╮", style)
+	c.put(x, y+h-1, "╰"+strings.Repeat("─", w-2)+"╯", style)
 	for row := y + 1; row < y+h-1; row++ {
-		c.put(x, row, "║", style)
-		c.put(x+w-1, row, "║", style)
+		c.put(x, row, "│", style)
+		c.put(x+w-1, row, "│", style)
 	}
+
 	if title != "" {
-		c.put(x+2, y, ansi.Truncate(" "+title+" ", w-4, "…"), style)
+		c.put(x+2, y, ansi.Truncate(" "+strings.TrimSpace(title)+" ", w-4, "…"), style)
 	}
 }
 func (c *canvas) content(p palette) string {
@@ -184,7 +228,7 @@ func (m Model) View() tea.View {
 			if click.Y == target.y && click.X >= target.x && click.X < target.x+target.width {
 				id := target.id
 				if id == 0 && !m.settings && (m.screen == createScreen || m.screen == dexSearchScreen) {
-					cursor := m.clickedNameCursor(click.X-target.x-4, min(w, 88)-8)
+					cursor := m.clickedNameCursor(click.X-target.x-1, min(min(w, 88)-4, 52)-2)
 					return func() tea.Msg { return nameCursorMsg(cursor) }
 				}
 				return func() tea.Msg { return activateMsg(id) }
@@ -203,58 +247,94 @@ func (m Model) paintMain(c *canvas) {
 	frameW, frameH := min(w, 120), min(h, 40)
 	left, top := (w-frameW)/2, (h-frameH)/2
 	c.box(left, top, frameW, frameH, "", p.accent)
-	c.put(left+3, top+1, "◈ POKÉCRT ◈", p.accent)
-	c.put(left+3, top+2, "ADVENTURE MENU", p.muted)
-	profileRow := 3
-	if frameW >= 90 && frameH >= 28 {
-		m.paintLogo(c, left+(frameW-41)/2, top+1)
-		profileRow = 4
-	}
-	c.put(left+3, top+profileRow, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
-	c.button(left+frameW-11, top+1, 8, 6, "Quit", m)
 	wide := frameW >= 90 && frameH >= 28
-	if frameH >= 28 {
-		sceneH := frameH - 20
-		if wide {
-			sceneH = frameH - 17
+	if wide {
+		lx := left + (frameW-41)/2
+		m.paintLogo(c, lx, top+1)
+		c.put(lx+14, top+4, "TRAINER HUB", p.gold)
+		px := left + frameW - 30
+		c.box(px, top+1, 28, 4, "", p.accent)
+		name := clean(m.snapshot.Name)
+		if name == "" {
+			name = "No trainer yet"
 		}
-		c.box(left+2, top+5, frameW-4, sceneH, "POKÉDEX DEVICE", p.accent)
+		if m.loading {
+			name = "Reading trainer…"
+		}
+		c.put(px+2, top+2, ansi.Truncate("♟ "+name, 24, "…"), p.foreground)
+		status := "Create or choose a trainer"
+		if m.snapshot.Active {
+			status = fmt.Sprintf("Level %d", max(1, m.snapshot.Level))
+		}
+		c.put(px+2, top+3, ansi.Truncate(status, 24, "…"), p.muted)
+	} else {
+		c.put(left+3, top+1, "◈ POKÉCRT ◈", p.accent)
+		c.put(left+3, top+2, "TRAINER HUB", p.gold)
+		c.put(left+3, top+3, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
+	}
+	if frameH < 28 {
+		c.button(left+frameW-11, top+1, 8, 6, "Quit", m)
+	}
+	if frameH >= 28 {
+		sceneH := frameH - 24
+		if wide {
+			sceneH = frameH - 20
+		}
+		c.box(left+2, top+5, frameW-4, sceneH, "TOWN MAP", p.accent)
 		m.paintScene(c, left+3, top+6, frameW-6, sceneH-2)
 		dy := top + 5 + sceneH
 		if wide {
 			menuW := 30
 			textW := frameW - menuW - 5
-			c.box(left+2, dy, textW, 9, "Adventure", p.accent)
+			c.box(left+2, dy, textW, 8, m.homeTitle(), p.accent)
 			c.wrap(left+4, dy+2, textW-4, 5, m.dialogue(), "")
 			mx := left + frameW - menuW - 2
-			c.box(mx, dy, menuW, 9, "Choose", p.accent)
+			c.box(mx, dy, menuW, 8, "Choose", p.accent)
 			for i, label := range sections {
 				c.button(mx+2, dy+1+i, menuW-4, i, label, m)
 			}
 			c.button(mx+2, dy+5, menuW-4, 4, "Appearance", m)
-			c.button(mx+2, dy+6, menuW-4, 5, "Refresh trainer", m)
 		} else {
-			c.box(left+2, dy, frameW-4, 4, "Adventure", p.accent)
+			c.box(left+2, dy, frameW-4, 4, m.homeTitle(), p.accent)
 			c.wrap(left+4, dy+1, frameW-8, 2, m.dialogue(), "")
 			c.box(left+2, dy+4, frameW-4, 8, "Choose", p.accent)
 			for i, label := range sections {
 				c.button(left+4, dy+5+i, frameW-8, i, label, m)
 			}
 			c.button(left+4, dy+9, frameW-8, 4, "Appearance", m)
-			c.button(left+4, dy+10, frameW-8, 5, "Refresh trainer", m)
 		}
 	} else {
 		for i, label := range sections {
 			c.button(left+3, top+4+i, frameW-6, i, label, m)
 		}
 		c.button(left+3, top+8, frameW-6, 4, "Appearance", m)
-		c.button(left+3, top+9, frameW-6, 5, "Refresh trainer", m)
+		c.button(left+3, top+9, frameW-6, 5, "Refresh", m)
 		if frameH >= 16 {
-			c.box(left+2, top+11, frameW-4, frameH-14, "Adventure", p.accent)
+			c.box(left+2, top+11, frameW-4, frameH-14, m.homeTitle(), p.accent)
 			c.wrap(left+4, top+12, frameW-8, frameH-16, m.dialogue(), "")
 		}
 	}
-	c.put(left+2, top+frameH-2, ansi.Truncate("↑↓ Choose · Enter Open · Q Quit", frameW-4, "…"), p.muted)
+	if frameH >= 28 {
+		c.outlinedButton(left+3, top+frameH-7, 14, 5, "Refresh", m)
+		c.outlinedButton(left+18, top+frameH-7, 12, 6, "Quit", m)
+		c.navigationHints(left+3, top+frameH-4, frameW-6, m, false, "Open")
+
+	} else {
+		c.put(left+2, top+frameH-2, ansi.Truncate("↑↓ Choose   Enter Open   Q Quit", frameW-4, "…"), p.muted)
+	}
+}
+
+func (m Model) homeTitle() string {
+	if m.focus >= 0 && m.focus < len(sections) {
+		return sections[m.focus]
+	}
+	if m.focus == 4 {
+		return "Appearance"
+	}
+	if m.focus == 5 {
+		return "Refresh"
+	}
+	return "Quit"
 }
 
 func (m Model) profileLabel() string {
@@ -262,10 +342,10 @@ func (m Model) profileLabel() string {
 		return "Reading trainer…"
 	}
 	if m.loadError != "" {
-		return "Trainer unavailable · refresh to retry"
+		return "Trainer unavailable   refresh to retry"
 	}
 	if m.snapshot.Active {
-		return "Trainer: " + clean(m.snapshot.Name) + fmt.Sprintf(" · Level %d", max(1, m.snapshot.Level))
+		return "Trainer: " + clean(m.snapshot.Name) + fmt.Sprintf("   Level %d", max(1, m.snapshot.Level))
 	}
 	if m.snapshot.Profiles > 0 {
 		return "Choose an active trainer with 'pokecrt trainer use <name>'."
@@ -285,11 +365,20 @@ func (m Model) dialogue() string {
 		}
 		return "Welcome, future trainer.\nOpen Trainer to create or select a profile."
 	}
-	return m.encounterNotice + " " + descriptions[m.section] + " Select a section to begin."
+	if m.focus >= 0 && m.focus < len(descriptions) {
+		return descriptions[m.focus]
+	}
+	if m.focus == 4 {
+		return "Choose Dark, Light, Follow Terminal or Terminal Native. Changes preview immediately."
+	}
+	if m.focus == 5 {
+		return "Reload this trainer’s latest collection and progress."
+	}
+	return "Close PokéCRT and return to your terminal."
 }
 
 func (m Model) paintSettings(c *canvas) {
-	w, h := min(c.width, 88), min(c.height, 20)
+	w, h := min(c.width, 88), min(c.height, 28)
 	x, y := (c.width-w)/2, (c.height-h)/2
 	p := m.palette()
 	c.box(x, y, w, h, "APPEARANCE", p.accent)
@@ -299,7 +388,11 @@ func (m Model) paintSettings(c *canvas) {
 		if appearances[i] == m.appearance {
 			marker = "● "
 		}
-		c.button(x+2, y+2+i, w-4, i, marker+label, m)
+		if h >= 24 {
+			c.framedControl(x+2, y+2+i*3, w-4, i, label, m, appearances[i] == m.appearance)
+		} else {
+			c.button(x+2, y+2+i, w-4, i, marker+label, m)
+		}
 	}
 	message := "Switch with Enter or a click. Terminal Native preserves your terminal background and configured transparency."
 	if m.appearance == FollowTerminal {
@@ -308,14 +401,28 @@ func (m Model) paintSettings(c *canvas) {
 	if m.noColor {
 		message = "NO_COLOR is enabled. Focus and selection remain visible. Color choices apply when color is enabled."
 	}
-	c.put(x+2, y+6, ansi.Truncate("↑↓ Choose · Enter Apply · Tab Focus", w-4, "…"), p.muted)
-	c.wrap(x+2, y+7, w-4, max(0, h-13), message, "")
-	c.wrap(x+2, y+h-5, w-4, 1, m.configStatus(), p.accent)
-	label := "Save appearance"
+	helpY := y + 6
+	if h >= 24 {
+		helpY = y + 14
+	}
+	c.put(x+2, helpY, ansi.Truncate("Changes preview immediately.", w-4, "…"), p.muted)
+	c.wrap(x+2, helpY+1, w-4, max(0, y+h-10-helpY-1), message, "")
+	statusY := y + h - 5
+	if h >= 24 {
+		statusY = y + h - 9
+	}
+	c.wrap(x+2, statusY, w-4, 1, m.configStatus(), p.accent)
+	label := "Save as default"
 	if m.savingConfig {
 		label = "Saving…"
 	}
-	c.button(x+2, y+h-4, w-4, 4, label, m)
-	c.button(x+2, y+h-3, w-4, 5, "Back", m)
-	c.put(x+2, y+h-2, ansi.Truncate(m.appearanceStatus(), w-4, "…"), p.muted)
+	if h >= 24 {
+		c.outlinedButton(x+2, y+h-8, (w-4)/2-1, 4, label, m)
+		c.outlinedButton(x+3+min((w-4)/2-1, 21), y+h-8, min((w-4)/2-1, 21), 5, "Back", m)
+		c.navigationHints(x+2, y+h-5, w-4, m, false, "Apply")
+	} else {
+		c.button(x+2, y+h-3, (w-4)/2-1, 4, label, m)
+		c.button(x+2+(w-4)/2, y+h-3, (w-4)/2-1, 5, "Back", m)
+		c.navigationHints(x+2, y+h-2, w-4, m, true, "Apply")
+	}
 }

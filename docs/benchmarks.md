@@ -981,3 +981,33 @@ terminal state. The five explicit test encounters added exactly five database
 rows; the separate read-only browsing/theme/profile-chooser cases left the
 seeded database byte-identical. Real terminal translucency and multiplexer
 compatibility remain manual checks for D23.
+
+
+## D23 character-only styling checkpoint
+
+On Intel Xeon Platinum 8573C / Go 1.27.1, three 300 ms benchmark runs with one
+CPU measured the 120×40 Adventure Menu median at 854,587 ns/op, 445,832 B/op
+and 2,318 allocations/op; the Pokédex median was 1,167,671 ns/op, 554,441 B/op
+and 2,890 allocations/op. These are frame-construction measurements, not
+end-to-end terminal latency. No graphics protocol, image decoding, timer or
+new dependency was added by this styling pass. Sprites retain their existing
+worker rendering. Public startup/RSS and renderer gates remain open; this is
+not a complete D23 resource acceptance claim.
+
+
+D23 frames/navigation trial: Go 1.27.1, linux/amd64, Intel Xeon Platinum 8573C,
+three 200 ms runs, `-cpu=1`. Median WideView 1,035,391 ns/op, 456,408 B/op,
+2,854 allocs/op; DexView 1,479,749 ns/op, 604,939 B/op, 3,730 allocs/op.
+These are local View microbenchmarks, not startup/RSS or end-to-end latency
+measurements. No new animation timers or I/O are introduced by the scenery.
+The separate full release resource budgets remain unresolved.
+
+
+## D23 purpose-colour controls
+
+Go 1.27.1, linux/amd64, AMD EPYC 9V74; three 200 ms runs with `-cpu=1`.
+Median WideView: 856,789 ns/op, 480,394 B/op, 3,182 allocs/op.
+Median DexView: 1,134,458 ns/op, 606,507 B/op, 3,720 allocs/op.
+These measure local View construction, not end-to-end latency, startup or RSS.
+Hardware differs from the earlier measurements; direct timing comparisons are
+not controlled. Full release resource gates remain separate.

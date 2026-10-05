@@ -34,7 +34,7 @@ func (m Model) dexGeometry() dexLayout {
 	g.entryW = w - 4
 	if g.wide {
 		g.bodyY = g.y + 5
-		g.bodyH = h - 11
+		g.bodyH = h - 12
 		g.listW = 31
 		g.entryX = g.x + 35
 		g.entryW = w - 37
@@ -52,6 +52,9 @@ func (m Model) dexGeometry() dexLayout {
 			g.bodyH = g.y + h - 8 - g.bodyY
 		}
 	}
+	if h >= 24 {
+		g.bodyH -= 3
+	}
 	g.bodyH = max(3, g.bodyH)
 	return g
 }
@@ -61,7 +64,11 @@ func (m Model) dexBodyHeight() int  { return max(1, m.dexGeometry().bodyH-2) }
 func (m Model) dexArtRect() (x, y, w, h int) {
 	g := m.dexGeometry()
 	if !g.wide {
-		return g.entryX, g.bodyY, g.entryW, g.bodyH
+		height := g.bodyH
+		if !g.short {
+			height = max(3, height-2)
+		}
+		return g.entryX, g.bodyY, g.entryW, height
 	}
 	return g.entryX + 2, g.bodyY + 4, min(46, g.entryW-28), max(3, min(max(12, len(m.dex.artRows))+2, g.bodyH-7))
 }
@@ -82,7 +89,15 @@ func (m Model) dexMaxHorizontal() int {
 func (m Model) dexControls() []dexControl {
 	g := m.dexGeometry()
 	cs := []dexControl{}
-	add := func(x, y, w, id int, label string) { cs = append(cs, dexControl{x, y, w, id, label}) }
+	add := func(x, y, w, id int, label string) {
+		if g.h >= 24 && y >= g.y+g.h-6 && y < g.y+g.h-3 {
+			y -= 3
+		}
+		if g.h >= 24 && y == g.y+g.h-3 {
+			y -= 3
+		}
+		cs = append(cs, dexControl{x, y, w, id, label})
+	}
 	fullFilters := g.wide || !m.dex.detail || m.dex.filters
 	if g.short {
 		add(g.x+2, g.y+2, 9, 2, []string{"All", "Seen", "Unseen"}[m.dex.status])
@@ -138,7 +153,7 @@ func (m Model) dexControls() []dexControl {
 			add(bx+bw-8, by+bh-1, 6, 14, "→")
 		}
 	} else {
-		add(g.x+2, g.y+g.h-5, g.w-4, 4, "Open entry · Enter")
+		add(g.x+2, g.y+g.h-5, g.w-4, 4, "Open entry   Enter")
 	}
 	if g.wide || !m.dex.detail {
 		add(g.listX+g.listW-14, g.bodyY+g.bodyH-1, 6, 16, "↑")
@@ -149,8 +164,8 @@ func (m Model) dexControls() []dexControl {
 	if !g.wide {
 		widths = []int{8, 15, 12, g.w - 39}
 		if g.w < 48 {
-			widths = []int{8, 12, 8, g.w - 32}
-			labels = []string{"Back", "Theme", "Read", "Quit"}
+			widths = []int{7, 10, 10, g.w - 31}
+			labels = []string{"Back", "Theme", "Refresh", "Quit"}
 		}
 	}
 	ids := []int{6, 7, 5, 8}
@@ -245,13 +260,13 @@ func (m Model) dexLines() []dexLine {
 				if o.Collected {
 					status = "COLLECTED"
 				}
-				out = append(out, dexLine{text: status + " · " + clean(o.Label), target: 3000 + i})
+				out = append(out, dexLine{text: status + "   " + clean(o.Label), target: 3000 + i})
 			}
 			add("")
 			add(fmt.Sprintf("Undiscovered forms: %d", e.UnknownForms))
 			for _, f := range e.Forms {
 				if f.UnknownGenders > 0 {
-					add(fmt.Sprintf("%s · %d undiscovered genders", clean(f.Name), f.UnknownGenders))
+					add(fmt.Sprintf("%s   %d undiscovered genders", clean(f.Name), f.UnknownGenders))
 				}
 			}
 		case 2:
@@ -271,18 +286,18 @@ func (m Model) dexLines() []dexLine {
 			add("")
 			add("Unseen nodes stay anonymous.")
 		case 3:
-			add(fmt.Sprintf("SPECIES · %d encounters", e.Discovery.Count))
+			add(fmt.Sprintf("SPECIES   %d encounters", e.Discovery.Count))
 			add("First: " + dexDate(e.Discovery.FirstMS))
 			add("Last:  " + dexDate(e.Discovery.LastMS))
 			add("")
 			if e.SelectedName != "" {
 				add(clean(e.SelectedName))
-				add(fmt.Sprintf("VARIANT · %d encounters", e.Selected.Count))
+				add(fmt.Sprintf("VARIANT   %d encounters", e.Selected.Count))
 				add("First: " + dexDate(e.Selected.FirstMS))
 				add("Last:  " + dexDate(e.Selected.LastMS))
 				add("")
 			}
-			add(fmt.Sprintf("GEN %02d · STAGE %d · %s", e.Generation, e.Stage, strings.ToUpper(e.Color)))
+			add(fmt.Sprintf("GEN %02d   STAGE %d   %s", e.Generation, e.Stage, strings.ToUpper(e.Color)))
 			flags := []string{}
 			if e.Baby {
 				flags = append(flags, "Baby")
@@ -294,12 +309,12 @@ func (m Model) dexLines() []dexLine {
 				flags = append(flags, "Mythical")
 			}
 			if len(flags) > 0 {
-				add(strings.Join(flags, " · "))
+				add(strings.Join(flags, "   "))
 			}
 			add("")
 			add("OBSERVED FORMS")
 			for _, f := range e.Forms {
-				add(fmt.Sprintf("%s · %d encounters", clean(f.Name), f.Count))
+				add(fmt.Sprintf("%s   %d encounters", clean(f.Name), f.Count))
 				add(strings.Join(f.Types, " / "))
 				for _, gender := range f.Genders {
 					regular, shiny := "Locked", "Locked"
@@ -309,7 +324,7 @@ func (m Model) dexLines() []dexLine {
 					if gender.Shiny {
 						shiny = "Collected"
 					}
-					add(gender.Name + " · Regular " + regular + " · Shiny " + shiny)
+					add(gender.Name + "   Regular " + regular + "   Shiny " + shiny)
 				}
 				add(fmt.Sprintf("Undiscovered genders: %d", f.UnknownGenders))
 			}
@@ -317,10 +332,10 @@ func (m Model) dexLines() []dexLine {
 			add("")
 			s := m.dex.snapshot.summary
 			add("YOUR COLLECTION")
-			add(fmt.Sprintf("Species %d/%d · Variants %d/%d", s.Completion.Species, s.Completion.SpeciesTotal, s.Completion.Variants, s.Completion.VariantsTotal))
-			add(fmt.Sprintf("Encounters %d · Shiny collections %d", s.Encounters, s.ShinyCollections))
+			add(fmt.Sprintf("Species %d/%d   Variants %d/%d", s.Completion.Species, s.Completion.SpeciesTotal, s.Completion.Variants, s.Completion.VariantsTotal))
+			add(fmt.Sprintf("Encounters %d   Shiny collections %d", s.Encounters, s.ShinyCollections))
 			for _, gen := range s.Generations {
-				add(fmt.Sprintf("Gen %d · %d/%d", gen.Generation, gen.Seen, gen.Total))
+				add(fmt.Sprintf("Gen %d   %d/%d", gen.Generation, gen.Seen, gen.Total))
 			}
 		}
 	}
@@ -347,16 +362,16 @@ func (m Model) paintDex(c *canvas) {
 	p := m.palette()
 	c.box(g.x, g.y, g.w, g.h, "", p.accent)
 	if g.wide {
-		c.put(g.x+1, g.y+2, strings.Repeat("─", g.w-2), p.accent)
+
 	}
-	c.put(g.x+1, g.y+g.h-4, strings.Repeat("─", g.w-2), p.accent)
+
 	brand := "POKÉCRT / POKÉDEX"
 	if !g.wide {
 		brand = "POKÉDEX"
 		if g.short && m.dex.detail {
 			brand = m.dexEntryTitle()
 			if !m.dex.entry.Seen {
-				brand += " · LOCKED"
+				brand += "   LOCKED"
 			}
 		}
 	}
@@ -390,11 +405,11 @@ func (m Model) paintDex(c *canvas) {
 		}
 		c.put(g.x+g.w-27, g.y+1, summary, p.muted)
 	} else if !g.short {
-		label := fmt.Sprintf("%s · %d/%d discovered", trainerLabel, s.Completion.Species, s.Completion.SpeciesTotal)
+		label := fmt.Sprintf("%s   %d/%d discovered", trainerLabel, s.Completion.Species, s.Completion.SpeciesTotal)
 		if m.dex.detail {
 			label = m.dexEntryTitle()
 			if m.dex.entry.Seen {
-				label += fmt.Sprintf(" · GEN %02d", m.dex.entry.Generation)
+				label += fmt.Sprintf("   GEN %02d", m.dex.entry.Generation)
 			}
 		}
 		c.put(g.x+2, g.y+2, ansi.Truncate(label, g.w-4, "…"), p.muted)
@@ -415,42 +430,43 @@ func (m Model) paintDex(c *canvas) {
 			label = dexTabNames[m.dex.tab]
 			types = "Only discovered facts are shown."
 		}
-		c.put(g.x+2, g.y+g.h-8, ansi.Truncate(label, g.w-4, "…"), p.muted)
-		c.put(g.x+2, g.y+g.h-7, ansi.Truncate(types, g.w-4, "…"), p.accent)
+		c.put(g.x+2, g.bodyY+g.bodyH-2, ansi.Truncate(label, g.w-4, "…"), p.muted)
+		c.put(g.x+2, g.bodyY+g.bodyH-1, ansi.Truncate(types, g.w-4, "…"), p.accent)
 	}
 	for _, control := range m.dexControls() {
-		c.button(control.x, control.y, control.w, control.id, control.label, m)
 		selected := control.id >= 20 && control.id <= 23 && m.dex.tab == control.id-20 || control.id >= 31 && control.id <= 33 && m.dex.status == control.id-31
-		if selected && m.focus != control.id {
-			style := p.accent
-			if !m.noColor {
-				style = fg(6, 25, 36) + bg(87, 221, 233) + "\x1b[1m"
-			}
-			c.put(control.x, control.y, "● ", style)
-			for xx := control.x; xx < control.x+control.w && xx < c.width; xx++ {
-				if xx >= 0 && control.y >= 0 && control.y < c.height {
-					c.rows[control.y][xx].style = style
-				}
-			}
+		if g.wide && (control.y == g.y+3 || control.id >= 20 && control.id <= 23) {
+			c.framedControl(control.x, control.y-1, max(3, control.w-1), control.id, control.label, m, selected)
+		} else if !g.short && (control.y == g.y+g.h-3 || g.h >= 24 && control.y == g.y+g.h-6) {
+			c.outlinedButton(control.x, control.y-1, max(3, control.w-1), control.id, control.label, m)
+		} else {
+			c.button(control.x, control.y, max(3, control.w-1), control.id, control.label, m)
 		}
 	}
-	hint := "↑↓ Index · Enter Open · / Search · Tab Focus"
+
+	hint := "↑↓ Index   Enter Open   / Search   Tab Focus"
 	if m.focus == 10 {
-		hint = "↑↓ Scroll / leave · Tab Focus"
+		hint = "↑↓ Scroll / leave   Tab Focus"
 		if m.dex.tab == 0 {
-			hint = "↑↓ Scroll / leave · ←→ Pan / leave · Tab"
+			hint = "↑↓ Scroll / leave   ←→ Pan / leave   Tab"
 		}
 	} else if m.focus == 15 {
-		hint = "↑↓ Appearance · Enter Select · Tab"
+		hint = "↑↓ Appearance   Enter Select   Tab"
 	} else if m.focus >= 2000 {
-		hint = "↑↓ Nodes · Enter Open · Tab"
+		hint = "↑↓ Nodes   Enter Open   Tab"
 	} else if m.focus != 0 {
-		hint = "↑↓←→ Focus · Enter Select · Tab"
+		hint = "↑↓←→ Focus   Enter Select   Tab"
 	}
 	if g.short {
-		hint = "Arrows Move · Enter Select · Tab"
+		hint = "Arrows Move   Enter Select   Tab"
 	}
-	c.put(g.x+2, g.y+g.h-2, ansi.Truncate(hint, g.w-4, "…"), p.muted)
+	// Footer borders occupy the old hint row; navigation stays visible in the header.
+	_ = hint
+	if g.h >= 24 {
+		c.navigationHints(g.x+2, g.y+g.h-4, g.w-4, m, false, "Select")
+	} else {
+		c.navigationHints(g.x+2, g.y+g.h-2, g.w-4, m, true, "Select")
+	}
 }
 func (m Model) dexEntryTitle() string {
 	if len(m.dex.rows) == 0 {
@@ -481,15 +497,16 @@ func (m Model) paintDexIndex(c *canvas, g dexLayout) {
 		marker := "  "
 		style := ""
 		if i == m.dex.selected {
-			marker = "▶ "
-			style = p.accent
-			if m.focus == 0 && !m.noColor {
-				style = fg(6, 25, 36) + bg(87, 221, 233)
+			marker = "● "
+			style = m.controlStyle(false, true)
+			if m.focus == 0 {
+				marker = "▶ "
+				style = m.controlStyle(true, true)
 			}
 		}
 		suffix := ""
 		if !r.Eligible {
-			suffix = " · unavailable"
+			suffix = "   unavailable"
 		}
 		label := ansi.Truncate(fmt.Sprintf("%s#%03d %s%s", marker, r.Number, clean(r.Name), suffix), w, "…")
 		label += strings.Repeat(" ", max(0, w-ansi.StringWidth(label)))
@@ -522,7 +539,7 @@ func (m Model) paintDexOverview(c *canvas, g dexLayout) {
 		c.box(g.entryX, g.bodyY, g.entryW, g.bodyH, "ENTRY", p.accent)
 		c.put(g.entryX+2, g.bodyY+1, ansi.Truncate(m.dexEntryTitle(), g.entryW-4, "…"), p.accent)
 		if m.dex.entry.Seen {
-			c.put(g.entryX+2, g.bodyY+2, fmt.Sprintf("GEN %02d · DISCOVERED", m.dex.entry.Generation), p.muted)
+			c.put(g.entryX+2, g.bodyY+2, fmt.Sprintf("GEN %02d   DISCOVERED", m.dex.entry.Generation), p.muted)
 		}
 	}
 	x, y, w, h := m.dexArtRect()
@@ -579,7 +596,7 @@ func (m Model) paintDexOverview(c *canvas, g dexLayout) {
 			notice = m.dex.entryError
 		}
 		if notice == "" {
-			notice = "Collected appearance · exact artwork"
+			notice = "Collected appearance   exact artwork"
 		}
 		if !m.dex.entry.Seen {
 			notice = "No identity or artwork is revealed until discovered."

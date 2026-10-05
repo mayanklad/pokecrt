@@ -441,6 +441,9 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			m.dex.artRows = nil
 			m.dex.artWidth = 0
 		}
+		if m.screen == dexScreen && !m.settings {
+			return tea.ClearScreen, true
+		}
 		return nil, true
 	}
 
@@ -547,9 +550,9 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			if m.focus == 15 {
 				next := m.dex.optionIndex + delta
 				if next < 0 {
-					m.focus = m.dexTabFocus()
+					m.focus = 1
 				} else if next >= len(m.dex.options) {
-					m.focus = 6
+					m.focus = m.dexTabFocus()
 				} else {
 					m.dex.optionIndex = next
 					m.revealDexOption()
@@ -576,9 +579,9 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			if m.focus == 10 {
 				next := m.dex.scroll + delta
 				if next < 0 {
-					m.focus = m.dexTabFocus()
+					m.focus = 1
 				} else if next > m.dexMaxScroll() {
-					m.focus = 6
+					m.focus = m.dexTabFocus()
 				} else {
 					m.dex.scroll = next
 				}
@@ -617,7 +620,6 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			delta = -1
 		}
 		if m.screen == dexSearchScreen {
-			m.moveFocus(delta)
 			return nil, true
 		}
 		g := m.dexGeometry()
@@ -680,43 +682,8 @@ func (m *Model) navigateDexControl(direction string) {
 		}
 		return
 	}
-	controls := m.dexTargets()
-	var current dexControl
-	found := false
-	for _, c := range controls {
-		if c.id == m.focus {
-			current = c
-			found = true
-			break
-		}
-	}
-	if !found {
-		m.focus = m.dexContentFocus()
-		return
-	}
-	best, score := -1, 1e20
-	for _, c := range controls {
-		if c.id == m.focus {
-			continue
-		}
-		dx := float64(2*c.x+c.w-2*current.x-current.w) / 4
-		dy := float64(c.y - current.y)
-		if direction == "left" && dx >= 0 || direction == "right" && dx <= 0 || direction == "up" && dy >= 0 || direction == "down" && dy <= 0 {
-			continue
-		}
-		distance := 1000*absFloat(dx) + absFloat(dy)
-		if direction == "left" || direction == "right" {
-			distance = 1000*absFloat(dy) + absFloat(dx)
-		}
-		if distance < score {
-			score = distance
-			best = c.id
-		}
-	}
-	if best >= 0 {
-		m.focus = best
-		m.revealDexFocus()
-	}
+	m.focus = directionalTarget(m.dexTargets(), m.focus, direction)
+	m.revealDexFocus()
 }
 
 func absFloat(n float64) float64 {
