@@ -184,3 +184,21 @@ func TestEventAchievementHasEarnablePlayerFacingStatus(t *testing.T) {
 		t.Fatal("event goal incorrectly presented as unavailable")
 	}
 }
+
+func TestEncounterReadyHeadingUsesFullLogWidth(t *testing.T) {
+	for _, width := range []int{100, 120, 180} {
+		m := activityModel()
+		m.width = width
+		rows := m.activityWrapped()
+		if ansi.StringWidth(rows[0]) != m.dexGeometry().w-8 {
+			t.Fatalf("ready divider width at %d: %d", width, ansi.StringWidth(rows[0]))
+		}
+		if len(rows) != 4 {
+			t.Fatal("ready text unexpectedly wraps", rows)
+		}
+		m.activity.art = []string{"sprite"}
+		if ansi.StringWidth(m.activityWrapped()[0]) != m.dexGeometry().w/2-6 {
+			t.Fatal("split details width mismatched")
+		}
+	}
+}

@@ -70,7 +70,7 @@ func (m Model) activityWrapped() []string {
 		_, right := m.activityColumns()
 		return wrapActivityLines(right, g.w/2-6)
 	}
-	if m.section == 1 && g.wide && !m.activity.historyMode {
+	if m.section == 1 && g.wide && !m.activity.historyMode && len(m.activity.art) > 0 && m.activity.error == "" {
 		w = g.w/2 - 6
 	}
 	var lines []string

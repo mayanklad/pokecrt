@@ -287,8 +287,8 @@ func (m Model) trainerInformationColumns() (left, right []string) {
 	s := d.stats
 	p := s.Progress
 	w := m.dexGeometry().w - 8
-	if m.dexGeometry().wide {
-		w = m.dexGeometry().w/2 - 7
+	if m.dexGeometry().wide && len(m.activity.art) > 0 && m.activity.error == "" {
+		w = m.dexGeometry().w/2 - 6
 	}
 	fact := func(label, value string) string { return m.informationFact(label, value, w) }
 	left = []string{m.informationHeading(strings.ToUpper(clean(d.profile.Name)), w), fact("Trainer since", dexDate(d.profile.CreatedAtMS)), "", m.informationHeading("TRAINER LEVEL", w), fact("Level", fmt.Sprint(p.Level)), fact("Total XP", fmt.Sprint(p.Total)), m.informationBar("XP", p.InLevel, 1000, w), fact("Next level", fmt.Sprintf("%d XP remaining", p.ToNext)), "", m.informationHeading("JOURNEY TOTALS", w), fact("Encounters", fmt.Sprint(s.Encounters)), fact("Species", fmt.Sprint(s.Species)), fact("Appearances", fmt.Sprint(s.Variants)), fact("Shiny collections", fmt.Sprint(s.ShinyCollections)), fact("Shiny encounters", fmt.Sprint(s.ShinyEncounters)), "", m.informationHeading("COLLECTION", w), m.informationBar("Species", s.Completion.Species, s.Completion.SpeciesTotal, w), m.informationBar("Variants", s.Completion.Variants, s.Completion.VariantsTotal, w)}
@@ -310,8 +310,8 @@ func (m Model) trainerInformationColumns() (left, right []string) {
 func (m Model) achievementInformationColumns() (left, right []string) {
 	d := m.activity.data
 	w := m.dexGeometry().w - 8
-	if m.dexGeometry().wide {
-		w = m.dexGeometry().w/2 - 7
+	if m.dexGeometry().wide && len(m.activity.art) > 0 && m.activity.error == "" {
+		w = m.dexGeometry().w/2 - 6
 	}
 	left = []string{m.informationHeading(fmt.Sprintf("%d BADGES EARNED", len(d.achievements.Unlocked)), w), ""}
 	for _, g := range d.achievements.Unlocked {
@@ -334,8 +334,8 @@ func (m Model) achievementInformationColumns() (left, right []string) {
 }
 func (m Model) encounterInformation() []string {
 	w := m.dexGeometry().w - 8
-	if m.dexGeometry().wide {
-		w = m.dexGeometry().w/2 - 7
+	if m.dexGeometry().wide && len(m.activity.art) > 0 && m.activity.error == "" {
+		w = m.dexGeometry().w/2 - 6
 	}
 	if m.activity.result == nil {
 		return []string{m.informationHeading("READY TO EXPLORE", w), "", "Choose Encounter to discover a Pokémon.", "Your discoveries will be saved to this trainer."}

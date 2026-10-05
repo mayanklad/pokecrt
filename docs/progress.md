@@ -724,3 +724,28 @@ These checks do not claim exhaustive platform or async-event coverage.
 Delivery: changed-file ZIP against ddc0d811; no deletions, binary/assets,
 dependency/schema changes or GitHub writes. Apply at repository root and run
 the normal test/vet/build commands before committing.
+
+### D27 — Home header actions and taller Town Map
+
+Against a9136edc, wide Home (at least 90×28) puts Refresh and Quit in the
+top-right header above a single-line trainer card. The card shows trainer name
+and a gold Lv. value separated from the name by two spaces without a middle-dot separator. Loading and
+no-trainer states remain readable. Header widths respect the central logo.
+The trainer card sizes to its text and stays right-aligned, with long names
+truncated within the header budget. Refresh/Quit retain their outlined frames.
+Town Map gains four rows against the committed baseline by reclaiming the
+lower action area. Information/Choose panel heights, title gap and bottom
+keyboard hints remain unchanged. Narrow Home retains the lower action layout
+with the one-row map expansion; layouts below 28 rows remain unchanged.
+No artwork, storage, dependency or other-screen changes.
+Validation: go test ./..., go vet ./... and build pass. Running-terminal checks
+cover 120×40, 90×28, 64×40, 48×28 and 40×12; exit restores terminal state.
+This package replaces the earlier D27 taller-map spacing ZIP in full.
+
+D27 Encounter Log follow-up: use the full text viewport for READY TO EXPLORE
+and wrapping when no artwork panel is displayed. Apply the half-width budget
+only when the split artwork/details view is actually rendered. Regression
+coverage checks full and split heading widths at 100, 120 and 180 columns.
+Tests, vet and build pass; wide running-terminal capture verifies the divider.
+This cumulative ZIP includes all uncommitted D27 Home and Encounter changes
+against a9136edc and replaces every earlier D27 ZIP.

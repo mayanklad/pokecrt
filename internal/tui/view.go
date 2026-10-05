@@ -267,15 +267,27 @@ func (m Model) paintMain(c *canvas) {
 			name = "Reading trainer…"
 		}
 		name = "♟ " + name
-		status := "Create or choose a trainer"
-		if m.snapshot.Active {
-			status = fmt.Sprintf("Level %d", max(1, m.snapshot.Level))
+		level := ""
+		if m.snapshot.Active && !m.loading {
+			level = fmt.Sprintf("Lv. %d", max(1, m.snapshot.Level))
 		}
-		cardW := min(28, (frameW-41)/2-4, max(ansi.StringWidth(name), ansi.StringWidth(status))+4)
+		cardW := ansi.StringWidth(name) + 4
+		if level != "" {
+			cardW += ansi.StringWidth(level) + 2
+		}
+		cardW = min(cardW, (frameW-41)/2-4)
 		px := left + frameW - cardW - 2
-		c.box(px, top+1, cardW, 4, "", p.accent)
-		c.put(px+2, top+2, ansi.Truncate(name, cardW-4, "…"), p.foreground)
-		c.put(px+2, top+3, ansi.Truncate(status, cardW-4, "…"), p.muted)
+		c.outlinedButton(left+frameW-29, top+1, 14, 5, "Refresh", m)
+		c.outlinedButton(left+frameW-14, top+1, 12, 6, "Quit", m)
+		c.box(px, top+4, cardW, 3, "", p.accent)
+		nameW := cardW - 4
+		if level != "" {
+			nameW -= ansi.StringWidth(level) + 2
+		}
+		c.put(px+2, top+5, ansi.Truncate(name, max(1, nameW), "…"), p.foreground)
+		if level != "" {
+			c.put(px+cardW-2-ansi.StringWidth(level), top+5, level, p.gold)
+		}
 
 	} else {
 		headerGap := 1
@@ -291,13 +303,17 @@ func (m Model) paintMain(c *canvas) {
 		c.button(left+frameW-11, top+1, 8, 6, "Quit", m)
 	}
 	if frameH >= 28 {
-		sceneH := frameH - 25
+		// Reclaim footer whitespace while keeping a blank row on each side
+		// of the lower actions.
+		sceneY := top + 6
+		sceneH := frameH - 24
 		if wide {
-			sceneH = frameH - 21
+			sceneY++
+			sceneH = frameH - 17
 		}
-		c.box(left+2, top+6, frameW-4, sceneH, "TOWN MAP", p.accent)
-		m.paintScene(c, left+3, top+7, frameW-6, sceneH-2)
-		dy := top + 6 + sceneH
+		c.box(left+2, sceneY, frameW-4, sceneH, "TOWN MAP", p.accent)
+		m.paintScene(c, left+3, sceneY+1, frameW-6, sceneH-2)
+		dy := sceneY + sceneH
 		if wide {
 			menuW := 30
 			textW := frameW - menuW - 5
@@ -330,8 +346,10 @@ func (m Model) paintMain(c *canvas) {
 		}
 	}
 	if frameH >= 28 {
-		c.outlinedButton(left+3, top+frameH-7, 14, 5, "Refresh", m)
-		c.outlinedButton(left+18, top+frameH-7, 12, 6, "Quit", m)
+		if !wide {
+			c.outlinedButton(left+3, top+frameH-6, 14, 5, "Refresh", m)
+			c.outlinedButton(left+18, top+frameH-6, 12, 6, "Quit", m)
+		}
 		c.navigationHints(left+3, top+frameH-4, frameW-6, m, false, "Open")
 
 	} else {
