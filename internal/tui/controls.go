@@ -228,6 +228,20 @@ func (m Model) styleFrames(c *canvas) {
 	for i, f := range c.frames {
 		inside := fx >= f.x && fx < f.x+f.w && fy >= f.y && fy < f.y+f.h
 		if !m.settings && m.screen == activityScreen {
+			if m.section == 3 && m.dexGeometry().wide && m.focus >= 40 && m.focus <= 45 {
+				panel := m.activity.achievementPanel
+				if m.focus == 40 || m.focus == 41 {
+					panel = m.focus - 40
+				}
+				if m.focus >= 42 {
+					panel = (m.focus - 42) / 2
+				}
+				px := m.dexGeometry().x + 2
+				if panel == 1 {
+					px = m.dexGeometry().x + m.dexGeometry().w/2
+				}
+				inside = f.x == px && f.h == m.activityBodyHeight()
+			}
 			if m.focus == 22 || m.focus == 16 || m.focus == 17 {
 				inside = f.h == m.activityBodyHeight()
 				if m.section == 1 && m.dexGeometry().wide && len(m.activity.art) > 0 && !m.activity.historyMode && m.activity.error == "" {

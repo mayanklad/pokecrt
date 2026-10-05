@@ -575,3 +575,79 @@ Action-button geometry, frame treatment and the town map remain unchanged.
 Validation covers Go tests, vet, TUI race checks and terminal scenarios across
 wide, compact and minimum layouts, appearance modes, keyboard and mouse exits.
 No dependencies, timers or background work are added.
+
+## D24 Full-terminal information presentation
+
+The TUI canvas and Home, Pokédex and activity frames follow the terminal extent
+instead of centering a 120-column by 40-row page. The prior 240-column by 100-row
+canvas ceiling is removed. Setup and Appearance remain bounded dialogs within
+the full canvas. Resize updates use the same geometry for painting and targets.
+The National Index retains its existing width, row treatment and disclosure.
+
+Information uses grouped headings, aligned label/value fields, restrained type
+colours, local readable timestamps and count/progress bars. Pokédex Overview
+separates artwork from field notes; Records groups discovery, species, observed
+forms and collection progress. Trainer and achievement pages present progress
+and goals in responsive columns. Encounter rewards and saved records have
+separate sections. History entries have spacing and wrapped-row target tracking.
+
+Evolution uses responsive cards with collected artwork and anonymous placeholders
+for uncollected nodes. Parent links determine presentation order, including babies
+with later National Dex numbers. Direct adjacent relationships have arrows;
+child identifiers preserve branches without implying unrelated adjacency. Card
+rows remain clickable and keyboard focus reveals the selected node. Artwork is
+prepared in the existing asynchronous entry worker and retained only with that
+entry; generation checks reject stale results. No View-time image decoding,
+network access, dependency, timer or background loop is added.
+
+The current catalog supplies family links but no evolution conditions or levels,
+base stats or abilities. These facts are not fabricated. Additional verified
+metadata is a separate dataset extension. Home artwork redesign remains deferred;
+its current design is retained in the larger frame.
+
+Validation includes tests, vet, TUI race checks, full-canvas extents through
+320 by 120, collection privacy, NO_COLOR, family order and real-terminal checks
+for normal/compact/minimum layouts, resizing, appearance modes and exits.
+
+### D24 redraw samples
+
+Brief 100 ms Go microbenchmark samples on linux/amd64, Go 1.27.1,
+AMD EPYC 9V74, measured View construction rather than terminal I/O:
+
+| View | Previous 120-column layout | D24 120-column layout |
+| --- | ---: | ---: |
+| Home | 0.63 ms | 0.69 ms |
+| Pokédex Overview | 0.91 ms | 1.19 ms |
+| Trainer | 0.51 ms | 0.69 ms |
+| Achievement goals (50) | 0.61 ms | 1.35 ms |
+| History (50) | 0.83 ms | 1.01 ms |
+
+The 180 by 60 Trainer sample measured 1.14 ms and about 843 KB allocated per
+View. Richer formatting adds processing/allocation cost. Larger terminal areas
+require more cells; these samples are not end-to-end latency guarantees.
+
+## D24 Evolution, appearance and achievement navigation
+
+Evolution cards accept arrow navigation from the index or tab row, with explicit
+card focus, geometry-based movement and predictable exits. Placeholder symbols
+and captions centre independently. National Dex identifiers remain visible for
+anonymous family nodes. Opening one shows a locked entry; Family or Escape
+returns to the originating family and its prior appearance selection.
+
+Variants use outlined appearance cards with collection status, current-selection
+markers and keyboard focus. Card height and wrapping determine scroll reveal;
+keyboard and mouse activation retain exact appearance selection.
+
+On wide Achievements layouts, Earned Badges and Next Goals have independent
+scroll offsets, focus borders, Scroll targets and per-panel arrow controls.
+Left/Right switch panels; wheel scrolling uses the panel beneath the pointer.
+Compact layouts retain the single combined journal and its existing scrolling.
+No new timer, background loop or dependency is introduced.
+
+## D24 Achievement wording and panel exits
+
+Event-based locked goals without a numerical target show “Not yet earned”.
+They remain earnable goals; absence of a progress bar does not mean that the
+encounter inventory cannot support them. Earned Badges Left exits to Back;
+Next Goals Right exits to Quit. Inward arrows still switch between the panels.
+These routes preserve both independent scroll positions.

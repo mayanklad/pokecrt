@@ -31,6 +31,7 @@ type dexEntryMsg struct {
 	entry   trainer.DexEntry
 	options []trainer.DexAppearance
 	art     string
+	family  map[int]string
 	err     error
 }
 type dexState struct {
@@ -53,6 +54,9 @@ type dexState struct {
 	art                                string
 	artRows                            []string
 	artWidth                           int
+	family                             map[int]string
+	familyOrigin, familyNode           int
+	familySelection                    catalog.Selection
 	scroll, horizontal                 int
 	searchBefore                       []rune
 	searchCursor                       int
@@ -105,10 +109,12 @@ func (m *Model) reloadDex() tea.Cmd {
 	m.dex.entryLoading = false
 	m.dex.loading = true
 	m.dex.error = ""
+	m.dex.familyOrigin = 0
 	m.dex.snapshot = dexSnapshot{}
 	m.dex.rows = nil
 	m.dex.entry = trainer.DexEntry{}
 	m.dex.options = nil
+	m.dex.family = nil
 	m.dex.art = ""
 	m.dex.artRows = nil
 	m.dex.artWidth = 0
@@ -165,6 +171,7 @@ func (m *Model) loadDexEntry(q catalog.Selection) tea.Cmd {
 	m.dex.entryGeneration++
 	id := m.dex.entryGeneration
 	m.dex.entry = trainer.DexEntry{}
+	m.dex.family = nil
 	m.dex.art = ""
 	m.dex.artRows = nil
 	m.dex.artWidth = 0
@@ -193,10 +200,35 @@ func (m *Model) loadDexEntry(q catalog.Selection) tea.Cmd {
 				art, err = render.Render(pixels, colored)
 			}
 		}
-		return dexEntryMsg{id, e, opts, string(art), err}
+		family := map[int]string{}
+		if err == nil {
+			for _, node := range e.Evolution {
+				for _, option := range d.Appearances(node.Number) {
+					if !option.Collected {
+						continue
+					}
+					revealed, entryErr := d.Entry(node.Number, option.Selection)
+					if entryErr != nil || revealed.ArtworkKey == nil {
+						continue
+					}
+					key := *revealed.ArtworkKey
+					pixels, decodeErr := sprite.Decode(key)
+					if decodeErr != nil {
+						continue
+					}
+					rendered, renderErr := render.Render(pixels, colored)
+					if renderErr == nil {
+						family[node.Number] = string(rendered)
+						break
+					}
+				}
+			}
+		}
+		return dexEntryMsg{id: id, entry: e, options: opts, art: string(art), family: family, err: err}
 	}
 }
 func (m *Model) selectDex(delta int) tea.Cmd {
+	m.dex.familyOrigin = 0
 	if len(m.dex.rows) == 0 {
 		return nil
 	}
@@ -288,6 +320,11 @@ func (m *Model) activateDex(id int) tea.Cmd {
 		return m.loadDexEntry(q)
 	}
 	if id >= 2000 {
+		if m.dex.tab == 2 {
+			m.dex.familyOrigin = m.dex.entry.Number
+			m.dex.familyNode = id
+			m.dex.familySelection = m.dex.selection
+		}
 		number := id - 2000
 		m.dex.status = 0
 		m.dex.generationFilter = 0
@@ -305,6 +342,7 @@ func (m *Model) activateDex(id int) tea.Cmd {
 		return m.loadDexEntry(catalog.Selection{})
 	}
 	if id >= 1000 {
+		m.dex.familyOrigin = 0
 		index := id - 1000
 		if index >= len(m.dex.rows) {
 			return nil
@@ -340,6 +378,9 @@ func (m *Model) activateDex(id int) tea.Cmd {
 	case 5:
 		return m.reloadDex()
 	case 6:
+		if m.dex.familyOrigin > 0 {
+			return m.returnToFamily()
+		}
 		m.leaveDex()
 	case 7:
 		m.openSettings()
@@ -392,6 +433,9 @@ func (m *Model) setDexTab(tab int) {
 	m.dex.scroll = 0
 	m.dex.horizontal = 0
 	m.dex.optionIndex = 0
+	if tab == 1 {
+		m.revealDexOption()
+	}
 }
 func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 	switch msg := msg.(type) {
@@ -428,6 +472,10 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 		m.dex.entry = msg.entry
 		m.dex.options = msg.options
 		m.dex.art = msg.art
+		m.dex.family = msg.family
+		if m.dex.tab == 2 {
+			m.revealDexFocus()
+		}
 		if msg.art != "" {
 			m.dex.artRows = strings.Split(strings.TrimSuffix(msg.art, "\n"), "\n")
 			if msg.entry.ArtworkKey != nil {
@@ -437,6 +485,7 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 		}
 		if msg.err != nil {
 			m.dex.entryError = clean(msg.err.Error())
+			m.dex.family = nil
 			m.dex.art = ""
 			m.dex.artRows = nil
 			m.dex.artWidth = 0
@@ -459,10 +508,17 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 		return nil, true
 	case tea.KeyPressMsg:
 		k := msg.String()
+		if m.dex.tab == 2 && (k == "up" || k == "down" || k == "left" || k == "right" || k == "j" || k == "k") && (m.focus == 10 || m.focus >= 2000 && m.focus < 3000) {
+			m.navigateEvolution(k)
+			return nil, true
+		}
 		switch k {
 		case "ctrl+c":
 			return tea.Quit, true
 		case "esc":
+			if m.dex.familyOrigin > 0 && m.screen == dexScreen {
+				return m.returnToFamily(), true
+			}
 			if m.screen == dexSearchScreen {
 				return m.closeDexSearch(false), true
 			}
@@ -609,6 +665,7 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			} else if m.focus == 0 && k == "right" {
 				m.dex.detail = true
 				m.focus = m.dexContentFocus()
+				m.enterEvolutionFocus()
 			} else {
 				m.navigateDexControl(k)
 			}
@@ -650,14 +707,25 @@ func (m *Model) revealDexFocus() {
 		return
 	}
 	for i, line := range m.dexLines() {
-		if line.target == m.focus {
-			m.dex.scroll = max(0, min(i, m.dexMaxScroll()))
+		matches := line.target == m.focus
+		for _, node := range line.nodes {
+			matches = matches || node.id == m.focus
+		}
+		if matches {
+			m.dex.scroll = max(0, min(i+1, m.dexMaxScroll()))
 			break
 		}
 	}
 }
 func (m *Model) revealDexOption() {
-	m.dex.scroll = max(0, min(m.dex.optionIndex-m.dexBodyHeight()/2, m.dexMaxScroll()))
+	for row, line := range m.dexLines() {
+		for _, node := range line.nodes {
+			if node.id == 3000+m.dex.optionIndex {
+				m.dex.scroll = min(max(0, row+1), m.dexMaxScroll())
+				return
+			}
+		}
+	}
 }
 func (m Model) dexTabFocus() int {
 	if min(m.height, 40) < 20 {
@@ -679,6 +747,7 @@ func (m *Model) navigateDexControl(direction string) {
 			m.focus -= 2
 		} else {
 			m.focus = m.dexContentFocus()
+			m.enterEvolutionFocus()
 		}
 		return
 	}
@@ -691,4 +760,58 @@ func absFloat(n float64) float64 {
 		return -n
 	}
 	return n
+}
+
+func (m *Model) enterEvolutionFocus() {
+	if m.dex.tab == 2 && m.dex.entry.Seen && len(m.dex.entry.Evolution) > 0 {
+		m.focus = 2000 + orderedEvolution(m.dex.entry.Evolution)[0].Number
+		m.revealDexFocus()
+	}
+}
+func (m *Model) navigateEvolution(key string) {
+	if key == "j" {
+		key = "down"
+	}
+	if key == "k" {
+		key = "up"
+	}
+	if m.focus == 10 {
+		m.enterEvolutionFocus()
+		return
+	}
+	targets := []dexControl{}
+	seen := map[int]bool{}
+	for y, line := range m.evolutionLines() {
+		for _, node := range line.nodes {
+			if !seen[node.id] {
+				node.y = y
+				targets = append(targets, node)
+				seen[node.id] = true
+			}
+		}
+	}
+	next := directionalTarget(targets, m.focus, key)
+	if next == m.focus {
+		switch key {
+		case "left":
+			m.focus = 0
+		case "right":
+			m.focus = 23
+		case "up":
+			m.focus = 1
+		case "down":
+			m.focus = 22
+		}
+	} else {
+		m.focus = next
+		m.revealDexFocus()
+	}
+}
+func (m *Model) returnToFamily() tea.Cmd {
+	origin, node, q := m.dex.familyOrigin, m.dex.familyNode, m.dex.familySelection
+	m.dex.familyOrigin = 0
+	m.activateDex(2000 + origin)
+	m.dex.tab = 2
+	m.focus = node
+	return m.loadDexEntry(q)
 }

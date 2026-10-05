@@ -35,6 +35,8 @@ type activityState struct {
 	error                               string
 	selected, scroll, artScroll, artPan int
 	refreshAfter                        bool
+	panelScroll                         [2]int
+	achievementPanel                    int
 	historyMode, resultDetails          bool
 	result                              *trainer.Record
 	art                                 []string
@@ -137,6 +139,9 @@ func (m *Model) openActivity(section int) tea.Cmd {
 	}
 	if section == 3 {
 		m.focus = 12
+		if m.dexGeometry().wide {
+			m.focus = 40
+		}
 	}
 	return tea.Batch(tea.ClearScreen, m.reloadActivity())
 }
@@ -190,10 +195,10 @@ func (m *Model) activateActivity(id int) tea.Cmd {
 		return tea.ClearScreen
 	case id == 31:
 		m.activity.selected = max(0, m.activity.selected-1)
-		m.activity.scroll = min(m.activityMaxScroll(), 2+m.activity.selected*3)
+		m.revealHistorySelection()
 	case id == 32:
 		m.activity.selected = min(max(0, len(m.activity.data.history)-1), m.activity.selected+1)
-		m.activity.scroll = min(m.activityMaxScroll(), 2+m.activity.selected*3)
+		m.revealHistorySelection()
 	case id == 33:
 		m.activity.artScroll = max(0, m.activity.artScroll-1)
 	case id == 34:
@@ -201,6 +206,16 @@ func (m *Model) activateActivity(id int) tea.Cmd {
 	case id == 35:
 		m.activity.resultDetails = !m.activity.resultDetails
 		return tea.ClearScreen
+	case id == 40 || id == 41:
+		m.activity.achievementPanel = id - 40
+	case id >= 42 && id <= 45:
+		panel := (id - 42) / 2
+		delta := -1
+		if id%2 == 1 {
+			delta = 1
+		}
+		m.activity.achievementPanel = panel
+		m.activity.panelScroll[panel] = max(0, min(m.achievementMaxScroll(panel), m.activity.panelScroll[panel]+delta))
 	case id == 16:
 		m.activity.scroll = max(0, m.activity.scroll-1)
 	case id == 17:
@@ -298,6 +313,14 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	if !found && len(controlsNow) > 0 {
 		m.focus = controlsNow[0].id
 	}
+	if m.section == 3 && m.dexGeometry().wide {
+		if m.focus == 40 || m.focus == 41 {
+			m.activity.achievementPanel = m.focus - 40
+		}
+		if m.focus >= 42 && m.focus <= 45 {
+			m.activity.achievementPanel = (m.focus - 42) / 2
+		}
+	}
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
@@ -333,13 +356,33 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 			if msg.String() == "up" || msg.String() == "k" || msg.String() == "left" {
 				delta = -1
 			}
-			if m.section == 1 && m.activity.historyMode && m.focus == 20 && (msg.String() == "up" || msg.String() == "down" || msg.String() == "j" || msg.String() == "k") {
+			if m.section == 3 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
+				panel := m.focus - 40
+				m.activity.achievementPanel = panel
+				if msg.String() == "left" || msg.String() == "right" {
+					if panel == 0 && msg.String() == "left" {
+						m.focus = 12
+					} else if panel == 1 && msg.String() == "right" {
+						m.focus = 14
+					} else {
+						m.focus = 40 + 1 - panel
+						m.activity.achievementPanel = 1 - panel
+					}
+				} else {
+					next := max(0, min(m.achievementMaxScroll(panel), m.activity.panelScroll[panel]+delta))
+					if next == m.activity.panelScroll[panel] {
+						m.activityMove(msg.String())
+					} else {
+						m.activity.panelScroll[panel] = next
+					}
+				}
+			} else if m.section == 1 && m.activity.historyMode && m.focus == 20 && (msg.String() == "up" || msg.String() == "down" || msg.String() == "j" || msg.String() == "k") {
 				next := max(0, min(max(0, len(m.activity.data.history)-1), m.activity.selected+delta))
 				if next == m.activity.selected {
 					m.activityMove(msg.String())
 				} else {
 					m.activity.selected = next
-					m.activity.scroll = min(m.activityMaxScroll(), 2+next*3)
+					m.revealHistorySelection()
 				}
 			} else if m.focus == 21 {
 				if msg.String() == "left" || msg.String() == "right" {
@@ -370,9 +413,17 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 				m.activityMove(msg.String())
 			}
 		case "pgdown":
-			m.activity.scroll = min(m.activityMaxScroll(), m.activity.scroll+m.activityBodyHeight()-2)
+			if m.section == 3 && m.dexGeometry().wide {
+				m.scrollAchievementPanel(m.activity.achievementPanel, m.activityBodyHeight()-2)
+			} else {
+				m.activity.scroll = min(m.activityMaxScroll(), m.activity.scroll+m.activityBodyHeight()-2)
+			}
 		case "pgup":
-			m.activity.scroll = max(0, m.activity.scroll-m.activityBodyHeight()+2)
+			if m.section == 3 && m.dexGeometry().wide {
+				m.scrollAchievementPanel(m.activity.achievementPanel, -m.activityBodyHeight()+2)
+			} else {
+				m.activity.scroll = max(0, m.activity.scroll-m.activityBodyHeight()+2)
+			}
 		}
 		return nil, true
 	case tea.MouseWheelMsg:
@@ -380,7 +431,17 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 		if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
 			delta = -1
 		}
-		m.activity.scroll = max(0, min(m.activityMaxScroll(), m.activity.scroll+delta))
+		if m.section == 3 && m.dexGeometry().wide {
+			panel := 0
+			if msg.X >= m.dexGeometry().w/2 {
+				panel = 1
+			}
+			m.focus = 40 + panel
+			m.activity.achievementPanel = panel
+			m.scrollAchievementPanel(panel, delta)
+		} else {
+			m.activity.scroll = max(0, min(m.activityMaxScroll(), m.activity.scroll+delta))
+		}
 		return nil, true
 	}
 	return nil, false
@@ -393,4 +454,29 @@ func (m *Model) activityMove(key string) {
 		key = "down"
 	}
 	m.focus = directionalTarget(m.activityControls(), m.focus, key)
+}
+
+func (m *Model) revealHistorySelection() {
+	for row, owner := range m.activityHistoryTargets() {
+		if owner == m.activity.selected {
+			m.activity.scroll = min(m.activityMaxScroll(), row)
+			return
+		}
+	}
+}
+
+func (m Model) achievementMaxScroll(panel int) int {
+	left, right := m.achievementInformationColumns()
+	lines := left
+	if panel == 1 {
+		lines = right
+	}
+	width := m.dexGeometry().w/2 - 7
+	if panel == 1 {
+		width++
+	}
+	return max(0, len(wrapActivityLines(lines, width))-m.activityBodyHeight()+2)
+}
+func (m *Model) scrollAchievementPanel(panel, delta int) {
+	m.activity.panelScroll[panel] = max(0, min(m.achievementMaxScroll(panel), m.activity.panelScroll[panel]+delta))
 }

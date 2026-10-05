@@ -178,7 +178,7 @@ func (c *canvas) content(p palette) string {
 
 func (m Model) View() tea.View {
 	// Bound work for enormous reported windows; normal terminals use every cell.
-	w, h := max(1, min(m.width, 240)), max(1, min(m.height, 100))
+	w, h := max(1, m.width), max(1, m.height)
 	c := newCanvas(w, h)
 	p := m.palette()
 	if m.width < 40 || m.height < 12 {
@@ -246,7 +246,7 @@ func (m Model) paintMain(c *canvas) {
 	p := m.palette()
 	// Keep the adventure stage cohesive on large windows rather than stretching
 	// dialogue across the entire screen. All hit coordinates remain frame-derived.
-	frameW, frameH := min(w, 120), min(h, 40)
+	frameW, frameH := w, h
 	left, top := (w-frameW)/2, (h-frameH)/2
 	c.box(left, top, frameW, frameH, "", p.accent)
 	wide := frameW >= 90 && frameH >= 28

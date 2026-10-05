@@ -575,7 +575,7 @@ func (m *Model) navigateSetup(direction string) {
 }
 
 func (m Model) createFocusTargets() []dexControl {
-	c := newCanvas(max(40, min(m.width, 240)), max(12, min(m.height, 100)))
+	c := newCanvas(max(40, m.width), max(12, m.height))
 	m.paintCreate(c)
 	targets := []dexControl{}
 	positions := map[int]int{}

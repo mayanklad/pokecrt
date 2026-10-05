@@ -30,7 +30,7 @@ func (m Model) activityLines() []string {
 	switch m.section {
 	case 1:
 		if m.activity.historyMode {
-			lines := []string{"LATEST 50   stored discoveries", ""}
+			lines := []string{m.informationHeading("RECENT DISCOVERIES", m.dexGeometry().w-8), ""}
 			if len(d.history) == 0 {
 				return append(lines, "Your journey starts with Encounter.")
 			}
@@ -39,60 +39,23 @@ func (m Model) activityLines() []string {
 				if i == a.selected {
 					marker = "▶ "
 				}
-				lines = append(lines, fmt.Sprintf("%s#%03d %s", marker, h.Key.SpeciesID, clean(h.Snapshot.SpeciesName)), fmt.Sprintf("  %s   %s   +%d XP", clean(h.Snapshot.FormName), h.Key.Palette, h.XP), "  "+dexDate(h.EncounteredAtMS))
+				titleStyle := m.palette().gold
+				if i == a.selected {
+					titleStyle = m.palette().muted
+				}
+				lines = append(lines, styled(fmt.Sprintf("%s#%03d %s", marker, h.Key.SpeciesID, clean(h.Snapshot.SpeciesName)), titleStyle), fmt.Sprintf("  %s   %s   +%d XP", clean(h.Snapshot.FormName), h.Key.Palette, h.XP), styled("  "+dexDate(h.EncounteredAtMS), m.hintStyle()), "")
 			}
 			return lines
 		}
-		if a.result == nil {
-			return []string{"READY FOR AN ENCOUNTER", "", "Choose Encounter to discover a Pokémon.", "Browsing never records a discovery."}
-		}
-		r := a.result
-		s := r.Choice.Snapshot()
-		k := r.Choice.Key()
-		lines := []string{fmt.Sprintf("#%03d %s", k.SpeciesID, strings.ToUpper(clean(s.SpeciesName))), strings.ToUpper(clean(s.FormName) + "   " + k.Palette), "", "COMMITTED   saved to your trainer", fmt.Sprintf("+%d XP   LEVEL %d", r.XPAwarded, r.After.Level)}
-		if r.FirstSpecies {
-			lines = append(lines, "NEW SPECIES DISCOVERED")
-		}
-		if r.FirstVariant {
-			lines = append(lines, "NEW APPEARANCE COLLECTED")
-		}
-		lines = append(lines, dexDate(r.EncounteredAtMS))
-		for _, u := range r.NewUnlocks() {
-			lines = append(lines, "UNLOCKED   "+clean(u.Name))
-		}
-		return lines
+		return m.encounterInformation()
 	case 2:
-		s := d.stats
-		p := s.Progress
-		filled := int(p.InLevel * 20 / 1000)
-		lines := []string{strings.ToUpper(clean(d.profile.Name)), "Created " + dexDate(d.profile.CreatedAtMS), "", fmt.Sprintf("LEVEL %d   %d XP", p.Level, p.Total), "[" + strings.Repeat("━", filled) + strings.Repeat("─", 20-filled) + "]", fmt.Sprintf("%d / 1000   %d XP to next level", p.InLevel, p.ToNext), "", fmt.Sprintf("%d ENCOUNTERS", s.Encounters), fmt.Sprintf("%d SPECIES   %d APPEARANCES", s.Species, s.Variants), fmt.Sprintf("%d SHINY COLLECTIONS   %d shiny encounters", s.ShinyCollections, s.ShinyEncounters), "", fmt.Sprintf("ELIGIBLE SPECIES %d / %d", s.Completion.Species, s.Completion.SpeciesTotal), fmt.Sprintf("ELIGIBLE APPEARANCES %d / %d", s.Completion.Variants, s.Completion.VariantsTotal), "", "GENERATION PROGRESS"}
-		for _, g := range s.Generations {
-			lines = append(lines, fmt.Sprintf("GEN %02d   %d / %d eligible   %d discovered", g.Generation, g.Eligible, g.EligibleTotal, g.Discovered))
-		}
-		if s.UnclassifiedSpecies > 0 {
-			lines = append(lines, fmt.Sprintf("%d retained discoveries outside current catalog", s.UnclassifiedSpecies))
-		}
-		if s.FirstEncounterMS != nil {
-			lines = append(lines, "", "First encounter "+dexDate(*s.FirstEncounterMS))
-		}
-		if s.LastEncounterMS != nil {
-			lines = append(lines, "Last encounter "+dexDate(*s.LastEncounterMS))
-		}
-		return lines
+		left, right := m.trainerInformationColumns()
+		return append(append(left, ""), right...)
 	default:
-		lines := []string{fmt.Sprintf("%d EARNED   %d LOCKED", len(d.achievements.Unlocked), len(d.achievements.Locked)), ""}
-		for _, g := range d.achievements.Unlocked {
-			lines = append(lines, "● "+clean(g.Name), "  "+clean(g.Description), "  Earned "+dexDate(g.EarnedAtMS), "")
-		}
-		for _, g := range d.achievements.Locked {
-			progress := "Unavailable in current inventory"
-			if g.HasTarget {
-				progress = fmt.Sprintf("%d / %d", g.Current, g.Target)
-			}
-			lines = append(lines, "◇ "+clean(g.Name), "  "+clean(g.Description), "  "+progress, "")
-		}
-		return lines
+		left, right := m.achievementInformationColumns()
+		return append(append(left, ""), right...)
 	}
+
 }
 func (m Model) activityWrapped() []string {
 	g := m.dexGeometry()
@@ -144,7 +107,20 @@ func (m Model) activityControls() []dexControl {
 	} else if m.section == 2 {
 		add(g.x+2, y, g.w-4, 15, "Choose / create trainer")
 	}
-	if m.activityMaxScroll() > 0 {
+	if m.section == 3 && g.wide {
+		for panel := 0; panel < 2; panel++ {
+			px := g.x + 2
+			if panel == 1 {
+				px = g.x + g.w/2
+			}
+			pw := g.w/2 - 3
+			add(px, g.y+g.h-6, 13, 40+panel, "Scroll")
+			if m.achievementMaxScroll(panel) > 0 {
+				add(px+pw-12, g.y+g.h-6, 5, 42+panel*2, "↑")
+				add(px+pw-7, g.y+g.h-6, 5, 43+panel*2, "↓")
+			}
+		}
+	} else if m.activityMaxScroll() > 0 {
 		if !(m.section == 1 && m.activity.historyMode && len(m.activity.data.history) > 0) {
 			add(g.x+2, g.y+g.h-6, min(13, g.w-14), 22, "Scroll")
 		}
@@ -221,14 +197,26 @@ func (m Model) paintActivity(c *canvas) {
 		c.box(g.x+2, bodyY, bodyW, bodyH, " "+map[int]string{1: "ENCOUNTER LOG", 2: "TRAINER CARD", 3: "ACHIEVEMENT JOURNAL"}[m.section]+" ", p.accent)
 	}
 	textX, textW := g.x+4, bodyW-4
+	if m.section == 3 && g.wide {
+		for row := bodyY + 1; row < bodyY+bodyH-1; row++ {
+			c.hits = append(c.hits, hit{g.x + 3, row, g.w/2 - 5, 40}, hit{g.x + g.w/2 + 1, row, g.w/2 - 4, 41})
+		}
+	}
 	if g.wide && m.section != 1 {
 		half := g.w/2 - 3
 		c.box(g.x+2, bodyY, half, bodyH, " "+map[int]string{2: "TRAINER CARD", 3: "EARNED BADGES"}[m.section]+" ", p.accent)
 		c.box(g.x+g.w/2, bodyY, g.w/2-2, bodyH, " "+map[int]string{2: "GENERATION PROGRESS", 3: "NEXT GOALS"}[m.section]+" ", p.accent)
 		left, _ := m.activityColumns()
 		rows := wrapActivityLines(left, half-4)
-		for i := 0; i < bodyH-2 && i+a.scroll < len(rows); i++ {
-			c.put(g.x+4, bodyY+1+i, rows[i+a.scroll], p.foreground)
+		leftScroll := a.scroll
+		if m.section == 3 {
+			leftScroll = min(a.panelScroll[0], m.achievementMaxScroll(0))
+		}
+		for i := 0; i < bodyH-2 && i+leftScroll < len(rows); i++ {
+			c.putANSI(g.x+4, bodyY+1+i, rows[i+leftScroll])
+			if m.section == 3 {
+				c.hits = append(c.hits, hit{g.x + 4, bodyY + 1 + i, half - 4, 40})
+			}
 		}
 		textX = g.x + g.w/2 + 2
 		textW = g.w/2 - 6
@@ -259,9 +247,16 @@ func (m Model) paintActivity(c *canvas) {
 	if m.section == 1 && a.historyMode && !a.loading && a.error == "" {
 		historyTargets = m.activityHistoryTargets()
 	}
+	scroll := a.scroll
+	if m.section == 3 && g.wide {
+		scroll = min(a.panelScroll[1], m.achievementMaxScroll(1))
+	}
 	if textW > 0 {
-		for i := 0; i < bodyH-2 && i+a.scroll < len(lines); i++ {
-			c.put(textX, bodyY+1+i, ansi.Truncate(lines[i+a.scroll], textW, "…"), p.foreground)
+		for i := 0; i < bodyH-2 && i+scroll < len(lines); i++ {
+			c.putANSI(textX, bodyY+1+i, ansi.Truncate(lines[i+scroll], textW, "…"))
+			if m.section == 3 && g.wide {
+				c.hits = append(c.hits, hit{textX, bodyY + 1 + i, textW, 41})
+			}
 			if m.section == 1 && a.historyMode && !a.loading && a.error == "" {
 				targets := historyTargets
 				if i+a.scroll < len(targets) && targets[i+a.scroll] >= 0 {
@@ -314,7 +309,7 @@ func (m Model) activityHistoryTargets() []int {
 	for i, line := range m.activityLines() {
 		owner := -1
 		if i >= 2 && len(m.activity.data.history) > 0 {
-			owner = (i - 2) / 3
+			owner = (i - 2) / 4
 		}
 		for range strings.Split(ansi.Wrap(line, max(1, w), ""), "\n") {
 			out = append(out, owner)
@@ -331,16 +326,10 @@ func wrapActivityLines(lines []string, w int) []string {
 	return out
 }
 func (m Model) activityColumns() (left, right []string) {
-	lines := m.activityLines()
 	if m.section == 2 {
-		return lines[:14], lines[15:]
+		return m.trainerInformationColumns()
 	}
-	split := 2 + len(m.activity.data.achievements.Unlocked)*4
-	left = append(left, lines[:split]...)
-	if len(m.activity.data.achievements.Unlocked) == 0 {
-		left = append(left, "Your first badge is waiting.", "Choose Encounter to start.")
-	}
-	return left, lines[split:]
+	return m.achievementInformationColumns()
 }
 func (m Model) paintActivityArt(c *canvas, x, y, w, h int) {
 	a := m.activity

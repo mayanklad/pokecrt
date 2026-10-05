@@ -449,7 +449,7 @@ func TestDeviceTabsSeparateFactsAndPreserveExactVariant(t *testing.T) {
 		}
 	}
 	records := m.View().Content
-	if !strings.Contains(records, "SPECIES") || !strings.Contains(records, "First:") {
+	if !strings.Contains(records, "SPECIES") || !strings.Contains(records, "First discovered") {
 		t.Fatal("records missing")
 	}
 	m.activateDex(21)

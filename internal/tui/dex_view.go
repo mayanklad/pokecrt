@@ -14,6 +14,7 @@ type dexLine struct {
 	text   string
 	art    bool
 	target int
+	nodes  []dexControl
 }
 type dexControl struct {
 	x, y, w, id int
@@ -25,8 +26,8 @@ type dexLayout struct {
 }
 
 func (m Model) dexGeometry() dexLayout {
-	cw, ch := max(1, min(m.width, 240)), max(1, min(m.height, 100))
-	w, h := min(cw, 120), min(ch, 40)
+	cw, ch := max(1, m.width), max(1, m.height)
+	w, h := cw, ch
 	g := dexLayout{x: (cw - w) / 2, y: (ch - h) / 2, w: w, h: h, wide: m.dexWide(), short: h < 20}
 	g.listX = g.x + 2
 	g.listW = w - 4
@@ -67,10 +68,13 @@ func (m Model) dexArtRect() (x, y, w, h int) {
 		height := g.bodyH
 		if !g.short {
 			height = max(3, height-2)
+			if g.bodyH >= 24 {
+				height = min(height, max(12, len(m.dex.artRows)+2))
+			}
 		}
 		return g.entryX, g.bodyY, g.entryW, height
 	}
-	return g.entryX + 2, g.bodyY + 4, min(46, g.entryW-28), max(3, min(max(12, len(m.dex.artRows))+2, g.bodyH-7))
+	return g.entryX + 2, g.bodyY + 4, max(24, (g.entryW-6)/2), max(3, g.bodyH-7)
 }
 func (m Model) dexMaxScroll() int {
 	if m.dex.tab == 0 {
@@ -177,6 +181,9 @@ func (m Model) dexControls() []dexControl {
 			labels = []string{"Back", "Theme", "Refresh", "Quit"}
 		}
 	}
+	if m.dex.familyOrigin > 0 {
+		labels[0] = "Family"
+	}
 	ids := []int{6, 7, 5, 8}
 	xx := g.x + 2
 	for i, label := range labels {
@@ -230,7 +237,7 @@ func (m Model) dexFocusOrder() []int {
 	if g.wide || m.dex.detail {
 		order = append(order, m.dexContentFocus())
 		if m.dex.tab == 2 {
-			for _, n := range m.dex.entry.Evolution {
+			for _, n := range orderedEvolution(m.dex.entry.Evolution) {
 				order = append(order, 2000+n.Number)
 			}
 		}
@@ -258,94 +265,13 @@ func (m Model) dexLines() []dexLine {
 		add("UNDISCOVERED")
 		add("An encounter can reveal this entry.")
 	} else {
-		e := m.dex.entry
 		switch m.dex.tab {
 		case 1:
-			if len(m.dex.options) == 0 {
-				add("No observed appearances")
-			}
-			for i, o := range m.dex.options {
-				status := "LOCKED"
-				if o.Collected {
-					status = "COLLECTED"
-				}
-				out = append(out, dexLine{text: status + "   " + clean(o.Label), target: 3000 + i})
-			}
-			add("")
-			add(fmt.Sprintf("Undiscovered forms: %d", e.UnknownForms))
-			for _, f := range e.Forms {
-				if f.UnknownGenders > 0 {
-					add(fmt.Sprintf("%s   %d undiscovered genders", clean(f.Name), f.UnknownGenders))
-				}
-			}
+			return m.variantLines()
 		case 2:
-			add("Choose a node to inspect.")
-			add("")
-			for _, n := range e.Evolution {
-				label := fmt.Sprintf("#%03d %s", n.Number, clean(n.Name))
-				if len(n.Children) > 0 {
-					children := []string{}
-					for _, child := range n.Children {
-						children = append(children, fmt.Sprintf("#%03d", child))
-					}
-					label += " → " + strings.Join(children, ", ")
-				}
-				out = append(out, dexLine{text: label, target: 2000 + n.Number})
-			}
-			add("")
-			add("Unseen nodes stay anonymous.")
+			return m.evolutionLines()
 		case 3:
-			add(fmt.Sprintf("SPECIES   %d encounters", e.Discovery.Count))
-			add("First: " + dexDate(e.Discovery.FirstMS))
-			add("Last:  " + dexDate(e.Discovery.LastMS))
-			add("")
-			if e.SelectedName != "" {
-				add(clean(e.SelectedName))
-				add(fmt.Sprintf("VARIANT   %d encounters", e.Selected.Count))
-				add("First: " + dexDate(e.Selected.FirstMS))
-				add("Last:  " + dexDate(e.Selected.LastMS))
-				add("")
-			}
-			add(fmt.Sprintf("GEN %02d   STAGE %d   %s", e.Generation, e.Stage, strings.ToUpper(e.Color)))
-			flags := []string{}
-			if e.Baby {
-				flags = append(flags, "Baby")
-			}
-			if e.Legendary {
-				flags = append(flags, "Legendary")
-			}
-			if e.Mythical {
-				flags = append(flags, "Mythical")
-			}
-			if len(flags) > 0 {
-				add(strings.Join(flags, "   "))
-			}
-			add("")
-			add("OBSERVED FORMS")
-			for _, f := range e.Forms {
-				add(fmt.Sprintf("%s   %d encounters", clean(f.Name), f.Count))
-				add(strings.Join(f.Types, " / "))
-				for _, gender := range f.Genders {
-					regular, shiny := "Locked", "Locked"
-					if gender.Regular {
-						regular = "Collected"
-					}
-					if gender.Shiny {
-						shiny = "Collected"
-					}
-					add(gender.Name + "   Regular " + regular + "   Shiny " + shiny)
-				}
-				add(fmt.Sprintf("Undiscovered genders: %d", f.UnknownGenders))
-			}
-			add(fmt.Sprintf("Undiscovered forms: %d", e.UnknownForms))
-			add("")
-			s := m.dex.snapshot.summary
-			add("YOUR COLLECTION")
-			add(fmt.Sprintf("Species %d/%d   Variants %d/%d", s.Completion.Species, s.Completion.SpeciesTotal, s.Completion.Variants, s.Completion.VariantsTotal))
-			add(fmt.Sprintf("Encounters %d   Shiny collections %d", s.Encounters, s.ShinyCollections))
-			for _, gen := range s.Generations {
-				add(fmt.Sprintf("Gen %d   %d/%d", gen.Generation, gen.Seen, gen.Total))
-			}
+			return m.recordLines()
 		}
 	}
 	width := max(1, m.dexDetailWidth())
@@ -361,7 +287,7 @@ func (m Model) dexLines() []dexLine {
 	}
 	return wrapped
 }
-func dexDate(ms int64) string { return time.UnixMilli(ms).UTC().Format(time.RFC3339Nano) }
+func dexDate(ms int64) string { return time.UnixMilli(ms).Local().Format("02 Jan 2006 15:04") }
 func (m Model) paintDex(c *canvas) {
 	if m.screen == dexSearchScreen {
 		m.paintCreate(c)
@@ -592,26 +518,13 @@ func (m Model) paintDexOverview(c *canvas, g dexLayout) {
 		c.hits = append(c.hits, hit{vx, row, vw, 10})
 	}
 	if g.wide {
-		label, types := m.dexOverviewLabels()
 		fx := x + w + 2
 		fw := g.entryX + g.entryW - fx - 2
-		c.wrap(fx, y+3, fw, 2, label, p.accent)
-		c.wrap(fx, y+6, fw, 2, types, p.muted)
-		if m.dex.entry.Seen {
-			c.put(fx, y+9, dexEncounterLabel(m.dex.entry.Discovery.Count), p.muted)
-		}
-		notice := m.dex.entry.Notice
-		if m.dex.entryError != "" {
-			notice = m.dex.entryError
-		}
-		if notice == "" {
-			notice = "Collected appearance   exact artwork"
-		}
-		if !m.dex.entry.Seen {
-			notice = "No identity or artwork is revealed until discovered."
-		}
-		c.wrap(g.entryX+2, y+h+1, g.entryW-4, max(0, g.bodyY+g.bodyH-y-h-2), notice, p.muted)
+		m.paintEntryFacts(c, fx, y, fw, h)
+	} else if g.bodyH >= 24 {
+		m.paintEntryFacts(c, x, y+h+1, w, g.bodyY+g.bodyH-y-h-1)
 	}
+
 }
 func (m Model) paintDexTab(c *canvas, g dexLayout) {
 	p := m.palette()
@@ -627,7 +540,15 @@ func (m Model) paintDexTab(c *canvas, g dexLayout) {
 	for i := offset; i < len(lines) && i < offset+h; i++ {
 		line := lines[i]
 		row := y + i - offset
-		if line.target > 0 {
+		if line.art {
+			c.putANSI(x, row, ansi.Truncate(line.text, w, "…"))
+			if len(line.nodes) == 0 {
+				c.hits = append(c.hits, hit{x, row, w, m.dexContentFocus()})
+			}
+			for _, node := range line.nodes {
+				c.hits = append(c.hits, hit{x + node.x, row, node.w, node.id})
+			}
+		} else if line.target > 0 {
 			copy := m
 			if line.target >= 3000 {
 				copy.focus = -1
