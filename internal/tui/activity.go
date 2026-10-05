@@ -427,6 +427,26 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 		}
 		return nil, true
 	case tea.MouseWheelMsg:
+		if !m.dexWide() {
+			delta := 1
+			if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
+				delta = -1
+			}
+			artView := m.section == 1 && !m.activity.historyMode && len(m.activity.art) > 0 && !m.activity.resultDetails && m.activity.error == ""
+			if artView {
+				if msg.Button == tea.MouseWheelLeft || msg.Button == tea.MouseWheelRight {
+					m.activity.artPan = max(0, min(m.activityMaxPan(), m.activity.artPan+4*delta))
+				} else {
+					m.activity.artScroll = max(0, min(max(0, len(m.activity.art)-m.activityBodyHeight()+2), m.activity.artScroll+delta))
+				}
+			} else if m.section == 1 && m.activity.historyMode && len(m.activity.data.history) > 0 {
+				m.activity.selected = max(0, min(len(m.activity.data.history)-1, m.activity.selected+delta))
+				m.revealHistorySelection()
+			} else {
+				m.activity.scroll = max(0, min(m.activityMaxScroll(), m.activity.scroll+delta))
+			}
+			return nil, true
+		}
 		delta := 1
 		if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
 			delta = -1

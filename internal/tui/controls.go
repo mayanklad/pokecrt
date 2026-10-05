@@ -50,6 +50,9 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 	}
 	c.keycap(x, y, w, "", border)
 	c.controlText(x+1, y+1, w-2, label, style, m.focus == id, selected)
+	if !m.dexWide() && m.noColor && m.focus == id {
+		c.put(x, y+1, "▶", style)
+	}
 	for row := y; row < y+3; row++ {
 		c.hits = append(c.hits, hit{x, row, w, id})
 	}

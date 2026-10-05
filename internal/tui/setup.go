@@ -220,6 +220,9 @@ func (m *Model) handleSetup(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m *Model) activateSetup(id int) tea.Cmd {
+	if id == 90 && !m.dexWide() {
+		return m.openCompactMessage()
+	}
 	if m.screen == createScreen && ((id >= 0 && id <= 7) || (id >= 100 && id < 100+len(m.keyboardLetters()))) {
 		m.focus = id
 	}
@@ -442,6 +445,10 @@ func (m Model) clickedNameCursor(column, fieldWidth int) int {
 // navigateSetup follows the visible rows; the list and letter grid have exits.
 func (m *Model) navigateSetup(direction string) {
 	if m.screen == profilesScreen {
+		if m.focus == 90 {
+			m.focus = 0
+			return
+		}
 		if m.focus == 0 {
 			switch direction {
 			case "up":
@@ -521,7 +528,11 @@ func (m *Model) navigateSetup(direction string) {
 			if i%10 < 9 && i+1 < n {
 				m.focus++
 			} else if i < 10 {
-				// The top-right keyboard edge leads to the visible header Quit.
+				// The top-right keyboard edge provides a direct route to Quit.
+				if !m.dexWide() {
+					m.focus = 7
+					return
+				}
 				targets := m.createFocusTargets()
 				for _, current := range targets {
 					if current.id != m.focus {

@@ -50,6 +50,8 @@ type Model struct {
 	width, height                                   int
 	section, focus                                  int
 	settingsReturnFocus                             int
+	compactMessage                                  string
+	compactMessageScroll, compactMessageReturnFocus int
 	settings                                        bool
 	appearance                                      Appearance
 	noColor, terminalDark, backgroundKnown, focused bool
@@ -110,6 +112,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	if cmd, handled := m.handleCompactMessage(msg); handled {
+		return m, cmd
+	}
 	if cmd, handled := m.handleActivity(msg); handled {
 		return m, cmd
 	}
@@ -122,6 +127,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
+		m.reconcileLayout()
 		if m.screen == dexScreen && !m.dexWide() && (m.focus == 10 || m.focus == 15 || m.focus >= 2000 || m.settings && (m.settingsReturnFocus == 10 || m.settingsReturnFocus == 15 || m.settingsReturnFocus >= 2000)) {
 			m.dex.detail = true
 		}
@@ -316,6 +322,9 @@ func (m *Model) moveFocus(delta int) {
 			order = []int{0, 2, 6, 7}
 		}
 	}
+	if !m.dexWide() && (m.settings || m.screen == createScreen || m.screen == dexSearchScreen || m.screen == profilesScreen) {
+		order = append(order, 90)
+	}
 	for i, id := range order {
 		if id == m.focus {
 			m.focus = order[(i+delta+len(order))%len(order)]
@@ -335,6 +344,9 @@ func (m *Model) openSettings() {
 	}
 }
 func (m *Model) activate(id int) tea.Cmd {
+	if id == 90 && !m.dexWide() {
+		return m.openCompactMessage()
+	}
 	if m.settings {
 		switch {
 		case id >= 0 && id < 4:

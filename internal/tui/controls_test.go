@@ -95,13 +95,13 @@ func TestActionFootersPrecedeHintStrip(t *testing.T) {
 		m.width, m.height = size[0], size[1]
 		g := m.dexGeometry()
 		hintY := g.y + g.h - 2
-		if g.h >= 24 {
+		if m.dexWide() && g.h >= 24 {
 			hintY = g.y + g.h - 4
 		}
 		for _, control := range m.dexControls() {
 			if control.id == 5 || control.id == 6 || control.id == 7 || control.id == 8 {
 				last := control.y
-				if !g.short {
+				if m.dexWide() && !g.short {
 					last++
 				}
 				if last >= hintY {
@@ -113,7 +113,7 @@ func TestActionFootersPrecedeHintStrip(t *testing.T) {
 		for _, control := range m.activityControls() {
 			if control.id >= 11 && control.id <= 14 {
 				last := control.y
-				if !g.short {
+				if m.dexWide() && !g.short {
 					last++
 				}
 				if last >= hintY {

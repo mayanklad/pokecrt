@@ -20,7 +20,7 @@ func (m Model) informationHeading(title string, width int) string {
 	return styled(title, m.palette().gold) + styled("  "+strings.Repeat("─", max(0, width-ansi.StringWidth(title)-2)), m.hintStyle())
 }
 func (m Model) informationFact(label, value string, width int) string {
-	if width < 30 {
+	if width < 30 || !m.dexWide() {
 		return styled(label+": ", m.hintStyle()) + value
 	}
 	return styled(fmt.Sprintf("%-*s", min(18, max(10, width/3)), label), m.hintStyle()) + value
@@ -53,6 +53,9 @@ func (m Model) evolutionLines() []dexLine {
 	w := m.dexDetailWidth()
 	minCardWidth := 44
 	for _, art := range m.dex.family {
+		if !m.dexWide() {
+			art = trimSpriteMargins(art)
+		}
 		for _, row := range strings.Split(art, "\n") {
 			minCardWidth = max(minCardWidth, ansi.StringWidth(row)+4)
 		}
@@ -65,6 +68,9 @@ func (m Model) evolutionLines() []dexLine {
 	}
 	artHeight := 12
 	for _, art := range m.dex.family {
+		if !m.dexWide() {
+			art = trimSpriteMargins(art)
+		}
 		artHeight = max(artHeight, len(strings.Split(strings.TrimSuffix(art, "\n"), "\n")))
 	}
 	out := []dexLine{{text: m.informationHeading("EVOLUTION FAMILY", w), art: true}, {text: "Collected appearances are shown. Undiscovered identities stay hidden."}, {}}
@@ -84,7 +90,11 @@ func (m Model) evolutionLines() []dexLine {
 			inner := cardW - 2
 			contentW := inner - 2
 			card := []string{styled("╭"+strings.Repeat("─", inner)+"╮", border), styled("│ ", border) + styled(ansi.Truncate(label, contentW, "…"), m.palette().gold)}
-			art := strings.Split(strings.TrimSuffix(m.dex.family[node.Number], "\n"), "\n")
+			familyArt := m.dex.family[node.Number]
+			if !m.dexWide() {
+				familyArt = trimSpriteMargins(familyArt)
+			}
+			art := strings.Split(strings.TrimSuffix(familyArt, "\n"), "\n")
 			if m.dex.family[node.Number] == "" {
 				art = []string{"", "?", "", "Appearance not collected", ""}
 			}
@@ -104,6 +114,9 @@ func (m Model) evolutionLines() []dexLine {
 					content = strings.Repeat(" ", max(0, (contentW-rowWidth)/2)) + ansi.Cut(art[index], 0, contentW)
 				}
 				card = append(card, styled("│ ", border)+content)
+			}
+			if !m.dexWide() && artW > contentW {
+				card = append(card, styled("│ Full art: Enter or button", m.hintStyle()))
 			}
 			card = append(card, styled("│", border))
 			relationshipRows := strings.Split(ansi.Wrap(evolutionCaption(node), contentW, ""), "\n")

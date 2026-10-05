@@ -26,6 +26,9 @@ type dexLayout struct {
 }
 
 func (m Model) dexGeometry() dexLayout {
+	if !m.dexWide() {
+		return m.compactDexGeometry()
+	}
 	cw, ch := max(1, m.width), max(1, m.height)
 	w, h := cw, ch
 	g := dexLayout{x: (cw - w) / 2, y: (ch - h) / 2, w: w, h: h, wide: m.dexWide(), short: h < 20}
@@ -65,18 +68,14 @@ func (m Model) dexBodyHeight() int  { return max(1, m.dexGeometry().bodyH-2) }
 func (m Model) dexArtRect() (x, y, w, h int) {
 	g := m.dexGeometry()
 	if !g.wide {
-		height := g.bodyH
-		if !g.short {
-			height = max(3, height-2)
-			if g.bodyH >= 24 {
-				height = min(height, max(12, len(m.dex.artRows)+2))
-			}
-		}
-		return g.entryX, g.bodyY, g.entryW, height
+		return g.entryX, g.bodyY, g.entryW, g.bodyH
 	}
 	return g.entryX + 2, g.bodyY + 4, max(24, (g.entryW-6)/2), max(3, g.bodyH-7)
 }
 func (m Model) dexMaxScroll() int {
+	if !m.dexWide() && m.dex.tab == 0 && m.dex.overviewFacts {
+		return max(0, len(m.compactEntryFacts())-m.dexBodyHeight())
+	}
 	if m.dex.tab == 0 {
 		_, _, _, h := m.dexArtRect()
 		return max(0, len(m.dex.artRows)-max(1, h-2))
@@ -84,13 +83,16 @@ func (m Model) dexMaxScroll() int {
 	return max(0, len(m.dexLines())-m.dexBodyHeight())
 }
 func (m Model) dexMaxHorizontal() int {
-	if m.dex.tab != 0 {
+	if m.dex.tab != 0 || !m.dexWide() && m.dex.overviewFacts {
 		return 0
 	}
 	_, _, w, _ := m.dexArtRect()
 	return max(0, m.dex.artWidth-max(1, w-2))
 }
 func (m Model) dexControls() []dexControl {
+	if !m.dexWide() {
+		return m.compactDexControls()
+	}
 	g := m.dexGeometry()
 	cs := []dexControl{}
 	add := func(x, y, w, id int, label string) {
@@ -231,7 +233,7 @@ func (m Model) dexTargets() []dexControl {
 func (m Model) dexFocusOrder() []int {
 	g := m.dexGeometry()
 	order := []int{}
-	if g.wide || !m.dex.detail {
+	if (g.wide || !m.dex.detail) && (g.wide || len(m.dex.rows) > 0) {
 		order = append(order, 0)
 	}
 	if g.wide || m.dex.detail {
@@ -291,6 +293,10 @@ func dexDate(ms int64) string { return time.UnixMilli(ms).Local().Format("02 Jan
 func (m Model) paintDex(c *canvas) {
 	if m.screen == dexSearchScreen {
 		m.paintCreate(c)
+		return
+	}
+	if !m.dexWide() {
+		m.paintCompactDex(c)
 		return
 	}
 	g := m.dexGeometry()
@@ -412,7 +418,11 @@ func (m Model) dexEntryTitle() string {
 }
 func (m Model) paintDexIndex(c *canvas, g dexLayout) {
 	p := m.palette()
-	c.box(g.listX, g.bodyY, g.listW, g.bodyH, "NATIONAL INDEX", p.accent)
+	title := "NATIONAL INDEX"
+	if !g.wide && m.focus == 0 {
+		title = "▶ " + title
+	}
+	c.box(g.listX, g.bodyY, g.listW, g.bodyH, title, p.accent)
 	x, y, w, h := g.listX+2, g.bodyY+1, g.listW-4, g.bodyH-2
 	if m.dex.loading {
 		c.wrap(x, y, w, h, "Reading collection…", p.muted)

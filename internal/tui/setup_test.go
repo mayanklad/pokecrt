@@ -466,7 +466,11 @@ func TestHelpTracksFocusAndMouseActions(t *testing.T) {
 		}
 		m.screen = profilesScreen
 		m.focus = 0
-		if !strings.Contains(m.View().Content, "Choose / leave") {
+		expected := "Choose / leave"
+		if !m.dexWide() {
+			expected = "Enter Use"
+		}
+		if !strings.Contains(m.View().Content, expected) {
 			t.Fatal("list help missing")
 		}
 		m.activateSetup(1) // New trainer, returns to form.
@@ -573,7 +577,7 @@ func TestSearchFooterQuitPreservesCursorEditing(t *testing.T) {
 		if m.focus != 0 {
 			t.Fatal("Up jumps to a footer button")
 		}
-		if size[1] >= 24 {
+		if size[1] >= 24 || !m.dexWide() {
 			m.focus = 6
 		} else {
 			m.focus = 2

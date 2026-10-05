@@ -689,3 +689,38 @@ D25 accepted-artwork follow-up: removed the Verdant Town label in both map layou
 
 
 D25 resize follow-up: switch to a four-landmark compact map before detailed buildings fall below their minimum width or height. Short viewports show condensed labels, including Home and Pond. Added landmark-persistence regression cases across layout thresholds and one-row panels. Large artwork remains unchanged. Go execution pending.
+
+### D26 — compact-mode audit fixes (ddc0d811 baseline)
+
+Compact pages now reserve separate content, tab/action and hint rows across
+40×12 through the wide-layout boundary. This resolves overlapping captions,
+card content, footer frames and mouse targets without changing wide rendering.
+
+- Pokédex: visible evolution exits, resize/overlay return-focus reconciliation,
+  complete scrollable Art/Facts views, transparent-margin trimming in compact
+  family cards, Full art opening the displayed collected appearance with Family
+  return, selected card borders preserved, and empty-search recovery controls.
+- Encounters/history: active Art/Details controls and wheel scrolling, explicit
+  return labels, wrapped errors, and usable compact footer labels.
+- Trainer, achievements and dialogs: reconciled scroll budgets, monotonic trainer
+  list capacity, full Help/Status access for lengthy explanations/errors,
+  context-specific hints, and visible NO_COLOR focus for tightly fitted buttons.
+- Expanded compact filters expose one Search target. Family artwork rejects a
+  stale card selection from another species. Accepted Home artwork is retained.
+
+Validation with Go 1.27.1: go test ./..., go vet ./..., go build, and
+race-enabled internal/tui tests pass. Added regressions for content/control
+separation, filter targets, facts, resize and overlay focus, evolution exits,
+empty results, exact collected artwork, stale family selection, trainer list
+capacity, wheel routing, full errors and NO_COLOR focus.
+264 deterministic wide renders match the baseline byte for byte, covering
+100×24, 120×40 and 180×60 across four appearance modes and NO_COLOR.
+98 running-terminal scenarios cover compact sizes, resize, filters, tabs,
+forms, profiles, encounters/history, Help, empty/locked states and undersized
+windows. Exit/terminal restoration checks pass; read-only fixture browsing
+leaves the trainer database unchanged. Encounter writes use disposable fixtures.
+These checks do not claim exhaustive platform or async-event coverage.
+
+Delivery: changed-file ZIP against ddc0d811; no deletions, binary/assets,
+dependency/schema changes or GitHub writes. Apply at repository root and run
+the normal test/vet/build commands before committing.

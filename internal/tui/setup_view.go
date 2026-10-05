@@ -15,6 +15,10 @@ func (m Model) paintSetup(c *canvas) {
 	}
 }
 func (m Model) paintCreate(c *canvas) {
+	if !m.dexWide() {
+		m.paintCompactCreate(c)
+		return
+	}
 	p := m.palette()
 	w, h := min(c.width, 88), min(c.height, 28)
 	x, y := (c.width-w)/2, (c.height-h)/2
@@ -140,10 +144,15 @@ func (m Model) paintProfiles(c *canvas) {
 	} else if m.notice != "" {
 		label = m.notice
 	}
-	c.wrap(x+2, y+1, w-4, 2, label, p.muted)
+	if m.dexWide() {
+		c.wrap(x+2, y+1, w-4, 2, label, p.muted)
+	} else {
+		c.put(x+2, y+1, ansi.Truncate(label, w-4, "…"), p.muted)
+		c.button(x+w-10, y+2, 8, 90, "Help", m)
+	}
 	count := len(m.snapshot.Entries)
 	reserve := 10
-	if h >= 24 {
+	if h >= 24 && m.dexWide() {
 		reserve = 19
 	}
 	capacity := max(1, h-reserve)
@@ -181,7 +190,7 @@ func (m Model) paintProfiles(c *canvas) {
 		use = "Working…"
 	}
 	half := (w - 4) / 2
-	if h >= 24 {
+	if h >= 24 && m.dexWide() {
 		ids := [3][2]int{{1, 2}, {3, 4}, {6, 5}}
 		labels := [3][2]string{{"New trainer", use}, {"Back / Cancel", "Refresh"}, {"Appearance", "Quit"}}
 		for row := 0; row < 3; row++ {
@@ -197,10 +206,17 @@ func (m Model) paintProfiles(c *canvas) {
 		c.button(x+2, y+h-3, half, 6, "Appearance", m)
 		c.button(x+2+half, y+h-3, half, 5, "Quit", m)
 	}
-	if h >= 24 {
+	if h >= 24 && m.dexWide() {
 		c.navigationHints(x+2, y+h-4, w-4, m, false, "Select")
 	} else {
-		c.put(x+2, y+h-2, ansi.Truncate(m.profilesHelp(), w-4, "…"), p.muted)
+		hint := m.profilesHelp()
+		if !m.dexWide() {
+			hint = "↑↓ Choose  Enter Use  ←→ Buttons"
+			if m.focus != 0 {
+				hint = "↑↓ Column  ←→ Row  Enter Use"
+			}
+		}
+		c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
 	}
 }
 

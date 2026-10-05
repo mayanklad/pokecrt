@@ -109,6 +109,9 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		c.put(x, y, "❨", style)
 		c.put(x+w-1, y, "❩", style)
 		c.controlText(x+1, y, w-2, label, style, m.focus == id, selected)
+		if !m.dexWide() && m.noColor && m.focus == id {
+			c.put(x, y, "▶", style)
+		}
 		c.hits = append(c.hits, hit{x, y, w, id})
 		return
 	}
@@ -202,6 +205,8 @@ func (m Model) View() tea.View {
 		}
 		m.focus = quitID
 		c.button(0, h-1, min(w, 12), quitID, "Quit", m)
+	} else if m.compactMessage != "" {
+		m.paintCompactMessage(c)
 	} else if m.settings {
 		m.paintSettings(c)
 	} else if m.screen == activityScreen {
@@ -388,6 +393,10 @@ func (m Model) dialogue() string {
 }
 
 func (m Model) paintSettings(c *canvas) {
+	if !m.dexWide() {
+		m.paintCompactSettings(c)
+		return
+	}
 	w, h := min(c.width, 88), min(c.height, 28)
 	x, y := (c.width-w)/2, (c.height-h)/2
 	p := m.palette()

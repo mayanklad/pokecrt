@@ -45,6 +45,7 @@ type dexState struct {
 	selected, status, generationFilter int
 	query                              string
 	detail                             bool
+	overviewFacts                      bool
 	tab                                int
 	filters                            bool
 	entry                              trainer.DexEntry
@@ -56,6 +57,7 @@ type dexState struct {
 	artWidth                           int
 	family                             map[int]string
 	familyOrigin, familyNode           int
+	cardNode                           int
 	familySelection                    catalog.Selection
 	scroll, horizontal                 int
 	searchBefore                       []rune
@@ -162,6 +164,9 @@ func (m *Model) filterDex() tea.Cmd {
 	}
 	m.dex.detail = false
 	m.dex.filters = false
+	if !m.dexWide() && len(m.dex.rows) == 0 {
+		m.focus = 1
+	}
 	if len(m.dex.rows) > 0 && m.dex.rows[m.dex.selected].Number == number {
 		return m.loadDexEntry(m.dex.selection)
 	}
@@ -178,6 +183,7 @@ func (m *Model) loadDexEntry(q catalog.Selection) tea.Cmd {
 	m.dex.options = nil
 	m.dex.entryError = ""
 	m.dex.scroll = 0
+	m.dex.overviewFacts = false
 	m.dex.horizontal = 0
 	m.dex.selection = q
 	if len(m.dex.rows) == 0 || m.dex.snapshot.data == nil {
@@ -276,6 +282,9 @@ func (m *Model) moveDexFocus(delta int) {
 }
 func (m Model) dexWide() bool { return m.width >= 100 && m.height >= 24 }
 func (m *Model) activateDex(id int) tea.Cmd {
+	if id == 90 && !m.dexWide() {
+		return m.openCompactMessage()
+	}
 	if m.screen == dexSearchScreen {
 		if id >= 100 && id < 100+len(m.keyboardLetters()) {
 			m.focus = id
@@ -394,6 +403,12 @@ func (m *Model) activateDex(id int) tea.Cmd {
 		m.setDexTab((m.dex.tab + 1) % 4)
 		m.focus = m.dexContentFocus()
 		m.focus = 24
+	case 26:
+		m.dex.overviewFacts = !m.dex.overviewFacts
+		m.dex.scroll, m.dex.horizontal = 0, 0
+		m.focus = 10
+	case 27:
+		return m.openFamilyArtwork()
 	case 25:
 		m.dex.filters = !m.dex.filters
 		m.focus = 1
@@ -508,6 +523,14 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 		return nil, true
 	case tea.KeyPressMsg:
 		k := msg.String()
+		if !m.dexWide() && m.dex.tab == 2 && (k == "pgup" || k == "pgdown") && m.focus >= 2000 && m.focus < 3000 {
+			delta := m.dexBodyHeight()
+			if k == "pgup" {
+				delta = -delta
+			}
+			m.dex.scroll = max(0, min(m.dexMaxScroll(), m.dex.scroll+delta))
+			return nil, true
+		}
 		if m.dex.tab == 2 && (k == "up" || k == "down" || k == "left" || k == "right" || k == "j" || k == "k") && (m.focus == 10 || m.focus >= 2000 && m.focus < 3000) {
 			m.navigateEvolution(k)
 			return nil, true
@@ -649,7 +672,7 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			}
 			m.navigateDexControl(direction)
 		case "left", "right":
-			if m.focus == 10 && m.dex.tab == 0 {
+			if m.focus == 10 && m.dex.tab == 0 && (m.dexWide() || !m.dex.overviewFacts) {
 				delta := 5
 				if k == "left" {
 					delta = -5
@@ -706,13 +729,18 @@ func (m *Model) revealDexFocus() {
 	if m.focus < 2000 || m.focus >= 3000 {
 		return
 	}
+	m.dex.cardNode = m.focus
 	for i, line := range m.dexLines() {
 		matches := line.target == m.focus
 		for _, node := range line.nodes {
 			matches = matches || node.id == m.focus
 		}
 		if matches {
-			m.dex.scroll = max(0, min(i+1, m.dexMaxScroll()))
+			offset := i + 1
+			if !m.dexWide() {
+				offset = i
+			}
+			m.dex.scroll = max(0, min(offset, m.dexMaxScroll()))
 			break
 		}
 	}
@@ -721,14 +749,18 @@ func (m *Model) revealDexOption() {
 	for row, line := range m.dexLines() {
 		for _, node := range line.nodes {
 			if node.id == 3000+m.dex.optionIndex {
-				m.dex.scroll = min(max(0, row+1), m.dexMaxScroll())
+				offset := row + 1
+				if !m.dexWide() {
+					offset = row
+				}
+				m.dex.scroll = min(max(0, offset), m.dexMaxScroll())
 				return
 			}
 		}
 	}
 }
 func (m Model) dexTabFocus() int {
-	if min(m.height, 40) < 20 {
+	if !m.dexWide() && m.height < 24 {
 		return 24
 	}
 	return 20 + m.dex.tab
@@ -743,7 +775,10 @@ func (m *Model) ensureDexFocus() {
 }
 func (m *Model) navigateDexControl(direction string) {
 	if m.focus >= 20 && m.focus <= 23 && direction == "up" {
-		if !m.dexWide() && m.focus >= 22 {
+		if !m.dexWide() && m.height < 24 {
+			m.focus = m.dexContentFocus()
+			m.enterEvolutionFocus()
+		} else if !m.dexWide() && m.focus >= 22 {
 			m.focus -= 2
 		} else {
 			m.focus = m.dexContentFocus()
@@ -791,6 +826,17 @@ func (m *Model) navigateEvolution(key string) {
 		}
 	}
 	next := directionalTarget(targets, m.focus, key)
+	if next == m.focus && !m.dexWide() {
+		switch key {
+		case "left":
+			m.focus = 4
+		case "right", "down":
+			m.focus = m.dexTabFocus()
+		case "up":
+			m.focus = 1
+		}
+		return
+	}
 	if next == m.focus {
 		switch key {
 		case "left":

@@ -7,6 +7,9 @@ import (
 )
 
 func (m Model) activityBodyHeight() int {
+	if !m.dexWide() {
+		return max(3, m.height-4-m.compactActivityBodyY())
+	}
 	h := m.dexGeometry().h
 	if h < 18 {
 		return max(4, h-8)
@@ -60,6 +63,9 @@ func (m Model) activityLines() []string {
 func (m Model) activityWrapped() []string {
 	g := m.dexGeometry()
 	w := g.w - 8
+	if !g.wide && m.activity.error != "" {
+		return wrapActivityLines([]string{m.activity.error}, w)
+	}
 	if g.wide && m.section != 1 {
 		_, right := m.activityColumns()
 		return wrapActivityLines(right, g.w/2-6)
@@ -82,6 +88,9 @@ func (m Model) activityMaxScroll() int {
 	return max(0, n-(m.activityBodyHeight()-2))
 }
 func (m Model) activityControls() []dexControl {
+	if !m.dexWide() {
+		return m.compactActivityControls()
+	}
 	g := m.dexGeometry()
 	out := []dexControl{}
 	add := func(x, y, w, id int, label string) {
@@ -162,6 +171,10 @@ func (m Model) activityControls() []dexControl {
 	return out
 }
 func (m Model) paintActivity(c *canvas) {
+	if !m.dexWide() {
+		m.paintCompactActivity(c)
+		return
+	}
 	g := m.dexGeometry()
 	p := m.palette()
 	a := m.activity
