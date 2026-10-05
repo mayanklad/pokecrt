@@ -269,3 +269,40 @@ func TestTownLandmarksSurviveShrinkingViewport(t *testing.T) {
 		}
 	}
 }
+
+func TestWideHomeArrowsFollowHeaderActionPositions(t *testing.T) {
+	for _, size := range [][2]int{{90, 28}, {120, 40}, {180, 60}} {
+		for _, tc := range []struct {
+			from int
+			key  rune
+			want int
+		}{{0, tea.KeyUp, 5}, {5, tea.KeyRight, 6}, {6, tea.KeyLeft, 5}, {5, tea.KeyDown, 0}, {6, tea.KeyDown, 0}, {5, tea.KeyUp, 5}, {6, tea.KeyUp, 6}, {4, tea.KeyDown, 4}, {1, tea.KeyUp, 0}, {0, tea.KeyDown, 1}, {0, 'k', 5}, {6, 'j', 0}} {
+			m := New(context.Background(), nil, Dark, false)
+			m.width, m.height = size[0], size[1]
+			m.focus = tc.from
+			m, cmd := update(m, key(tc.key))
+			if m.focus != tc.want || cmd != nil || m.screen != mainScreen || m.settings {
+				t.Fatalf("%v from %d key %v: focus %d, want %d", size, tc.from, tc.key, m.focus, tc.want)
+			}
+		}
+	}
+}
+func TestNarrowHomeRetainsFooterArrowRoutes(t *testing.T) {
+	for _, size := range [][2]int{{89, 40}, {64, 28}, {48, 28}} {
+		m := New(context.Background(), nil, Dark, false)
+		m.width, m.height = size[0], size[1]
+		m.focus = 4
+		m, _ = update(m, key(tea.KeyDown))
+		if m.focus != 5 {
+			t.Fatal("narrow footer unreachable", size)
+		}
+		m, _ = update(m, key(tea.KeyRight))
+		if m.focus != 6 {
+			t.Fatal("narrow Quit unreachable", size)
+		}
+		m, _ = update(m, key(tea.KeyUp))
+		if m.focus != 4 {
+			t.Fatal("narrow footer return lost", size)
+		}
+	}
+}

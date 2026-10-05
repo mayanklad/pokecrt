@@ -4,10 +4,11 @@ Current milestone: [v0.3 - Trainer CLI](https://github.com/mayanklad/pokecrt/rel
 Source: [v0.3 tag](https://github.com/mayanklad/pokecrt/tree/v0.3).
 [Release notes](release-v0.3.md).
 
-Development source baseline: `6cded0c045a1be51c2314ce609d902adeeba6ebe`.
+Development source baseline: `4f614a5e3620a647521273bda670aca5e9f7404b`.
 Implemented through D27: complete Trainer CLI and Adventure Menu, setup,
 private Pokédex, encounters/history, statistics, achievements and appearance.
-D28 release blocker audit is prepared against that baseline.
+D28 release blocker audit is committed. D29 Home arrow-navigation correction
+is prepared against that baseline.
 Next milestone in the specification: v0.4 - TUI; final product target: v1.0.
 Release clearance is pending source-cache, final archive/tag and terminal/compact
 acceptance checks, recorded below. Further compact
@@ -785,3 +786,17 @@ and final milestone archive smoke tests before publication.
 Local document organization: the specification and detailed release audit are
 under docs/local/, ignored as a folder. Progress, benchmarks and release notes
 remain tracked; repository documentation has no links to the local audit.
+
+
+## D29 — wide Home arrows follow header action placement
+
+Baseline: 4f614a5e3620a647521273bda670aca5e9f7404b. At wide Home sizes
+(90×28 and above), Up from Pokédex focuses Refresh; Left/Right moves between
+Refresh and Quit; Down from either returns to Pokédex. Up at the header stays
+there, and Down at Appearance stays at the bottom of Choose. j/k retain the
+same directional routes. Tab and narrow footer routes remain unchanged.
+
+Regression tests cover 90×28, 120×40 and 180×60 wide layouts and 89×40,
+64×28 and 48×28 narrow layouts. Full tests, vet and build pass. Three
+running-terminal captures verify Refresh, Quit and Choose focus; terminal
+restoration passes. No artwork, layout, domain or storage changes.

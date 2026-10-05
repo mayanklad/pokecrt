@@ -255,6 +255,30 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			if m.settings {
 				m.navigateSettings(direction)
+			} else if m.width >= 90 && m.height >= 28 {
+				// Wide Home actions sit above the Choose list.
+				switch direction {
+				case "up":
+					if m.focus == 0 {
+						m.focus = 5
+					} else if m.focus < 5 {
+						m.focus--
+					}
+				case "down":
+					if m.focus >= 5 {
+						m.focus = 0
+					} else {
+						m.focus = min(4, m.focus+1)
+					}
+				case "left":
+					if m.focus == 6 {
+						m.focus = 5
+					}
+				case "right":
+					if m.focus == 5 {
+						m.focus = 6
+					}
+				}
 			} else {
 				if m.height >= 28 && direction == "right" && m.focus == 5 {
 					m.focus = 6
