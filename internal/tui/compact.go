@@ -279,7 +279,7 @@ func (m *Model) reconcileLayout() {
 		m.activity.artPan = max(0, min(m.activity.artPan, m.activityMaxPan()))
 		m.activity.artScroll = max(0, min(m.activity.artScroll, max(0, len(m.activity.art)-m.activityBodyHeight()+2)))
 		for panel := 0; panel < 2; panel++ {
-			m.activity.panelScroll[panel] = max(0, min(m.activity.panelScroll[panel], m.achievementMaxScroll(panel)))
+			m.activity.panelScroll[panel] = max(0, min(m.activity.panelScroll[panel], m.activityPanelMaxScroll(panel)))
 		}
 		controls := m.activityControls()
 		if len(controls) > 0 {

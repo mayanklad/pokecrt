@@ -224,3 +224,59 @@ func TestWideTrainerAndAchievementHeadingsIgnoreEncounterArtwork(t *testing.T) {
 		}
 	}
 }
+
+func TestTrainerPanelsScrollIndependently(t *testing.T) {
+	for _, width := range []int{100, 120, 180} {
+		m := activityModel()
+		m.width, m.height, m.section, m.focus = width, 28, 2, 40
+		for generation := 1; generation <= 9; generation++ {
+			m.activity.data.stats.Generations = append(m.activity.data.stats.Generations, trainer.GenerationStatistics{Generation: generation})
+		}
+		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyDown})
+		if m.activity.panelScroll != [2]int{1, 0} {
+			t.Fatal("trainer card scroll moved generation progress", m.activity.panelScroll)
+		}
+		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
+		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyDown})
+		if m.focus != 41 || m.activity.panelScroll != [2]int{1, 1} {
+			t.Fatal("generation panel not independently focusable", m.focus, m.activity.panelScroll)
+		}
+		m, _ = update(m, tea.MouseWheelMsg{Button: tea.MouseWheelDown, X: 10, Y: 10})
+		if m.activity.panelScroll != [2]int{2, 1} {
+			t.Fatal("left wheel moved other panel", m.activity.panelScroll)
+		}
+		m, _ = update(m, tea.MouseWheelMsg{Button: tea.MouseWheelDown, X: width - 10, Y: 10})
+		if m.activity.panelScroll != [2]int{2, 2} {
+			t.Fatal("right wheel moved other panel", m.activity.panelScroll)
+		}
+		m.activateActivity(42)
+		if m.activity.panelScroll != [2]int{1, 2} {
+			t.Fatal("left scroll button moved other panel")
+		}
+		m.activateActivity(45)
+		if m.activity.panelScroll != [2]int{1, 3} {
+			t.Fatal("right scroll button moved other panel")
+		}
+		m.focus = 40
+		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyPgDown})
+		if m.activity.panelScroll[0] <= 1 || m.activity.panelScroll[1] != 3 {
+			t.Fatal("page down moved other panel")
+		}
+		m.focus = 41
+		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyPgUp})
+		if m.activity.panelScroll[1] != 0 {
+			t.Fatal("page up did not target generation progress")
+		}
+		// Rendered generation content must remain fixed when only the trainer card moves.
+		before := strings.Split(m.View().Content, "\n")
+		m.scrollActivityPanel(0, -1)
+		after := strings.Split(m.View().Content, "\n")
+		for row := 6; row < 6+m.activityBodyHeight()-2; row++ {
+			b := ansi.Cut(ansi.Strip(before[row]), width/2+2, width-3)
+			a := ansi.Cut(ansi.Strip(after[row]), width/2+2, width-3)
+			if a != b {
+				t.Fatal("trainer scrolling changed generation rendering", row)
+			}
+		}
+	}
+}

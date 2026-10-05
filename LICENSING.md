@@ -1,8 +1,7 @@
 # Code and artwork licensing
 
 Original PokéCRT code and documentation are licensed under the MIT License in
-LICENSE. Copyright (c) 2026 Mayank Lad. The owner selected MIT on 30 September
-2026. This does not relicense third-party metadata, names, images, or notices.
+LICENSE. Copyright (c) 2026 Mayank Lad. This does not relicense third-party metadata, names, images, or notices.
 
 ## Metadata
 
@@ -30,8 +29,8 @@ and contributor credits in generated notices, and only crops transparent margins
 This verifies recorded identity and provenance, not ownership or redistribution
 clearance. Community images remain subject to their respective owners' rights.
 
-On 30 September 2026, the owner approved attributed fan-project releases with
-bundled sprites. The project-wide policy is recorded in docs/release-policy.md
+The distribution policy recorded on 30 September 2026 permits attributed
+fan-project releases with bundled sprites. The project-wide policy is recorded in docs/release-policy.md
 and applies to v0.1 and subsequent releases. Source PNGs are downloaded and generated during build preparation, excluded
 from Git, and embedded into compiled binaries.
 

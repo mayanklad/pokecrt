@@ -4,15 +4,16 @@ Current milestone: [v0.3 - Trainer CLI](https://github.com/mayanklad/pokecrt/rel
 Source: [v0.3 tag](https://github.com/mayanklad/pokecrt/tree/v0.3).
 [Release notes](release-v0.3.md).
 
-Development source baseline: `4f614a5e3620a647521273bda670aca5e9f7404b`.
-Implemented through D27: complete Trainer CLI and Adventure Menu, setup,
-private Pokédex, encounters/history, statistics, achievements and appearance.
-D28 release blocker audit is committed. D29 Home arrow-navigation correction
-is prepared against that baseline.
-Next milestone in the specification: v0.4 - TUI; final product target: v1.0.
-Release clearance is pending source-cache, final archive/tag and terminal/compact
-acceptance checks, recorded below. Further compact
-refinement is deferred to v2 by owner decision. No new release is published.
+Development source baseline: `c2712017b0785e07f951f98301ef9b1e6b1d59a9`.
+D29 Home navigation is committed. D30 source-cache verification and D31
+independent Trainer-panel scrolling/documentation updates are prepared against
+that baseline. The Adventure Menu includes setup, private Pokédex,
+encounters/history, statistics, achievements and appearance.
+Next milestone: v0.4 - TUI; final product target: v1.0.
+All pinned inputs and the local D30 candidate archive are verified. Final
+packaging from tagged source and real-terminal acceptance remain pending.
+Compact refinement is deferred to v2; all compact flows are not certified.
+The published release remains v0.3.
 
 ## Implemented behavior
 
@@ -362,7 +363,7 @@ Public latency/RSS, warm rendering and binary size remain within existing
 budgets in the initial D19 measurements. The revised device binary is 12.633 MiB;
 its 120×36 frame assembly median is 0.817 ms in three shared-host samples.
 Detailed measurements and limits are in benchmarks.md. Real terminal theme
-changes/transparency still require user verification; network isolation was
+changes/transparency still require real-terminal verification; network isolation was
 unavailable on this host and is not newly claimed.
 
 
@@ -484,7 +485,7 @@ checks passed after final view changes. New tests cover explicit-only writes,
 duplicate requests, recoverable failure, stale messages, read-only/no-init
 behavior, trainer isolation, exact history appearance, and 50-row snapshot
 ordering/isolation. Device resource measurements are recorded in benchmarks.md.
-The remaining arrow-navigation refinement is deferred to D23 as requested.
+The remaining arrow-navigation refinement is deferred to D23 as scheduled.
 
 D22 final interaction refinement: navigation remains available during an encounter;
 a model-wide single-flight token blocks duplicate encounters even after leaving
@@ -682,7 +683,7 @@ seven-row height and aligned lower borders. Information wrapping stays within
 the resized interior. Compact stacked panels retain their existing heights.
 
 
-### D25 — adaptive home town artwork refinement
+### D25 - adaptive home town artwork refinement
 
 - Town streets span the artwork viewport with connected avenue and building entrances.
 - Landmark sizes and positions adapt to the viewport; outer lawns contain trees and the pond has aligned continuous borders.
@@ -696,7 +697,7 @@ D25 accepted-artwork follow-up: removed the Verdant Town label in both map layou
 
 D25 resize follow-up: switch to a four-landmark compact map before detailed buildings fall below their minimum width or height. Short viewports show condensed labels, including Home and Pond. Added landmark-persistence regression cases across layout thresholds and one-row panels. Large artwork remains unchanged. Go execution pending.
 
-### D26 — compact-mode audit fixes (ddc0d811 baseline)
+### D26 - compact-mode audit fixes (ddc0d811 baseline)
 
 Compact pages now reserve separate content, tab/action and hint rows across
 40×12 through the wide-layout boundary. This resolves overlapping captions,
@@ -731,7 +732,7 @@ Delivery: changed-file ZIP against ddc0d811; no deletions, binary/assets,
 dependency/schema changes or GitHub writes. Apply at repository root and run
 the normal test/vet/build commands before committing.
 
-### D27 — Home header actions and taller Town Map
+### D27 - Home header actions and taller Town Map
 
 Against a9136edc, wide Home (at least 90×28) puts Refresh and Quit in the
 top-right header above a single-line trainer card. The card shows trainer name
@@ -757,14 +758,14 @@ This cumulative ZIP includes all uncommitted D27 Home and Encounter changes
 against a9136edc and replaces every earlier D27 ZIP.
 
 
-## D28 — release blocker audit
+## D28 - release blocker audit
 
 Restored independent wide Trainer/Achievements column widths after the D27
 Encounter Log fix accidentally made them depend on artwork state. Preserve the
-requested full-width READY TO EXPLORE behavior. New tests cover both panel
+full-width READY TO EXPLORE behavior. New tests cover both panel
 headings at 100/120/180 columns with/without encounter art.
 README reflects implemented Home/setup/activity views, actual full-terminal
-geometry and known compact limitations. Candidate v0.4 notes are supplied.
+geometry and known compact limitations. Candidate v0.4 notes are included.
 The published release remains v0.3; v0.4/v1 clearance is not claimed.
 
 All 112 tracked baseline files matched GitHub. Go 1.27.1 test/vet/full race,
@@ -776,7 +777,7 @@ on this host; representative history timing is recorded without new budgets.
 
 The old available pinned-input cache is incomplete; raw regeneration and
 package.sh remain pending, as do final archive/tag and real-terminal acceptance.
-Owner-reported remaining compact issues are not individually classified; wide
+Reported remaining compact issues are not individually classified; wide
 layouts are recommended and further refinement stays deferred to v2.
 Only a reproduced crash, blocked essential action, disclosure or integrity
 defect requires current-release correction. No gameplay/schema/budget changes
@@ -788,7 +789,7 @@ under docs/local/, ignored as a folder. Progress, benchmarks and release notes
 remain tracked; repository documentation has no links to the local audit.
 
 
-## D29 — wide Home arrows follow header action placement
+## D29 - wide Home arrows follow header action placement
 
 Baseline: 4f614a5e3620a647521273bda670aca5e9f7404b. At wide Home sizes
 (90×28 and above), Up from Pokédex focuses Refresh; Left/Right moves between
@@ -800,3 +801,62 @@ Regression tests cover 90×28, 120×40 and 180×60 wide layouts and 89×40,
 64×28 and 48×28 narrow layouts. Full tests, vet and build pass. Three
 running-terminal captures verify Refresh, Quit and Choose focus; terminal
 restoration passes. No artwork, layout, domain or storage changes.
+
+
+## D30 - source-cache and local v0.4 candidate verification
+
+Baseline: c2712017b0785e07f951f98301ef9b1e6b1d59a9. All 113 tracked files
+matched GitHub before edits. Source comparison used read-only GitHub access. The stale TUI help
+statement about forthcoming section views now describes the implemented views
+and recommends wide layouts. Release notes reflect completed cache verification.
+
+All 2,947 pinned inputs were downloaded and verified. Cache-only preparation
+and checks pass with the existing dataset ID; generated tracked metadata has
+no drift. The actual package.sh v0.4 command passes dataset checks, tests and
+vet. Full race tests, module verification and CGO-disabled storage/trainer
+tests also pass.
+
+The local, untagged Linux amd64 candidate contains exactly the executable and
+seven documented notice/readme/coverage/release files. SHA256SUMS, version and
+dataset identity, 0755 executable mode and installation into an isolated folder
+pass. No profiles, cache or source tree are present in the archive. The stripped
+binary is 13,705,376 bytes (13.07 MiB), below the approved 16 MiB limit.
+34 extracted-executable CLI cases pass with socket/connect denied by kernel
+seccomp. Trainer encounter counts remain isolated (5/1); browsing preserves the
+state hash and corrupt input remains untouched. Ten offline PTY cases cover
+Home, Trainer, Achievements, locked/variant Pokédex, setup cancellation,
+appearance, header arrows and Home/Pokédex resize recovery. Exit, terminal/mouse
+restoration and unchanged browsing state pass.
+
+Pinned-source regeneration and local candidate artifact checks are complete.
+Final tagged-source packaging and real-terminal acceptance remain pending.
+The candidate is unpublished; published v0.3 links remain unchanged. Remaining
+compact refinement stays deferred to v2, without certifying all compact flows.
+Gameplay, schema and performance budgets are unchanged.
+
+
+## D31 - independent Trainer panels and neutral documentation
+
+Baseline: c2712017b0785e07f951f98301ef9b1e6b1d59a9; D30 updates are retained.
+Wide Trainer Card and Generation Progress now use independent scroll offsets,
+focus targets and arrow buttons, matching the Achievements panel behavior.
+Keyboard arrows/j/k, Page Up/Down, mouse wheels and clickable controls target
+one panel at a time. Profile changes reset panel offsets; refresh and resize
+clamp them to the available content. Compact mode retains its combined view.
+
+Documentation describes project behavior and verification without conversational
+approval/decision attribution. Licensing and distribution statements retain their
+substantive scope. Generated notices and their generator/source terms agree;
+third-party license and contributor quotations remain unchanged.
+
+Full tests and vet pass, as do race-enabled TUI tests. Regression tests cover
+independent offsets and rendered content at 100/120/180 columns. Fourteen
+socket-blocked PTY cases pass, including Trainer arrow/page navigation and
+resize recovery. Browsing preserves the database hash; terminal attributes,
+alternate screen and mouse reporting restore on exit. All 2,947 pinned inputs
+verify with the unchanged dataset ID and generated output check.
+
+The D31 stripped Linux amd64 executable is 13,705,376 bytes (13.07 MiB).
+D28 timing/RSS measurements and D30 archive smoke checks remain historical
+measurements of those revisions, not fresh D31 results. Final D31 archive
+packaging and tagged-source/real-terminal acceptance remain pending.

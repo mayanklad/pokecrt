@@ -36,7 +36,7 @@ type activityState struct {
 	selected, scroll, artScroll, artPan int
 	refreshAfter                        bool
 	panelScroll                         [2]int
-	achievementPanel                    int
+	informationPanel                    int
 	historyMode, resultDetails          bool
 	result                              *trainer.Record
 	art                                 []string
@@ -207,15 +207,15 @@ func (m *Model) activateActivity(id int) tea.Cmd {
 		m.activity.resultDetails = !m.activity.resultDetails
 		return tea.ClearScreen
 	case id == 40 || id == 41:
-		m.activity.achievementPanel = id - 40
+		m.activity.informationPanel = id - 40
 	case id >= 42 && id <= 45:
 		panel := (id - 42) / 2
 		delta := -1
 		if id%2 == 1 {
 			delta = 1
 		}
-		m.activity.achievementPanel = panel
-		m.activity.panelScroll[panel] = max(0, min(m.achievementMaxScroll(panel), m.activity.panelScroll[panel]+delta))
+		m.activity.informationPanel = panel
+		m.activity.panelScroll[panel] = max(0, min(m.activityPanelMaxScroll(panel), m.activity.panelScroll[panel]+delta))
 	case id == 16:
 		m.activity.scroll = max(0, m.activity.scroll-1)
 	case id == 17:
@@ -256,10 +256,14 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 			if m.activity.data.profile.ID != msg.data.profile.ID {
 				m.activity.selected = 0
 				m.activity.scroll = 0
+				m.activity.panelScroll = [2]int{}
 			}
 			m.activity.data = msg.data
 			m.activity.selected = min(m.activity.selected, max(0, len(msg.data.history)-1))
 			m.activity.scroll = min(m.activity.scroll, m.activityMaxScroll())
+			for panel := range m.activity.panelScroll {
+				m.activity.panelScroll[panel] = min(m.activity.panelScroll[panel], m.activityPanelMaxScroll(panel))
+			}
 		}
 		if m.activity.refreshAfter {
 			m.activity.refreshAfter = false
@@ -313,12 +317,12 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	if !found && len(controlsNow) > 0 {
 		m.focus = controlsNow[0].id
 	}
-	if m.section == 3 && m.dexGeometry().wide {
+	if m.section != 1 && m.dexGeometry().wide {
 		if m.focus == 40 || m.focus == 41 {
-			m.activity.achievementPanel = m.focus - 40
+			m.activity.informationPanel = m.focus - 40
 		}
 		if m.focus >= 42 && m.focus <= 45 {
-			m.activity.achievementPanel = (m.focus - 42) / 2
+			m.activity.informationPanel = (m.focus - 42) / 2
 		}
 	}
 	switch msg := msg.(type) {
@@ -356,9 +360,9 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 			if msg.String() == "up" || msg.String() == "k" || msg.String() == "left" {
 				delta = -1
 			}
-			if m.section == 3 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
+			if m.section != 1 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
 				panel := m.focus - 40
-				m.activity.achievementPanel = panel
+				m.activity.informationPanel = panel
 				if msg.String() == "left" || msg.String() == "right" {
 					if panel == 0 && msg.String() == "left" {
 						m.focus = 12
@@ -366,10 +370,10 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 						m.focus = 14
 					} else {
 						m.focus = 40 + 1 - panel
-						m.activity.achievementPanel = 1 - panel
+						m.activity.informationPanel = 1 - panel
 					}
 				} else {
-					next := max(0, min(m.achievementMaxScroll(panel), m.activity.panelScroll[panel]+delta))
+					next := max(0, min(m.activityPanelMaxScroll(panel), m.activity.panelScroll[panel]+delta))
 					if next == m.activity.panelScroll[panel] {
 						m.activityMove(msg.String())
 					} else {
@@ -413,14 +417,14 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 				m.activityMove(msg.String())
 			}
 		case "pgdown":
-			if m.section == 3 && m.dexGeometry().wide {
-				m.scrollAchievementPanel(m.activity.achievementPanel, m.activityBodyHeight()-2)
+			if m.section != 1 && m.dexGeometry().wide {
+				m.scrollActivityPanel(m.activity.informationPanel, m.activityBodyHeight()-2)
 			} else {
 				m.activity.scroll = min(m.activityMaxScroll(), m.activity.scroll+m.activityBodyHeight()-2)
 			}
 		case "pgup":
-			if m.section == 3 && m.dexGeometry().wide {
-				m.scrollAchievementPanel(m.activity.achievementPanel, -m.activityBodyHeight()+2)
+			if m.section != 1 && m.dexGeometry().wide {
+				m.scrollActivityPanel(m.activity.informationPanel, -m.activityBodyHeight()+2)
 			} else {
 				m.activity.scroll = max(0, m.activity.scroll-m.activityBodyHeight()+2)
 			}
@@ -451,14 +455,14 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 		if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
 			delta = -1
 		}
-		if m.section == 3 && m.dexGeometry().wide {
+		if m.section != 1 && m.dexGeometry().wide {
 			panel := 0
 			if msg.X >= m.dexGeometry().w/2 {
 				panel = 1
 			}
 			m.focus = 40 + panel
-			m.activity.achievementPanel = panel
-			m.scrollAchievementPanel(panel, delta)
+			m.activity.informationPanel = panel
+			m.scrollActivityPanel(panel, delta)
 		} else {
 			m.activity.scroll = max(0, min(m.activityMaxScroll(), m.activity.scroll+delta))
 		}
@@ -485,8 +489,8 @@ func (m *Model) revealHistorySelection() {
 	}
 }
 
-func (m Model) achievementMaxScroll(panel int) int {
-	left, right := m.achievementInformationColumns()
+func (m Model) activityPanelMaxScroll(panel int) int {
+	left, right := m.activityColumns()
 	lines := left
 	if panel == 1 {
 		lines = right
@@ -497,6 +501,6 @@ func (m Model) achievementMaxScroll(panel int) int {
 	}
 	return max(0, len(wrapActivityLines(lines, width))-m.activityBodyHeight()+2)
 }
-func (m *Model) scrollAchievementPanel(panel, delta int) {
-	m.activity.panelScroll[panel] = max(0, min(m.achievementMaxScroll(panel), m.activity.panelScroll[panel]+delta))
+func (m *Model) scrollActivityPanel(panel, delta int) {
+	m.activity.panelScroll[panel] = max(0, min(m.activityPanelMaxScroll(panel), m.activity.panelScroll[panel]+delta))
 }

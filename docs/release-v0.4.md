@@ -1,7 +1,9 @@
-# v0.4 — Interactive Adventure Menu
+# v0.4 - Interactive Adventure Menu
 
-Release candidate notes. Source-cache verification, final tagged archive checks
-and terminal acceptance remain pending. No v0.4 tag or archive is recorded here.
+Release candidate notes. All 2,947 pinned source inputs are verified against the
+locked dataset. Local Linux amd64 packaging and extracted-binary checks are
+recorded in project progress. Final tagged-source checks and real-terminal
+acceptance remain pending. No v0.4 release has been published.
 
 PokéCRT adds `pokecrt tui` to the existing offline Trainer CLI:
 
@@ -9,6 +11,7 @@ PokéCRT adds `pokecrt tui` to the existing offline Trainer CLI:
 - Browse a private Pokédex, collected appearances, evolution families and records.
 - Record an explicit encounter and inspect recent history, trainer statistics
   and the 50 achievement goals without changing the shared gameplay rules.
+- Scroll Trainer Card and Generation Progress independently in wide layouts.
 - Preview Dark, Light, Follow Terminal and Terminal Native palettes live, and
   explicitly save an appearance default.
 - Navigate the Home Town Map, outlined header actions and single-line trainer
@@ -27,7 +30,7 @@ half blocks; terminal fonts and truecolor support affect presentation.
 ## Known limitations
 
 Compact mode still has reported layout/navigation issues. Further compact
-refinement is deferred to v2 by the owner; wide layouts are recommended. The
+refinement is deferred to v2; wide layouts are recommended. The
 reported remaining compact issues have not all been individually reproduced or
 classified, so this release audit does not certify every compact flow.
 Follow Terminal depends on background replies supported by the terminal. Native

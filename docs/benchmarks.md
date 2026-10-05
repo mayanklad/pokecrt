@@ -33,7 +33,7 @@ cache. P95 is the 95th sorted sample, maxima are retained to show scheduler nois
 Every invocation starts a new Go runtime; none uses a persistent application cache.
 
 The first observation is **not a true cold-disk measurement**: compilation and
-other invocations can populate page caches. We do not evict shared host caches.
+other invocations can populate page caches. Shared host caches are not evicted.
 True cold filesystem startup remains unmeasured and has no invented result or
 budget. In-process warm measurements are recorded separately below.
 
@@ -724,7 +724,7 @@ random/list P95 <= 9.300 ms. The stripped binary is 11,821,216 bytes (11.274 MiB
 Warm/render measurements above precede this presentation-only review; those
 paths are unchanged and no new warm/render result is claimed.
 
-## D19 Adventure Menu shell — 4 October 2026
+## D19 Adventure Menu shell - 4 October 2026
 
 Baseline: `0fc3efd8feefd56be46bdbcd981773e42c097d4e`; candidate adds
 Bubble Tea v2.0.10, responsive shell controls and async read-only profile status.
@@ -788,15 +788,14 @@ restore on exit; first-run storage stays absent.
 
 PTY frames were inspected at wide, compact and appearance-settings sizes.
 Real-emulator transparency, native theme notifications and terminal/multiplexer
-compatibility still need the owner's terminal checks; unit/PTY tests do not
+compatibility still need real-terminal checks; unit/PTY tests do not
 establish those. Network namespace isolation could not be repeated: unshare
 failed to write uid_map in this environment. No new offline-isolation claim is
 made. The shell performs no HTTP/network operation at runtime.
 
 ### D19 visual revision: Pokédex device
 
-The owner selected the device after terminal-rendered review, then rejected its
-pixel Poké Ball. The shipped revision uses a clean question mark and text,
+Terminal-rendered review led to removal of the device’s pixel Poké Ball. The shipped revision uses a clean question mark and text,
 with a bounded centered stage and filled focus bar. The previous D19 tables
 above describe the initial shell measurements; they are retained as historical
 samples, not fresh measurements of this revision.
@@ -812,7 +811,7 @@ unchanged by this visual revision; their prior measurements are not rerun or
 represented as newly measured. Theme/translucency still need real-terminal review.
 
 
-## D20 setup and appearance persistence — 4 October 2026
+## D20 setup and appearance persistence - 4 October 2026
 
 Source baseline: D19 `742ac3248883ccacf396c1533deff0ebb65ad560`. Host:
 Linux amd64, Intel Xeon Platinum 8370C, Go 1.27.1. Both comparison binaries
@@ -877,7 +876,7 @@ multiplexer compatibility remain manual checks; no new network-isolation claim.
 
 ## D21 initial browse prototype measurements (superseded layout)
 
-Owner baseline: `5ad62fd5d1e896eec24cb360e685038052f7e176` (D20). Go 1.27.1,
+Baseline: `5ad62fd5d1e896eec24cb360e685038052f7e176` (D20). Go 1.27.1,
 Linux amd64, Intel Xeon Platinum 8370C shared host. CGO_ENABLED=0 with
 -buildvcs=false -trimpath and -ldflags '-s -w'. No added dependency or global
 Dex initialization. Public measurements used the browse candidate before the
@@ -915,7 +914,7 @@ Largest-area truecolor renderer median was 0.601 ms, slightly above the 0.600 ms
 limit. A follow-up three one-second-sample run reached 0.918 ms; the renderer
 source is unchanged. A same-host D20 comparison gave a 0.720 ms median (also
 over the threshold). These render measurements do **not** clear the render gate.
-A comparable owner-machine D20/D21 check remains part of D23 performance review.
+A comparable local-machine D20/D21 check remains part of D23 performance review.
 
 120×40 Pokédex with collected Mega X shiny artwork: three 300 ms one-processor
 View samples 1.294/1.383/2.558 ms, median 1.383 ms, approximately 442.4 kB/op
@@ -934,7 +933,7 @@ evolution navigation, fresh creation, 40×12 and compact/wide/resize, Native,
 NO_COLOR, live Follow Terminal and restoration. The seeded test database remains
 byte-identical across browsing; trainer-switch tests verify no cross-profile
 collection retention. Automated frame/hit tests exercise all modes and search
-keyboard pages. Multiplexer and real terminal translucency remain owner checks;
+keyboard pages. Multiplexer and real terminal translucency remain real-terminal checks;
 no new network-isolation verification is claimed.
 
 
@@ -1021,7 +1020,7 @@ These are local frame-construction benchmarks. They do not establish terminal
 latency, startup or RSS acceptance. The separate release resource gates remain
 open. Focused frame styling adds no background work or timers.
 
-## D28 release audit — 6 October 2026
+## D28 release audit - 6 October 2026
 
 Source baseline `6cded0c045a1be51c2314ce609d902adeeba6ebe`, with the
 Trainer/Achievements width regression restored in the audit candidate.
@@ -1083,3 +1082,19 @@ Pinned-source regeneration, final tagged archive checks and real-terminal
 acceptance remain pending. Compact refinement is deferred to v2. These
 measurements establish the scoped performance results, not final v1 or
 archive acceptance.
+
+
+### D30 packaged binary
+
+The local v0.4 Linux amd64 candidate built from c2712017 plus the TUI help
+correction is 13,705,376 bytes (13.07 MiB), below the approved 16 MiB limit.
+Gameplay/rendering code is unchanged; D28 timing measurements remain the prior
+performance evidence. Packaging does not imply final tagged release clearance.
+
+
+### D31 Trainer panel correction
+
+The CGO-disabled, trimpath, stripped Linux amd64 build with version v0.4 is
+13,705,376 bytes (13.07 MiB), below the 16 MiB limit. Independent Trainer
+scrolling passes unit/rendered-content and running-terminal checks. Timing and
+RSS figures above remain dated measurements; they were not rerun for D31.

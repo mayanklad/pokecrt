@@ -30,7 +30,8 @@ stdin and stdout; redirected streams are rejected before any terminal changes.
 
 Trainer setup and selection are interactive. Mouse-only name entry uses an
 on-screen keyboard. Additional trainers need a separate Use action. Collection
-and gameplay remain available through the CLI; interactive section views follow.
+and gameplay are available through Pokédex, Encounter, Trainer and Achievements.
+Wide terminal layouts are recommended; compact layouts have known limitations.
 `
 
 func runTUI(args []string, stdout, stderr io.Writer) int {

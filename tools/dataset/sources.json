@@ -13478,7 +13478,7 @@
       "id": "bamq",
       "repository": "bamq/pokemon-sprites",
       "revision": "c1958e7260a4bce93bd104e79966a27fb333c7aa",
-      "terms": "Pinned README and contributors record National Pokédex Version Delta community artwork adapted to 68x56. No application-code license or source label is treated as an image-rights grant. Owner-approved attributed fan-project distribution applies.",
+      "terms": "Pinned README and contributors record National Pokédex Version Delta community artwork adapted to 68x56. No application-code license or source label is treated as an image-rights grant. Attributed fan-project distribution follows docs/release-policy.md.",
       "attribution": "bamq/pokemon-sprites; National Pokédex Version Delta Icon Dex and its contributors; linked credits preserved in generated notices.",
       "files": [
         {

@@ -130,7 +130,7 @@ The cache label is `pokesprite-v2`; raw inputs and normalized PNGs stay outside 
 PokéAPI metadata retains BSD-3-Clause terms and attribution. PokéSprite-v2
 separates artwork copyright from its code/non-image MIT terms. Community reuse
 statements do not establish permission from underlying rights holders.
-The owner-approved distribution policy is in `docs/release-policy.md`;
+The documented distribution policy is in `docs/release-policy.md`;
 `LICENSING.md` and generated `THIRD_PARTY_NOTICES.md` preserve licensing scope
 and notices. No rights-holder endorsement or clearance is claimed.
 
@@ -363,7 +363,7 @@ claims are not evidence of usable artwork or completed form/gender semantics.
 
 ## Reviewed Generation 9 provider increment
 
-Generation 9 metadata was owner-committed at
+Generation 9 metadata was committed at
 39abfc30e855ac8d0aeddf3a71667b7eb3e0e63d. Rules `d06-auto-7` explicitly accept
 nongenerated `bamq/pokemon-sprites` appearances without maintaining a species or
 image list. Paths and identities continue to derive from pinned source records.
@@ -374,7 +374,7 @@ repositories and must match byte-for-byte. Missing or mismatched provider eviden
 fails generation. The original provider README and contributor file are pinned
 and included in generated notices, retaining project and artist-credit links.
 These are community-adapted icons, resized upstream to 68×56; PokéCRT does not
-resize them or claim they are untouched game assets. The existing owner-approved
+resize them or claim they are untouched game assets. The existing documented
 fan-project release policy applies; the audit does not claim image rights clearance.
 
 This adds 254 assets in 127 regular/shiny pairs across 119 species. Standard
@@ -398,7 +398,7 @@ The maximum cropped dimensions remain 67×56. D06 remains open.
 
 ## Automatic inherited visual genders increment
 
-Provider increment owner-committed at 7a901ba813188b7d33a1d155b427bbdf12c1ab6f.
+Provider increment committed at 7a901ba813188b7d33a1d155b427bbdf12c1ab6f.
 Rules `d06-auto-8` replace maintained `visual_gender_species` with the boolean
 `audited_inherited_genders` policy. Source declarations derive the accepted pairs;
 unsupported/provisional candidates are reported automatically. Tests reject wrong
@@ -431,7 +431,7 @@ and shared validation for the public selectors.
 
 ## Transformation alias semantics increment
 
-Automatic gender increment owner-committed at
+Automatic gender increment committed at
 17558ae1a53b8288b870b4103d7b198ff735f114. Rules `d06-auto-9` require the pinned
 metadata form table's explicit `is_mega` flags when auditing source aliases.
 A Mega-marked exact metadata form owned by a different same-species variety
@@ -464,7 +464,7 @@ and public selectors remain D07.
 
 ## Source-encoded gender identity increment
 
-Transformation-alias increment owner-committed at
+Transformation-alias increment committed at
 795183b41aac94d5fbe0e1cd083ca9d24713427c. Rules `d06-auto-10` derive the
 source’s explicit male-default, male/female layout as one standard form. Require
 pinned gender-difference metadata, exact male/female `form_identifier` values,
@@ -492,7 +492,7 @@ D06 remains open for other provider/layout, provisional, alias and tag audits.
 
 ## Automatic themed-inventory increment
 
-Source-encoded gender correction owner-committed at
+Source-encoded gender correction committed at
 f5fe6d5c31b79ab3a94d706d0aaa3dec9656a22a. Rules `d06-auto-11` add sorted
 `Form.Tags` from exact, owner-checked pinned metadata. `is_mega` determines
 `mega`; the exact `gmax` state determines `gigantamax`. An explicit small
@@ -536,7 +536,7 @@ and alias review, including the limits of source inventory coverage.
 
 ## Closing source/inventory audit
 
-The themed-inventory increment was owner-committed at
+The themed-inventory increment was committed at
 c2a26e87cb726a6fee3a7242a24fa00358b70956. Rules `d06-auto-12` make the
 remaining source scope visible in generated coverage rather than leaving
 metadata varieties outside the source inventory unreported. This is a

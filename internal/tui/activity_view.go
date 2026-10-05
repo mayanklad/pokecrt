@@ -116,7 +116,7 @@ func (m Model) activityControls() []dexControl {
 	} else if m.section == 2 {
 		add(g.x+2, y, g.w-4, 15, "Choose / create trainer")
 	}
-	if m.section == 3 && g.wide {
+	if m.section != 1 && g.wide {
 		for panel := 0; panel < 2; panel++ {
 			px := g.x + 2
 			if panel == 1 {
@@ -124,7 +124,7 @@ func (m Model) activityControls() []dexControl {
 			}
 			pw := g.w/2 - 3
 			add(px, g.y+g.h-6, 13, 40+panel, "Scroll")
-			if m.achievementMaxScroll(panel) > 0 {
+			if m.activityPanelMaxScroll(panel) > 0 {
 				add(px+pw-12, g.y+g.h-6, 5, 42+panel*2, "↑")
 				add(px+pw-7, g.y+g.h-6, 5, 43+panel*2, "↓")
 			}
@@ -210,7 +210,7 @@ func (m Model) paintActivity(c *canvas) {
 		c.box(g.x+2, bodyY, bodyW, bodyH, " "+map[int]string{1: "ENCOUNTER LOG", 2: "TRAINER CARD", 3: "ACHIEVEMENT JOURNAL"}[m.section]+" ", p.accent)
 	}
 	textX, textW := g.x+4, bodyW-4
-	if m.section == 3 && g.wide {
+	if m.section != 1 && g.wide {
 		for row := bodyY + 1; row < bodyY+bodyH-1; row++ {
 			c.hits = append(c.hits, hit{g.x + 3, row, g.w/2 - 5, 40}, hit{g.x + g.w/2 + 1, row, g.w/2 - 4, 41})
 		}
@@ -222,12 +222,12 @@ func (m Model) paintActivity(c *canvas) {
 		left, _ := m.activityColumns()
 		rows := wrapActivityLines(left, half-4)
 		leftScroll := a.scroll
-		if m.section == 3 {
-			leftScroll = min(a.panelScroll[0], m.achievementMaxScroll(0))
+		if m.section != 1 {
+			leftScroll = min(a.panelScroll[0], m.activityPanelMaxScroll(0))
 		}
 		for i := 0; i < bodyH-2 && i+leftScroll < len(rows); i++ {
 			c.putANSI(g.x+4, bodyY+1+i, rows[i+leftScroll])
-			if m.section == 3 {
+			if m.section != 1 {
 				c.hits = append(c.hits, hit{g.x + 4, bodyY + 1 + i, half - 4, 40})
 			}
 		}
@@ -261,13 +261,13 @@ func (m Model) paintActivity(c *canvas) {
 		historyTargets = m.activityHistoryTargets()
 	}
 	scroll := a.scroll
-	if m.section == 3 && g.wide {
-		scroll = min(a.panelScroll[1], m.achievementMaxScroll(1))
+	if m.section != 1 && g.wide {
+		scroll = min(a.panelScroll[1], m.activityPanelMaxScroll(1))
 	}
 	if textW > 0 {
 		for i := 0; i < bodyH-2 && i+scroll < len(lines); i++ {
 			c.putANSI(textX, bodyY+1+i, ansi.Truncate(lines[i+scroll], textW, "…"))
-			if m.section == 3 && g.wide {
+			if m.section != 1 && g.wide {
 				c.hits = append(c.hits, hit{textX, bodyY + 1 + i, textW, 41})
 			}
 			if m.section == 1 && a.historyMode && !a.loading && a.error == "" {
