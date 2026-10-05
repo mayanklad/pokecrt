@@ -3,8 +3,9 @@
 Offline Pokémon terminal artwork, written in Go. Print one named or randomly
 selected Pokémon with truecolor Unicode half blocks at the original pixel scale.
 
-Release: [v0.3 - Trainer CLI](https://github.com/mayanklad/pokecrt/releases/tag/v0.3).
-[Source tag](https://github.com/mayanklad/pokecrt/tree/v0.3) · [Release notes](docs/release-v0.3.md).
+Release: [v0.4 - Interactive Adventure Menu](https://github.com/mayanklad/pokecrt/releases/tag/v0.4).
+[Source tag](https://github.com/mayanklad/pokecrt/tree/v0.4) · [Release notes](docs/release-v0.4.md).
+[Linux amd64 archive](https://github.com/mayanklad/pokecrt/releases/download/v0.4/pokecrt_v0.4_linux_amd64.tar.gz) · [SHA256SUMS](https://github.com/mayanklad/pokecrt/releases/download/v0.4/SHA256SUMS).
 
 ## Current coverage
 
@@ -41,11 +42,10 @@ manifest; performance measurements are documented in docs/benchmarks.md.
 Public metadata filters and explicit form/shiny/gender printing are implemented.
 v0.3 adds local trainer profiles, fair encounters, XP/levels, 50 achievements,
 private Pokédex browsing and trainer statistics. Public printing and listing
-remain independent of trainer state. The development branch implements the v0.4
+remain independent of trainer state. v0.4 adds the
 Adventure Menu: interactive trainer creation/selection, private Pokédex,
 encounters/history, trainer statistics, achievements and saved live appearance
-choices. v0.4 release verification is in progress; the published v0.3 release
-remains the Trainer CLI milestone. Compact-mode issues remain known and further
+choices. The Interactive Adventure Menu is published in v0.4. Compact-mode issues remain known and further
 refinement is deferred to v2. Use a wide terminal for the best interface.
 
 The earlier v0.1 release included three standard sprites.
@@ -274,6 +274,7 @@ Installation and removal do not erase trainer data.
 ## Project documents
 
 - [Implementation progress](docs/progress.md)
+- [v0.4 release notes](docs/release-v0.4.md)
 - [v0.3 release notes](docs/release-v0.3.md)
 - [v0.2 release notes](docs/release-v0.2.md)
 - [Performance baseline and comparison](docs/benchmarks.md)
@@ -668,3 +669,4 @@ Appearance changes apply live. **Save as default** remembers the selected mode
 for later launches. **Refresh** rereads local records without creating a discovery.
 The Route 01 home scene is static character artwork; no image protocol or new
 animation timer is required. Terminal fonts determine glyph shape and joins.
+

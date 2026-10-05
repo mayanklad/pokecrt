@@ -1,19 +1,24 @@
 # Implementation progress
 
-Current milestone: [v0.3 - Trainer CLI](https://github.com/mayanklad/pokecrt/releases/tag/v0.3).
-Source: [v0.3 tag](https://github.com/mayanklad/pokecrt/tree/v0.3).
-[Release notes](release-v0.3.md).
+Current milestone: [v0.4 - Interactive Adventure Menu](https://github.com/mayanklad/pokecrt/releases/tag/v0.4).
+Source: [v0.4 tag](https://github.com/mayanklad/pokecrt/tree/v0.4).
+[Release notes](release-v0.4.md).
 
-Development source baseline: `c2712017b0785e07f951f98301ef9b1e6b1d59a9`.
-D29 Home navigation is committed. D30 source-cache verification and D31
-independent Trainer-panel scrolling/documentation updates are prepared against
-that baseline. The Adventure Menu includes setup, private Pokédex,
-encounters/history, statistics, achievements and appearance.
-Next milestone: v0.4 - TUI; final product target: v1.0.
-All pinned inputs and the local D30 candidate archive are verified. Final
-packaging from tagged source and real-terminal acceptance remain pending.
-Compact refinement is deferred to v2; all compact flows are not certified.
-The published release remains v0.3.
+Released source: `f4464c7d60109935ccc734ff02de739c2a1ef948`.
+D29–D31 navigation, Trainer scrolling and documentation updates are committed.
+All pinned inputs verify. Local packaging, checksum verification and extracted
+executable checks were completed before publication. The annotated v0.4 tag
+points to that commit; the Linux amd64 archive and SHA256SUMS are uploaded.
+Publication and tag/asset metadata were verified through read-only GitHub access.
+Published archive bytes have not been independently downloaded and re-tested
+in this documentation follow-up.
+
+The final product target remains v1.0. Compact refinement is deferred to v2;
+publication does not certify every compact flow or all terminal/multiplexer
+configurations. Existing timing/RSS measurements remain dated historical results.
+
+Earlier entries below record status at each increment; their pending release
+items are superseded where completed by the publication record above.
 
 ## Implemented behavior
 
@@ -860,3 +865,14 @@ The D31 stripped Linux amd64 executable is 13,705,376 bytes (13.07 MiB).
 D28 timing/RSS measurements and D30 archive smoke checks remain historical
 measurements of those revisions, not fresh D31 results. Final D31 archive
 packaging and tagged-source/real-terminal acceptance remain pending.
+
+
+
+## D32 - published v0.4 documentation
+
+v0.4 was published on 6 October 2026 (IST), from
+f4464c7d60109935ccc734ff02de739c2a1ef948. README links now point to the
+release, source tag, Linux amd64 archive, checksums and current release notes.
+Current status reflects publication; historical benchmark and audit entries are
+retained with their measurement scope. This update changes documentation only.
+The existing tag and uploaded archive remain unchanged.

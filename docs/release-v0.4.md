@@ -1,9 +1,11 @@
 # v0.4 - Interactive Adventure Menu
 
-Release candidate notes. All 2,947 pinned source inputs are verified against the
-locked dataset. Local Linux amd64 packaging and extracted-binary checks are
-recorded in project progress. Final tagged-source checks and real-terminal
-acceptance remain pending. No v0.4 release has been published.
+Published 6 October 2026 (IST): [v0.4](https://github.com/mayanklad/pokecrt/releases/tag/v0.4).
+Source: `f4464c7d60109935ccc734ff02de739c2a1ef948`.
+All 2,947 pinned inputs verify. Local packaging, checksum verification and
+extracted-binary checks completed before publication. The Linux amd64 archive
+and SHA256SUMS are attached to the release. Known terminal and compact-mode
+limitations remain documented below.
 
 PokéCRT adds `pokecrt tui` to the existing offline Trainer CLI:
 
@@ -52,3 +54,4 @@ The source is MIT licensed; third-party metadata/artwork retain their own terms
 and ownership. PokéCRT remains an unofficial fan project, with the existing
 attribution and distribution policy. No endorsement or rights-holder permission
 is claimed.
+

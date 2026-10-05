@@ -1,5 +1,10 @@
 # Public-engine performance baseline
 
+Publication status: v0.4 is released from `f4464c7d60109935ccc734ff02de739c2a1ef948`.
+The sections below retain their original source revisions, hardware and test
+scope. Publication adds no new timing or RSS measurement; historical pending
+archive statements describe the status at the time of measurement.
+
 D10a measured 2 October 2026 against commit
 `8490227efd6e7c5fd3782995acf7bfe739d4fda5`; its original baseline is retained below.
 D10b applies the automatic lookup index to pushed D10a commit
@@ -1098,3 +1103,4 @@ The CGO-disabled, trimpath, stripped Linux amd64 build with version v0.4 is
 13,705,376 bytes (13.07 MiB), below the 16 MiB limit. Independent Trainer
 scrolling passes unit/rendered-content and running-terminal checks. Timing and
 RSS figures above remain dated measurements; they were not rerun for D31.
+
