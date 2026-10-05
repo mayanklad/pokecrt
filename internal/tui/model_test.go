@@ -232,18 +232,40 @@ func BenchmarkWideView(b *testing.B) {
 	}
 }
 
-func TestDeviceHasNoBallAndFitsCompactScreen(t *testing.T) {
+func TestTownArtworkFitsViewport(t *testing.T) {
 	for _, size := range [][2]int{{120, 40}, {48, 36}, {48, 28}, {90, 28}} {
 		m := New(context.Background(), nil, Dark, true)
 		m.width, m.height = size[0], size[1]
-		c := newCanvas(size[0], size[1])
-		m.paintScene(c, 0, 0, size[0], size[1]-15)
+		c := newCanvas(size[0]+4, size[1]+4)
+		viewportH := size[1] - 15
+		m.paintScene(c, 2, 2, size[0], viewportH)
 		s := c.content(m.palette())
-		if !strings.Contains(s, "ROUTE 01") || strings.Contains(s, "▀") || strings.Contains(s, "▄") {
+		if !strings.Contains(s, "ROUTE") || strings.Contains(s, "VERDANT TOWN") {
 			t.Fatalf("unexpected first-run artwork at %v", size)
 		}
-		if size[1] >= 36 && !strings.Contains(s, "◆") {
+		if !strings.Contains(s, "◆ YOU") {
 			t.Fatalf("missing status at %v", size)
+		}
+		for y, row := range c.rows {
+			for x, cell := range row {
+				if (x < 2 || x >= size[0]+2 || y < 2 || y >= viewportH+2) && cell.text != " " {
+					t.Fatalf("artwork escaped viewport at %v: (%d, %d)", size, x, y)
+				}
+			}
+		}
+	}
+}
+
+func TestTownLandmarksSurviveShrinkingViewport(t *testing.T) {
+	for _, size := range [][2]int{{188, 37}, {120, 25}, {114, 17}, {114, 16}, {68, 17}, {67, 17}, {60, 14}, {44, 9}, {44, 8}, {44, 3}, {44, 2}, {44, 1}} {
+		m := New(context.Background(), nil, Dark, true)
+		c := newCanvas(size[0], size[1])
+		m.paintScene(c, 0, 0, size[0], size[1])
+		s := c.content(m.palette())
+		for _, label := range []string{"HOME", "POND", "◆ YOU"} {
+			if !strings.Contains(s, label) {
+				t.Fatalf("missing %q at viewport %v", label, size)
+			}
 		}
 	}
 }

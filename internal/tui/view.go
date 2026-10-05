@@ -252,8 +252,8 @@ func (m Model) paintMain(c *canvas) {
 	wide := frameW >= 90 && frameH >= 28
 	if wide {
 		lx := left + (frameW-41)/2
-		m.paintLogo(c, lx, top+1)
-		c.put(lx+14, top+4, "TRAINER HUB", p.gold)
+		m.paintLogo(c, lx, top+2)
+		c.put(lx+14, top+5, "TRAINER HUB", p.gold)
 		name := clean(m.snapshot.Name)
 		if name == "" {
 			name = "No trainer yet"
@@ -273,29 +273,33 @@ func (m Model) paintMain(c *canvas) {
 		c.put(px+2, top+3, ansi.Truncate(status, cardW-4, "…"), p.muted)
 
 	} else {
-		c.put(left+3, top+1, "◈ POKECRT ◈", p.accent)
-		c.put(left+5, top+1, "POKECRT", m.brandStyle())
-		c.put(left+3, top+2, "TRAINER HUB", p.gold)
-		c.put(left+3, top+3, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
+		headerGap := 1
+		if frameH < 28 {
+			headerGap = 0
+		}
+		c.put(left+3, top+1+headerGap, "◈ POKECRT ◈", p.accent)
+		c.put(left+5, top+1+headerGap, "POKECRT", m.brandStyle())
+		c.put(left+3, top+2+headerGap, "TRAINER HUB", p.gold)
+		c.put(left+3, top+3+headerGap, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
 	}
 	if frameH < 28 {
 		c.button(left+frameW-11, top+1, 8, 6, "Quit", m)
 	}
 	if frameH >= 28 {
-		sceneH := frameH - 24
+		sceneH := frameH - 25
 		if wide {
-			sceneH = frameH - 20
+			sceneH = frameH - 21
 		}
-		c.box(left+2, top+5, frameW-4, sceneH, "TOWN MAP", p.accent)
-		m.paintScene(c, left+3, top+6, frameW-6, sceneH-2)
-		dy := top + 5 + sceneH
+		c.box(left+2, top+6, frameW-4, sceneH, "TOWN MAP", p.accent)
+		m.paintScene(c, left+3, top+7, frameW-6, sceneH-2)
+		dy := top + 6 + sceneH
 		if wide {
 			menuW := 30
 			textW := frameW - menuW - 5
-			c.box(left+2, dy, textW, 8, m.homeTitle(), p.accent)
-			c.wrap(left+4, dy+2, textW-4, 5, m.dialogue(), "")
+			c.box(left+2, dy, textW, 7, m.homeTitle(), p.accent)
+			c.wrap(left+4, dy+2, textW-4, 4, m.dialogue(), "")
 			mx := left + frameW - menuW - 2
-			c.box(mx, dy, menuW, 8, "Choose", p.accent)
+			c.box(mx, dy, menuW, 7, "Choose", p.accent)
 			for i, label := range sections {
 				c.button(mx+2, dy+1+i, menuW-4, i, label, m)
 			}
@@ -303,7 +307,7 @@ func (m Model) paintMain(c *canvas) {
 		} else {
 			c.box(left+2, dy, frameW-4, 4, m.homeTitle(), p.accent)
 			c.wrap(left+4, dy+1, frameW-8, 2, m.dialogue(), "")
-			c.box(left+2, dy+4, frameW-4, 8, "Choose", p.accent)
+			c.box(left+2, dy+4, frameW-4, 7, "Choose", p.accent)
 			for i, label := range sections {
 				c.button(left+4, dy+5+i, frameW-8, i, label, m)
 			}

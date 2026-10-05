@@ -651,3 +651,41 @@ They remain earnable goals; absence of a progress bar does not mean that the
 encounter inventory cannot support them. Earned Badges Left exits to Back;
 Next Goals Right exits to Quit. Inward arrows still switch between the panels.
 These routes preserve both independent scroll positions.
+
+## D25 Home town illustration
+
+The Home town artwork uses pitched-roof landmarks, window bays, doorways,
+a central avenue, a location marker, tree silhouettes and a garden pond.
+Three compositions adapt to the available artwork viewport; decorative strokes
+are clipped to that viewport. The illustration uses terminal characters with
+separate dark/light colours and terminal-native/NO_COLOR fallbacks. It adds no
+image assets, dependencies, animation timers, navigation targets or storage writes.
+Existing Home controls, layout and the accepted information panels are retained.
+
+Validation: go test ./..., go vet ./... and build pass. Real terminal captures
+cover wide, large, compact, short and minimum layouts, Dark, Light, Terminal
+Native, Follow Terminal with a light-background reply and NO_COLOR. Terminal
+state restores after exit; the trainer fixture remains unchanged.
+
+The Home Choose frame fits its five options with no unused interior row below
+Appearance, in both wide and compact layouts. The information panel keeps its
+existing height, and control positions and navigation targets are retained.
+
+On wide Home layouts, the information panel and Choose frame share the same
+seven-row height and aligned lower borders. Information wrapping stays within
+the resized interior. Compact stacked panels retain their existing heights.
+
+
+### D25 — adaptive home town artwork refinement
+
+- Town streets span the artwork viewport with connected avenue and building entrances.
+- Landmark sizes and positions adapt to the viewport; outer lawns contain trees and the pond has aligned continuous borders.
+- Home title receives one blank interior row above it on normal layouts. The information and Choose frames retain equal heights.
+- Compact maps retain a simpler composition. No image assets, timers, or new focus targets.
+- Build and running-terminal verification pending: Go is unavailable in the current workspace.
+
+
+D25 accepted-artwork follow-up: removed the Verdant Town label in both map layouts. Replaced the obsolete half-block prohibition with route/location, removed-label, and viewport-containment checks; trees remain unchanged. Go execution remains pending in this workspace.
+
+
+D25 resize follow-up: switch to a four-landmark compact map before detailed buildings fall below their minimum width or height. Short viewports show condensed labels, including Home and Pond. Added landmark-persistence regression cases across layout thresholds and one-row panels. Large artwork remains unchanged. Go execution pending.

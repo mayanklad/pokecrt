@@ -1,85 +1,148 @@
 package tui
 
-import "strings"
+import (
+	"strings"
 
-// The town is a static character drawing: no image assets or animation timers.
+	"github.com/charmbracelet/x/ansi"
+)
+
+// The town is composed inside its viewport, without assets or animation timers.
 func (m Model) paintScene(c *canvas, x, y, w, h int) {
-	if w < 20 || h < 2 {
+	if w < 20 || h < 1 {
 		return
 	}
 	p := m.palette()
-	road, green, water, roof := p.gold, p.muted, p.accent, p.accent
+	road, leaf, water, roof := p.gold, p.muted, p.accent, p.accent
 	if !m.noColor && !m.nativePalette() {
-		green, water, roof = fg(99, 171, 126), fg(103, 173, 211), fg(223, 126, 139)
+		road, leaf = fg(168, 151, 110), fg(104, 173, 137)
+		water, roof = fg(111, 182, 204), fg(217, 119, 137)
 		if m.lightPalette() {
-			green, water, roof = fg(43, 112, 72), fg(39, 111, 154), fg(159, 62, 78)
+			road, leaf = fg(125, 104, 57), fg(40, 107, 73)
+			water, roof = fg(30, 107, 140), fg(158, 53, 76)
 		}
 	}
-	mw := min(w-2, 84)
-	mx := x + (w-mw)/2
-	if h == 2 {
-		c.put(mx, y, "CENTER ───── ◆ YOU ───── MART", p.accent)
-		c.put(mx, y+1, "VERDANT TOWN     ROUTE 01 →", road)
+	draw := func(dx, dy int, text, style string) {
+		if dx < 0 || dx >= w || dy < 0 || dy >= h {
+			return
+		}
+		c.put(x+dx, y+dy, ansi.Truncate(text, w-dx, ""), style)
+	}
+	// Switch composition before a detailed landmark becomes too small to draw.
+	if w < 68 || h < 17 {
+		if h == 1 {
+			draw(0, 0, "HOME  POND  ◆ YOU →", p.foreground)
+			return
+		}
+		if h < 9 || w < 40 {
+			if h == 2 {
+				draw(0, 0, "CENTER MART HOME POND", p.foreground)
+			} else {
+				draw(1, 0, "CENTER   MART", roof)
+				draw(1, 1, "HOME     ≋ POND", water)
+			}
+			draw(0, h-1, "◆ YOU   ROUTE 01 →", road)
+			return
+		}
+		bx, bw := 2, min(16, (w-8)/2)
+		rx := w-bw-2
+		landmark := func(dx, dy int, label, style string) {
+			draw(dx, dy, "╭"+strings.Repeat("─", bw-2)+"╮", style)
+			draw(dx, dy+1, "│"+strings.Repeat(" ", bw-2)+"│", style)
+			draw(dx+(bw-ansi.StringWidth(label))/2, dy+1, label, style)
+			draw(dx, dy+2, "╰"+strings.Repeat("─", bw-2)+"╯", style)
+		}
+		landmark(bx, 1, "CENTER", roof)
+		landmark(rx, 1, "MART", roof)
+		landmark(bx, h-4, "YOUR HOME", p.foreground)
+		landmark(rx, h-4, "≋ POND ≋", water)
+		ry := h/2
+		draw(0, ry, strings.Repeat("─", w), road)
+		draw(w/2-3, ry, "◆ YOU", p.accent)
+		draw(w-11, ry, "ROUTE 01 →", road)
 		return
 	}
-	if h < 8 {
-		c.put(mx, y, "╭─ CENTER ─╮    ╭─ MART ─╮", roof)
-		c.put(mx, y+1, "╰────┬─────╯    ╰───┬────╯", p.accent)
-		c.put(mx, y+2, strings.Repeat("─", mw/2)+" ◆ YOU", road)
-		return
+	// Streets reach the viewport edges; buildings and gardens fill four blocks.
+	mid, avenue := h/2, w/2
+	for row := 0; row < h; row++ {
+		draw(avenue-4, row, "│       │", road)
 	}
-	mh := min(h, 15)
-	my := y + (h-mh)/2
-	cy := my + mh/2 + 1
-	cx := mx + mw/2
-	c.put(mx+2, my, "VERDANT TOWN", p.foreground)
-	c.put(mx+mw-16, my, "ROUTE 01  →", road)
-	c.put(mx, cy-1, strings.Repeat("─", mw), road)
-	c.put(mx, cy+1, strings.Repeat("─", mw), road)
-	for row := my + 1; row < my+mh; row++ {
-		if row < cy-1 || row > cy+1 {
-			c.put(cx-2, row, "│   │", road)
+	for _, row := range []int{mid-1, mid+1} {
+		draw(0, row, strings.Repeat("─", w), road)
+	}
+	draw(avenue-4, mid-1, "╯       ╰", road)
+	draw(avenue-4, mid+1, "╮       ╭", road)
+	draw(avenue-2, mid, "◆ YOU", p.accent)
+	draw(w-13, mid, "ROUTE 01 →", road)
+	draw(avenue-3, 0, "↑", road)
+	building := func(bx, by, bw, bh int, name string, upper bool) {
+		if bw < 16 || bh < 5 {
+			return
+		}
+		draw(bx+2, by, "╱"+strings.Repeat("─", bw-6)+"╲", roof)
+		draw(bx+1, by+1, "╱"+strings.Repeat(" ", bw-4)+"╲", roof)
+		draw(bx+(bw-ansi.StringWidth(name))/2, by+1, name, roof)
+		draw(bx, by+2, "╱"+strings.Repeat("─", bw-2)+"╲", roof)
+		for row := 3; row < bh-1; row++ {
+			draw(bx, by+row, "│"+strings.Repeat(" ", bw-2)+"│", p.foreground)
+			if row == 3 || row%3 == 0 {
+				for col := 3; col < bw-3; col += 6 {
+					draw(bx+col, by+row, "▪ ▪", water)
+				}
+			}
+		}
+		door := bx+bw/2-1
+		draw(door, by+bh-2, "╭─╮", p.foreground)
+		draw(bx, by+bh-1, "╰"+strings.Repeat("─", bw-2)+"╯", p.foreground)
+		draw(door, by+bh-1, "┴─┴", p.foreground)
+		if upper {
+			for row := by+bh; row < mid-1; row++ {
+				draw(door, row, "│ │", road)
+			}
+			draw(door, mid-1, "╯ ╰", road)
+		} else {
+			for row := mid+2; row < by; row++ {
+				draw(door, row, "│ │", road)
+			}
+			draw(door, mid+1, "╮ ╭", road)
 		}
 	}
-	c.put(cx-2, cy-1, "╯   ╰", road)
-	c.put(cx-2, cy+1, "╮   ╭", road)
-	building := func(bx, by int, name string) {
-		c.put(bx, by, "╭────────────╮", roof)
-		c.put(bx, by+1, "│            │", p.accent)
-		c.put(bx+2, by+1, name, p.foreground)
-		c.put(bx, by+2, "╰─────┬┬─────╯", p.accent)
-	}
-	if mw >= 55 {
-		building(mx+6, my+2, "✚ CENTER")
-		building(cx+7, my+2, "MART")
-		for py := my + 5; py < cy-1; py++ {
-			c.put(mx+12, py, "││", road)
-			c.put(cx+13, py, "││", road)
+	blockW := avenue-6
+	bw := min(38, blockW-12)
+	bh := max(5, (mid-3)*2/3)
+	left, right := max(4, (blockW-bw)/2), avenue+6+max(2, (blockW-bw)/2)
+	building(left, 2, bw, bh, "✚ POKÉMON CENTER", true)
+	building(right, 2, bw, bh, "POKÉ MART", true)
+	lowerY := mid+3
+	lowerH := h-lowerY-1
+	building(left, lowerY, bw, lowerH, "YOUR HOME", false)
+	// A rectangular stone bank gives the pond a continuous, aligned outline.
+	pondW := bw
+	if lowerH >= 4 {
+		draw(right, lowerY, "╭"+strings.Repeat("─", pondW-2)+"╮", water)
+		for row := 1; row < lowerH-1; row++ {
+			draw(right, lowerY+row, "│"+strings.Repeat(" ", pondW-2)+"│", water)
+			for col := 3+row%2; col < pondW-2; col += 5 {
+				draw(right+col, lowerY+row, "≋", water)
+			}
 		}
-		if mh >= 12 {
-			c.put(mx+12, cy+2, "││", road)
-			building(mx+6, cy+3, "YOUR HOME")
-			c.put(cx+9, cy+3, "╭──────────────╮", water)
-			c.put(cx+9, cy+4, "│ ≋  ≋  ≋  ≋   │", water)
-			c.put(cx+9, cy+5, "╰──────────────╯", water)
-		}
-	} else {
-		c.put(mx+2, my+2, "╭─ CENTER ─╮", roof)
-		c.put(mx+2, my+3, "╰────┬─────╯", p.accent)
-		c.put(cx+5, my+2, "MART", p.foreground)
+		draw(right, lowerY+lowerH-1, "╰"+strings.Repeat("─", pondW-2)+"╯", water)
+		draw(right+max(1, (pondW-11)/2), lowerY, " TOWN POND ", p.foreground)
 	}
-	for _, pos := range [][2]int{{mx + 1, my + 2}, {mx + 1, my + 4}, {mx + mw - 3, my + 2}, {mx + mw - 3, cy + 3}} {
-		if pos[1] < my+mh {
-			c.put(pos[0], pos[1], "♣", green)
+	// Plant the remaining lawn, keeping streets, signs and landmarks clear.
+	for row := 2; row+2 < h; row += 4 {
+		if row+2 >= mid-2 && row <= mid+2 {
+			continue
+		}
+		for col := 1; col+4 < w; col += 8 {
+			inStreet := col+4 >= avenue-5 && col <= avenue+5
+			inLeft := col+4 >= left-1 && col <= left+bw+1
+			inRight := col+4 >= right-1 && col <= right+bw+1
+			if inStreet || inLeft || inRight {
+				continue
+			}
+			draw(col+1, row, "▄█▄", leaf)
+			draw(col, row+1, "▀███▀", leaf)
+			draw(col+2, row+2, "│", road)
 		}
 	}
-	if mw >= 75 && mh >= 12 {
-		for _, ty := range []int{my + 2, my + 4, cy + 3, cy + 5} {
-			c.put(mx+mw-11, ty, "♣  ♣  ♣", green)
-			c.put(mx+1, ty, "♣  ♣", green)
-		}
-		c.put(cx+10, cy+6, "TOWN GARDEN", green)
-	}
-	c.put(cx-1, cy, "◆", p.accent)
-	c.put(cx+3, cy, "YOU", p.foreground)
 }
