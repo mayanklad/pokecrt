@@ -420,7 +420,11 @@ func (m Model) compactActivityControls() []dexControl {
 		if !(m.section == 1 && m.activity.historyMode && len(m.activity.data.history) > 0) {
 			add(4, bottom, 12, 22, "Scroll")
 		}
-		add(g.w-14, bottom, 5, 16, "↑")
+		upX := g.w - 14
+		if m.section == 3 {
+			upX--
+		}
+		add(upX, bottom, 5, 16, "↑")
 		add(g.w-9, bottom, 5, 17, "↓")
 	}
 	if m.section == 1 && m.activity.historyMode && len(m.activity.data.history) > 0 {
@@ -433,6 +437,29 @@ func (m Model) compactActivityControls() []dexControl {
 			label = "Art"
 		}
 		add(2, g.h-4, 16, 35, label)
+	}
+	if m.section == 3 {
+		y := g.h - 5
+		if g.h >= 24 && g.w >= 56 {
+			y = g.h - 6
+		}
+		if g.h >= 24 && g.w >= 56 {
+			for i, label := range []string{"Back", "Theme", "Refresh", "Quit"} {
+				add(2+i*13, y, 12, []int{12, 13, 11, 14}[i], label)
+			}
+			return out
+		}
+		x := 2
+		gap := 1
+		if g.w < 43 {
+			gap = 0
+		}
+		for i, label := range []string{"Back", "Theme", "Refresh", "Quit"} {
+			width := ansi.StringWidth(label) + 4
+			add(x, y, width, []int{12, 13, 11, 14}[i], label)
+			x += width + gap
+		}
+		return out
 	}
 	return append(out, compactActions(2, g.h-3, g.w-4, []int{12, 13, 11, 14}, []string{"Back", "Theme", "Reload", "Quit"})...)
 }
@@ -450,10 +477,10 @@ func (m Model) paintCompactActivity(c *canvas) {
 	if m.section == 1 && a.historyMode {
 		title = "RECENT DISCOVERIES"
 	}
-	if m.focus == 21 || m.focus == 22 || m.focus == 20 {
+	if m.section != 3 && (m.focus == 21 || m.focus == 22 || m.focus == 20) {
 		title = "▶ " + title
 	}
-	c.box(2, y, g.w-4, h, title, p.accent)
+	c.box(2, y, g.w-4, h, title, m.achievementFrameStyle(p.accent))
 	if m.section == 1 && a.result != nil && !a.historyMode {
 		c.put(2, 3, ansi.Truncate(fmt.Sprintf("#%03d %s  +%d XP", a.result.Choice.Key().SpeciesID, strings.ToUpper(clean(a.result.Choice.Snapshot().SpeciesName)), a.result.XPAwarded), g.w-4, "…"), p.muted)
 	}
@@ -483,7 +510,23 @@ func (m Model) paintCompactActivity(c *canvas) {
 		}
 	}
 	for _, control := range m.activityControls() {
-		c.button(control.x, control.y, control.w, control.id, control.label, m)
+		if m.section == 3 && m.height >= 24 && m.width >= 56 && (control.id == 12 || control.id == 13 || control.id == 11 || control.id == 14) {
+			c.outlinedButton(control.x, control.y-1, control.w, control.id, control.label, m)
+		} else {
+			if m.section == 3 && (control.id == 22 || control.id == 16 || control.id == 17) {
+				if control.id == 22 || control.id == 16 || control.id == 17 {
+					c.put(control.x-1, control.y, " ", p.foreground)
+				}
+				if control.id == 22 || control.id == 16 || control.id == 17 {
+					c.put(control.x+control.w, control.y, " ", p.foreground)
+				}
+			}
+			c.button(control.x, control.y, control.w, control.id, control.label, m)
+		}
+	}
+	if m.section == 3 {
+		m.paintAchievementHints(c, 2, g.h-3, g.w-4)
+		return
 	}
 	hint := "Arrows Focus  Enter Use  Tab Next"
 	if m.focus == 21 {

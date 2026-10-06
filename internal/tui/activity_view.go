@@ -8,6 +8,13 @@ import (
 
 func (m Model) activityBodyHeight() int {
 	if !m.dexWide() {
+		if m.section == 3 {
+			reserve := 6
+			if m.height >= 24 && m.width >= 56 {
+				reserve = 8
+			}
+			return max(3, m.height-reserve-m.compactActivityBodyY())
+		}
 		return max(3, m.height-4-m.compactActivityBodyY())
 	}
 	h := m.dexGeometry().h
@@ -22,6 +29,9 @@ func (m Model) activityBodyHeight() int {
 		return max(3, height)
 	}
 	height := h - 11
+	if m.section == 3 {
+		height -= 2
+	}
 	if m.section == 1 && h >= 20 {
 		height--
 	}
@@ -74,7 +84,14 @@ func (m Model) activityWrapped() []string {
 		w = g.w/2 - 6
 	}
 	var lines []string
-	for _, line := range m.activityLines() {
+	source := m.activityLines()
+	if m.section == 3 && !g.wide && m.height < 14 && len(source) > 2 {
+		source = source[2:]
+	}
+	for _, line := range source {
+		if m.section == 3 && !g.wide && m.height < 16 && strings.TrimSpace(ansi.Strip(line)) == "" {
+			continue
+		}
 		lines = append(lines, strings.Split(ansi.Wrap(line, max(1, w), ""), "\n")...)
 	}
 	return lines
@@ -99,6 +116,9 @@ func (m Model) activityControls() []dexControl {
 		}
 		if g.h >= 24 && y == g.y+g.h-3 {
 			y -= 3
+		}
+		if m.section == 3 && g.h < 24 && (id == 12 || id == 13 || id == 11 || id == 14) {
+			y -= 2
 		}
 		out = append(out, dexControl{x, y, w, id, label})
 	}
@@ -125,7 +145,11 @@ func (m Model) activityControls() []dexControl {
 			pw := g.w/2 - 3
 			add(px, g.y+g.h-6, 13, 40+panel, "Scroll")
 			if m.activityPanelMaxScroll(panel) > 0 {
-				add(px+pw-12, g.y+g.h-6, 5, 42+panel*2, "↑")
+				upX := px + pw - 12
+				if m.section == 3 {
+					upX--
+				}
+				add(upX, g.y+g.h-6, 5, 42+panel*2, "↑")
 				add(px+pw-7, g.y+g.h-6, 5, 43+panel*2, "↓")
 			}
 		}
@@ -207,7 +231,7 @@ func (m Model) paintActivity(c *canvas) {
 		bodyY = g.y + 3
 	}
 	if g.h >= 18 && !(g.wide && (m.section != 1 || !a.historyMode && len(a.art) > 0 && a.error == "")) {
-		c.box(g.x+2, bodyY, bodyW, bodyH, " "+map[int]string{1: "ENCOUNTER LOG", 2: "TRAINER CARD", 3: "ACHIEVEMENT JOURNAL"}[m.section]+" ", p.accent)
+		c.box(g.x+2, bodyY, bodyW, bodyH, " "+map[int]string{1: "ENCOUNTER LOG", 2: "TRAINER CARD", 3: "ACHIEVEMENT JOURNAL"}[m.section]+" ", m.achievementFrameStyle(p.accent))
 	}
 	textX, textW := g.x+4, bodyW-4
 	if m.section != 1 && g.wide {
@@ -217,8 +241,8 @@ func (m Model) paintActivity(c *canvas) {
 	}
 	if g.wide && m.section != 1 {
 		half := g.w/2 - 3
-		c.box(g.x+2, bodyY, half, bodyH, " "+map[int]string{2: "TRAINER CARD", 3: "EARNED BADGES"}[m.section]+" ", p.accent)
-		c.box(g.x+g.w/2, bodyY, g.w/2-2, bodyH, " "+map[int]string{2: "GENERATION PROGRESS", 3: "NEXT GOALS"}[m.section]+" ", p.accent)
+		c.box(g.x+2, bodyY, half, bodyH, " "+map[int]string{2: "TRAINER CARD", 3: "EARNED BADGES"}[m.section]+" ", m.informationFrameStyle(0, p.accent))
+		c.box(g.x+g.w/2, bodyY, g.w/2-2, bodyH, " "+map[int]string{2: "GENERATION PROGRESS", 3: "NEXT GOALS"}[m.section]+" ", m.informationFrameStyle(1, p.accent))
 		left, _ := m.activityColumns()
 		rows := wrapActivityLines(left, half-4)
 		leftScroll := a.scroll
@@ -296,7 +320,13 @@ func (m Model) paintActivity(c *canvas) {
 		}
 	}
 
-	if g.h >= 24 {
+	if m.section == 3 {
+		hintY := g.y + g.h - 3
+		if g.h >= 24 {
+			hintY = g.y + g.h - 4
+		}
+		m.paintAchievementHints(c, g.x+2, hintY, g.w-4)
+	} else if g.h >= 24 {
 		c.navigationHints(g.x+2, g.y+g.h-4, g.w-4, m, false, "Select")
 	} else {
 		c.navigationHints(g.x+2, g.y+g.h-2, g.w-4, m, true, "Select")
@@ -354,4 +384,17 @@ func (m Model) paintActivityArt(c *canvas, x, y, w, h int) {
 	for i := 0; i < h-dy && i+a.artScroll < len(a.art); i++ {
 		c.putANSI(x+dx, y+dy+i, ansi.Cut(a.art[i+a.artScroll], a.artPan, a.artPan+w-dx))
 	}
+}
+
+func (m Model) achievementFrameStyle(fallback string) string {
+	if m.section == 3 {
+		return m.achievementPanelStyle(0)
+	}
+	return fallback
+}
+func (m Model) informationFrameStyle(panel int, fallback string) string {
+	if m.section == 3 {
+		return m.achievementPanelStyle(panel)
+	}
+	return fallback
 }

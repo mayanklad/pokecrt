@@ -879,7 +879,7 @@ retained with their measurement scope. This update changes documentation only.
 The existing tag and uploaded archive remain unchanged.
 
 
-## D34 — Home screenshot review and responsive corrections
+## D34 - Home screenshot review and responsive corrections
 
 Baseline: cb2385c2f16cfbcab206c0a667e45442848696ea. A fresh source copy
 matches every tracked GitHub blob before edits. Compact/lower-size refinements
@@ -908,3 +908,85 @@ network-blocked Home PTY scenarios cover 40×12 through 120×40, screenshot-like
 remain unchanged; terminal, alternate screen and mouse reporting restore on exit.
 No other page layout, gameplay, schema, dataset, dependency or timer changes.
 This is the first Home refinement pass, not complete compact/v1.0 acceptance.
+
+
+## D35 - Achievements focus and responsive controls
+
+Baseline: 3986f0c4dc3f9fe997fc20fc0ac4387f02a641cc. Every tracked
+source blob matched the GitHub baseline before edits.
+
+Achievements uses one focus marker on the selected control. Color layouts
+highlight the journal or panel border for Scroll and both arrow controls;
+frame titles have no duplicate marker. Monochrome layouts retain one visible
+control marker without ANSI styling. Horizontal navigation follows each visible
+panel's Scroll, Up and Down controls, then Back, Theme, Refresh and Quit.
+Left from the first Scroll reaches Quit; Right from the last panel control
+reaches Back. Tab/Shift-Tab follow the same control order. Up/Down on Scroll
+and mouse-wheel scrolling retain independent panel positions.
+
+Footer hints use bracketed key notation, consistent action names and two
+reserved rows at all supported sizes. The scroll hint follows the focused
+control. Compact action labels are centered; outlined actions are retained
+when at least 56 columns and 24 rows are available. Smaller layouts use
+single-row actions. At fewer than 16 rows, compact journal text omits blank
+separator rows so the first badge remains visible at 40×12.
+
+Full Go tests, vet, TUI race checks and executable build pass. Regression tests
+cover control order, footer clearance, exact rendered dimensions, one focus
+marker in color and monochrome, active panel styling and independent arrow
+activation. Forty-five network-blocked PTY scenarios cover 40×12 through
+120×40, every panel control and footer boundary, resizing, light appearance
+and NO_COLOR. Stored trainer data remains unchanged; terminal attributes,
+alternate screen and mouse reporting restore on exit. Historical performance
+measurements are retained; no new benchmark or release claim is made.
+
+Compact refinement remains required before v1.0. This increment addresses
+Achievements; remaining pages still require their individual review.
+
+
+### D35 screenshot follow-up
+
+Achievements hints now use a single row when the complete hint fits the
+available width, otherwise two rows. The two reserved footer rows prevent
+clipping at smaller sizes. Single-row control interiors overwrite underlying
+frame lines, preserve both delimiters, center labels with symmetric padding,
+and place the sole focus marker inside the control. Arrow controls have a
+blank separating column. The approved Home layout remains unchanged.
+
+Full tests, vet, build and TUI race checks pass. Additional regression tests
+check border-free control interiors and one-row/two-row hint selection. Six
+additional offline PTY scenarios cover minimum, screenshot-like short and
+large screens; browsing leaves trainer data unchanged and exit restores the
+terminal. These checks supplement the preceding D35 scenarios.
+
+
+### D35 footer anchoring
+
+Achievements hints are anchored immediately above the bottom frame border,
+with a horizontal divider separating them from content and action buttons.
+Arrow directions share a single Move label whenever they all move focus;
+Scroll focus retains separate vertical Scroll and horizontal Move hints.
+Compact content and action positions reserve the divider and hint rows. At
+the minimum height, the journal omits its summary heading so a badge remains
+visible. Regression tests verify bottom anchoring and combined Move hints.
+
+
+### D35 Home footer consistency
+
+Home uses the same bottom-anchored hint area and horizontal divider as
+Achievements. Key names have no internal bracket padding: [Enter], [Tab],
+[Esc] and [Q]. Hints use one row when they fit, otherwise two. At 40×12 the
+trainer summary shares the title row so all seven actions remain above the
+footer divider. Narrow footer buttons and dialogue reserve the divider row.
+Home arrow navigation and Town Map artwork remain unchanged.
+
+Full tests, vet and build pass. Home regression coverage checks footer
+anchoring, key formatting, all seven visible hit targets and divider clearance
+across ten layouts from 40×12 through 120×40. Six additional offline Home PTY
+scenarios verify actual rendering and terminal restoration without state changes.
+
+
+Footer dividers now use the same quiet structural-border style as the outer
+frame, including light, dark, terminal-native and NO_COLOR appearances.
+The divider remains a thin line and does not acquire a focus accent.
+TUI regression tests pass; layout and navigation are unchanged.

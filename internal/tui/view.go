@@ -109,7 +109,7 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		c.put(x, y, "❨", style)
 		c.put(x+w-1, y, "❩", style)
 		c.controlText(x+1, y, w-2, label, style, m.focus == id, selected)
-		if !m.dexWide() && m.noColor && m.focus == id {
+		if !m.dexWide() && m.noColor && m.focus == id && !(m.screen == activityScreen && m.section == 3 && !m.settings) {
 			c.put(x, y, "▶", style)
 		}
 		c.hits = append(c.hits, hit{x, y, w, id})
@@ -306,7 +306,11 @@ func (m Model) paintMain(c *canvas) {
 		if frameH < 16 {
 			profileY = top + 2
 		}
-		c.put(left+3, profileY, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
+		if frameH == 12 {
+			c.put(left+16, top+1, ansi.Truncate(m.profileLabel(), frameW-18, "…"), p.muted)
+		} else {
+			c.put(left+3, profileY, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
+		}
 	}
 
 	if frameH >= 28 {
@@ -352,22 +356,35 @@ func (m Model) paintMain(c *canvas) {
 			c.outlinedButton(left+18, top+4, 12, 6, "Quit", m)
 			menuY = top + 7
 		} else {
-			c.button(left+3, top+3, 14, 5, "Refresh", m)
-			c.button(left+18, top+3, 12, 6, "Quit", m)
+			actionY := top + 3
+			if frameH == 12 {
+				actionY--
+				menuY--
+			}
+			c.button(left+3, actionY, 14, 5, "Refresh", m)
+			c.button(left+18, actionY, 12, 6, "Quit", m)
 		}
 		for i, label := range sections {
 			c.button(left+3, menuY+i, frameW-6, i, label, m)
 		}
 		c.button(left+3, menuY+4, frameW-6, 4, "Appearance", m)
-		if frameH >= 19 {
-			c.box(left+2, top+13, frameW-4, frameH-16, m.homeTitle(), p.accent)
-			c.wrap(left+4, top+14, frameW-8, frameH-18, m.dialogue(), "")
+		dialogueH := frameH - 16
+		if frameW-6 < ansi.StringWidth("[↑↓←→] Move  [Tab] Focus  [Enter] Open  [Esc] Back  [Q] Quit") {
+			dialogueH--
+		}
+		if dialogueH >= 3 {
+			c.box(left+2, top+13, frameW-4, dialogueH, m.homeTitle(), p.accent)
+			c.wrap(left+4, top+14, frameW-8, dialogueH-2, m.dialogue(), "")
 		}
 	}
 	if frameH >= 28 {
 		if !wide {
-			c.outlinedButton(left+3, top+frameH-6, 14, 5, "Refresh", m)
-			c.outlinedButton(left+18, top+frameH-6, 12, 6, "Quit", m)
+			actionY := top + frameH - 6
+			if frameW-6 < ansi.StringWidth("[↑↓←→] Move  [Tab] Focus  [Enter] Open  [Esc] Back  [Q] Quit") {
+				actionY--
+			}
+			c.outlinedButton(left+3, actionY, 14, 5, "Refresh", m)
+			c.outlinedButton(left+18, actionY, 12, 6, "Quit", m)
 		}
 		m.paintHomeHints(c, left+3, top+frameH-4, frameW-6)
 
@@ -377,12 +394,20 @@ func (m Model) paintMain(c *canvas) {
 }
 
 func (m Model) paintHomeHints(c *canvas, x, y, w int) {
-	if w >= 65 {
-		c.navigationHints(x, y, w, m, false, "Open")
+	first := "[↑↓←→] Move  [Tab] Focus"
+	second := "[Enter] Open  [Esc] Back  [Q] Quit"
+	full := first + "  " + second
+	y = c.height - 3
+	if ansi.StringWidth(full) <= w {
+		y = c.height - 2
+	}
+	c.put(0, y-1, "├"+strings.Repeat("─", max(0, c.width-2))+"┤", m.footerDividerStyle())
+	if ansi.StringWidth(full) <= w {
+		c.put(x, y, full, m.hintStyle())
 		return
 	}
-	c.put(x, y+1, "[↑↓←→] Move  [Tab] Focus", m.hintStyle())
-	c.put(x, y+2, "[Enter] Open  [Q] Quit", m.hintStyle())
+	c.put(x, y, first, m.hintStyle())
+	c.put(x, y+1, second, m.hintStyle())
 }
 
 func (m Model) homeTitle() string {

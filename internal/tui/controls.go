@@ -50,7 +50,7 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 	}
 	c.keycap(x, y, w, "", border)
 	c.controlText(x+1, y+1, w-2, label, style, m.focus == id, selected)
-	if !m.dexWide() && m.noColor && m.focus == id {
+	if !m.dexWide() && m.noColor && m.focus == id && !(m.screen == activityScreen && m.section == 3 && !m.settings) {
 		c.put(x, y+1, "▶", style)
 	}
 	for row := y; row < y+3; row++ {
@@ -198,8 +198,7 @@ func directionalTarget(controls []dexControl, currentID int, direction string) i
 }
 
 // Quiet structural borders; only the panel containing keyboard focus is accented.
-func (m Model) styleFrames(c *canvas) {
-	quiet, active := "", ""
+func (m Model) frameStyles() (quiet, active string) {
 	if !m.noColor {
 		quiet, active = fg(64, 88, 104), fg(105, 165, 182)
 		if m.lightPalette() {
@@ -209,6 +208,16 @@ func (m Model) styleFrames(c *canvas) {
 			quiet, active = "\x1b[2m", "\x1b[1m"
 		}
 	}
+	return quiet, active
+}
+
+func (m Model) footerDividerStyle() string {
+	quiet, _ := m.frameStyles()
+	return quiet
+}
+
+func (m Model) styleFrames(c *canvas) {
+	quiet, active := m.frameStyles()
 	fx, fy := -1, -1
 	for _, hit := range c.hits {
 		if hit.id == m.focus {

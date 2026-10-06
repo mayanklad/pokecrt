@@ -121,7 +121,9 @@ func TestAchievementPanelsScrollIndependently(t *testing.T) {
 	if m.activity.panelScroll != [2]int{1, 0} {
 		t.Fatal("left scroll moves right panel", m.activity.panelScroll)
 	}
-	m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
+	for range 3 {
+		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
+	}
 	m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyDown})
 	if m.focus != 41 || m.activity.panelScroll != [2]int{1, 1} {
 		t.Fatal("right panel not independently focusable", m.focus, m.activity.panelScroll)
@@ -149,31 +151,6 @@ func TestVariantCardsRemainSelectableAndRevealTheirFocus(t *testing.T) {
 	}
 }
 
-func TestAchievementOutwardArrowsExitWithoutWrapping(t *testing.T) {
-	m := activityModel()
-	m.width, m.height = 120, 40
-	m.section = 3
-	m.focus = 40
-	m.activity.panelScroll = [2]int{2, 3}
-	m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyLeft})
-	if m.focus != 12 || m.activity.panelScroll != [2]int{2, 3} {
-		t.Fatal("Earned Badges Left must exit to Back")
-	}
-	m.focus = 41
-	m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
-	if m.focus != 14 || m.activity.panelScroll != [2]int{2, 3} {
-		t.Fatal("Next Goals Right must exit to Quit")
-	}
-	m.focus = 40
-	m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
-	if m.focus != 41 {
-		t.Fatal("inward Right must reach Next Goals")
-	}
-	m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyLeft})
-	if m.focus != 40 {
-		t.Fatal("inward Left must reach Earned Badges")
-	}
-}
 func TestEventAchievementHasEarnablePlayerFacingStatus(t *testing.T) {
 	m := activityModel()
 	m.section = 3

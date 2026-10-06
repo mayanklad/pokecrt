@@ -647,7 +647,14 @@ shiny counts, eligible completion, generation progress, and encounter dates.
 Choose / create trainer opens the existing trainer chooser. The Adventure Menu
 also displays the active trainer's level. **Achievements** separates earned
 badges and their dates from locked goals and current progress, using the same
-disclosure-safe registry as the CLI. Reading never awards a badge.
+disclosure-safe registry as the CLI. Reading never awards a badge. Achievements
+uses one focus marker on the selected control; the active journal/panel border
+is highlighted in color modes. Left/Right visits Scroll, Up and Down in each
+visible panel, then the footer actions. Up/Down on Scroll moves only that
+panel's content. Footer hints use bracketed key names, one row when they fit and two when needed; compact
+labels remain centered. Hints sit above the bottom border with a separating
+divider, combining arrow directions when their actions match. Refresh uses the same name in every Achievements layout.
+
 
 Wide views use framed device/card panes; compact views scroll, and compact
 encounter results switch between natural-size artwork and Details. Tab selects
@@ -657,7 +664,11 @@ PageUp/PageDown scroll records. Appearance remains live in all screens.
 Unsupported terminals retain the existing resize hint and Quit action. Screen
 transitions clear once before redraw to avoid stale frame fragments.
 
-Navigation and Home refinements are implemented through D27. The current
+Home and Achievements footer hints sit immediately above the bottom frame,
+separated by a divider. Key labels use compact brackets such as `[Enter]`;
+matching arrow actions share one Move label. Hints wrap only when needed.
+
+Navigation, Home and Achievements refinements are implemented through D35. The current
 release audit records remaining packaging, compatibility and verification gates.
 
 

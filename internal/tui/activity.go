@@ -3,6 +3,7 @@ package tui
 import (
 	tea "charm.land/bubbletea/v2"
 	"context"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/mayanklad/pokecrt/internal/catalog"
 	"github.com/mayanklad/pokecrt/internal/render"
 	"github.com/mayanklad/pokecrt/internal/sprite"
@@ -360,7 +361,9 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 			if msg.String() == "up" || msg.String() == "k" || msg.String() == "left" {
 				delta = -1
 			}
-			if m.section != 1 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
+			if m.section == 3 && (msg.String() == "left" || msg.String() == "right") {
+				m.moveAchievementControl(delta)
+			} else if m.section != 1 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
 				panel := m.focus - 40
 				m.activity.informationPanel = panel
 				if msg.String() == "left" || msg.String() == "right" {
@@ -503,4 +506,52 @@ func (m Model) activityPanelMaxScroll(panel int) int {
 }
 func (m *Model) scrollActivityPanel(panel, delta int) {
 	m.activity.panelScroll[panel] = max(0, min(m.activityPanelMaxScroll(panel), m.activity.panelScroll[panel]+delta))
+}
+
+// Horizontal movement follows the visible panel controls, then footer actions.
+func (m *Model) moveAchievementControl(delta int) {
+	controls := m.activityControls()
+	for i, control := range controls {
+		if control.id == m.focus {
+			next := (i + delta + len(controls)) % len(controls)
+			m.focus = controls[next].id
+			return
+		}
+	}
+}
+
+func (m Model) achievementPanelStyle(panel int) string {
+	if m.noColor {
+		return ""
+	}
+	active := m.focus == 22 || m.focus == 16 || m.focus == 17
+	if m.dexGeometry().wide {
+		active = m.focus == 40+panel || m.focus == 42+panel*2 || m.focus == 43+panel*2
+	}
+	if active {
+		return m.palette().muted + "\x1b[1m"
+	}
+	return m.palette().accent
+}
+
+func (m Model) paintAchievementHints(c *canvas, x, y, w int) {
+	first := "[↑↓←→] Move  [Tab] Focus"
+	if m.focus == 22 || m.focus == 40 || m.focus == 41 {
+		first = "[↑↓] Scroll  [←→] Move  [Tab] Focus"
+	}
+	second := "[Enter] Select  [Esc] Back  [Q] Quit"
+	full := first + "  " + second
+	y = c.height - 3
+	if ansi.StringWidth(full) <= w {
+		y = c.height - 2
+	}
+	if y > 0 {
+		c.put(0, y-1, "├"+strings.Repeat("─", max(0, c.width-2))+"┤", m.footerDividerStyle())
+	}
+	if ansi.StringWidth(full) <= w {
+		c.put(x, y, full, m.hintStyle())
+		return
+	}
+	c.put(x, y, first, m.hintStyle())
+	c.put(x, y+1, second, m.hintStyle())
 }

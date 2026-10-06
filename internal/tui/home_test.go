@@ -122,3 +122,39 @@ func TestShortHomeHeaderClearance(t *testing.T) {
 		}
 	}
 }
+
+func TestHomeFooterAnchoredWithoutCoveringControls(t *testing.T) {
+	for _, size := range [][2]int{{40, 12}, {40, 13}, {40, 19}, {40, 24}, {40, 28}, {48, 20}, {64, 24}, {80, 24}, {90, 28}, {120, 40}} {
+		m := New(context.Background(), nil, Dark, true)
+		m.width, m.height = size[0], size[1]
+		c := newCanvas(m.width, m.height)
+		m.paintMain(c)
+		rows := strings.Split(ansi.Strip(c.content(m.palette())), "\n")
+		if !strings.Contains(rows[m.height-2], "[Enter] Open") {
+			t.Fatal("Home hints not anchored", size)
+		}
+		content := strings.Join(rows, "\n")
+		if strings.Contains(content, "[ Enter ]") || !strings.Contains(content, "[Tab] Focus") {
+			t.Fatal("inconsistent key brackets", size)
+		}
+		divider := m.height - 3
+		if strings.Contains(rows[m.height-3], "[↑↓←→]") {
+			divider--
+		}
+		if !strings.HasPrefix(rows[divider], "├") {
+			t.Fatal("missing footer divider", size)
+		}
+		seen := map[int]bool{}
+		for _, h := range c.hits {
+			if h.id >= 0 && h.id <= 6 {
+				seen[h.id] = true
+				if h.y >= divider {
+					t.Fatal("footer covers control", size, h)
+				}
+			}
+		}
+		if len(seen) != 7 {
+			t.Fatal("missing Home action", size)
+		}
+	}
+}
