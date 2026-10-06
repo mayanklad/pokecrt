@@ -112,7 +112,7 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		c.put(x, y, "❨", style)
 		c.put(x+w-1, y, "❩", style)
 		c.controlText(x+1, y, w-2, label, style, m.focus == id, selected)
-		if !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen) && !m.settings) {
+		if !m.settings && !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen) && !m.settings) {
 			c.put(x, y, "▶", style)
 		}
 		c.hits = append(c.hits, hit{x, y, w, id})
@@ -464,69 +464,4 @@ func (m Model) dialogue() string {
 		return "Reload this trainer’s latest collection and progress."
 	}
 	return "Close PokéCRT and return to your terminal."
-}
-
-func (m Model) paintSettings(c *canvas) {
-	if !m.dexWide() {
-		m.paintCompactSettings(c)
-		return
-	}
-	w, h := min(c.width, 88), min(c.height, 28)
-	x, y := (c.width-w)/2, (c.height-h)/2
-	p := m.palette()
-	c.pageBox(x, y, w, h, "APPEARANCE", m)
-	if h >= 24 {
-		c.framedControl(x+w-14, y+1, 12, 6, "Quit", m, false)
-	} else {
-		c.button(x+w-11, y+1, 8, 6, "Quit", m)
-	}
-	for i, label := range appearanceNames {
-		marker := "○ "
-		if appearances[i] == m.appearance {
-			marker = "● "
-		}
-		if h >= 26 {
-			c.framedControl(x+2, y+4+i*3, w-4, i, label, m, appearances[i] == m.appearance)
-		} else {
-			modeY := y + 2
-			if h >= 24 {
-				modeY = y + 4
-			}
-			c.button(x+2, modeY+i, w-4, i, marker+label, m)
-		}
-	}
-	message := "Switch with Enter or a click. Terminal Native preserves your terminal background and configured transparency."
-	if m.appearance == FollowTerminal {
-		message = "Follow Terminal checks background replies about every 2 seconds while focused. Without replies, terminal defaults are used."
-	}
-	if m.noColor {
-		message = "NO_COLOR is enabled. Focus and selection remain visible. Color choices apply when color is enabled."
-	}
-	helpY := y + 6
-	if h >= 24 && h < 26 {
-		helpY = y + 8
-	}
-	if h >= 26 {
-		helpY = y + 16
-	}
-	c.put(x+2, helpY, ansi.Truncate("Changes preview immediately.", w-4, "…"), p.muted)
-	c.wrap(x+2, helpY+1, w-4, max(0, y+h-9-helpY-1), message, "")
-	statusY := y + h - 5
-	if h >= 26 {
-		statusY = y + h - 9
-	}
-	c.wrap(x+2, statusY, w-4, 1, m.configStatus(), p.accent)
-	label := "Save as default"
-	if m.savingConfig {
-		label = "Saving…"
-	}
-	if h >= 26 {
-		c.outlinedButton(x+2, y+h-8, (w-4)/2-1, 4, label, m)
-		c.outlinedButton(x+3+min((w-4)/2-1, 21), y+h-8, min((w-4)/2-1, 21), 5, "Back", m)
-		c.navigationHints(x+2, y+h-4, w-4, m, false, "Apply")
-	} else {
-		c.button(x+2, y+h-3, (w-4)/2-1, 4, label, m)
-		c.button(x+2+(w-4)/2, y+h-3, (w-4)/2-1, 5, "Back", m)
-		c.navigationHints(x+2, y+h-2, w-4, m, true, "Apply")
-	}
 }

@@ -1094,3 +1094,16 @@ Validation: full Go test suite, vet, build and TUI race tests passed. Twenty-two
 Trainer facts retain a visible label/value gap in the wide layout, including long journey labels, generation counts and encounter dates. Compact layouts retain their colon separator. Trainer selection and creation footer dividers join both outer frame borders. The minimum-height create form shifts the keyboard and editing row upward by one row to preserve all controls alongside the divider; validation messages retain their own available row.
 
 Validation: full Go tests, vet, build and TUI race tests passed. Twenty-seven offline terminal scenarios covered Trainer, trainer selection and creation at nine sizes, including the minimum-height form and both sides of the wide-layout boundary. Label/value spacing and joined footer dividers have regression coverage in color and monochrome modes.
+
+
+## D38 - Appearance responsive layout and navigation
+
+Appearance uses one responsive layout across terminal sizes. Mode buttons have bounded widths, a persistent selection dot and one independent focus pointer in color and monochrome output. Roomier dialogs show the focused mode explanation beside the choices. Compact layouts retain contextual descriptions when space permits.
+
+Back, Save default and Help share a balanced action row above the bottom hints. Quit remains in the header. A quiet divider joins both frame borders, and hint rows wrap only when needed. Arrow navigation follows the mode list, header action and footer groups; Tab reaches every visible control. Back restores the original screen and focus while retaining the live preview. Only Save default writes the persistent setting.
+
+Appearance Help is available at every supported size and retains complete settings errors. Its inline Scroll and arrow controls appear only when the details overflow. Mouse wheel and page keys scroll the visible help viewport, and resizing remaps hidden help controls to Back. Closing Help restores its action in Appearance.
+
+Validation covers responsive geometry, all four modes, monochrome focus and selection, mouse targets, arrow and Tab routes, save failure, full error details, Help scrolling, resizing and return focus. Existing terminal-following and protected configuration tests remain in place.
+
+Full Go tests, vet, build and TUI race checks passed. Thirty-nine offline terminal scenarios covered ten terminal sizes, all appearance modes, NO_COLOR, Help and resizing, save/restart behavior, a protected configuration file and return to Trainer. Trainer storage remained unchanged and terminal state was restored.

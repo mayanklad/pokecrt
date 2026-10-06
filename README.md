@@ -588,7 +588,7 @@ default foreground/background colors, preserving terminal-configured
 transparency; the application does not create transparency. Nonempty NO_COLOR
 removes styling while retaining visible focus and selection markers. Ordinary
 text in Native mode uses your terminal foreground; purpose-colour borders and
-visible focus markers remain. Changes apply live. **Save as default** explicitly
+visible focus markers remain. Changes apply live. **Save default** explicitly
 remembers the choice; browsing alone never creates a configuration file.
 
 Without `--appearance`, startup uses the saved choice, then Follow Terminal if
@@ -684,11 +684,11 @@ PageUp/PageDown scroll records. Appearance remains live in all screens.
 Unsupported terminals retain the existing resize hint and Quit action. Screen
 transitions clear once before redraw to avoid stale frame fragments.
 
-Home and Achievements footer hints sit immediately above the bottom frame,
+Home, Achievements, Encounter, Trainer and Appearance footer hints sit immediately above their bottom frame,
 separated by a divider. Key labels use compact brackets such as `[Enter]`;
 matching arrow actions share one Move label. Hints wrap only when needed.
 
-Navigation, Home, Achievements, Encounter and Trainer refinements are implemented through D37. The current
+Navigation, Home, Achievements, Encounter, Trainer and Appearance refinements are implemented through D38. The current
 release audit records remaining packaging, compatibility and verification gates.
 
 
@@ -698,8 +698,11 @@ Controls use flat rounded borders and purpose colours. Focus and
 selection have separate visible markers, including with NO_COLOR. Action rows
 precede bottom navigation hints. Compact screens use rounded single-row caps.
 
-Appearance changes apply live. **Save as default** remembers the selected mode
-for later launches. **Refresh** rereads local records without creating a discovery.
+Appearance changes apply live. **Save default** remembers the selected mode
+for later launches. Back retains the live preview and restores the preceding
+screen and focus. Appearance Help explains terminal modes and exposes complete
+settings errors; its inline scroll controls appear only when needed. **Refresh**
+rereads local records without creating a discovery.
 The Route 01 home scene is static character artwork; no image protocol or new
 animation timer is required. Terminal fonts determine glyph shape and joins.
 

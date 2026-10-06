@@ -225,9 +225,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "q":
-			if !m.settings || m.width < 40 || m.height < 12 {
-				return m, tea.Quit
-			}
+			return m, tea.Quit
 		case "esc":
 			if m.settings {
 				m.closeSettings()
@@ -333,7 +331,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) moveFocus(delta int) {
 	order := []int{0, 1, 2, 3, 4, 5, 6}
 	if m.settings {
-		order = []int{6, 0, 1, 2, 3, 4, 5}
+		order = []int{6, 0, 1, 2, 3, 5, 4, 90}
 	} else if m.screen == profilesScreen {
 		order = []int{0, 1, 2, 3, 4, 6, 5}
 	} else if m.screen == createScreen || m.screen == dexSearchScreen {
@@ -346,7 +344,7 @@ func (m *Model) moveFocus(delta int) {
 			order = []int{0, 2, 6, 7}
 		}
 	}
-	if !m.dexWide() && (m.settings || m.screen == dexSearchScreen) {
+	if !m.settings && !m.dexWide() && m.screen == dexSearchScreen {
 		order = append(order, 90)
 	}
 	for i, id := range order {
@@ -368,10 +366,16 @@ func (m *Model) openSettings() {
 	}
 }
 func (m *Model) activate(id int) tea.Cmd {
-	if id == 90 && !m.dexWide() && (m.settings || m.screen == dexSearchScreen) {
+	if id == 90 && (m.settings || !m.dexWide() && m.screen == dexSearchScreen) {
+		if m.settings {
+			m.focus = 90
+		}
 		return m.openCompactMessage()
 	}
 	if m.settings {
+		if id >= 0 && id <= 6 {
+			m.focus = id
+		}
 		switch {
 		case id >= 0 && id < 4:
 			m.focus = id
@@ -434,50 +438,57 @@ func (m *Model) activate(id int) tea.Cmd {
 
 func (m *Model) closeSettings() {
 	m.settings = false
-	m.focus = 4
-	if m.screen != mainScreen {
-		m.focus = m.settingsReturnFocus
-	}
+	m.focus = m.settingsReturnFocus
 }
 
 func (m *Model) navigateSettings(direction string) {
-	// Appearance choices are a vertical group; Save and Back share the next row.
-	if m.focus < 4 {
-		if direction == "down" {
-			if m.focus < 3 {
-				m.focus++
-			} else {
-				m.focus = 4
-			}
-		}
-		if direction == "up" {
-			if m.focus > 0 {
-				m.focus--
-			} else {
+	if m.focus >= 0 && m.focus < 4 {
+		switch direction {
+		case "up":
+			if m.focus == 0 {
 				m.focus = 6
+			} else {
+				m.focus--
 			}
+		case "down":
+			if m.focus == 3 {
+				m.focus = 5
+			} else {
+				m.focus++
+			}
+		case "left":
+			m.focus = 5
+		case "right":
+			m.focus = 90
 		}
-
+		return
+	}
+	if m.focus == 6 {
+		if direction == "down" || direction == "left" {
+			m.focus = 0
+		}
 		return
 	}
 	switch direction {
 	case "up":
-		if m.focus == 4 || m.focus == 5 {
-			m.focus = 3
-		}
-	case "down":
-		if m.focus == 6 {
-			m.focus = 0
-		}
+		m.focus = 3
 	case "left":
-		if m.focus == 5 {
+		switch m.focus {
+		case 5:
+			m.focus = 3
+		case 4:
+			m.focus = 5
+		case 90:
 			m.focus = 4
-		} else if m.focus == 6 {
-			m.focus = 0
 		}
 	case "right":
-		if m.focus == 4 {
-			m.focus = 5
+		switch m.focus {
+		case 5:
+			m.focus = 4
+		case 4:
+			m.focus = 90
+		case 90:
+			m.focus = 3
 		}
 	}
 }

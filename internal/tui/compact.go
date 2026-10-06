@@ -251,6 +251,9 @@ func (m *Model) reconcileLayout() {
 			m.compactMessageReturnFocus = m.focus
 			m.focus = popupFocus
 			m.compactMessageScroll = min(m.compactMessageScroll, m.compactMessageMaxScroll())
+			if m.settings && m.compactMessageMaxScroll() == 0 && m.focus >= 93 && m.focus <= 95 {
+				m.focus = 92
+			}
 		}()
 	}
 	if m.screen == dexScreen {
@@ -576,10 +579,21 @@ func (m *Model) openCompactMessage() tea.Cmd {
 	return nil
 }
 func (m Model) compactMessageRows() []string {
-	return wrapActivityLines(strings.Split(m.compactMessage, "\n"), min(m.width, 88)-4)
+	width := min(m.width, 88) - 4
+	if m.settings {
+		width -= 4
+	}
+	return wrapActivityLines(strings.Split(m.compactMessage, "\n"), width)
+}
+func (m Model) compactMessagePageSize() int {
+	reserve := 6
+	if m.settings {
+		reserve = 9
+	}
+	return max(1, min(m.height, 28)-reserve)
 }
 func (m Model) compactMessageMaxScroll() int {
-	return max(0, len(m.compactMessageRows())-max(1, min(m.height, 28)-6))
+	return max(0, len(m.compactMessageRows())-m.compactMessagePageSize())
 }
 func (m *Model) closeCompactMessage() {
 	m.compactMessage = ""
@@ -590,9 +604,19 @@ func (m *Model) activateCompactMessage(id int) tea.Cmd {
 	switch id {
 	case 92:
 		m.closeCompactMessage()
+	case 95:
+		if m.settings {
+			m.focus = 95
+		}
 	case 93:
+		if m.settings {
+			m.focus = 93
+		}
 		m.compactMessageScroll = max(0, m.compactMessageScroll-1)
 	case 94:
+		if m.settings {
+			m.focus = 94
+		}
 		m.compactMessageScroll = min(m.compactMessageMaxScroll(), m.compactMessageScroll+1)
 	}
 	return nil
@@ -615,19 +639,22 @@ func (m *Model) handleCompactMessage(msg tea.Msg) (tea.Cmd, bool) {
 		case "up", "pgup":
 			delta := 1
 			if k.String() == "pgup" {
-				delta = max(1, min(m.height, 28)-6)
+				delta = m.compactMessagePageSize()
 			}
 			m.compactMessageScroll = max(0, m.compactMessageScroll-delta)
 		case "down", "pgdown":
 			delta := 1
 			if k.String() == "pgdown" {
-				delta = max(1, min(m.height, 28)-6)
+				delta = m.compactMessagePageSize()
 			}
 			m.compactMessageScroll = min(m.compactMessageMaxScroll(), m.compactMessageScroll+delta)
 		case "tab", "shift+tab", "left", "right":
 			order := []int{92}
 			if m.compactMessageMaxScroll() > 0 {
 				order = []int{92, 93, 94}
+				if m.settings {
+					order = []int{95, 93, 94, 92}
+				}
 			}
 			delta := 1
 			if k.String() == "shift+tab" || k.String() == "left" {
@@ -652,6 +679,10 @@ func (m *Model) handleCompactMessage(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m Model) paintCompactMessage(c *canvas) {
+	if m.settings {
+		m.paintAppearanceHelp(c)
+		return
+	}
 	w, h := min(c.width, 88), min(c.height, 28)
 	x, y := (c.width-w)/2, (c.height-h)/2
 	c.pageBox(x, y, w, h, "HELP / STATUS", m)
@@ -785,33 +816,4 @@ func (m Model) paintCompactCreate(c *canvas) {
 		}
 		c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
 	}
-}
-
-func (m Model) paintCompactSettings(c *canvas) {
-	w, h := min(c.width, 88), min(c.height, 28)
-	x, y := (c.width-w)/2, (c.height-h)/2
-	p := m.palette()
-	c.pageBox(x, y, w, h, "APPEARANCE", m)
-	c.button(x+w-10, y+1, 8, 6, "Quit", m)
-	for i, label := range appearanceNames {
-		if h >= 26 {
-			c.framedControl(x+2, y+3+i*3, w-4, i, label, m, appearances[i] == m.appearance)
-		} else {
-			c.button(x+2, y+2+i, w-4, i, label, m)
-		}
-	}
-	helpY := y + 6
-	if h >= 26 {
-		helpY = y + 15
-	}
-	c.put(x+2, helpY, ansi.Truncate("Live preview. Help shows full details.", w-4, "…"), p.muted)
-	c.wrap(x+2, helpY+1, w-4, max(0, y+h-5-helpY-1), m.configStatus(), p.accent)
-	c.button(x+2, y+h-4, 12, 90, "Help", m)
-	label := "Save default"
-	if m.savingConfig {
-		label = "Saving…"
-	}
-	c.button(x+2, y+h-3, 18, 4, label, m)
-	c.button(x+21, y+h-3, 10, 5, "Back", m)
-	c.put(x+2, y+h-2, ansi.Truncate("↑↓ Mode  Enter Apply  Tab Focus", w-4, "…"), m.hintStyle())
 }

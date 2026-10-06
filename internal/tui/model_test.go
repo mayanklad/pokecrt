@@ -42,7 +42,7 @@ func TestArrowFocusAndExplicitActivation(t *testing.T) {
 		t.Fatal("appearance not applied live")
 	}
 	m, _ = update(m, key(tea.KeyEscape))
-	if m.settings || m.focus != 4 || m.section != 1 {
+	if m.settings || m.focus != 1 || m.section != 1 {
 		t.Fatal("Back lost section/focus")
 	}
 }
