@@ -46,7 +46,7 @@ remain independent of trainer state. v0.4 adds the
 Adventure Menu: interactive trainer creation/selection, private Pokédex,
 encounters/history, trainer statistics, achievements and saved live appearance
 choices. The Interactive Adventure Menu is published in v0.4. Compact-mode issues remain known and further
-refinement is deferred to v2. Use a wide terminal for the best interface.
+refinement is planned before v1.0. Use a wide terminal for the best interface.
 
 The earlier v0.1 release included three standard sprites.
 The initial tested platform is Linux amd64. A UTF-8 terminal is required;
@@ -564,11 +564,13 @@ The Adventure Menu shows a static Town Map above dialogue and a four-section
 menu. Wide Home layouts (at least 90 columns and 28 rows) put outlined Refresh
 and Quit controls above a single-line trainer card in the top right. Taller
 compact layouts stack the dialogue and menu below the map. Short layouts omit
-the map. The interface fills the terminal; below 40 columns or 12 rows it shows
+the map and group Refresh/Quit above the menu, in the top right where space
+permits. Left/Right switches these actions; Down enters Pokédex, and Up from
+Pokédex returns to Refresh. The interface fills the terminal; below 40 columns or 12 rows it shows
 a resize instruction and clickable Quit. Pokédex and activity wide layouts
 require at least 100 columns and 24 rows.
 
-Compact mode has known layout and navigation issues that are deferred to v2;
+Compact mode has known layout and navigation issues under review before v1.0;
 the 40×12 minimum indicates the resize fallback, not that every compact flow
 has release-quality validation. Wide layouts are the preferred v0.4 experience.
 

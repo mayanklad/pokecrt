@@ -13,7 +13,8 @@ Publication and tag/asset metadata were verified through read-only GitHub access
 Published archive bytes have not been independently downloaded and re-tested
 in this documentation follow-up.
 
-The final product target remains v1.0. Compact refinement is deferred to v2;
+The final product target remains v1.0. Compact refinements are required before
+that release and are being reviewed page by page;
 publication does not certify every compact flow or all terminal/multiplexer
 configurations. Existing timing/RSS measurements remain dated historical results.
 
@@ -876,3 +877,34 @@ release, source tag, Linux amd64 archive, checksums and current release notes.
 Current status reflects publication; historical benchmark and audit entries are
 retained with their measurement scope. This update changes documentation only.
 The existing tag and uploaded archive remain unchanged.
+
+
+## D34 — Home screenshot review and responsive corrections
+
+Baseline: cb2385c2f16cfbcab206c0a667e45442848696ea. A fresh source copy
+matches every tracked GitHub blob before edits. Compact/lower-size refinements
+remain in the v1.0 scope; earlier v2-deferral statements describe historical
+plans. The published v0.4 tag and archive remain unchanged.
+
+The four Home screenshots were reviewed. Large-logo clearance now reserves a
+gap from Refresh/Quit at intermediate widths and preserves the centered position
+where it fits. YOU and ROUTE signs have blank padding separating them from road
+lines in both map compositions. Short-screen Refresh/Quit are grouped in the
+top right at 44 columns and 16 rows or larger. Below that width they sit beneath
+the trainer heading; below 16 rows they use single-row controls. All seven Home
+actions remain visible and clickable at 40×12. Narrow hints show directional
+arrows, Tab, Enter and Quit across two lines.
+
+Header navigation follows placement: Up from Pokédex reaches Refresh; Left/Right
+switches Refresh/Quit; Down from either returns to Pokédex. Appearance Down and
+header Up stop at the group edges. j/k retain directional routes. Taller narrow
+layouts retain footer actions and their navigation.
+
+Full tests, vet, TUI race checks and build pass. Regression tests cover logo
+clearance at 90–130 columns, short-header text clearance at 44–89 columns,
+map-sign padding and short-screen arrow/j/k/Tab/mouse reachability. Twenty-three
+network-blocked Home PTY scenarios cover 40×12 through 120×40, screenshot-like
+94×36/94×32/70×40/80×24 layouts, header navigation and resizing. Database hashes
+remain unchanged; terminal, alternate screen and mouse reporting restore on exit.
+No other page layout, gameplay, schema, dataset, dependency or timer changes.
+This is the first Home refinement pass, not complete compact/v1.0 acceptance.

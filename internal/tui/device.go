@@ -57,8 +57,8 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 		landmark(rx, h-4, "≋ POND ≋", water)
 		ry := h/2
 		draw(0, ry, strings.Repeat("─", w), road)
-		draw(w/2-3, ry, "◆ YOU", p.accent)
-		draw(w-11, ry, "ROUTE 01 →", road)
+		draw(w/2-4, ry, " ◆ YOU ", p.accent)
+		draw(w-12, ry, " ROUTE 01 → ", road)
 		return
 	}
 	// Streets reach the viewport edges; buildings and gardens fill four blocks.
@@ -71,8 +71,8 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 	}
 	draw(avenue-4, mid-1, "╯       ╰", road)
 	draw(avenue-4, mid+1, "╮       ╭", road)
-	draw(avenue-2, mid, "◆ YOU", p.accent)
-	draw(w-13, mid, "ROUTE 01 →", road)
+	draw(avenue-3, mid, " ◆ YOU ", p.accent)
+	draw(w-14, mid, " ROUTE 01 → ", road)
 	draw(avenue-3, 0, "↑", road)
 	building := func(bx, by, bw, bh int, name string, upper bool) {
 		if bw < 16 || bh < 5 {

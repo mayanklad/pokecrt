@@ -256,7 +256,7 @@ func (m Model) paintMain(c *canvas) {
 	c.box(left, top, frameW, frameH, "", p.accent)
 	wide := frameW >= 90 && frameH >= 28
 	if wide {
-		lx := left + (frameW-41)/2
+		lx := left + min((frameW-41)/2, frameW-72)
 		m.paintLogo(c, lx, top+2)
 		c.put(lx+14, top+5, "TRAINER HUB", p.gold)
 		name := clean(m.snapshot.Name)
@@ -296,12 +296,19 @@ func (m Model) paintMain(c *canvas) {
 		}
 		c.put(left+3, top+1+headerGap, "◈ POKECRT ◈", p.accent)
 		c.put(left+5, top+1+headerGap, "POKECRT", m.brandStyle())
-		c.put(left+3, top+2+headerGap, "TRAINER HUB", p.gold)
-		c.put(left+3, top+3+headerGap, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
+		if frameH >= 16 {
+			c.put(left+3, top+2+headerGap, "TRAINER HUB", p.gold)
+		}
+		profileY := top + 3 + headerGap
+		if frameH >= 16 && frameH < 28 && frameW >= 44 {
+			profileY = top + 4
+		}
+		if frameH < 16 {
+			profileY = top + 2
+		}
+		c.put(left+3, profileY, ansi.Truncate(m.profileLabel(), frameW-6, "…"), p.muted)
 	}
-	if frameH < 28 {
-		c.button(left+frameW-11, top+1, 8, 6, "Quit", m)
-	}
+
 	if frameH >= 28 {
 		// Reclaim footer whitespace while keeping a blank row on each side
 		// of the lower actions.
@@ -335,14 +342,26 @@ func (m Model) paintMain(c *canvas) {
 			c.button(left+4, dy+9, frameW-8, 4, "Appearance", m)
 		}
 	} else {
-		for i, label := range sections {
-			c.button(left+3, top+4+i, frameW-6, i, label, m)
+		menuY := top + 4
+		if frameH >= 16 && frameW >= 44 {
+			c.outlinedButton(left+frameW-29, top+1, 14, 5, "Refresh", m)
+			c.outlinedButton(left+frameW-14, top+1, 12, 6, "Quit", m)
+			menuY = top + 6
+		} else if frameH >= 16 {
+			c.outlinedButton(left+3, top+4, 14, 5, "Refresh", m)
+			c.outlinedButton(left+18, top+4, 12, 6, "Quit", m)
+			menuY = top + 7
+		} else {
+			c.button(left+3, top+3, 14, 5, "Refresh", m)
+			c.button(left+18, top+3, 12, 6, "Quit", m)
 		}
-		c.button(left+3, top+8, frameW-6, 4, "Appearance", m)
-		c.button(left+3, top+9, frameW-6, 5, "Refresh", m)
-		if frameH >= 16 {
-			c.box(left+2, top+11, frameW-4, frameH-14, m.homeTitle(), p.accent)
-			c.wrap(left+4, top+12, frameW-8, frameH-16, m.dialogue(), "")
+		for i, label := range sections {
+			c.button(left+3, menuY+i, frameW-6, i, label, m)
+		}
+		c.button(left+3, menuY+4, frameW-6, 4, "Appearance", m)
+		if frameH >= 19 {
+			c.box(left+2, top+13, frameW-4, frameH-16, m.homeTitle(), p.accent)
+			c.wrap(left+4, top+14, frameW-8, frameH-18, m.dialogue(), "")
 		}
 	}
 	if frameH >= 28 {
@@ -350,11 +369,20 @@ func (m Model) paintMain(c *canvas) {
 			c.outlinedButton(left+3, top+frameH-6, 14, 5, "Refresh", m)
 			c.outlinedButton(left+18, top+frameH-6, 12, 6, "Quit", m)
 		}
-		c.navigationHints(left+3, top+frameH-4, frameW-6, m, false, "Open")
+		m.paintHomeHints(c, left+3, top+frameH-4, frameW-6)
 
 	} else {
-		c.put(left+2, top+frameH-2, ansi.Truncate("↑↓ Choose   Enter Open   Q Quit", frameW-4, "…"), p.muted)
+		m.paintHomeHints(c, left+3, top+frameH-4, frameW-6)
 	}
+}
+
+func (m Model) paintHomeHints(c *canvas, x, y, w int) {
+	if w >= 65 {
+		c.navigationHints(x, y, w, m, false, "Open")
+		return
+	}
+	c.put(x, y+1, "[↑↓←→] Move  [Tab] Focus", m.hintStyle())
+	c.put(x, y+2, "[Enter] Open  [Q] Quit", m.hintStyle())
 }
 
 func (m Model) homeTitle() string {

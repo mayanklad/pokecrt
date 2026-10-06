@@ -255,8 +255,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			if m.settings {
 				m.navigateSettings(direction)
-			} else if m.width >= 90 && m.height >= 28 {
-				// Wide Home actions sit above the Choose list.
+			} else if m.width >= 90 && m.height >= 28 || m.height < 28 {
+				// Header actions sit above Choose in wide and short Home layouts.
 				switch direction {
 				case "up":
 					if m.focus == 0 {
