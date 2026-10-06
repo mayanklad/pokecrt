@@ -50,7 +50,7 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 	}
 	c.keycap(x, y, w, "", border)
 	c.controlText(x+1, y+1, w-2, label, style, m.focus == id, selected)
-	if !m.dexWide() && m.noColor && m.focus == id && !(m.screen == activityScreen && m.section == 3 && !m.settings) {
+	if !m.dexWide() && m.noColor && m.focus == id && !(m.screen == activityScreen && (m.section == 3 || m.section == 1) && !m.settings) {
 		c.put(x, y+1, "▶", style)
 	}
 	for row := y; row < y+3; row++ {
@@ -254,7 +254,7 @@ func (m Model) styleFrames(c *canvas) {
 				}
 				inside = f.x == px && f.h == m.activityBodyHeight()
 			}
-			if m.focus == 22 || m.focus == 16 || m.focus == 17 {
+			if m.focus == 22 || m.focus == 16 || m.focus == 17 || (m.section == 1 && m.focus == 35) {
 				inside = f.h == m.activityBodyHeight()
 				if m.section == 1 && m.dexGeometry().wide && len(m.activity.art) > 0 && !m.activity.historyMode && m.activity.error == "" {
 					inside = inside && f.x == m.dexGeometry().x+m.dexGeometry().w/2

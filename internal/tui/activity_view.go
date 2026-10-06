@@ -7,6 +7,9 @@ import (
 )
 
 func (m Model) activityBodyHeight() int {
+	if m.section == 1 {
+		return m.encounterGeometry().bodyH
+	}
 	if !m.dexWide() {
 		if m.section == 3 {
 			reserve := 6
@@ -43,14 +46,14 @@ func (m Model) activityLines() []string {
 	switch m.section {
 	case 1:
 		if m.activity.historyMode {
-			lines := []string{m.informationHeading("RECENT DISCOVERIES", m.dexGeometry().w-8), ""}
+			lines := []string{}
 			if len(d.history) == 0 {
 				return append(lines, "Your journey starts with Encounter.")
 			}
 			for i, h := range d.history {
 				marker := "  "
 				if i == a.selected {
-					marker = "▶ "
+					marker = "› "
 				}
 				titleStyle := m.palette().gold
 				if i == a.selected {
@@ -105,6 +108,9 @@ func (m Model) activityMaxScroll() int {
 	return max(0, n-(m.activityBodyHeight()-2))
 }
 func (m Model) activityControls() []dexControl {
+	if m.section == 1 {
+		return m.encounterControls()
+	}
 	if !m.dexWide() {
 		return m.compactActivityControls()
 	}
@@ -195,6 +201,10 @@ func (m Model) activityControls() []dexControl {
 	return out
 }
 func (m Model) paintActivity(c *canvas) {
+	if m.section == 1 {
+		m.paintEncounter(c)
+		return
+	}
 	if !m.dexWide() {
 		m.paintCompactActivity(c)
 		return
@@ -336,7 +346,7 @@ func (m Model) paintActivity(c *canvas) {
 func (m Model) activityMaxPan() int {
 	w := m.dexGeometry().w - 6
 	if m.dexGeometry().wide {
-		w = m.dexGeometry().w/2 - 6
+		w = m.dexGeometry().w/2 - 5
 	}
 	maxWidth := 0
 	for _, line := range m.activity.art {
@@ -351,8 +361,8 @@ func (m Model) activityHistoryTargets() []int {
 	var out []int
 	for i, line := range m.activityLines() {
 		owner := -1
-		if i >= 2 && len(m.activity.data.history) > 0 {
-			owner = (i - 2) / 4
+		if len(m.activity.data.history) > 0 {
+			owner = i / 4
 		}
 		for range strings.Split(ansi.Wrap(line, max(1, w), ""), "\n") {
 			out = append(out, owner)

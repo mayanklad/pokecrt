@@ -642,6 +642,18 @@ history. Click a row or use Previous/Next and Up/Down on the selected-entry cont
 then Open selected entry to browse that exact appearance in the safe Pokédex.
 Browsing never creates another encounter.
 
+The Encounter screen keeps separate Result and History tabs with stable labels.
+History uses one Recent Discoveries frame: Scroll and Up/Down select entries,
+Enter or Open opens the selected collected appearance in the Pokédex.
+PageUp/PageDown and the mouse wheel move history selection without recording
+an encounter. Result retains the latest discovery, while History omits that
+result's summary. Compact results switch artwork and details through the
+Details/Art control; artwork arrows sit at the right of their own pane.
+Encounter footers use the same bottom alignment, quiet divider, key notation
+and centered controls as Home and Achievements. Frame titles have no focus
+marker; only the focused control has one, with an accented associated frame.
+
+
 **Trainer** displays creation time, level, XP bar, encounter/collection counts,
 shiny counts, eligible completion, generation progress, and encounter dates.
 Choose / create trainer opens the existing trainer chooser. The Adventure Menu

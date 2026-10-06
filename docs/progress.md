@@ -990,3 +990,58 @@ Footer dividers now use the same quiet structural-border style as the outer
 frame, including light, dark, terminal-native and NO_COLOR appearances.
 The divider remains a thin line and does not acquire a focus accent.
 TUI regression tests pass; layout and navigation are unchanged.
+
+
+## D36 - Encounter screen consistency and history flow
+
+Baseline: b5a0af2d8c8d79b5c752f1164a2898e3771ff97b. Source files
+matched the GitHub baseline before edits; the committed progress document was
+loaded separately to preserve its latest contents.
+
+Encounter has stable Result and History tabs beside the explicit Encounter
+action. History uses one Recent Discoveries frame heading, without a duplicate
+inner heading or the latest result's Pokémon/XP summary. Scroll selects history
+entries; Up/Down arrow controls, PageUp/PageDown and the mouse wheel move that
+selection. A single Open action or Enter on Scroll opens the selected exact
+collected appearance. Previous/Next labels and their extra control row are
+removed. Selecting History repeatedly preserves its current viewport; Result returns to the
+existing result without generating a discovery.
+
+Artwork pan/scroll arrow controls are aligned to the right of their own pane.
+Details/Art switching remains available in compact results without overlapping
+frame controls. Navigation follows visible rows: Down from the top controls
+enters History Scroll, artwork navigation, details Scroll, or the footer when
+no content controls are needed. Horizontal movement visits controls in their
+own row; outward frame edges reach Back/Quit. Scroll and artwork retain their
+context-specific vertical/horizontal behavior. Frame titles have no duplicate
+focus markers. Entry selection uses a distinct marker from keyboard focus.
+
+Footer actions and hints follow Home/Achievements: centered labels, Refresh
+naming, outlined controls when space permits, compact key brackets, one-row
+hints when they fit and a quiet divider above bottom-anchored hints. Browsing
+and tab switching never record an encounter. A wide artwork mouse wheel now
+scrolls the pane under the pointer rather than hidden details. In-flight
+encounter guards and loading/saving feedback remain active.
+
+Full Go tests, vet, executable build and TUI race checks pass. Regression tests
+cover ready/history/artwork states across seven sizes, monochrome output,
+unique focus markers, rendered dimensions, stable tabs, single history heading,
+selection, right-aligned artwork controls, pane-specific wheel input and row
+navigation. Eighteen offline PTY cases cover ready/history/results, minimum
+40×12 through 120×40, resizing, light appearance and NO_COLOR. Read-only
+history browsing preserves the trainer database; generated encounter tests
+use isolated temporary profiles. Terminal attributes, alternate screen and
+mouse reporting restore on exit. No schema, dataset, dependency or benchmark
+changes. Remaining compact pages still require review before v1.0.
+
+
+### D36 marked frame and button follow-up
+
+Frame-control padding clears horizontal border segments without erasing pane
+corners. Artwork, details and history frames retain both lower corners.
+Single-row Result/History buttons now show the active-tab dot, matching outlined
+tabs. Encounter controls use label-compatible widths for balanced whole-cell
+padding in both forms, while preserving space for focus and selection markers.
+Full tests, vet and build pass. Added regression tests verify lower corners and
+active tabs across compact and wide layouts. Four additional offline terminal
+scenarios verify selected History indicators and unchanged browsing state.

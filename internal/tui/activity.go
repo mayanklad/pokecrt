@@ -191,9 +191,19 @@ func (m *Model) activateActivity(id int) tea.Cmd {
 		m.openProfiles()
 		return tea.Batch(tea.ClearScreen, m.reload())
 	case id == 30:
-		m.activity.historyMode = !m.activity.historyMode
+		if m.activity.historyMode {
+			return nil
+		}
+		m.activity.historyMode = true
+		m.activity.scroll = 0
+		m.revealHistorySelection()
+		return tea.ClearScreen
+	case id == 36:
+		m.activity.historyMode = false
 		m.activity.scroll = 0
 		return tea.ClearScreen
+	case id == 37:
+		return m.activateActivity(20)
 	case id == 31:
 		m.activity.selected = max(0, m.activity.selected-1)
 		m.revealHistorySelection()
@@ -361,7 +371,9 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 			if msg.String() == "up" || msg.String() == "k" || msg.String() == "left" {
 				delta = -1
 			}
-			if m.section == 3 && (msg.String() == "left" || msg.String() == "right") {
+			if m.section == 1 && (msg.String() == "left" || msg.String() == "right") && m.focus != 21 {
+				m.moveEncounterControl(msg.String())
+			} else if m.section == 3 && (msg.String() == "left" || msg.String() == "right") {
 				m.moveAchievementControl(delta)
 			} else if m.section != 1 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
 				panel := m.focus - 40
@@ -420,13 +432,19 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 				m.activityMove(msg.String())
 			}
 		case "pgdown":
-			if m.section != 1 && m.dexGeometry().wide {
+			if m.section == 1 && m.activity.historyMode {
+				m.activity.selected = min(max(0, len(m.activity.data.history)-1), m.activity.selected+max(1, m.activityBodyHeight()/4))
+				m.revealHistorySelection()
+			} else if m.section != 1 && m.dexGeometry().wide {
 				m.scrollActivityPanel(m.activity.informationPanel, m.activityBodyHeight()-2)
 			} else {
 				m.activity.scroll = min(m.activityMaxScroll(), m.activity.scroll+m.activityBodyHeight()-2)
 			}
 		case "pgup":
-			if m.section != 1 && m.dexGeometry().wide {
+			if m.section == 1 && m.activity.historyMode {
+				m.activity.selected = max(0, m.activity.selected-max(1, m.activityBodyHeight()/4))
+				m.revealHistorySelection()
+			} else if m.section != 1 && m.dexGeometry().wide {
 				m.scrollActivityPanel(m.activity.informationPanel, -m.activityBodyHeight()+2)
 			} else {
 				m.activity.scroll = max(0, m.activity.scroll-m.activityBodyHeight()+2)
@@ -434,6 +452,27 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 		}
 		return nil, true
 	case tea.MouseWheelMsg:
+		if m.section == 1 && m.activity.historyMode {
+			delta := 1
+			if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
+				delta = -1
+			}
+			m.activity.selected = max(0, min(max(0, len(m.activity.data.history)-1), m.activity.selected+delta))
+			m.revealHistorySelection()
+			return nil, true
+		}
+		if m.section == 1 && m.dexWide() && m.encounterArtView() && msg.X < m.width/2 {
+			delta := 1
+			if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
+				delta = -1
+			}
+			if msg.Button == tea.MouseWheelLeft || msg.Button == tea.MouseWheelRight {
+				m.activity.artPan = max(0, min(m.activityMaxPan(), m.activity.artPan+delta*4))
+			} else {
+				m.activity.artScroll = max(0, min(max(0, len(m.activity.art)-m.activityBodyHeight()+2), m.activity.artScroll+delta))
+			}
+			return nil, true
+		}
 		if !m.dexWide() {
 			delta := 1
 			if msg.Button == tea.MouseWheelUp || msg.Button == tea.MouseWheelLeft {
@@ -474,6 +513,16 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m *Model) activityMove(key string) {
+	if m.section == 1 {
+		if key == "j" {
+			key = "down"
+		}
+		if key == "k" {
+			key = "up"
+		}
+		m.moveEncounterControl(key)
+		return
+	}
 	if key == "k" {
 		key = "up"
 	}
