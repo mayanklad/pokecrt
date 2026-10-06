@@ -374,6 +374,9 @@ func (m Model) compactActivityBodyY() int {
 	if m.section == 1 {
 		return 4
 	}
+	if m.section == 2 && m.height >= 24 && m.width >= 56 {
+		return 5
+	}
 	return 3
 }
 func (m Model) compactActivityControls() []dexControl {
@@ -398,7 +401,11 @@ func (m Model) compactActivityControls() []dexControl {
 		}
 		add(18, 2, g.w-20, 30, label)
 	} else if m.section == 2 {
-		add(2, 2, g.w-4, 15, "Choose / create trainer")
+		y := 2
+		if g.h >= 24 && g.w >= 56 {
+			y = 3
+		}
+		add(2, y, 29, 15, "Choose / create trainer")
 	}
 	artView := m.section == 1 && !m.activity.historyMode && len(m.activity.art) > 0 && !m.activity.resultDetails && m.activity.error == ""
 	bottom := m.compactActivityBodyY() + m.activityBodyHeight() - 1
@@ -418,10 +425,10 @@ func (m Model) compactActivityControls() []dexControl {
 		}
 	} else if m.activityMaxScroll() > 0 {
 		if !(m.section == 1 && m.activity.historyMode && len(m.activity.data.history) > 0) {
-			add(4, bottom, 12, 22, "Scroll")
+			add(3, bottom, 10, 22, "Scroll")
 		}
 		upX := g.w - 14
-		if m.section == 3 {
+		if m.section != 1 {
 			upX--
 		}
 		add(upX, bottom, 5, 16, "↑")
@@ -438,7 +445,7 @@ func (m Model) compactActivityControls() []dexControl {
 		}
 		add(2, g.h-4, 16, 35, label)
 	}
-	if m.section == 3 {
+	if m.section != 1 {
 		y := g.h - 5
 		if g.h >= 24 && g.w >= 56 {
 			y = g.h - 6
@@ -477,7 +484,7 @@ func (m Model) paintCompactActivity(c *canvas) {
 	if m.section == 1 && a.historyMode {
 		title = "RECENT DISCOVERIES"
 	}
-	if m.section != 3 && (m.focus == 21 || m.focus == 22 || m.focus == 20) {
+	if m.section == 1 && (m.focus == 21 || m.focus == 22 || m.focus == 20) {
 		title = "▶ " + title
 	}
 	c.box(2, y, g.w-4, h, title, m.achievementFrameStyle(p.accent))
@@ -510,21 +517,18 @@ func (m Model) paintCompactActivity(c *canvas) {
 		}
 	}
 	for _, control := range m.activityControls() {
-		if m.section == 3 && m.height >= 24 && m.width >= 56 && (control.id == 12 || control.id == 13 || control.id == 11 || control.id == 14) {
-			c.outlinedButton(control.x, control.y-1, control.w, control.id, control.label, m)
-		} else {
-			if m.section == 3 && (control.id == 22 || control.id == 16 || control.id == 17) {
-				if control.id == 22 || control.id == 16 || control.id == 17 {
-					c.put(control.x-1, control.y, " ", p.foreground)
-				}
-				if control.id == 22 || control.id == 16 || control.id == 17 {
-					c.put(control.x+control.w, control.y, " ", p.foreground)
-				}
+		if m.section != 1 && m.height >= 24 && m.width >= 56 && (control.id == 15 || control.id == 12 || control.id == 13 || control.id == 11 || control.id == 14) {
+			if m.section == 2 {
+				c.trainerOutlinedButton(control.x, control.y-1, control.w, control.id, control.label, m)
+			} else {
+				c.outlinedButton(control.x, control.y-1, control.w, control.id, control.label, m)
 			}
+		} else {
+
 			c.button(control.x, control.y, control.w, control.id, control.label, m)
 		}
 	}
-	if m.section == 3 {
+	if m.section != 1 {
 		m.paintAchievementHints(c, 2, g.h-3, g.w-4)
 		return
 	}
@@ -690,18 +694,33 @@ func (m Model) paintCompactCreate(c *canvas) {
 	if status == "" {
 		status = m.notice
 	}
-	c.put(x+2, y+4, ansi.Truncate(status, w-4, "…"), p.accent)
+	keysY, editY, statusY := y+5, y+8, y+4
+	if m.screen == createScreen && h == 12 {
+		keysY--
+		editY--
+		statusY = y + 3
+	}
+	if status != "" || statusY == y+4 {
+		c.put(x+2, statusY, ansi.Truncate(status, w-4, "…"), p.accent)
+	}
 	keysX := x + (w-30)/2
 	for i, r := range m.keyboardLetters() {
-		c.button(keysX+(i%10)*3, y+5+i/10, 3, 100+i, string(r), m)
+		c.button(keysX+(i%10)*3, keysY+i/10, 3, 100+i, string(r), m)
 	}
 	page := []string{"abc→ABC", "ABC→123", "123→abc"}[m.keyboardPage]
-	c.button(x+2, y+8, 11, 3, page, m)
-	c.button(x+13, y+8, 11, 4, "Backspace", m)
-	c.button(x+24, y+8, 7, 5, "Space", m)
-	c.button(x+31, y+8, 7, 90, "Help", m)
+	c.button(x+2, editY, 11, 3, page, m)
+	if m.screen == createScreen {
+		c.button(x+13, editY, 13, 4, "Backspace", m)
+		c.button(x+26, editY, 9, 5, "Space", m)
+	} else {
+		c.button(x+13, editY, 11, 4, "Backspace", m)
+		c.button(x+24, editY, 7, 5, "Space", m)
+	}
+	if m.screen == dexSearchScreen {
+		c.button(x+31, editY, 7, 90, "Help", m)
+	}
 	if h >= 16 {
-		message := "Creating a trainer does not record an encounter. Help explains activation and input."
+		message := "The first trainer becomes active. Additional trainers require Use trainer. No encounter is recorded."
 		if m.screen == dexSearchScreen {
 			message = "Search revealed names or National numbers. Help explains search and navigation."
 		}
@@ -714,17 +733,58 @@ func (m Model) paintCompactCreate(c *canvas) {
 	if m.busy {
 		label = "Saving"
 	}
-	for _, control := range compactActions(x+2, y+h-3, w-4, []int{1, 2, 6, 7}, []string{label, "Cancel", "Theme", "Quit"}) {
-		c.button(control.x, control.y, control.w, control.id, control.label, m)
+	if m.screen == createScreen {
+		actionY := y + h - 4
+		if h >= 16 {
+			actionY = y + h - 5
+		}
+		if h >= 24 {
+			actionY = y + h - 6
+		}
+		buttonX := x + 1
+		for i, text := range []string{label, "Cancel", "Theme", "Quit"} {
+			width := ansi.StringWidth(text) + 4
+			if h >= 24 {
+				c.framedControl(buttonX, actionY-1, width, []int{1, 2, 6, 7}[i], text, m, false)
+			} else {
+				c.button(buttonX, actionY, width, []int{1, 2, 6, 7}[i], text, m)
+			}
+			buttonX += width
+		}
+		first := "[↑↓←→] Move  [Tab] Focus"
+		second := "[Enter] Select  [Esc] Back"
+		if m.focus == 0 {
+			first = "↓ Keys  [←→] Cursor  [Tab] Focus"
+			second = "[Enter] Create  [Esc] Back"
+		}
+		if m.focus >= 100 {
+			second = "[Enter] Type  [Esc] Back"
+		}
+		if h >= 16 {
+			m.paintSetupHints(c, x, y, w, h, first, second)
+		} else {
+			hint := "↓ Keys  [Tab] Focus  [Enter] Create"
+			if m.focus >= 100 {
+				hint = "[↑↓←→] [Tab] Focus [Enter] Type"
+			} else if m.focus != 0 {
+				hint = "[↑↓←→] [Tab] Focus [Enter] Select"
+			}
+			c.put(x, y+h-3, "├"+strings.Repeat("─", w-2)+"┤", m.footerDividerStyle())
+			c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
+		}
+	} else {
+		for _, control := range compactActions(x+2, y+h-3, w-4, []int{1, 2, 6, 7}, []string{label, "Cancel", "Theme", "Quit"}) {
+			c.button(control.x, control.y, control.w, control.id, control.label, m)
+		}
+		hint := "Arrows Focus  Enter Use  Tab Next"
+		if m.focus == 0 {
+			hint = "←→ Cursor  ↓ Keys  Enter " + label
+		}
+		if m.focus >= 100 {
+			hint = "↑↓←→ Keys  Enter Type  Tab Next"
+		}
+		c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
 	}
-	hint := "Arrows Focus  Enter Use  Tab Next"
-	if m.focus == 0 {
-		hint = "←→ Cursor  ↓ Keys  Enter " + label
-	}
-	if m.focus >= 100 {
-		hint = "↑↓←→ Keys  Enter Type  Tab Next"
-	}
-	c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
 }
 
 func (m Model) paintCompactSettings(c *canvas) {

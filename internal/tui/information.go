@@ -290,7 +290,13 @@ func (m Model) trainerInformationColumns() (left, right []string) {
 	if m.dexGeometry().wide {
 		w = m.dexGeometry().w/2 - 7
 	}
-	fact := func(label, value string) string { return m.informationFact(label, value, w) }
+	fact := func(label, value string) string {
+		if !m.dexWide() {
+			return m.informationFact(label, value, w)
+		}
+		column := max(19, ansi.StringWidth(label)+2)
+		return styled(label+strings.Repeat(" ", column-ansi.StringWidth(label)), m.hintStyle()) + value
+	}
 	left = []string{m.informationHeading(strings.ToUpper(clean(d.profile.Name)), w), fact("Trainer since", dexDate(d.profile.CreatedAtMS)), "", m.informationHeading("TRAINER LEVEL", w), fact("Level", fmt.Sprint(p.Level)), fact("Total XP", fmt.Sprint(p.Total)), m.informationBar("XP", p.InLevel, 1000, w), fact("Next level", fmt.Sprintf("%d XP remaining", p.ToNext)), "", m.informationHeading("JOURNEY TOTALS", w), fact("Encounters", fmt.Sprint(s.Encounters)), fact("Species", fmt.Sprint(s.Species)), fact("Appearances", fmt.Sprint(s.Variants)), fact("Shiny collections", fmt.Sprint(s.ShinyCollections)), fact("Shiny encounters", fmt.Sprint(s.ShinyEncounters)), "", m.informationHeading("COLLECTION", w), m.informationBar("Species", s.Completion.Species, s.Completion.SpeciesTotal, w), m.informationBar("Variants", s.Completion.Variants, s.Completion.VariantsTotal, w)}
 	if s.FirstEncounterMS != nil {
 		left = append(left, "", fact("First encounter", dexDate(*s.FirstEncounterMS)))

@@ -656,7 +656,15 @@ marker; only the focused control has one, with an accented associated frame.
 
 **Trainer** displays creation time, level, XP bar, encounter/collection counts,
 shiny counts, eligible completion, generation progress, and encounter dates.
-Choose / create trainer opens the existing trainer chooser. The Adventure Menu
+Choose / create trainer opens the existing trainer chooser.
+The Trainer screen uses the shared bottom-anchored hints, quiet footer divider,
+centered controls and Refresh naming. Down from the chooser enters the first
+visible Scroll control. Left/Right visits each panel's Scroll and arrow controls
+before reaching footer actions; Up/Down on Scroll moves only its own panel.
+Compact layouts stack trainer facts and generation progress in one scrollable
+card. Wide layouts preserve separate, independently scrolling panels. Frame
+titles have no duplicate focus marker.
+ The Adventure Menu
 also displays the active trainer's level. **Achievements** separates earned
 badges and their dates from locked goals and current progress, using the same
 disclosure-safe registry as the CLI. Reading never awards a badge. Achievements
@@ -680,7 +688,7 @@ Home and Achievements footer hints sit immediately above the bottom frame,
 separated by a divider. Key labels use compact brackets such as `[Enter]`;
 matching arrow actions share one Move label. Hints wrap only when needed.
 
-Navigation, Home and Achievements refinements are implemented through D35. The current
+Navigation, Home, Achievements, Encounter and Trainer refinements are implemented through D37. The current
 release audit records remaining packaging, compatibility and verification gates.
 
 

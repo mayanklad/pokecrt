@@ -61,9 +61,11 @@ func (m Model) encounterControls() []dexControl {
 	}
 	if m.activity.historyMode {
 		if len(m.activity.data.history) > 0 {
-			scroll(2, w-4, 20, "Scroll")
+			if m.activityMaxScroll() > 0 {
+				scroll(2, w-4, 20, "Scroll")
+			}
 			add(14, bottom, 8, 37, "Open")
-			if len(m.activity.data.history) > 1 {
+			if m.activityMaxScroll() > 0 {
 				arrows(2, w-4, []int{31, 32}, []string{"↑", "↓"})
 			}
 		}
@@ -196,13 +198,7 @@ func (m Model) paintEncounter(c *canvas) {
 			selected := control.id == 30 && m.activity.historyMode || control.id == 36 && !m.activity.historyMode
 			c.framedControl(control.x, control.y-1, control.w, control.id, control.label, m, selected)
 		} else {
-			if control.y == g.bodyY+g.bodyH-1 {
-				for _, padX := range []int{control.x - 1, control.x + control.w} {
-					if padX >= 0 && padX < c.width && c.rows[control.y][padX].text == "─" {
-						c.put(padX, control.y, " ", p.foreground)
-					}
-				}
-			}
+
 			c.button(control.x, control.y, control.w, control.id, control.label, m)
 		}
 	}
@@ -217,7 +213,7 @@ func (m Model) paintEncounterHints(c *canvas) {
 	if m.focus == 22 {
 		first = "[↑↓] Scroll  [←→] Move  [Tab] Focus"
 	}
-	if m.focus == 20 {
+	if m.focus == 20 || m.focus == 37 {
 		first = "[↑↓] Choose  [←→] Move  [Tab] Focus"
 		action = "Open"
 	}

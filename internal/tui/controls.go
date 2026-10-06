@@ -50,7 +50,7 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 	}
 	c.keycap(x, y, w, "", border)
 	c.controlText(x+1, y+1, w-2, label, style, m.focus == id, selected)
-	if !m.dexWide() && m.noColor && m.focus == id && !(m.screen == activityScreen && (m.section == 3 || m.section == 1) && !m.settings) {
+	if !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen) && !m.settings) {
 		c.put(x, y+1, "▶", style)
 	}
 	for row := y; row < y+3; row++ {
@@ -327,4 +327,10 @@ func (m Model) hintStyle() string {
 func (c *canvas) pageBox(x, y, w, h int, title string, m Model) {
 	c.box(x, y, w, h, "POKÉCRT / "+title, m.palette().accent)
 	c.put(x+3, y, "POKÉCRT", m.brandStyle())
+}
+
+func (c *canvas) trainerOutlinedButton(x, y, w, id int, label string, m Model) {
+	label = strings.TrimSpace(strings.Trim(label, "[]"))
+	width := balancedControlWidth(min(w, max(12, ansi.StringWidth(label)+6)), label)
+	c.framedControl(x, y, width, id, label, m, false)
 }

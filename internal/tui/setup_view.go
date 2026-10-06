@@ -20,6 +20,10 @@ func (m Model) paintCreate(c *canvas) {
 		return
 	}
 	p := m.palette()
+	actionButton := c.outlinedButton
+	if m.screen == createScreen {
+		actionButton = c.trainerOutlinedButton
+	}
 	w, h := min(c.width, 88), min(c.height, 28)
 	x, y := (c.width-w)/2, (c.height-h)/2
 	title, subtitle := "NEW TRAINER", "Name   1–32 Unicode characters"
@@ -74,9 +78,9 @@ func (m Model) paintCreate(c *canvas) {
 	}
 	page := []string{"abc → ABC", "ABC → 123", "123 → abc"}[m.keyboardPage]
 	if h >= 24 {
-		c.outlinedButton(x+2, y+8, 13, 3, page, m)
-		c.outlinedButton(x+15, y+8, 13, 4, "Backspace", m)
-		c.outlinedButton(x+28, y+8, w-30, 5, "Space", m)
+		actionButton(x+2, y+8, 13, 3, page, m)
+		actionButton(x+15, y+8, 13, 4, "Backspace", m)
+		actionButton(x+28, y+8, w-30, 5, "Space", m)
 	} else {
 		c.button(x+2, y+8, 12, 3, page, m)
 		c.button(x+15, y+8, 12, 4, "Backspace", m)
@@ -110,9 +114,9 @@ func (m Model) paintCreate(c *canvas) {
 	}
 	if h >= 24 {
 		actionW := min((w-4)/2-1, 22)
-		c.outlinedButton(x+2, y+h-11, actionW, 1, create, m)
-		c.outlinedButton(x+3+actionW, y+h-11, actionW, 2, cancel, m)
-		c.outlinedButton(x+2, y+h-8, 16, 6, "Appearance", m)
+		actionButton(x+2, y+h-11, actionW, 1, create, m)
+		actionButton(x+3+actionW, y+h-11, actionW, 2, cancel, m)
+		actionButton(x+2, y+h-8, 16, 6, "Appearance", m)
 	} else {
 		if m.screen == dexSearchScreen {
 			buttonW := min(18, (w-6)/3)
@@ -125,7 +129,18 @@ func (m Model) paintCreate(c *canvas) {
 		}
 		c.button(x+2, y+h-2, 16, 6, "Appearance", m)
 	}
-	if h >= 24 {
+	if h >= 24 && m.screen == createScreen {
+		first := "[↑↓←→] Move  [Tab] Focus"
+		second := "[Enter] Select  [Esc] Back"
+		if m.focus == 0 {
+			first = "↓ Keyboard  [←→] Cursor  [Tab] Focus"
+			second = "[Enter] Create  [Esc] Back"
+		}
+		if m.focus >= 100 {
+			second = "[Enter] Type  [Esc] Back"
+		}
+		m.paintSetupHints(c, x, y, w, h, first, second)
+	} else if h >= 24 {
 		c.navigationHints(x+2, y+h-4, w-4, m, false, "Select")
 	} else {
 		c.put(x+19, y+h-2, ansi.Truncate(m.createHelp(w-21), w-21, "…"), p.muted)
@@ -148,11 +163,10 @@ func (m Model) paintProfiles(c *canvas) {
 		c.wrap(x+2, y+1, w-4, 2, label, p.muted)
 	} else {
 		c.put(x+2, y+1, ansi.Truncate(label, w-4, "…"), p.muted)
-		c.button(x+w-10, y+2, 8, 90, "Help", m)
 	}
 	count := len(m.snapshot.Entries)
-	reserve := 10
-	if h >= 24 && m.dexWide() {
+	reserve := 12
+	if h >= 24 && w >= 56 {
 		reserve = 19
 	}
 	capacity := max(1, h-reserve)
@@ -162,7 +176,6 @@ func (m Model) paintProfiles(c *canvas) {
 		marker := "  "
 		style := ""
 		if i == m.selected {
-			marker = "● "
 			style = m.controlStyle(false, true)
 			if m.focus == 0 {
 				marker = "▶ "
@@ -171,53 +184,56 @@ func (m Model) paintProfiles(c *canvas) {
 		}
 		active := ""
 		if profile.Active {
+			marker += "● "
 			active = "   ACTIVE"
+		} else {
+			marker += "  "
 		}
+
 		label := ansi.Truncate(marker+clean(profile.Name)+active, w-4, "…")
 		label += strings.Repeat(" ", max(0, w-4-ansi.StringWidth(label)))
 		row := y + 4 + i - first
 		c.put(x+2, row, label, style)
+		if profile.Active {
+			c.put(x+4, row, "●", m.palette().gold)
+		}
 		c.hits = append(c.hits, hit{x + 2, row, w - 4, 1000 + i})
 	}
 	if count == 0 {
 		c.button(x+2, y+4, w-4, 0, "No trainers yet.", m)
 	}
 	if count > capacity {
-		c.put(x+2, y+4+capacity, fmt.Sprintf("%d–%d of %d   arrows/wheel scroll", first+1, min(count, first+capacity), count), p.muted)
+		c.put(x+2, y+3, fmt.Sprintf("%d–%d of %d", first+1, min(count, first+capacity), count), p.muted)
 	}
 	use := "Use trainer"
 	if m.busy {
 		use = "Working…"
 	}
-	half := (w - 4) / 2
-	if h >= 24 && m.dexWide() {
+	if h >= 24 && w >= 56 {
 		ids := [3][2]int{{1, 2}, {3, 4}, {6, 5}}
 		labels := [3][2]string{{"New trainer", use}, {"Back / Cancel", "Refresh"}, {"Appearance", "Quit"}}
 		for row := 0; row < 3; row++ {
 			for col := 0; col < 2; col++ {
-				c.outlinedButton(x+2+col*min(half, 22), y+h-14+row*3, min(half-1, 21), ids[row][col], labels[row][col], m)
+				c.framedControl(x+2+col*22, y+h-14+row*3, 21, ids[row][col], labels[row][col], m, false)
 			}
 		}
 	} else {
-		c.button(x+2, y+h-5, half, 1, "New trainer", m)
-		c.button(x+2+half, y+h-5, half, 2, use, m)
-		c.button(x+2, y+h-4, half, 3, "Back / Cancel", m)
-		c.button(x+2+half, y+h-4, half, 4, "Refresh", m)
-		c.button(x+2, y+h-3, half, 6, "Appearance", m)
-		c.button(x+2+half, y+h-3, half, 5, "Quit", m)
+		c.button(x+2, y+h-7, 17, 1, "New trainer", m)
+		c.button(x+20, y+h-7, 15, 2, use, m)
+		c.button(x+2, y+h-6, 17, 3, "Back / Cancel", m)
+		c.button(x+20, y+h-6, 15, 4, "Refresh", m)
+		c.button(x+2, y+h-5, 17, 6, "Appearance", m)
+		c.button(x+20, y+h-5, 15, 5, "Quit", m)
 	}
-	if h >= 24 && m.dexWide() {
-		c.navigationHints(x+2, y+h-4, w-4, m, false, "Select")
-	} else {
-		hint := m.profilesHelp()
-		if !m.dexWide() {
-			hint = "↑↓ Choose  Enter Use  ←→ Buttons"
-			if m.focus != 0 {
-				hint = "↑↓ Column  ←→ Row  Enter Use"
-			}
-		}
-		c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
+	firstHint := "[↑↓←→] Move  [Tab] Focus"
+	if m.focus == 0 {
+		firstHint = "[↑↓] Choose  [←→] Buttons"
 	}
+	secondHint := "[Enter] Select  [Esc] Back"
+	if m.focus == 0 {
+		secondHint = "[Tab] Focus [Enter] Use [Esc] Back"
+	}
+	m.paintSetupHints(c, x, y, w, h, firstHint, secondHint)
 }
 
 func (m Model) createHelp(width int) string {
@@ -247,9 +263,21 @@ func (m Model) createHelp(width int) string {
 	}
 	return "↑↓←→ Move   Enter Select   Tab Focus"
 }
-func (m Model) profilesHelp() string {
-	if m.focus == 0 {
-		return "↑↓ Choose / leave   ←→ Buttons   Enter Use"
+func (m Model) paintSetupHints(c *canvas, x, y, w, h int, first, second string) {
+	combined := first + "  " + second
+	rows := 2
+	if ansi.StringWidth(combined) <= w-4 {
+		rows = 1
 	}
-	return "↑↓ Column   ←→ Row   Enter Select   Tab Focus"
+	hintY := y + h - 2
+	if rows == 2 {
+		hintY--
+	}
+	c.put(x, hintY-1, "├"+strings.Repeat("─", w-2)+"┤", m.footerDividerStyle())
+	if rows == 1 {
+		c.put(x+2, hintY, combined, m.hintStyle())
+	} else {
+		c.put(x+2, hintY, ansi.Truncate(first, w-4, "…"), m.hintStyle())
+		c.put(x+2, hintY+1, ansi.Truncate(second, w-4, "…"), m.hintStyle())
+	}
 }

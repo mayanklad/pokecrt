@@ -112,7 +112,7 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		c.put(x, y, "❨", style)
 		c.put(x+w-1, y, "❩", style)
 		c.controlText(x+1, y, w-2, label, style, m.focus == id, selected)
-		if !m.dexWide() && m.noColor && m.focus == id && !(m.screen == activityScreen && (m.section == 3 || m.section == 1) && !m.settings) {
+		if !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen) && !m.settings) {
 			c.put(x, y, "▶", style)
 		}
 		c.hits = append(c.hits, hit{x, y, w, id})

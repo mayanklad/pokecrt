@@ -11,7 +11,7 @@ func (m Model) activityBodyHeight() int {
 		return m.encounterGeometry().bodyH
 	}
 	if !m.dexWide() {
-		if m.section == 3 {
+		if m.section != 1 {
 			reserve := 6
 			if m.height >= 24 && m.width >= 56 {
 				reserve = 8
@@ -32,7 +32,7 @@ func (m Model) activityBodyHeight() int {
 		return max(3, height)
 	}
 	height := h - 11
-	if m.section == 3 {
+	if m.section != 1 {
 		height -= 2
 	}
 	if m.section == 1 && h >= 20 {
@@ -123,7 +123,7 @@ func (m Model) activityControls() []dexControl {
 		if g.h >= 24 && y == g.y+g.h-3 {
 			y -= 3
 		}
-		if m.section == 3 && g.h < 24 && (id == 12 || id == 13 || id == 11 || id == 14) {
+		if m.section != 1 && g.h < 24 && (id == 12 || id == 13 || id == 11 || id == 14) {
 			y -= 2
 		}
 		out = append(out, dexControl{x, y, w, id, label})
@@ -140,7 +140,7 @@ func (m Model) activityControls() []dexControl {
 		add(g.x+2, y, 16, 10, label)
 		add(g.x+18, y, g.w-20, 30, map[bool]string{true: "Show result", false: "History"}[m.activity.historyMode])
 	} else if m.section == 2 {
-		add(g.x+2, y, g.w-4, 15, "Choose / create trainer")
+		add(g.x+2, y, 29, 15, "Choose / create trainer")
 	}
 	if m.section != 1 && g.wide {
 		for panel := 0; panel < 2; panel++ {
@@ -149,14 +149,15 @@ func (m Model) activityControls() []dexControl {
 				px = g.x + g.w/2
 			}
 			pw := g.w/2 - 3
-			add(px, g.y+g.h-6, 13, 40+panel, "Scroll")
 			if m.activityPanelMaxScroll(panel) > 0 {
+				bottom := g.y + 5 + m.activityBodyHeight() - 1
+				add(px+1, bottom, 10, 40+panel, "Scroll")
 				upX := px + pw - 12
-				if m.section == 3 {
+				if m.section != 1 {
 					upX--
 				}
-				add(upX, g.y+g.h-6, 5, 42+panel*2, "↑")
-				add(px+pw-7, g.y+g.h-6, 5, 43+panel*2, "↓")
+				add(upX, bottom, 5, 42+panel*2, "↑")
+				add(px+pw-7, bottom, 5, 43+panel*2, "↓")
 			}
 		}
 	} else if m.activityMaxScroll() > 0 {
@@ -244,11 +245,7 @@ func (m Model) paintActivity(c *canvas) {
 		c.box(g.x+2, bodyY, bodyW, bodyH, " "+map[int]string{1: "ENCOUNTER LOG", 2: "TRAINER CARD", 3: "ACHIEVEMENT JOURNAL"}[m.section]+" ", m.achievementFrameStyle(p.accent))
 	}
 	textX, textW := g.x+4, bodyW-4
-	if m.section != 1 && g.wide {
-		for row := bodyY + 1; row < bodyY+bodyH-1; row++ {
-			c.hits = append(c.hits, hit{g.x + 3, row, g.w/2 - 5, 40}, hit{g.x + g.w/2 + 1, row, g.w/2 - 4, 41})
-		}
-	}
+
 	if g.wide && m.section != 1 {
 		half := g.w/2 - 3
 		c.box(g.x+2, bodyY, half, bodyH, " "+map[int]string{2: "TRAINER CARD", 3: "EARNED BADGES"}[m.section]+" ", m.informationFrameStyle(0, p.accent))
@@ -261,7 +258,7 @@ func (m Model) paintActivity(c *canvas) {
 		}
 		for i := 0; i < bodyH-2 && i+leftScroll < len(rows); i++ {
 			c.putANSI(g.x+4, bodyY+1+i, rows[i+leftScroll])
-			if m.section != 1 {
+			if m.section != 1 && m.activityPanelMaxScroll(0) > 0 {
 				c.hits = append(c.hits, hit{g.x + 4, bodyY + 1 + i, half - 4, 40})
 			}
 		}
@@ -301,7 +298,7 @@ func (m Model) paintActivity(c *canvas) {
 	if textW > 0 {
 		for i := 0; i < bodyH-2 && i+scroll < len(lines); i++ {
 			c.putANSI(textX, bodyY+1+i, ansi.Truncate(lines[i+scroll], textW, "…"))
-			if m.section != 1 && g.wide {
+			if m.section != 1 && g.wide && m.activityPanelMaxScroll(1) > 0 {
 				c.hits = append(c.hits, hit{textX, bodyY + 1 + i, textW, 41})
 			}
 			if m.section == 1 && a.historyMode && !a.loading && a.error == "" {
@@ -317,10 +314,20 @@ func (m Model) paintActivity(c *canvas) {
 		if label != "" {
 			label = "[" + label + "]"
 		}
-		if !g.short && control.y == g.y+3 {
-			c.framedControl(control.x, control.y-1, max(3, control.w-1), control.id, label, m, control.id == 30 && m.activity.historyMode)
+		if control.id >= 40 && control.id <= 45 {
+			c.button(control.x, control.y, control.w, control.id, control.label, m)
+		} else if !g.short && control.y == g.y+3 {
+			width := max(3, control.w-1)
+			if m.section == 2 && control.id == 15 {
+				width = control.w
+			}
+			c.framedControl(control.x, control.y-1, width, control.id, label, m, control.id == 30 && m.activity.historyMode)
 		} else if !g.short && (control.y == g.y+g.h-3 || g.h >= 24 && control.y == g.y+g.h-6) {
-			c.outlinedButton(control.x, control.y-1, max(3, control.w-1), control.id, label, m)
+			if m.section == 2 {
+				c.trainerOutlinedButton(control.x, control.y-1, max(3, control.w-1), control.id, label, m)
+			} else {
+				c.outlinedButton(control.x, control.y-1, max(3, control.w-1), control.id, label, m)
+			}
 		} else {
 			width := max(3, control.w-1)
 			if control.label == "↑" || control.label == "↓" || control.label == "←" || control.label == "→" {
@@ -330,7 +337,7 @@ func (m Model) paintActivity(c *canvas) {
 		}
 	}
 
-	if m.section == 3 {
+	if m.section != 1 {
 		hintY := g.y + g.h - 3
 		if g.h >= 24 {
 			hintY = g.y + g.h - 4
@@ -397,13 +404,13 @@ func (m Model) paintActivityArt(c *canvas, x, y, w, h int) {
 }
 
 func (m Model) achievementFrameStyle(fallback string) string {
-	if m.section == 3 {
+	if m.section != 1 {
 		return m.achievementPanelStyle(0)
 	}
 	return fallback
 }
 func (m Model) informationFrameStyle(panel int, fallback string) string {
-	if m.section == 3 {
+	if m.section != 1 {
 		return m.achievementPanelStyle(panel)
 	}
 	return fallback

@@ -346,7 +346,7 @@ func (m *Model) moveFocus(delta int) {
 			order = []int{0, 2, 6, 7}
 		}
 	}
-	if !m.dexWide() && (m.settings || m.screen == createScreen || m.screen == dexSearchScreen || m.screen == profilesScreen) {
+	if !m.dexWide() && (m.settings || m.screen == dexSearchScreen) {
 		order = append(order, 90)
 	}
 	for i, id := range order {
@@ -368,7 +368,7 @@ func (m *Model) openSettings() {
 	}
 }
 func (m *Model) activate(id int) tea.Cmd {
-	if id == 90 && !m.dexWide() {
+	if id == 90 && !m.dexWide() && (m.settings || m.screen == dexSearchScreen) {
 		return m.openCompactMessage()
 	}
 	if m.settings {

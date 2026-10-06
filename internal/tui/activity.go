@@ -140,7 +140,7 @@ func (m *Model) openActivity(section int) tea.Cmd {
 	}
 	if section == 3 {
 		m.focus = 12
-		if m.dexGeometry().wide {
+		if m.dexGeometry().wide && m.activityPanelMaxScroll(0) > 0 {
 			m.focus = 40
 		}
 	}
@@ -373,6 +373,8 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 			}
 			if m.section == 1 && (msg.String() == "left" || msg.String() == "right") && m.focus != 21 {
 				m.moveEncounterControl(msg.String())
+			} else if m.section == 2 && (msg.String() == "left" || msg.String() == "right") {
+				m.moveTrainerControl(msg.String())
 			} else if m.section == 3 && (msg.String() == "left" || msg.String() == "right") {
 				m.moveAchievementControl(delta)
 			} else if m.section != 1 && m.dexGeometry().wide && (m.focus == 40 || m.focus == 41) {
@@ -395,7 +397,7 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 						m.activity.panelScroll[panel] = next
 					}
 				}
-			} else if m.section == 1 && m.activity.historyMode && m.focus == 20 && (msg.String() == "up" || msg.String() == "down" || msg.String() == "j" || msg.String() == "k") {
+			} else if m.section == 1 && m.activity.historyMode && (m.focus == 20 || m.focus == 37) && (msg.String() == "up" || msg.String() == "down" || msg.String() == "j" || msg.String() == "k") {
 				next := max(0, min(max(0, len(m.activity.data.history)-1), m.activity.selected+delta))
 				if next == m.activity.selected {
 					m.activityMove(msg.String())
@@ -513,6 +515,16 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m *Model) activityMove(key string) {
+	if m.section == 2 {
+		if key == "j" {
+			key = "down"
+		}
+		if key == "k" {
+			key = "up"
+		}
+		m.moveTrainerControl(key)
+		return
+	}
 	if m.section == 1 {
 		if key == "j" {
 			key = "down"
@@ -603,4 +615,66 @@ func (m Model) paintAchievementHints(c *canvas, x, y, w int) {
 	}
 	c.put(x, y, first, m.hintStyle())
 	c.put(x, y+1, second, m.hintStyle())
+}
+
+func (m *Model) moveTrainerControl(key string) {
+	controls := m.activityControls()
+	panes := []int{}
+	for _, c := range controls {
+		if c.id == 22 || c.id == 16 || c.id == 17 || c.id >= 40 && c.id <= 45 {
+			panes = append(panes, c.id)
+		}
+	}
+	if m.focus == 15 {
+		if key == "up" {
+			return
+		}
+		if key == "down" {
+			m.focus = 12
+			if len(panes) > 0 {
+				m.focus = panes[0]
+			}
+			return
+		}
+		m.focus = 12
+		if key == "right" {
+			m.focus = 14
+		}
+		return
+	}
+	if key == "left" || key == "right" {
+		delta := 1
+		if key == "left" {
+			delta = -1
+		}
+		for i, id := range panes {
+			if id == m.focus {
+				next := i + delta
+				if next < 0 {
+					m.focus = 12
+				} else if next >= len(panes) {
+					m.focus = 14
+				} else {
+					m.focus = panes[next]
+				}
+				return
+			}
+		}
+		footer := []int{12, 13, 11, 14}
+		for i, id := range footer {
+			if id == m.focus {
+				next := i + delta
+				if next >= 0 && next < len(footer) {
+					m.focus = footer[next]
+				} else {
+					m.focus = 15
+				}
+				return
+			}
+		}
+	}
+	if key == "down" && (m.focus == 12 || m.focus == 13 || m.focus == 11 || m.focus == 14) {
+		return
+	}
+	m.focus = directionalTarget(controls, m.focus, key)
 }

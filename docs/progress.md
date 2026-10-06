@@ -1045,3 +1045,52 @@ padding in both forms, while preserving space for focus and selection markers.
 Full tests, vet and build pass. Added regression tests verify lower corners and
 active tabs across compact and wide layouts. Four additional offline terminal
 scenarios verify selected History indicators and unchanged browsing state.
+
+
+## D37 - Trainer responsive controls and navigation
+
+Baseline: 23c24102e753c4e611ef02fff9c21ba44b389df8. Source files
+matched the GitHub baseline before edits. The committed progress document was
+loaded separately to preserve its latest contents.
+
+Trainer uses the approved footer pattern: bottom-anchored hints, a quiet divider,
+compact key brackets, combined Move directions when appropriate and Refresh
+naming. Controls have centered labels and balanced whole-cell padding. Compact
+layouts use outlined chooser/footer controls when space permits, with reserved
+rows preventing overlaps; shorter layouts retain single-row controls. Frame
+corners remain intact beside compact scroll controls. There is one focus marker
+on the actual control, with its associated pane accented in color modes.
+
+Down from Choose / create trainer enters the first visible Scroll control.
+Left/Right visits each panel's Scroll and Up/Down controls in visible order;
+outward panel edges reach Back/Quit. Footer arrows visit footer actions, and
+horizontal footer boundaries return to the chooser. Chooser Up and footer Down
+stop at their group edges. Tab/Shift-Tab retain complete control access.
+Up/Down on Scroll, PageUp/PageDown and pointer-targeted mouse wheels preserve
+independent trainer-card and generation-progress offsets in wide layouts.
+Compact layouts retain the combined scrollable card and expose all facts.
+Profile selection/creation behavior, gameplay and storage remain unchanged.
+
+Full tests, vet, executable build and TUI race checks pass. Regression tests cover
+nine sizes from 40×12 through 120×40, color/NO_COLOR focus markers, rendered
+extent, bottom hints, chooser/panel routes and independent panel scrolling.
+Thirty offline PTY scenarios cover chooser, Scroll and arrows, resizing, light
+appearance and NO_COLOR. Database hashes remain unchanged; terminal attributes,
+alternate screen and mouse reporting restore on exit. No schema, dataset,
+dependency or benchmark changes. Remaining pages require review before v1.0.
+
+### Trainer form and reviewed frame follow-up
+
+Trainer and Achievements show frame controls only when their respective content overflows. Wide controls share the bottom frame border; compact controls and Encounter controls preserve the surrounding border. Encounter history retains keyboard selection through Open when scrolling is unnecessary.
+
+Trainer selection uses compact action widths, aligned wide button columns, a persistent active-trainer dot independent of the selection and focus pointer, and bottom-aligned contextual hints. The list position counter uses its own header row when the trainer list overflows. Trainer creation uses balanced action labels and keyboard editing controls with room for the focus marker. Redundant Help shortcuts were removed from the trainer forms; shared Help remains available in search and appearance settings.
+
+The smallest trainer creation layout retains one footer hint row and a joined divider while preserving the complete on-screen keyboard. Taller forms use the shared quiet footer divider and contextual hint rows.
+
+Validation: full Go test suite, vet, build and TUI race tests passed. Twenty-two offline terminal scenarios covered Trainer, trainer selection and trainer creation at five sizes, Achievements and Encounter at three sizes, and terminal resizing; browsing preserved trainer storage and restored terminal state. Focus, frame overflow and inline border regression tests passed in color and monochrome modes.
+
+### Trainer fact spacing and footer junctions
+
+Trainer facts retain a visible label/value gap in the wide layout, including long journey labels, generation counts and encounter dates. Compact layouts retain their colon separator. Trainer selection and creation footer dividers join both outer frame borders. The minimum-height create form shifts the keyboard and editing row upward by one row to preserve all controls alongside the divider; validation messages retain their own available row.
+
+Validation: full Go tests, vet, build and TUI race tests passed. Twenty-seven offline terminal scenarios covered Trainer, trainer selection and creation at nine sizes, including the minimum-height form and both sides of the wide-layout boundary. Label/value spacing and joined footer dividers have regression coverage in color and monochrome modes.

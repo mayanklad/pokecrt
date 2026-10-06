@@ -263,7 +263,7 @@ func TestTrainerEntryHintsIncludeHorizontalButtonNavigation(t *testing.T) {
 	for _, width := range []int{40, 64, 120} {
 		m := New(context.Background(), nil, Dark, true)
 		m.width, m.height, m.screen, m.focus = width, 36, profilesScreen, 0
-		if !strings.Contains(m.View().Content, "←→") || !strings.Contains(m.View().Content, "Buttons") {
+		if !strings.Contains(m.View().Content, "←→") || !strings.Contains(m.View().Content, "[Tab] Focus") {
 			t.Fatal("trainer-list horizontal guidance missing", width)
 		}
 	}

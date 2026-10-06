@@ -220,7 +220,7 @@ func (m *Model) handleSetup(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m *Model) activateSetup(id int) tea.Cmd {
-	if id == 90 && !m.dexWide() {
+	if id == 90 && !m.dexWide() && (m.settings || m.screen == dexSearchScreen) {
 		return m.openCompactMessage()
 	}
 	if m.screen == createScreen && ((id >= 0 && id <= 7) || (id >= 100 && id < 100+len(m.keyboardLetters()))) {

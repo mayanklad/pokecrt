@@ -213,7 +213,9 @@ func TestTrainerPanelsScrollIndependently(t *testing.T) {
 		if m.activity.panelScroll != [2]int{1, 0} {
 			t.Fatal("trainer card scroll moved generation progress", m.activity.panelScroll)
 		}
-		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
+		for range 3 {
+			m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyRight})
+		}
 		m, _ = update(m, tea.KeyPressMsg{Code: tea.KeyDown})
 		if m.focus != 41 || m.activity.panelScroll != [2]int{1, 1} {
 			t.Fatal("generation panel not independently focusable", m.focus, m.activity.panelScroll)

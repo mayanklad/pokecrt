@@ -466,11 +466,7 @@ func TestHelpTracksFocusAndMouseActions(t *testing.T) {
 		}
 		m.screen = profilesScreen
 		m.focus = 0
-		expected := "Choose / leave"
-		if !m.dexWide() {
-			expected = "Enter Use"
-		}
-		if !strings.Contains(m.View().Content, expected) {
+		if !strings.Contains(m.View().Content, "[Enter] Use") || !strings.Contains(m.View().Content, "[Tab] Focus") {
 			t.Fatal("list help missing")
 		}
 		m.activateSetup(1) // New trainer, returns to form.
@@ -478,7 +474,7 @@ func TestHelpTracksFocusAndMouseActions(t *testing.T) {
 		m.focus = 4
 		m.openSettings()
 		m.activate(5)
-		if m.focus != 4 || !strings.Contains(m.View().Content, "Column") {
+		if m.focus != 4 || !strings.Contains(m.View().Content, "[Enter] Select") {
 			t.Fatal("button help or return focus missing")
 		}
 	}
