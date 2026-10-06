@@ -21,7 +21,7 @@ func (m Model) paintCreate(c *canvas) {
 	}
 	p := m.palette()
 	actionButton := c.outlinedButton
-	if m.screen == createScreen {
+	if m.screen == createScreen || m.screen == dexSearchScreen {
 		actionButton = c.trainerOutlinedButton
 	}
 	w, h := min(c.width, 88), min(c.height, 28)
@@ -33,11 +33,7 @@ func (m Model) paintCreate(c *canvas) {
 	}
 	c.pageBox(x, y, w, h, title, m)
 	c.put(x+2, y+1, ansi.Truncate(subtitle, w-14, "…"), p.muted)
-	if m.screen == dexSearchScreen {
-		if h >= 24 {
-			c.framedControl(x+3+min((w-4)/2-1, 22), y+h-8, 12, 7, "Quit", m, false)
-		}
-	} else if h >= 24 {
+	if h >= 24 {
 		quitY := y + 1
 		if w < 72 {
 			quitY = y + h - 8
@@ -46,6 +42,7 @@ func (m Model) paintCreate(c *canvas) {
 	} else {
 		c.button(x+w-10, y+1, 8, 7, "Quit", m)
 	}
+
 	prefix, suffix := string(m.name[:m.cursor]), string(m.name[m.cursor:])
 	fieldBoxW := min(w-4, 52)
 	fieldW := fieldBoxW - 2
@@ -129,19 +126,20 @@ func (m Model) paintCreate(c *canvas) {
 		}
 		c.button(x+2, y+h-2, 16, 6, "Appearance", m)
 	}
-	if h >= 24 && m.screen == createScreen {
+	if h >= 24 {
 		first := "[↑↓←→] Move  [Tab] Focus"
 		second := "[Enter] Select  [Esc] Back"
 		if m.focus == 0 {
 			first = "↓ Keyboard  [←→] Cursor  [Tab] Focus"
 			second = "[Enter] Create  [Esc] Back"
+			if m.screen == dexSearchScreen {
+				second = "[Enter] Search  [Esc] Back"
+			}
 		}
 		if m.focus >= 100 {
 			second = "[Enter] Type  [Esc] Back"
 		}
 		m.paintSetupHints(c, x, y, w, h, first, second)
-	} else if h >= 24 {
-		c.navigationHints(x+2, y+h-4, w-4, m, false, "Select")
 	} else {
 		c.put(x+19, y+h-2, ansi.Truncate(m.createHelp(w-21), w-21, "…"), p.muted)
 	}

@@ -23,7 +23,8 @@ func (m Model) informationFact(label, value string, width int) string {
 	if width < 30 || !m.dexWide() {
 		return styled(label+": ", m.hintStyle()) + value
 	}
-	return styled(fmt.Sprintf("%-*s", min(18, max(10, width/3)), label), m.hintStyle()) + value
+	column := max(ansi.StringWidth(label)+2, min(18, max(10, width/3)))
+	return styled(label+strings.Repeat(" ", column-ansi.StringWidth(label)), m.hintStyle()) + value
 }
 func (m Model) informationBar(label string, current, total int64, width int) string {
 	if total <= 0 {
@@ -82,6 +83,10 @@ func (m Model) evolutionLines() []dexLine {
 			node := nodes[first+j]
 			border := m.hintStyle()
 			marker := ""
+			if m.focus == 18 && m.dex.tab == 2 && m.dex.cardNode == 2000+node.Number {
+				border = m.palette().gold
+				marker = "● "
+			}
 			if m.focus == 2000+node.Number {
 				border = m.palette().muted
 				marker = "▶ "
@@ -249,12 +254,7 @@ func wrapDexInformation(lines []dexLine, width int) []dexLine {
 	return out
 }
 
-func (m Model) paintEntryFacts(c *canvas, x, y, w, h int) {
-	if w < 12 || h < 3 {
-		return
-	}
-	c.box(x, y, w, h, "FIELD NOTES", m.palette().accent)
-	width := w - 4
+func (m Model) entryFactRows(width int) []string {
 	lines := []string{}
 	e := m.dex.entry
 	if !e.Seen {
@@ -273,12 +273,36 @@ func (m Model) paintEntryFacts(c *canvas, x, y, w, h int) {
 			lines = append(lines, "", m.dex.entryError)
 		}
 	}
-	rows := wrapActivityLines(lines, width)
-	for i, row := range rows {
-		if i >= h-2 {
-			break
+	return wrapActivityLines(lines, width)
+}
+func (m Model) dexFactsRect() (x, y, w, h int) {
+	g := m.dexGeometry()
+	ax, ay, aw, ah := m.dexArtRect()
+	x = ax + aw + 2
+	return x, ay, g.entryX + g.entryW - x - 2, ah
+}
+func (m Model) dexFactsMaxScroll() int {
+	if !m.dexWide() || m.dex.tab != 0 {
+		return 0
+	}
+	_, _, w, h := m.dexFactsRect()
+	return max(0, len(m.entryFactRows(w-4))-max(1, h-2))
+}
+func (m Model) paintEntryFacts(c *canvas, x, y, w, h int) {
+	if w < 12 || h < 3 {
+		return
+	}
+	c.box(x, y, w, h, "POKÉMON DETAILS", m.palette().accent)
+	rows := m.entryFactRows(w - 4)
+	offset := 0
+	if m.dexWide() {
+		offset = min(m.dex.factsScroll, m.dexFactsMaxScroll())
+	}
+	for i := 0; i < h-2 && i+offset < len(rows); i++ {
+		c.putANSI(x+2, y+1+i, rows[i+offset])
+		if m.dexFactsMaxScroll() > 0 {
+			c.hits = append(c.hits, hit{x + 1, y + 1 + i, w - 2, 40})
 		}
-		c.putANSI(x+2, y+1+i, row)
 	}
 }
 
@@ -421,6 +445,10 @@ func (m Model) variantLines() []dexLine {
 		if selected {
 			marker = "● "
 			border = m.palette().gold
+		}
+		if m.focus == 18 && m.dex.tab == 1 && i == m.dex.optionIndex {
+			marker = "● "
+			border = m.palette().muted
 		}
 		if m.focus == 15 && i == m.dex.optionIndex {
 			marker = "▶ "

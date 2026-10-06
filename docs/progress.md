@@ -1107,3 +1107,14 @@ Appearance Help is available at every supported size and retains complete settin
 Validation covers responsive geometry, all four modes, monochrome focus and selection, mouse targets, arrow and Tab routes, save failure, full error details, Help scrolling, resizing and return focus. Existing terminal-following and protected configuration tests remain in place.
 
 Full Go tests, vet, build and TUI race checks passed. Thirty-nine offline terminal scenarios covered ten terminal sizes, all appearance modes, NO_COLOR, Help and resizing, save/restart behavior, a protected configuration file and return to Trainer. Trainer storage remained unchanged and terminal state was restored.
+
+
+## D39 - Pokédex responsive controls and navigation
+
+Pokédex uses explicit navigation through visible header, entry, frame, tab and footer controls. Arrow routes and Tab order reach each control without duplicate Scroll targets. Active tabs and filters retain independent selection dots. Compact Overview switches between Art and Details; wide Overview labels its panes Artwork and Pokémon Details.
+
+Frame controls appear inline only when needed. Focus highlights the associated frame, including nested Overview panes, without duplicating the pointer in its title. Variants and Evolution Scroll controls move the selected card, reveal its label and inspect it on Enter; direct card selection and paging arrows remain available. Focused card labels remain visible. Wide National Index uses a narrower column and extends beside the entry tabs. Rounded view labels reserve separate padding for focus and selection indicators. Rounded labels keep centered spacing and intact delimiters; outlined actions reserve their full three-row height above the bottom hints.
+
+Artwork Scroll pans horizontally with Left/Right and exits to adjacent controls at the pan limits. Dedicated horizontal arrows also pan on Enter. Mouse wheels target their own viewport and page keys use its height. Resizing preserves the corresponding entry and remaps hidden controls to visible targets. Compact Back closes filters, returns from an entry to the index, then leaves Pokédex. Search retains the shared trainer-form actions and joined footer. Discovery locks, exact collected variants and read-only browsing remain unchanged.
+
+Validation: full Go tests, vet, build and TUI race checks passed. Arrow-route regression checks cover 90 layout/filter configurations. Sixty-eight network-restricted terminal scenarios covered ten sizes, all four tabs, Search, monochrome output, appearance modes and resizing. Trainer database bytes remained unchanged and terminal state was restored. Eighty representative captures of previously approved pages matched after normalizing the environment-dependent trainer timestamp.

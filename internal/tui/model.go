@@ -128,7 +128,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
 		m.reconcileLayout()
-		if m.screen == dexScreen && !m.dexWide() && (m.focus == 10 || m.focus == 15 || m.focus >= 2000 || m.settings && (m.settingsReturnFocus == 10 || m.settingsReturnFocus == 15 || m.settingsReturnFocus >= 2000)) {
+		if m.screen == dexScreen && !m.dexWide() && (pokedexEntryFocus(m.focus) || m.settings && pokedexEntryFocus(m.settingsReturnFocus)) {
 			m.dex.detail = true
 		}
 	case activateMsg:
@@ -343,9 +343,6 @@ func (m *Model) moveFocus(delta int) {
 		if m.busy {
 			order = []int{0, 2, 6, 7}
 		}
-	}
-	if !m.settings && !m.dexWide() && m.screen == dexSearchScreen {
-		order = append(order, 90)
 	}
 	for i, id := range order {
 		if id == m.focus {

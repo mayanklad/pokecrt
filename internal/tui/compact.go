@@ -11,6 +11,10 @@ import (
 
 // Compact pages reserve actual rows instead of shifting individual controls.
 func (m Model) compactDexGeometry() dexLayout {
+	if m.screen == dexScreen {
+		return m.pokedexGeometry(false)
+	}
+
 	w, h := max(1, m.width), max(1, m.height)
 	g := dexLayout{w: w, h: h, short: h < 20, listX: 2, listW: w - 4, entryX: 2, entryW: w - 4}
 	if m.dex.detail {
@@ -46,93 +50,7 @@ func compactActions(x, y, w int, ids []int, labels []string) []dexControl {
 	return out
 }
 
-func (m Model) compactDexControls() []dexControl {
-	g := m.dexGeometry()
-	if m.width < 40 || m.height < 12 {
-		return []dexControl{{0, max(0, m.height-1), min(12, m.width), 8, "Quit"}}
-	}
-	cs := []dexControl{}
-	add := func(x, y, w, id int, label string) { cs = append(cs, dexControl{x, y, w, id, label}) }
-	filters := func(y int) {
-		if g.w >= 64 {
-			add(2, y, 12, 31, "All")
-			add(14, y, 13, 32, "Seen")
-			add(27, y, 15, 33, "Unseen")
-			add(42, y, g.w-44, 3, m.dexGenLabel())
-		} else {
-			add(2, y, 15, 2, []string{"All", "Seen", "Unseen"}[m.dex.status])
-			add(17, y, g.w-19, 3, m.dexGenLabel())
-		}
-		add(2, y+1, g.w-4, 1, m.dexSearchLabel())
-	}
-	if !m.dex.detail {
-		y := 3
-		if g.short {
-			y = 2
-		}
-		filters(y)
-		if len(m.dex.rows) > 0 {
-			add(2, g.h-4, g.w-4, 4, "Open entry")
-			if len(m.dex.rows) > m.dexBodyHeight() {
-				add(g.listX+g.listW-12, g.bodyY+g.bodyH-1, 5, 16, "↑")
-				add(g.listX+g.listW-7, g.bodyY+g.bodyH-1, 5, 17, "↓")
-			}
-		}
-	} else {
-		y := 3
-		if g.short {
-			y = 2
-		}
-		third := (g.w - 4) / 3
-		add(2, y, third, 4, "Index")
-		if !m.dex.filters {
-			add(2+third, y, third, 1, "Search /")
-		}
-		filterLabel := "Filters"
-		if m.dex.filters {
-			filterLabel = "Close"
-		}
-		add(2+2*third, y, g.w-4-2*third, 25, filterLabel)
-		if m.dex.filters {
-			filters(y + 1)
-		}
-		if g.h >= 24 {
-			half := (g.w - 4) / 2
-			for i, label := range dexTabNames {
-				add(2+(i%2)*half, g.h-5+i/2, half, 20+i, label)
-			}
-		} else {
-			add(2, g.h-4, g.w-4, 24, "View: "+dexTabNames[m.dex.tab]+" ▸")
-		}
-		y = g.bodyY + g.bodyH - 1
-		if m.dexMaxScroll() > 0 {
-			add(4, y, 5, 11, "↑")
-			add(9, y, 5, 12, "↓")
-		}
-		if m.dexMaxHorizontal() > 0 {
-			add(14, y, 5, 13, "←")
-			add(19, y, 5, 14, "→")
-		}
-		if m.dex.tab == 0 {
-			label := "Facts"
-			if m.dex.overviewFacts {
-				label = "Art"
-			}
-			add(g.entryX+g.entryW-10, y, 8, 26, label)
-		}
-		if m.dex.tab == 2 && m.dex.entry.Seen && len(m.dex.entry.Evolution) > 0 {
-			add(g.entryX+g.entryW-12, y, 10, 27, "Full art")
-		}
-	}
-	back, theme := "Back", "Appearance"
-	if m.dex.familyOrigin > 0 {
-		back = "Family"
-	}
-	if g.w < 48 {
-		theme = "Theme"
-	}
-	return append(cs, compactActions(2, g.h-3, g.w-4, []int{6, 7, 5, 8}, []string{back, theme, "Reload", "Quit"})...)
-}
+func (m Model) compactDexControls() []dexControl { return m.pokedexControls() }
 
 func (m Model) compactEntryFacts() []dexLine {
 	w := m.dexDetailWidth()
@@ -191,7 +109,15 @@ func (m Model) paintCompactDex(c *canvas) {
 			brand += " LOCKED"
 		}
 	}
-	c.put(2, 1, ansi.Truncate(brand, g.w-4, "…"), p.accent)
+	brandW := g.w - 4
+	if !m.dex.detail && len(m.dex.rows) > 0 {
+		brandW = g.w - 20
+	} else if m.dex.detail && m.dex.tab == 0 {
+		brandW = g.w - 20
+	} else if m.dex.detail && m.dex.tab == 2 {
+		brandW = g.w - 16
+	}
+	c.put(2, 1, ansi.Truncate(brand, brandW, "…"), p.accent)
 	if strings.HasPrefix(brand, "POKÉCRT") {
 		c.put(2, 1, "POKÉCRT", m.brandStyle())
 	}
@@ -203,12 +129,14 @@ func (m Model) paintCompactDex(c *canvas) {
 		}
 		c.put(2, 2, ansi.Truncate(label, g.w-4, "…"), p.muted)
 	}
-	if !m.dex.detail {
+	if m.dex.detail && g.bodyH < 3 {
+		c.put(2, 5, "Choose filters above.", p.muted)
+	} else if !m.dex.detail {
 		m.paintDexIndex(c, g)
 	} else if m.dex.tab == 0 && !m.dex.overviewFacts {
 		m.paintDexOverview(c, g)
 	} else if m.dex.tab == 0 {
-		c.box(g.entryX, g.bodyY, g.entryW, g.bodyH, "FIELD NOTES", p.accent)
+		c.box(g.entryX, g.bodyY, g.entryW, g.bodyH, "POKÉMON DETAILS", p.accent)
 		rows := m.compactEntryFacts()
 		offset := min(m.dex.scroll, max(0, len(rows)-m.dexBodyHeight()))
 		for i := 0; i < m.dexBodyHeight() && i+offset < len(rows); i++ {
@@ -217,27 +145,8 @@ func (m Model) paintCompactDex(c *canvas) {
 	} else {
 		m.paintDexTab(c, g)
 	}
-	for _, control := range m.dexControls() {
-		copy := m
-		c.button(control.x, control.y, control.w, control.id, control.label, copy)
-	}
-	hint := "Arrows Focus  Enter Use  Tab Next"
-	if m.focus == 0 {
-		hint = "↑↓ Choose  Enter Open  / Search"
-	}
-	if m.focus == 10 && m.dex.tab == 0 {
-		hint = "↑↓ Scroll  ←→ Pan  Tab Focus"
-		if m.dex.overviewFacts {
-			hint = "↑↓ Scroll  Tab Focus  Esc Index"
-		}
-	}
-	if m.focus == 15 {
-		hint = "↑↓ Choose  Enter Inspect  Tab Focus"
-	}
-	if m.focus >= 2000 && m.focus < 3000 {
-		hint = "↑↓ Family  Enter Open  Tab Focus"
-	}
-	c.put(2, g.h-2, ansi.Truncate(hint, g.w-4, "…"), m.hintStyle())
+	m.paintPokedexControls(c)
+	m.paintPokedexHints(c)
 }
 
 func (m *Model) reconcileLayout() {
@@ -262,8 +171,14 @@ func (m *Model) reconcileLayout() {
 			m.focus = m.settingsReturnFocus
 		}
 		if !m.dexWide() {
-			if m.focus == 10 || m.focus == 15 || m.focus >= 2000 {
+			if pokedexEntryFocus(m.focus) {
 				m.dex.detail = true
+			}
+			if m.focus >= 40 && m.focus <= 42 {
+				m.dex.tab = 0
+				m.dex.overviewFacts = true
+				m.dex.scroll = m.dex.factsScroll
+				m.focus = 18
 			}
 			if m.width < 64 && m.focus >= 31 && m.focus <= 33 {
 				m.focus = 2
@@ -271,6 +186,7 @@ func (m *Model) reconcileLayout() {
 		}
 		m.dex.scroll = max(0, min(m.dex.scroll, m.dexMaxScroll()))
 		m.dex.horizontal = max(0, min(m.dex.horizontal, m.dexMaxHorizontal()))
+		m.dex.factsScroll = max(0, min(m.dex.factsScroll, m.dexFactsMaxScroll()))
 		m.ensureDexFocus()
 		if m.settings {
 			m.settingsReturnFocus = m.focus
@@ -726,7 +642,7 @@ func (m Model) paintCompactCreate(c *canvas) {
 		status = m.notice
 	}
 	keysY, editY, statusY := y+5, y+8, y+4
-	if m.screen == createScreen && h == 12 {
+	if h == 12 {
 		keysY--
 		editY--
 		statusY = y + 3
@@ -740,20 +656,17 @@ func (m Model) paintCompactCreate(c *canvas) {
 	}
 	page := []string{"abc→ABC", "ABC→123", "123→abc"}[m.keyboardPage]
 	c.button(x+2, editY, 11, 3, page, m)
-	if m.screen == createScreen {
+	if m.screen == createScreen || m.screen == dexSearchScreen {
 		c.button(x+13, editY, 13, 4, "Backspace", m)
 		c.button(x+26, editY, 9, 5, "Space", m)
 	} else {
 		c.button(x+13, editY, 11, 4, "Backspace", m)
 		c.button(x+24, editY, 7, 5, "Space", m)
 	}
-	if m.screen == dexSearchScreen {
-		c.button(x+31, editY, 7, 90, "Help", m)
-	}
 	if h >= 16 {
 		message := "The first trainer becomes active. Additional trainers require Use trainer. No encounter is recorded."
 		if m.screen == dexSearchScreen {
-			message = "Search revealed names or National numbers. Help explains search and navigation."
+			message = "Search revealed names or National numbers. An empty search clears the query."
 		}
 		c.wrap(x+2, y+10, w-4, max(0, h-14), message, p.muted)
 	}
@@ -764,7 +677,7 @@ func (m Model) paintCompactCreate(c *canvas) {
 	if m.busy {
 		label = "Saving"
 	}
-	if m.screen == createScreen {
+	if m.screen == createScreen || m.screen == dexSearchScreen {
 		actionY := y + h - 4
 		if h >= 16 {
 			actionY = y + h - 5
@@ -787,6 +700,9 @@ func (m Model) paintCompactCreate(c *canvas) {
 		if m.focus == 0 {
 			first = "↓ Keys  [←→] Cursor  [Tab] Focus"
 			second = "[Enter] Create  [Esc] Back"
+			if m.screen == dexSearchScreen {
+				second = "[Enter] Search  [Esc] Back"
+			}
 		}
 		if m.focus >= 100 {
 			second = "[Enter] Type  [Esc] Back"
@@ -795,6 +711,9 @@ func (m Model) paintCompactCreate(c *canvas) {
 			m.paintSetupHints(c, x, y, w, h, first, second)
 		} else {
 			hint := "↓ Keys  [Tab] Focus  [Enter] Create"
+			if m.screen == dexSearchScreen {
+				hint = "↓ Keys  [Tab] Focus  [Enter] Search"
+			}
 			if m.focus >= 100 {
 				hint = "[↑↓←→] [Tab] Focus [Enter] Type"
 			} else if m.focus != 0 {

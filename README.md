@@ -500,6 +500,41 @@ for an uncollected standard regular selection. Removed artwork retains its
 collection record with an explicit unavailable notice. Browsing requires an
 active trainer, opens storage read-only and never grants XP or achievements.
 
+### Interactive Pokédex
+
+The Adventure Menu opens a private National Index with All, Seen, Unseen,
+generation and search controls. Wide layouts keep the index beside the entry;
+smaller layouts open entries on a separate view. Search matches National numbers
+and revealed names. Applying an empty query clears search while retaining status
+and generation filters. Cancel leaves the query unchanged. The search dialog
+supports typing, paste, cursor editing and an on-screen keyboard for mouse-only
+use, with the same action and footer design as trainer creation.
+
+Overview, Variants, Evolution and Records remain directly selectable when the
+terminal has at least 20 rows. Shorter layouts use a View selector; its label and
+selection dot identify the current tab. Compact Overview switches between Art
+and Details without changing the collected appearance. Active filters and tabs
+retain their selection dots independently of keyboard focus.
+
+Scroll and arrow controls sit within their own frame borders and appear only
+when content overflows. Wide Overview keeps Artwork and Pokémon Details scrolling
+independent. Mouse-wheel input affects only the content under the pointer;
+PageUp/PageDown moves by the focused viewport size. Left/Right visits each
+frame's controls before reaching Back or Quit. Artwork Scroll uses Left/Right to pan horizontally when artwork overflows; at
+either pan limit the same keys move to adjacent controls. Dedicated arrow controls
+also pan on Enter.
+Variants and Evolution Scroll controls move the selected item and keep its label
+visible. Enter inspects that item; Left/Right visits the frame controls. Direct
+card selection remains available. Controls appear only when content overflows. Compact Back returns from an entry to the index before
+leaving Pokédex. Focused appearance and evolution card labels remain
+visible even at the minimum supported height.
+
+The footer uses contextual key hints, a quiet divider joined to the outer frame,
+and consistent Refresh naming. Frame titles do not duplicate focus pointers.
+Resizing clamps scrolling and moves focus away from controls that disappear.
+Browsing, filtering, search and appearance inspection remain read-only; exact
+collected variants and undiscovered identity locks use the shared Pokédex rules.
+
 ## Trainer statistics
 
 `pokecrt trainer` and `pokecrt trainer --name NAME` show total XP, level,
@@ -638,8 +673,8 @@ in-flight guard preventing another encounter across screens. Ctrl+C exits gracef
 
 **History** shows the newest 50 encounters, ordered by recorded time then ID.
 Names/forms use stored encounter snapshots; removed artwork does not erase
-history. Click a row or use Previous/Next and Up/Down on the selected-entry control,
-then Open selected entry to browse that exact appearance in the safe Pokédex.
+history. Click a row or use Up/Down on Scroll to select an encounter,
+then Open to browse that exact appearance in the safe Pokédex.
 Browsing never creates another encounter.
 
 The Encounter screen keeps separate Result and History tabs with stable labels.
@@ -688,7 +723,7 @@ Home, Achievements, Encounter, Trainer and Appearance footer hints sit immediate
 separated by a divider. Key labels use compact brackets such as `[Enter]`;
 matching arrow actions share one Move label. Hints wrap only when needed.
 
-Navigation, Home, Achievements, Encounter, Trainer and Appearance refinements are implemented through D38. The current
+Navigation, Home, Achievements, Encounter, Trainer, Appearance and Pokédex refinements are implemented through D39. The current
 release audit records remaining packaging, compatibility and verification gates.
 
 

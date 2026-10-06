@@ -50,7 +50,7 @@ func (c *canvas) framedControl(x, y, w, id int, label string, m Model, selected 
 	}
 	c.keycap(x, y, w, "", border)
 	c.controlText(x+1, y+1, w-2, label, style, m.focus == id, selected)
-	if !m.settings && !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen) && !m.settings) {
+	if !m.settings && !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen || m.screen == dexScreen || m.screen == dexSearchScreen) && !m.settings) {
 		c.put(x, y+1, "▶", style)
 	}
 	for row := y; row < y+3; row++ {
@@ -239,6 +239,10 @@ func (m Model) styleFrames(c *canvas) {
 	}
 	for i, f := range c.frames {
 		inside := fx >= f.x && fx < f.x+f.w && fy >= f.y && fy < f.y+f.h
+		if !m.settings && m.screen == dexScreen {
+			x, y, w, h, ok := m.pokedexFocusedFrame()
+			inside = ok && f.x == x && f.y == y && f.w == w && f.h == h
+		}
 		if !m.settings && m.screen == activityScreen {
 			if m.section != 1 && m.dexGeometry().wide && m.focus >= 40 && m.focus <= 45 {
 				panel := m.activity.informationPanel

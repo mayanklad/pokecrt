@@ -260,8 +260,9 @@ func TestDexEvolutionKeyboardFocusScrollAndLocks(t *testing.T) {
 	m.width, m.height = 40, 12
 	m.dex.detail = true
 	m.dex.tab = 2
-	m.focus = 10
-	m.moveDexFocus(1)
+	m.dex.detail = false
+	m.focus = 0
+	m, _ = update(m, key(tea.KeyRight))
 	if m.focus != 2004 || m.dex.scroll == 0 || !strings.Contains(m.View().Content, "▶") {
 		t.Fatal("evolution unreachable by keyboard")
 	}
@@ -416,7 +417,8 @@ func TestDexResizeKeepsFocusedPaneAndSearchWheelDoesNotBrowse(t *testing.T) {
 	m.focus = 10
 	m.dex.detail = false
 	m, _ = update(m, tea.WindowSizeMsg{Width: 48, Height: 24})
-	if !m.dex.detail || m.focus != 10 || !strings.Contains(m.View().Content, "DEVICE DISPLAY") {
+	// A fitting pane has no Scroll control; focus may move to its active tab.
+	if !m.dex.detail || m.focus != m.dexContentFocus() && m.focus != m.dexTabFocus() || !strings.Contains(m.View().Content, "ARTWORK") {
 		t.Fatal("resize hid focused detail")
 	}
 	m.dex.detail = false
@@ -439,7 +441,7 @@ func TestDeviceTabsSeparateFactsAndPreserveExactVariant(t *testing.T) {
 	m = applyEntry(t, m, m.activateDex(3001))
 	keyBefore := *m.dex.entry.ArtworkKey
 	overview := m.View().Content
-	if !strings.Contains(overview, "DEVICE DISPLAY") || strings.Contains(overview, "First:") || strings.Contains(overview, "OBSERVED FORMS") {
+	if !strings.Contains(overview, "ARTWORK") || strings.Contains(overview, "First:") || strings.Contains(overview, "OBSERVED FORMS") {
 		t.Fatal("overview is a raw record dump")
 	}
 	for tab := 1; tab < 4; tab++ {
@@ -524,7 +526,7 @@ func TestDeviceNoColorCollectedArtworkAndBorders(t *testing.T) {
 			lines := strings.Split(s, "\n")
 			for _, line := range lines {
 				r := []rune(line)
-				if len(r) == 0 || r[0] != '│' && r[0] != '╭' && r[0] != '╰' {
+				if len(r) == 0 || r[0] != '│' && r[0] != '╭' && r[0] != '╰' && r[0] != '├' {
 					t.Fatal("outer border overwritten", line)
 				}
 			}

@@ -96,7 +96,7 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 	} else if w >= 3 && !strings.Contains(label, "▏") && id < 1000 && !(id >= 100 && id < 200) {
 		selected := m.settings && id < 4 && appearances[id] == m.appearance
 		if m.screen == dexScreen && !m.settings {
-			selected = id >= 20 && id <= 23 && m.dex.tab == id-20 || id >= 31 && id <= 33 && m.dex.status == id-31
+			selected = id >= 20 && id <= 23 && m.dex.tab == id-20 || id >= 31 && id <= 33 && m.dex.status == id-31 || id == 26 || id == 2 || id == 24
 		}
 		if m.screen == activityScreen && m.section == 1 && !m.settings {
 			selected = id == 30 && m.activity.historyMode || id == 36 && !m.activity.historyMode
@@ -112,7 +112,7 @@ func (c *canvas) button(x, y, w, id int, label string, m Model) {
 		c.put(x, y, "❨", style)
 		c.put(x+w-1, y, "❩", style)
 		c.controlText(x+1, y, w-2, label, style, m.focus == id, selected)
-		if !m.settings && !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen) && !m.settings) {
+		if !m.settings && !m.dexWide() && m.noColor && m.focus == id && !((m.screen == activityScreen || m.screen == createScreen || m.screen == profilesScreen || m.screen == dexScreen || m.screen == dexSearchScreen) && !m.settings) {
 			c.put(x, y, "▶", style)
 		}
 		c.hits = append(c.hits, hit{x, y, w, id})
