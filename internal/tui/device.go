@@ -44,7 +44,7 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 			return
 		}
 		bx, bw := 2, min(16, (w-8)/2)
-		rx := w-bw-2
+		rx := w - bw - 2
 		landmark := func(dx, dy int, label, style string) {
 			draw(dx, dy, "╭"+strings.Repeat("─", bw-2)+"╮", style)
 			draw(dx, dy+1, "│"+strings.Repeat(" ", bw-2)+"│", style)
@@ -55,7 +55,7 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 		landmark(rx, 1, "MART", roof)
 		landmark(bx, h-4, "YOUR HOME", p.foreground)
 		landmark(rx, h-4, "≋ POND ≋", water)
-		ry := h/2
+		ry := h / 2
 		draw(0, ry, strings.Repeat("─", w), road)
 		draw(w/2-4, ry, " ◆ YOU ", p.accent)
 		draw(w-12, ry, " ROUTE 01 → ", road)
@@ -66,11 +66,12 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 	for row := 0; row < h; row++ {
 		draw(avenue-4, row, "│       │", road)
 	}
-	for _, row := range []int{mid-1, mid+1} {
+	for _, row := range []int{mid - 1, mid + 1} {
 		draw(0, row, strings.Repeat("─", w), road)
 	}
 	draw(avenue-4, mid-1, "╯       ╰", road)
 	draw(avenue-4, mid+1, "╮       ╭", road)
+	draw(avenue-4, mid, "         ", road)
 	draw(avenue-3, mid, " ◆ YOU ", p.accent)
 	draw(w-14, mid, " ROUTE 01 → ", road)
 	draw(avenue-3, 0, "↑", road)
@@ -90,30 +91,30 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 				}
 			}
 		}
-		door := bx+bw/2-1
+		door := bx + bw/2 - 1
 		draw(door, by+bh-2, "╭─╮", p.foreground)
 		draw(bx, by+bh-1, "╰"+strings.Repeat("─", bw-2)+"╯", p.foreground)
 		draw(door, by+bh-1, "┴─┴", p.foreground)
 		if upper {
-			for row := by+bh; row < mid-1; row++ {
+			for row := by + bh; row < mid-1; row++ {
 				draw(door, row, "│ │", road)
 			}
 			draw(door, mid-1, "╯ ╰", road)
 		} else {
-			for row := mid+2; row < by; row++ {
+			for row := mid + 2; row < by; row++ {
 				draw(door, row, "│ │", road)
 			}
 			draw(door, mid+1, "╮ ╭", road)
 		}
 	}
-	blockW := avenue-6
+	blockW := avenue - 6
 	bw := min(38, blockW-12)
 	bh := max(5, (mid-3)*2/3)
 	left, right := max(4, (blockW-bw)/2), avenue+6+max(2, (blockW-bw)/2)
 	building(left, 2, bw, bh, "✚ POKÉMON CENTER", true)
 	building(right, 2, bw, bh, "POKÉ MART", true)
-	lowerY := mid+3
-	lowerH := h-lowerY-1
+	lowerY := mid + 3
+	lowerH := h - lowerY - 1
 	building(left, lowerY, bw, lowerH, "YOUR HOME", false)
 	// A rectangular stone bank gives the pond a continuous, aligned outline.
 	pondW := bw
@@ -121,7 +122,7 @@ func (m Model) paintScene(c *canvas, x, y, w, h int) {
 		draw(right, lowerY, "╭"+strings.Repeat("─", pondW-2)+"╮", water)
 		for row := 1; row < lowerH-1; row++ {
 			draw(right, lowerY+row, "│"+strings.Repeat(" ", pondW-2)+"│", water)
-			for col := 3+row%2; col < pondW-2; col += 5 {
+			for col := 3 + row%2; col < pondW-2; col += 5 {
 				draw(right+col, lowerY+row, "≋", water)
 			}
 		}

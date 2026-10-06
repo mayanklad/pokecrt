@@ -515,6 +515,17 @@ func (m *Model) handleActivity(msg tea.Msg) (tea.Cmd, bool) {
 	return nil, false
 }
 func (m *Model) activityMove(key string) {
+	direction := key
+	if direction == "j" {
+		direction = "down"
+	}
+	if direction == "k" {
+		direction = "up"
+	}
+	if next, handled := footerRowNavigation(m.activityControls(), m.focus, direction, []int{12, 13, 11, 14}); handled && compactActionRows(m.width) {
+		m.focus = next
+		return
+	}
 	if m.section == 2 {
 		if key == "j" {
 			key = "down"
@@ -596,6 +607,9 @@ func (m Model) achievementPanelStyle(panel int) string {
 }
 
 func (m Model) paintAchievementHints(c *canvas, x, y, w int) {
+	if m.paintMinimumPageHints(c) {
+		return
+	}
 	first := "[↑↓←→] Move  [Tab] Focus"
 	if m.focus == 22 || m.focus == 40 || m.focus == 41 {
 		first = "[↑↓] Scroll  [←→] Move  [Tab] Focus"
@@ -673,7 +687,7 @@ func (m *Model) moveTrainerControl(key string) {
 			}
 		}
 	}
-	if key == "down" && (m.focus == 12 || m.focus == 13 || m.focus == 11 || m.focus == 14) {
+	if key == "down" && (m.focus == 12 || m.focus == 13 || m.focus == 11 || m.focus == 14) && (!compactActionRows(m.width) || m.focus == 11 || m.focus == 14) {
 		return
 	}
 	m.focus = directionalTarget(controls, m.focus, key)

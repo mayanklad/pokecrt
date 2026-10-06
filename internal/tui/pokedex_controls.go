@@ -9,6 +9,9 @@ func (m Model) pokedexFooterY() int {
 	if m.pokedexOutlined() {
 		return m.height - 6
 	}
+	if compactActionRows(m.width) && m.height >= 16 {
+		return m.height - 6
+	}
 	return m.height - 5
 }
 func (m Model) pokedexTabY() int {
@@ -197,7 +200,16 @@ func (m Model) pokedexControls() []dexControl {
 			}
 		}
 		if !g.wide && m.dex.tab == 2 && m.dex.entry.Seen && len(m.dex.entry.Evolution) > 0 {
-			add(g.w-14, 1, 12, 27, "Full art")
+			if compactActionRows(m.width) && m.height < 16 {
+				for i := range cs {
+					if cs[i].id == 24 {
+						cs[i].w = g.w - 18
+					}
+				}
+				add(g.w-14, tabY, 12, 27, "Full art")
+			} else {
+				add(g.w-14, 1, 12, 27, "Full art")
+			}
 		}
 	}
 	if m.dexWide() && m.dex.tab == 0 && m.dexFactsMaxScroll() > 0 {
@@ -207,24 +219,12 @@ func (m Model) pokedexControls() []dexControl {
 		add(x+w-11, bottom, 5, 41, "↑")
 		add(x+w-6, bottom, 5, 42, "↓")
 	}
-	labels := []string{"Back", "Theme", "Refresh", "Quit"}
+	labels := []string{"Back", "Appearance", "Refresh", "Quit"}
 	if m.dex.familyOrigin > 0 {
 		labels[0] = "Family"
 	}
 	ids := []int{6, 7, 5, 8}
-	x := 2
-	gap := 1
-	if g.w < 43 {
-		gap = 0
-	}
-	for i, label := range labels {
-		w := ansi.StringWidth(label) + 4
-		if m.pokedexOutlined() {
-			w = max(12, w)
-		}
-		add(x, m.pokedexFooterY(), w, ids[i], label)
-		x += w + gap
-	}
+	cs = append(cs, pageFooterControls(g.w, m.height, m.pokedexFooterY(), ids, labels, m.pokedexOutlined())...)
 	return cs
 }
 func (m Model) paintPokedexControls(c *canvas) {
@@ -246,6 +246,9 @@ func (m Model) paintPokedexControls(c *canvas) {
 	}
 }
 func (m Model) paintPokedexHints(c *canvas) {
+	if m.paintMinimumPageHints(c) {
+		return
+	}
 	g := m.dexGeometry()
 	first := "[↑↓←→] Move  [Tab] Focus"
 	action := "Select"
@@ -293,7 +296,7 @@ func (m Model) paintPokedexHints(c *canvas) {
 	case 6:
 		action = "Back"
 	case 7:
-		action = "Theme"
+		action = "Appearance"
 	case 8:
 		action = "Quit"
 	case 11, 12, 16, 17, 41, 42:
@@ -305,6 +308,9 @@ func (m Model) paintPokedexHints(c *canvas) {
 		action = "Open"
 	}
 	second := "[Enter] " + action + "  [Esc] Back"
+	if m.focus == 10 && m.dexContentFocus() == 10 {
+		second = "[Esc] Back"
+	}
 	// One or two rows, always joined to the outer frame.
 	m.paintSetupHints(c, g.x, g.y, g.w, g.h, first, second)
 }

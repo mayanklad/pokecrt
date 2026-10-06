@@ -919,7 +919,7 @@ Achievements uses one focus marker on the selected control. Color layouts
 highlight the journal or panel border for Scroll and both arrow controls;
 frame titles have no duplicate marker. Monochrome layouts retain one visible
 control marker without ANSI styling. Horizontal navigation follows each visible
-panel's Scroll, Up and Down controls, then Back, Theme, Refresh and Quit.
+panel's Scroll, Up and Down controls, then Back, Appearance, Refresh and Quit.
 Left from the first Scroll reaches Quit; Right from the last panel control
 reaches Back. Tab/Shift-Tab follow the same control order. Up/Down on Scroll
 and mouse-wheel scrolling retain independent panel positions.
@@ -1118,3 +1118,22 @@ Frame controls appear inline only when needed. Focus highlights the associated f
 Artwork Scroll pans horizontally with Left/Right and exits to adjacent controls at the pan limits. Dedicated horizontal arrows also pan on Enter. Mouse wheels target their own viewport and page keys use its height. Resizing preserves the corresponding entry and remaps hidden controls to visible targets. Compact Back closes filters, returns from an entry to the index, then leaves Pokédex. Search retains the shared trainer-form actions and joined footer. Discovery locks, exact collected variants and read-only browsing remain unchanged.
 
 Validation: full Go tests, vet, build and TUI race checks passed. Arrow-route regression checks cover 90 layout/filter configurations. Sixty-eight network-restricted terminal scenarios covered ten sizes, all four tabs, Search, monochrome output, appearance modes and resizing. Trainer database bytes remained unchanged and terminal state was restored. Eighty representative captures of previously approved pages matched after normalizing the environment-dependent trainer timestamp.
+
+
+## D40 - Appearance naming and footer navigation
+
+Appearance is the action label on every page and trainer/search form. It stays with the footer actions at every supported size. Narrow layouts use two rows: Back/Appearance then Refresh/Quit on browsing pages, and Create or Search/Cancel then Appearance/Quit on forms. Left/Right follows each row; Up/Down changes rows and returns to the page or editing controls. Tab retains every visible control. Minimum-height pages reserve one concise hint row; compact forms fit the full keyboard and editing controls above both action rows. Wide pages retain one footer row. The Town Map location marker keeps ◆ YOU with blank spacing and no surrounding vertical street bars.
+
+Validation: full Go tests, vet, build and TUI race checks passed. Label and focus checks cover eight sizes, all four appearance modes and monochrome output. Wrapped-row route and mouse-target checks cover six browsing/form views at eight sizes; Pokédex arrow reachability checks retain 90 layout/filter configurations. Seventy-two network-restricted terminal scenarios covered all reviewed pages, forms, appearance modes, resizing, and Appearance return-focus navigation. Trainer storage remained unchanged and terminal state was restored. No dataset, dependency, schema or benchmark changes.
+
+Trainer creation and Pokédex Search use outlined footer actions from 56 columns and 24 rows. Narrower forms retain rounded controls so all four labels and the parent frame fit. Regression checks sweep widths 40–100 across four heights for both forms.
+
+Outline follow-up validation: full tests, vet, build and targeted race checks passed. Ten additional offline terminal scenarios covered both forms immediately below and above the outline threshold, including monochrome output; storage and terminal state remained unchanged.
+
+Pokédex tab Up navigation targets the entry pane above the tabs, excluding National Index controls. When the entry fits without controls, its content remains focusable with one pointer and the associated frame highlight; no redundant Scroll button is added.
+
+Tab navigation validation: full tests, vet and build passed, with targeted race checks for tab routes and arrow reachability. Eight additional offline terminal scenarios verified Up from all four tabs at two wide sizes; storage and terminal state remained unchanged.
+
+A Pokédex pane whose content fits without controls indicates focus through its frame border highlight, without a pointer in the title or content. Panes with controls retain the pointer on the focused control without duplicating it in the title.
+
+Undiscovered Evolution panels use normal frame navigation rather than intercepting arrow keys for unavailable evolution entries. Locked content remains undisclosed.

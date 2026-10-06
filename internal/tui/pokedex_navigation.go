@@ -8,12 +8,15 @@ import (
 )
 
 func pokedexFooter(id int) bool { return id == 6 || id == 7 || id == 5 || id == 8 }
-func pokedexTab(id int) bool    { return id >= 20 && id <= 24 }
+func (m Model) pokedexFooterAction(id int) bool {
+	return pokedexFooter(id)
+}
+func pokedexTab(id int) bool { return id >= 20 && id <= 24 }
 func pokedexFrameControl(id int) bool {
 	return id == 19 || id == 18 || id >= 11 && id <= 14 || id == 16 || id == 17 || id >= 40 && id <= 42
 }
 func (m Model) pokedexIsTab(id int) bool {
-	return pokedexTab(id) || id == 26 && m.height < 20 && m.dex.detail && m.dex.tab == 0
+	return id == 27 && compactActionRows(m.width) && m.height < 16 || pokedexTab(id) || id == 26 && m.height < 20 && m.dex.detail && m.dex.tab == 0
 }
 func (m Model) pokedexRegionControls(region string) []dexControl {
 	out := []dexControl{}
@@ -21,13 +24,13 @@ func (m Model) pokedexRegionControls(region string) []dexControl {
 		match := false
 		switch region {
 		case "footer":
-			match = pokedexFooter(c.id)
+			match = m.pokedexFooterAction(c.id)
 		case "tabs":
 			match = m.pokedexIsTab(c.id)
 		case "frame":
 			match = pokedexFrameControl(c.id)
 		case "header":
-			match = !pokedexFooter(c.id) && !m.pokedexIsTab(c.id) && !pokedexFrameControl(c.id)
+			match = !m.pokedexFooterAction(c.id) && !m.pokedexIsTab(c.id) && !pokedexFrameControl(c.id)
 		}
 		if match {
 			out = append(out, c)
@@ -59,6 +62,9 @@ func (m Model) pokedexFocusOrder() []int {
 			add(0)
 		}
 		if g.wide || m.dex.detail {
+			if m.dexContentFocus() == 10 {
+				add(10)
+			}
 			if m.dex.tab == 1 && m.dex.entry.Seen && len(m.dex.options) > 0 {
 				add(15)
 			}
@@ -206,10 +212,17 @@ func (m *Model) pokedexContentExit(direction string) {
 	}
 }
 func (m *Model) navigatePokedex(direction string) {
+	if next, handled := footerRowNavigation(m.dexControls(), m.focus, direction, []int{6, 7, 5, 8}); handled && compactActionRows(m.width) {
+		m.focus = next
+		return
+	}
 	id := m.focus
 	x := m.pokedexAnchorX(id)
-	if pokedexFooter(id) {
+	if m.pokedexFooterAction(id) {
 		if direction == "down" {
+			if next := m.pokedexRow("footer", id, direction); next >= 0 {
+				m.focus = next
+			}
 			return
 		}
 		if next := m.pokedexRow("footer", id, direction); next >= 0 {
@@ -264,7 +277,13 @@ func (m *Model) navigatePokedex(direction string) {
 		case "down":
 			m.focus = pokedexClosest(m.pokedexRegionControls("footer"), x)
 		case "up":
-			next := pokedexClosest(m.pokedexRegionControls("frame"), x)
+			entryControls := []dexControl{}
+			for _, control := range m.pokedexRegionControls("frame") {
+				if control.id != 19 && control.id != 16 && control.id != 17 {
+					entryControls = append(entryControls, control)
+				}
+			}
+			next := pokedexClosest(entryControls, x)
 			if next < 0 {
 				next = m.dexContentFocus()
 			}

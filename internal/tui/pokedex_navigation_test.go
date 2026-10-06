@@ -313,3 +313,54 @@ func TestPokedexArtworkScrollPansAndExitsLimits(t *testing.T) {
 		}
 	}
 }
+
+func TestPokedexTabsUpNeverTargetsIndexControls(t *testing.T) {
+	for _, size := range [][2]int{{64, 40}, {100, 40}, {120, 50}, {190, 50}} {
+		for view := 0; view < 4; view++ {
+			m := dexModel(t, collectedDex())
+			m.dex.query = "charizard"
+			m = applyEntry(t, m, m.filterDex())
+			m.width, m.height = size[0], size[1]
+			m.dex.detail = true
+			m.dex.tab = view
+			for tab := 20; tab <= 23; tab++ {
+				next := m
+				next.focus = tab
+				next.navigateDexControl("up")
+				if next.focus == 0 || next.focus == 19 || next.focus == 16 || next.focus == 17 || next.focus == tab {
+					t.Fatalf("tabs Up misses entry %v view%d tab%d ->%d", size, view, tab, next.focus)
+				}
+				_, _, _, _, ok := next.pokedexFocusedFrame()
+				if !ok {
+					t.Fatal("entry focus lacks frame highlight")
+				}
+				expectedPointers := 1
+				if next.focus == 10 && next.dexContentFocus() == 10 {
+					expectedPointers = 0
+				}
+				if strings.Count(ansi.Strip(next.View().Content), "▶") != expectedPointers {
+					t.Fatal("entry focus has unexpected pointer count")
+				}
+			}
+		}
+	}
+}
+
+func TestPokedexStaticPaneFocusUsesBorderHighlightOnly(t *testing.T) {
+	m := dexModel(t, collectedDex())
+	m.dex.query = "charizard"
+	m = applyEntry(t, m, m.filterDex())
+	m.width, m.height = 190, 60
+	m.dex.detail = true
+	m.dex.tab = 3
+	m.focus = m.dexContentFocus()
+	if m.focus != 10 {
+		t.Fatal("fixture should fit without controls")
+	}
+	if _, _, _, _, ok := m.pokedexFocusedFrame(); !ok {
+		t.Fatal("missing focused frame")
+	}
+	if strings.Contains(ansi.Strip(m.View().Content), "▶") {
+		t.Fatal("static pane should use border highlight without a pointer")
+	}
+}

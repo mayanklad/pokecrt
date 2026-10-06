@@ -478,7 +478,7 @@ func (m Model) dexContentFocus() int {
 	if m.dexMaxScroll() > 0 || m.dexMaxHorizontal() > 0 {
 		return 18
 	}
-	return m.dexTabFocus()
+	return 10
 }
 func (m *Model) setDexTab(tab int) {
 	m.screen = dexScreen
@@ -574,7 +574,7 @@ func (m *Model) handleDex(msg tea.Msg) (tea.Cmd, bool) {
 			m.dex.scroll = max(0, min(m.dexMaxScroll(), m.dex.scroll+delta))
 			return nil, true
 		}
-		if m.dex.tab == 2 && (k == "up" || k == "down" || k == "left" || k == "right" || k == "j" || k == "k") && (m.focus == 10 || m.focus >= 2000 && m.focus < 3000) {
+		if m.dex.tab == 2 && m.dex.entry.Seen && len(m.dex.entry.Evolution) > 0 && (k == "up" || k == "down" || k == "left" || k == "right" || k == "j" || k == "k") && (m.focus == 10 || m.focus >= 2000 && m.focus < 3000) {
 			m.navigateEvolution(k)
 			return nil, true
 		}
@@ -851,7 +851,7 @@ func (m *Model) revealDexFocus() {
 		m.revealDexOption()
 		return
 	}
-	if m.focus == 18 && m.dex.tab == 2 && m.dex.cardNode >= 2000 {
+	if m.focus == 18 && m.dex.tab == 2 && m.dex.entry.Seen && m.dex.cardNode >= 2000 {
 		m.focus = m.dex.cardNode
 		m.revealDexFocus()
 		m.focus = 18
@@ -893,7 +893,7 @@ func (m Model) dexTabFocus() int {
 func (m *Model) ensureDexFocus() {
 	for _, id := range m.dexFocusOrder() {
 		if id == m.focus {
-			if m.focus == 18 && m.dex.tab == 2 {
+			if m.focus == 18 && m.dex.tab == 2 && m.dex.entry.Seen {
 				valid := false
 				for _, n := range m.dex.entry.Evolution {
 					valid = valid || m.dex.cardNode == 2000+n.Number

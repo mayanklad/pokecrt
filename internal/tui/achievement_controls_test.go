@@ -48,6 +48,12 @@ func TestAchievementFooterAndFocusAtEverySize(t *testing.T) {
 			m.focus = control.id
 			content := ansi.Strip(m.View().Content)
 			for _, text := range []string{"Refresh", "[Tab] Focus", "[Enter] Select", "[Esc] Back", "Move"} {
+				if text == "Move" && compactActionRows(m.width) && m.height < 16 {
+					continue
+				}
+				if text == "[Enter] Select" && compactActionRows(m.width) && m.height < 16 {
+					text = "[Enter] Use"
+				}
 				if !strings.Contains(content, text) {
 					t.Fatalf("%v focus %d missing %q", size, m.focus, text)
 				}

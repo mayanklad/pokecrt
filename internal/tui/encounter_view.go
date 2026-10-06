@@ -14,6 +14,9 @@ type encounterLayout struct {
 
 func (m Model) encounterGeometry() encounterLayout {
 	g := encounterLayout{bodyY: 4, footerY: m.height - 5}
+	if compactActionRows(m.width) && m.height >= 16 {
+		g.footerY--
+	}
 	g.outlined = m.height >= 24 && m.width >= 56
 	if g.outlined {
 		g.bodyY = 6
@@ -106,38 +109,15 @@ func (m Model) encounterControls() []dexControl {
 			add(w-13, g.bodyY-1, 11, 35, "Art")
 		}
 	}
-	if g.outlined {
-		x := 2
-		for i, label := range []string{"Back", "Theme", "Refresh", "Quit"} {
-			width := 12
-			if label == "Theme" {
-				width = 11
-			}
-			if label == "Refresh" {
-				width = 13
-			}
-			add(x, g.footerY, width, []int{12, 13, 11, 14}[i], label)
-			x += width + 1
-		}
-	} else {
-		x := 2
-		gap := 1
-		if w < 43 {
-			gap = 0
-		}
-		for i, label := range []string{"Back", "Theme", "Refresh", "Quit"} {
-			width := ansi.StringWidth(label) + 4
-			add(x, g.footerY, width, []int{12, 13, 11, 14}[i], label)
-			x += width + gap
-		}
-	}
+	cs = append(cs, pageFooterControls(w, m.height, g.footerY, []int{12, 13, 11, 14}, []string{"Back", "Appearance", "Refresh", "Quit"}, g.outlined)...)
 	return cs
 }
 func (m Model) paintEncounter(c *canvas) {
 	g, p := m.encounterGeometry(), m.palette()
 	w, h := m.width, m.height
 	c.box(0, 0, w, h, "", p.accent)
-	c.put(2, 1, "POKÉCRT / ENCOUNTERS", p.accent)
+	titleW := w - 4
+	c.put(2, 1, ansi.Truncate("POKÉCRT / ENCOUNTERS", titleW, "…"), p.accent)
 	c.put(2, 1, "POKÉCRT", m.brandStyle())
 	if m.dexWide() {
 		c.put(w/2, 1, "TRAINER "+clean(m.activity.data.profile.Name), p.muted)
@@ -205,6 +185,9 @@ func (m Model) paintEncounter(c *canvas) {
 	m.paintEncounterHints(c)
 }
 func (m Model) paintEncounterHints(c *canvas) {
+	if m.paintMinimumPageHints(c) {
+		return
+	}
 	first := "[↑↓←→] Move  [Tab] Focus"
 	action := "Select"
 	if m.focus == 21 {
@@ -255,7 +238,7 @@ func (m *Model) moveEncounterControl(key string) {
 		m.focus = 12
 		return
 	}
-	if key == "down" && current.y == m.encounterGeometry().footerY {
+	if key == "down" && (current.id == 12 || current.id == 13 || current.id == 11 || current.id == 14) && (!compactActionRows(m.width) || current.y > m.encounterGeometry().footerY) {
 		return
 	}
 	if key == "up" && (m.focus == 10 || m.focus == 36 || m.focus == 30) {
@@ -279,7 +262,7 @@ func (m *Model) moveEncounterControl(key string) {
 					m.focus = row[next].id
 					return
 				}
-				if current.y != m.encounterGeometry().footerY {
+				if current.id != 12 && current.id != 13 && current.id != 11 && current.id != 14 {
 					m.focus = 14
 					if key == "left" {
 						m.focus = 12

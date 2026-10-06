@@ -529,11 +529,18 @@ card selection remains available. Controls appear only when content overflows. C
 leaving Pokédex. Focused appearance and evolution card labels remain
 visible even at the minimum supported height.
 
+Up from a Pokédex tab enters its entry pane, including content that fits without
+scroll controls. The National Index keeps its own navigation group.
+
 The footer uses contextual key hints, a quiet divider joined to the outer frame,
 and consistent Refresh naming. Frame titles do not duplicate focus pointers.
 Resizing clamps scrolling and moves focus away from controls that disappear.
 Browsing, filtering, search and appearance inspection remain read-only; exact
 collected variants and undiscovered identity locks use the shared Pokédex rules.
+
+Appearance uses the same action label throughout the interface. Narrow layouts use two
+footer action rows, keeping Appearance with the other actions. Arrow navigation
+follows those rows; the smallest forms preserve the keyboard and editing controls.
 
 ## Trainer statistics
 

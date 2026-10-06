@@ -117,6 +117,9 @@ func (m Model) paintCompactDex(c *canvas) {
 	} else if m.dex.detail && m.dex.tab == 2 {
 		brandW = g.w - 16
 	}
+	if m.dex.detail && compactActionRows(g.w) && m.height < 16 {
+		brandW = g.w - 4
+	}
 	c.put(2, 1, ansi.Truncate(brand, brandW, "…"), p.accent)
 	if strings.HasPrefix(brand, "POKÉCRT") {
 		c.put(2, 1, "POKÉCRT", m.brandStyle())
@@ -369,30 +372,19 @@ func (m Model) compactActivityControls() []dexControl {
 		if g.h >= 24 && g.w >= 56 {
 			y = g.h - 6
 		}
-		if g.h >= 24 && g.w >= 56 {
-			for i, label := range []string{"Back", "Theme", "Refresh", "Quit"} {
-				add(2+i*13, y, 12, []int{12, 13, 11, 14}[i], label)
-			}
-			return out
+		if compactActionRows(g.w) && m.height >= 16 {
+			y--
 		}
-		x := 2
-		gap := 1
-		if g.w < 43 {
-			gap = 0
-		}
-		for i, label := range []string{"Back", "Theme", "Refresh", "Quit"} {
-			width := ansi.StringWidth(label) + 4
-			add(x, y, width, []int{12, 13, 11, 14}[i], label)
-			x += width + gap
-		}
-		return out
+		return append(out, pageFooterControls(g.w, m.height, y, []int{12, 13, 11, 14}, []string{"Back", "Appearance", "Refresh", "Quit"}, g.h >= 24 && g.w >= 56)...)
+
 	}
-	return append(out, compactActions(2, g.h-3, g.w-4, []int{12, 13, 11, 14}, []string{"Back", "Theme", "Reload", "Quit"})...)
+	return append(out, compactActions(2, g.h-3, g.w-4, []int{12, 13, 11, 14}, []string{"Back", "Appearance", "Reload", "Quit"})...)
 }
 func (m Model) paintCompactActivity(c *canvas) {
 	g, p, a := m.dexGeometry(), m.palette(), m.activity
 	c.box(0, 0, g.w, g.h, "", p.accent)
-	c.put(2, 1, ansi.Truncate("POKÉCRT / "+strings.ToUpper(sections[m.section]), g.w-4, "…"), p.accent)
+	titleW := g.w - 4
+	c.put(2, 1, ansi.Truncate("POKÉCRT / "+strings.ToUpper(sections[m.section]), titleW, "…"), p.accent)
 	c.put(2, 1, "POKÉCRT", m.brandStyle())
 	y, h := m.compactActivityBodyY(), m.activityBodyHeight()
 	artView := m.section == 1 && !a.historyMode && len(a.art) > 0 && !a.resultDetails && a.error == ""
@@ -624,7 +616,9 @@ func (m Model) paintCompactCreate(c *canvas) {
 		title, subtitle = "POKÉDEX SEARCH", "Name or National number"
 	}
 	c.pageBox(x, y, w, h, title, m)
-	c.put(x+2, y+1, ansi.Truncate(subtitle, w-4, "…"), p.muted)
+	subtitleW := w - 4
+
+	c.put(x+2, y+1, ansi.Truncate(subtitle, subtitleW, "…"), p.muted)
 	prefix, suffix := string(m.name[:m.cursor]), string(m.name[m.cursor:])
 	fieldBoxW := min(w-4, 52)
 	fieldW := fieldBoxW - 2
@@ -635,14 +629,20 @@ func (m Model) paintCompactCreate(c *canvas) {
 	}
 	field := ansi.Cut(prefix, offset, ansi.StringWidth(prefix)) + caret + suffix
 	c.put(x+3, y+2, ansi.Truncate(field, fieldW, "…"), m.controlStyle(m.focus == 0, false))
-	c.put(x+2, y+3, strings.Repeat("─", fieldBoxW), p.muted)
+	if !(compactActionRows(w) && h < 16) {
+		c.put(x+2, y+3, strings.Repeat("─", fieldBoxW), p.muted)
+	}
 	c.hits = append(c.hits, hit{x + 2, y + 2, fieldBoxW, 0})
 	status := m.formError
 	if status == "" {
 		status = m.notice
 	}
 	keysY, editY, statusY := y+5, y+8, y+4
-	if h == 12 {
+	if compactActionRows(w) && h < 16 {
+		keysY = y + 3
+		editY = y + 6
+		statusY = y + 1
+	} else if h == 12 {
 		keysY--
 		editY--
 		statusY = y + 3
@@ -668,7 +668,11 @@ func (m Model) paintCompactCreate(c *canvas) {
 		if m.screen == dexSearchScreen {
 			message = "Search revealed names or National numbers. An empty search clears the query."
 		}
-		c.wrap(x+2, y+10, w-4, max(0, h-14), message, p.muted)
+		messageH := max(0, h-14)
+		if compactActionRows(w) {
+			messageH = max(0, h-17)
+		}
+		c.wrap(x+2, y+10, w-4, messageH, message, p.muted)
 	}
 	label := "Create"
 	if m.screen == dexSearchScreen {
@@ -685,16 +689,18 @@ func (m Model) paintCompactCreate(c *canvas) {
 		if h >= 24 {
 			actionY = y + h - 6
 		}
-		buttonX := x + 1
-		for i, text := range []string{label, "Cancel", "Theme", "Quit"} {
-			width := ansi.StringWidth(text) + 4
-			if h >= 24 {
-				c.framedControl(buttonX, actionY-1, width, []int{1, 2, 6, 7}[i], text, m, false)
-			} else {
-				c.button(buttonX, actionY, width, []int{1, 2, 6, 7}[i], text, m)
-			}
-			buttonX += width
+		if compactActionRows(w) {
+			actionY--
 		}
+		buttons := pageFooterControls(w, h, actionY-y, []int{1, 2, 6, 7}, []string{label, "Cancel", "Appearance", "Quit"}, h >= 24 && w >= 56)
+		for _, control := range buttons {
+			if h >= 24 && w >= 56 {
+				c.framedControl(x+control.x, y+control.y-1, control.w, control.id, control.label, m, false)
+			} else {
+				c.button(x+control.x, y+control.y, control.w, control.id, control.label, m)
+			}
+		}
+
 		first := "[↑↓←→] Move  [Tab] Focus"
 		second := "[Enter] Select  [Esc] Back"
 		if m.focus == 0 {
@@ -723,7 +729,7 @@ func (m Model) paintCompactCreate(c *canvas) {
 			c.put(x+2, y+h-2, ansi.Truncate(hint, w-4, "…"), m.hintStyle())
 		}
 	} else {
-		for _, control := range compactActions(x+2, y+h-3, w-4, []int{1, 2, 6, 7}, []string{label, "Cancel", "Theme", "Quit"}) {
+		for _, control := range compactActions(x+2, y+h-3, w-4, []int{1, 2, 6, 7}, []string{label, "Cancel", "Appearance", "Quit"}) {
 			c.button(control.x, control.y, control.w, control.id, control.label, m)
 		}
 		hint := "Arrows Focus  Enter Use  Tab Next"

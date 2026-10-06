@@ -13,6 +13,9 @@ func (m Model) activityBodyHeight() int {
 	if !m.dexWide() {
 		if m.section != 1 {
 			reserve := 6
+			if compactActionRows(m.width) && m.height >= 16 {
+				reserve++
+			}
 			if m.height >= 24 && m.width >= 56 {
 				reserve = 8
 			}
@@ -193,9 +196,9 @@ func (m Model) activityControls() []dexControl {
 
 		}
 	}
-	labels := []string{"Back", "Theme", "Refresh", "Quit"}
+	labels := []string{"Back", "Appearance", "Refresh", "Quit"}
 	ids := []int{12, 13, 11, 14}
-	q := min(14, (g.w-4)/4)
+	q := min(16, (g.w-4)/4)
 	for i, id := range ids {
 		add(g.x+2+i*q, g.y+g.h-3, q, id, labels[i])
 	}

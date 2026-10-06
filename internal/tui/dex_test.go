@@ -564,3 +564,39 @@ func TestDexHeaderUsesAvailableTrainerWidth(t *testing.T) {
 		}
 	}
 }
+
+func TestUndiscoveredEvolutionPanelArrowNavigation(t *testing.T) {
+	for _, size := range [][2]int{{40, 12}, {48, 20}, {80, 24}, {120, 40}, {190, 60}} {
+		m := dexModel(t, collectedDex())
+		m.width, m.height = size[0], size[1]
+		m.dex.detail = true
+		m.activateDex(22)
+		if m.dex.entry.Seen {
+			t.Fatal("fixture must be undiscovered")
+		}
+		m.focus = m.dexTabFocus()
+		m, _ = update(m, key(tea.KeyUp))
+		if m.focus == 0 || m.focus == 19 || m.focus == 16 || m.focus == 17 {
+			t.Fatalf("%v: tab Up missed locked panel: %d", size, m.focus)
+		}
+		if m.dexMaxScroll() > 0 {
+			m.focus = 12
+			m.activateDex(12)
+			if m.dex.scroll == 0 {
+				t.Fatal("locked panel scroll arrow did not move content")
+			}
+			continue
+		}
+		m.focus = 10
+		for _, direction := range []rune{tea.KeyUp, tea.KeyDown, tea.KeyLeft, tea.KeyRight} {
+			next := m
+			next, _ = update(next, key(direction))
+			if next.focus == 10 {
+				t.Fatalf("%v: locked panel trapped arrow %d", size, direction)
+			}
+			if next.dex.entry.Seen || next.dex.art != "" {
+				t.Fatal("locked panel disclosed artwork")
+			}
+		}
+	}
+}

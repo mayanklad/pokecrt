@@ -444,6 +444,13 @@ func (m Model) clickedNameCursor(column, fieldWidth int) int {
 
 // navigateSetup follows the visible rows; the list and letter grid have exits.
 func (m *Model) navigateSetup(direction string) {
+	if compactActionRows(m.width) && (m.screen == createScreen || m.screen == dexSearchScreen) {
+		if next, handled := footerRowNavigation(m.createFocusTargets(), m.focus, direction, []int{1, 2, 6, 7}); handled {
+			m.focus = next
+			return
+		}
+	}
+
 	if m.screen == profilesScreen {
 		if m.focus == 90 {
 			m.focus = 0

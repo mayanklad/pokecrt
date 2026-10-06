@@ -32,6 +32,9 @@ func TestTrainerResponsiveFooterAndFocus(t *testing.T) {
 					t.Fatal("NO_COLOR leak")
 				}
 				for _, label := range []string{"Refresh", "[Tab] Focus", "[Enter] Select", "[Esc] Back"} {
+					if label == "[Enter] Select" && compactActionRows(m.width) && m.height < 16 {
+						label = "[Enter] Use"
+					}
 					if !strings.Contains(plain, label) {
 						t.Fatalf("%v missing %q", size, label)
 					}
@@ -45,7 +48,11 @@ func TestTrainerResponsiveFooterAndFocus(t *testing.T) {
 						t.Fatal("rendered width")
 					}
 				}
-				if !strings.Contains(rows[size[1]-2], "[Enter] Select") {
+				enterHint := "[Enter] Select"
+				if compactActionRows(m.width) && m.height < 16 {
+					enterHint = "[Enter] Use"
+				}
+				if !strings.Contains(rows[size[1]-2], enterHint) {
 					t.Fatal("footer not bottom anchored")
 				}
 			}
