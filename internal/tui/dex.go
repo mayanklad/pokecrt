@@ -435,10 +435,10 @@ func (m *Model) activateDex(id int) tea.Cmd {
 	case 42:
 		m.dex.factsScroll = min(m.dexFactsMaxScroll(), m.dex.factsScroll+3)
 	case 18:
-		if m.dex.tab == 1 && len(m.dex.options) > 0 {
+		if m.dex.tab == 1 && m.dex.entry.Seen && len(m.dex.options) > 0 {
 			return m.activateDex(3000 + m.dex.optionIndex)
 		}
-		if m.dex.tab == 2 && m.dex.cardNode >= 2000 {
+		if m.dex.tab == 2 && m.dex.entry.Seen && m.dex.cardNode >= 2000 {
 			return m.activateDex(m.dex.cardNode)
 		}
 		m.focus = 18

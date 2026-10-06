@@ -1130,10 +1130,23 @@ Trainer creation and Pokédex Search use outlined footer actions from 56 columns
 
 Outline follow-up validation: full tests, vet, build and targeted race checks passed. Ten additional offline terminal scenarios covered both forms immediately below and above the outline threshold, including monochrome output; storage and terminal state remained unchanged.
 
-Pokédex tab Up navigation targets the entry pane above the tabs, excluding National Index controls. When the entry fits without controls, its content remains focusable with one pointer and the associated frame highlight; no redundant Scroll button is added.
+Pokédex tab Up navigation targets the entry pane above the tabs, excluding National Index controls. When the entry fits without controls, its content remains focusable through the associated frame highlight; no pointer or redundant Scroll button is added.
 
 Tab navigation validation: full tests, vet and build passed, with targeted race checks for tab routes and arrow reachability. Eight additional offline terminal scenarios verified Up from all four tabs at two wide sizes; storage and terminal state remained unchanged.
 
 A Pokédex pane whose content fits without controls indicates focus through its frame border highlight, without a pointer in the title or content. Panes with controls retain the pointer on the focused control without duplicating it in the title.
 
 Undiscovered Evolution panels use normal frame navigation rather than intercepting arrow keys for unavailable evolution entries. Locked content remains undisclosed.
+
+
+## D41 - Interface consistency audit
+
+Baseline: aa96c50120a736fd491ea41737c4c50677f5fcaa.
+
+Scroll activation in undiscovered Pokédex panels no longer opens a card retained from a previously viewed entry. Variants and Evolution inspect a selected card through Scroll only when the current entry is discovered. Locked panels retain their own scrolling and frame navigation.
+
+Validation covered arrow reachability for 32 undiscovered Pokédex size/tab combinations and recovery controls for 108 Encounter, Trainer and Achievements size/state combinations. Each activity control matched its mouse target. Keyboard and mouse activation both preserve a locked Evolution entry when an old card selection remains in memory. Existing tests cover Home, Appearance, trainer creation, Search, collected Pokédex entries, footer layouts and resize reconciliation.
+
+Full Go tests and vet passed. The baseline full race suite and targeted race checks for the changes passed. The binary built successfully. Sixty-seven offline terminal scenarios covered the reviewed pages, forms, four appearance modes, monochrome output, resizing and Appearance return navigation. Four further scenarios used an empty data directory to check the first-run trainer form. All terminal scenarios restored terminal state; the existing trainer database remained byte-for-byte unchanged.
+
+No dataset, dependency, schema, release status or benchmark changes. This interface audit does not replace final release packaging and installation checks.
