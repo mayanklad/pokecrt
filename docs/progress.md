@@ -1,6 +1,32 @@
 # Implementation progress
 
-Current milestone: [v0.4 - Interactive Adventure Menu](https://github.com/mayanklad/pokecrt/releases/tag/v0.4).
+## v1.0 overview
+
+[Release](https://github.com/mayanklad/pokecrt/releases/tag/v1.0) · [Source tag](https://github.com/mayanklad/pokecrt/tree/v1.0) · [Release notes](release-v1.0.md) · [Guide](guide.md)
+
+v1.0 combines the offline public artwork/catalog engine, local trainer progression and the Adventure Menu. All six main pages have completed responsive review, with cross-page navigation and recovery-state verification. Compact refinements are part of v1.0; earlier deferral statements below record superseded plans.
+
+The runtime verification baseline is `16ea4ed16e57fca7238ae58e6848b7bceceb8187`. Release documentation and packaging updates preserve the runtime, dataset, schema and dependencies. The v1.0 source tag identifies the final release source.
+
+| Area | Verification |
+| --- | --- |
+| Source and dependencies | Full tests, vet, race suite, module checks and CGO-disabled storage/trainer tests passed. |
+| Dataset | All 2,947 pinned inputs verified; generated metadata remains unchanged. |
+| Interface | Page reviews, keyboard/mouse routes, locked/empty/error states and resizing checked. |
+| Distribution | Archive contents, checksums, executable permissions and isolated installation checked. |
+| Offline runtime | 34 command scenarios and 24 installed TUI scenarios passed with network calls blocked. |
+| Data and terminal state | Profile isolation, corrupt-data preservation, read-only browsing and terminal restoration checked. |
+| Resources | Measured startup, RSS, warm command work, rendering and binary size meet recorded limits; see [benchmarks](benchmarks.md). |
+
+The README is the project entry point; the guide preserves the detailed command, gameplay, interface and development reference. Release notes and final links are prepared before publication. The distribution build generates its own checksum from the final artifact. No post-publication documentation commit is required to complete the release.
+
+These checks cover the verified Linux amd64 environment and exercised terminal scenarios; they do not claim every terminal/font configuration. Historical entries retain their original measurements and release context.
+
+## Development history
+
+### v0.4 publication record
+
+Milestone at this point: [v0.4 - Interactive Adventure Menu](https://github.com/mayanklad/pokecrt/releases/tag/v0.4).
 Source: [v0.4 tag](https://github.com/mayanklad/pokecrt/tree/v0.4).
 [Release notes](release-v0.4.md).
 
@@ -20,6 +46,7 @@ configurations. Existing timing/RSS measurements remain dated historical results
 
 Earlier entries below record status at each increment; their pending release
 items are superseded where completed by the publication record above.
+
 
 ## Implemented behavior
 
@@ -1150,3 +1177,24 @@ Validation covered arrow reachability for 32 undiscovered Pokédex size/tab comb
 Full Go tests and vet passed. The baseline full race suite and targeted race checks for the changes passed. The binary built successfully. Sixty-seven offline terminal scenarios covered the reviewed pages, forms, four appearance modes, monochrome output, resizing and Appearance return navigation. Four further scenarios used an empty data directory to check the first-run trainer form. All terminal scenarios restored terminal state; the existing trainer database remained byte-for-byte unchanged.
 
 No dataset, dependency, schema, release status or benchmark changes. This interface audit does not replace final release packaging and installation checks.
+
+
+## D42 - v1.0 release preparation
+
+Runtime baseline: 16ea4ed16e57fca7238ae58e6848b7bceceb8187. No runtime, dataset, schema or dependency change. README and v1.0 notes use the final source-tag, archive and checksum URLs before publication. Historical release notes retain their original scope. The source tag identifies the final release source without a circular commit-hash edit. Release documentation does not require a post-publication status commit.
+
+Full tests, vet, race suite, module verification and CGO-disabled storage/trainer tests pass. All 2,947 cached pinned inputs verify without generated metadata drift. Linux amd64 packaging, archive membership, checksums, version/dataset identity, 0755 executable mode and isolated installation pass. Thirty-four offline extracted-binary command scenarios and 24 installed-binary terminal scenarios pass, with preserved read-only trainer data, isolated encounter records, corrupt-state preservation and terminal restoration. Temporary state and installs are separate from project/user data.
+
+The 13,783,200-byte stripped executable fits the 16 MiB limit. Current startup, peak RSS, warm command work and largest-render measurements meet the recorded limits; exact measurements and methodology are in docs/benchmarks.md. Older measurements remain historical. Final distributor archive checksums are generated from the final local build. Git tagging, upload and publication are separate distribution actions; the verification performed here does not claim they occurred.
+
+
+### D42 documentation organization
+
+README is a concise landing page with a captured Home preview, installation, quick start, feature overview and essential limits. docs/guide.md preserves the previous README reference material in one document, with a contents index and release packaging instructions. The existing benchmarks, release notes, licensing and dataset reports retain their roles. Progress opens with the v1.0 summary and separates historical milestone records. The release archive includes GUIDE.md; the preview is a terminal capture stored as SVG, not sprite-source imagery. Final links use the v1.0 tag and asset names before publication.
+
+Documentation validation: the guide retains every previous README reference paragraph. Local/source-tag document links resolve, the Home preview was captured and visually reviewed, and the nine-file archive contains GUIDE.md with matching documentation and the previously verified runtime binary. Dataset checks, full tests and vet pass through the packaging script.
+
+
+### D42 final documentation links and installation
+
+Repository and archive documentation preserve matching relative paths, including docs/guide.md, the Home preview, release notes and tools/dataset/coverage.md. Source-only references and downloads use web URLs. The README includes source installation, an encounter workflow and static release/platform/Go/source-license badges. The guide separates binary-only removal from complete data/settings removal and documents custom paths. Trainer examples use fictional names; repository identifiers and legitimate author credits remain unchanged. Historical benchmark provenance stays with its corresponding measurements rather than the introduction.

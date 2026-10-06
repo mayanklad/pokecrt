@@ -15,7 +15,7 @@ project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$project_root"
 
 release_notes="docs/release-${release_tag}.md"
-for required_file in "$release_notes" LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md docs/release-policy.md; do
+for required_file in "$release_notes" docs/guide.md docs/media/home.svg docs/progress.md docs/benchmarks.md docs/release-v0.1.md docs/release-v0.2.md docs/release-v0.3.md docs/release-v0.4.md LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md docs/release-policy.md; do
     if [ ! -s "$required_file" ]; then
         echo "package: missing required file: $required_file" >&2
         exit 1
@@ -46,11 +46,14 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -o "$staging_dir/pokecrt" ./cmd/pokecrt
 chmod 0755 "$staging_dir/pokecrt"
 cp README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md "$staging_dir/"
-cp tools/dataset/coverage.md "$staging_dir/COVERAGE.md"
-cp docs/release-policy.md "$staging_dir/RELEASE_POLICY.md"
-cp "$release_notes" "$staging_dir/RELEASE_NOTES.md"
+mkdir -p "$staging_dir/docs/media" "$staging_dir/tools/dataset"
+cp tools/dataset/coverage.md "$staging_dir/tools/dataset/coverage.md"
+cp docs/guide.md docs/progress.md docs/benchmarks.md docs/release-policy.md \
+    docs/release-v0.1.md docs/release-v0.2.md docs/release-v0.3.md docs/release-v0.4.md \
+    "$release_notes" "$staging_dir/docs/"
+cp docs/media/home.svg "$staging_dir/docs/media/home.svg"
 tar -czf "dist/$archive_name" -C "$staging_dir" \
-    pokecrt README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md COVERAGE.md RELEASE_POLICY.md RELEASE_NOTES.md
+    pokecrt README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md docs tools/dataset/coverage.md
 # Include all local release archives so earlier checksum entries remain present.
 (cd dist && sha256sum pokecrt_*_linux_amd64.tar.gz > SHA256SUMS)
 printf 'Created dist/%s and dist/SHA256SUMS\n' "$archive_name"

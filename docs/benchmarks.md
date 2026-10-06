@@ -1,6 +1,6 @@
 # Public-engine performance baseline
 
-Publication status: v0.4 is released from `f4464c7d60109935ccc734ff02de739c2a1ef948`.
+Release reference: [v1.0](https://github.com/mayanklad/pokecrt/releases/tag/v1.0).
 The sections below retain their original source revisions, hardware and test
 scope. Publication adds no new timing or RSS measurement; historical pending
 archive statements describe the status at the time of measurement.
@@ -1104,3 +1104,41 @@ The CGO-disabled, trimpath, stripped Linux amd64 build with version v0.4 is
 scrolling passes unit/rendered-content and running-terminal checks. Timing and
 RSS figures above remain dated measurements; they were not rerun for D31.
 
+
+
+## D42 - v1.0 packaging and installed-binary verification
+
+Runtime source baseline: `16ea4ed16e57fca7238ae58e6848b7bceceb8187`. Release documentation changes do not alter runtime code. Measurements use Go 1.27.1, Linux 6.18.44 amd64, AMD EPYC 9V74, eight-CPU cgroup quota and the shared execution environment. The stripped CGO-disabled v1.0 binary uses `-trimpath`; the source-snapshot verification additionally sets `-buildvcs=false`.
+
+Binary size: 13,783,200 bytes (13.145 MiB), below 16 MiB. Public process measurements use GOMAXPROCS=1, five discarded warmups and 100 measured fresh processes per case, stdout discarded and a warm filesystem cache. Peak RSS uses ten independent child processes per case with wait4 rusage. Compilation, source preparation and terminal painting are excluded. Cold-disk startup remains unmeasured.
+
+| Case | Median ms | P95 ms | Maximum ms | Peak RSS KiB |
+| --- | ---: | ---: | ---: | ---: |
+| color/random | 3.839 | 4.778 | 7.612 | 9920 |
+| color/named | 2.134 | 2.721 | 5.671 | 7484 |
+| color/filtered | 2.242 | 2.825 | 5.121 | 7488 |
+| color/variant | 2.102 | 2.527 | 6.158 | 7548 |
+| color/list | 3.907 | 5.351 | 6.548 | 9148 |
+| color/details | 2.095 | 2.601 | 3.643 | 7356 |
+| plain/random | 3.79 | 5.669 | 21.262 | 9920 |
+| plain/named | 2.014 | 2.612 | 4.66 | 7356 |
+| plain/filtered | 2.147 | 2.966 | 6.335 | 7360 |
+| plain/variant | 2.08 | 2.591 | 3.59 | 7548 |
+| plain/list | 3.777 | 5.51 | 8.114 | 9148 |
+| plain/details | 2.062 | 2.594 | 3.96 | 7356 |
+
+Worst short-command P95 is 2.966 ms (8 ms limit); random/full-list P95 is at most 5.669 ms (25 ms limit). Peak public RSS is 9,920 KiB (9.688 MiB), below 10 MiB.
+
+Three 300 ms in-process benchmark runs with `-cpu=1` give median worst short-command work of 0.532 ms (0.85 ms limit), random/full-list work of 2.246 ms (12 ms limit), and largest-area truecolor rendering of 0.368 ms (0.60 ms limit). These are in-process work measurements, not terminal latency.
+
+Reproduction:
+
+```bash
+go test ./internal/cli ./internal/render -run '^$' \
+  -bench 'BenchmarkPublic|BenchmarkRender/LargestArea/Color' \
+  -benchtime=300ms -count=3 -cpu=1
+```
+
+Full tests, vet, full race suite, module verification and CGO-disabled storage/trainer tests pass. Cache-only preparation verifies all 2,947 pinned inputs without tracked metadata drift. The packaging script includes documentation, licensing, coverage and the preview in their repository locations. Checksums, version/dataset identity, executable mode and isolated installation pass. Thirty-four extracted-binary command scenarios and 24 installed-binary TUI scenarios run with socket/connect blocked by the kernel. Read-only browsing preserves database bytes; profile encounters remain isolated, corrupt data is preserved and terminal state is restored. Tests use temporary state and installation directories.
+
+The local archive verifies packaging from the source snapshot. The distributor builds the final archive from the release commit/tag; its checksum is generated locally and is not copied from this verification build. These checks do not claim exhaustive terminal/platform coverage or publication.
