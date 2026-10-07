@@ -47,8 +47,11 @@ coverage.json, coverage.md, LICENSING.md, and THIRD_PARTY_NOTICES.md.
 
 ## Distribution contents
 
-Release archives contain the executable, README, LICENSE, LICENSING.md,
-THIRD_PARTY_NOTICES.md, COVERAGE.md, RELEASE_POLICY.md and RELEASE_NOTES.md. Archive checksums
-accompany the release. Platform support and dataset coverage are stated explicitly.
+Release archives contain the executable, README, LICENSE, LICENSING.md and
+THIRD_PARTY_NOTICES.md at the root. The guide, release notes, distribution policy,
+progress, benchmarks and Home preview retain their paths under `docs/`; dataset
+coverage is included as `tools/dataset/coverage.md`. Relative documentation paths
+are preserved. Archive checksums accompany the release. Platform support and
+dataset coverage are stated explicitly.
 Profiles, credentials, raw download caches and unrelated development files are
 excluded from release archives.
