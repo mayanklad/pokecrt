@@ -56,3 +56,8 @@ Downloadable Linux x86-64 files include `.deb` for Ubuntu/Kubuntu and Debian,
 installation, updates and removal. Packages install the executable and documentation;
 user-owned trainer data and appearance settings survive removal. Release preparation
 is manual and requires the cross-distribution verification workflow to pass.
+
+Native installation, removal and reinstallation were verified in Ubuntu 24.04,
+Debian 13, Fedora 44 and Arch Linux containers. These checks include CLI operation
+and preservation of trainer data and appearance settings. Other distributions
+and terminal configurations are not exhaustively certified.

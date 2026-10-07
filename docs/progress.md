@@ -13,7 +13,7 @@ The runtime verification baseline is `16ea4ed16e57fca7238ae58e6848b7bceceb8187`.
 | Source and dependencies | Full tests, vet, race suite, module checks and CGO-disabled storage/trainer tests passed. |
 | Dataset | All 2,947 pinned inputs verified; generated metadata remains unchanged. |
 | Interface | Page reviews, keyboard/mouse routes, locked/empty/error states and resizing checked. |
-| Distribution | Archive contents, checksums, executable permissions and isolated installation checked. |
+| Distribution | Archive checked; native installation/removal/reinstallation and data preservation passed in Ubuntu 24.04, Debian 13, Fedora 44 and Arch containers. See the dated verification record below. |
 | Offline runtime | 34 command scenarios and 24 installed TUI scenarios passed with network calls blocked. |
 | Data and terminal state | Profile isolation, corrupt-data preservation, read-only browsing and terminal restoration checked. |
 | Resources | Measured startup, RSS, warm command work, rendering and binary size meet recorded limits; see [benchmarks](benchmarks.md). |
@@ -26,7 +26,7 @@ These checks cover the verified Linux amd64 environment and exercised terminal s
 
 Baseline: cdf9d1a0e175124adc0bf0b71b9a0bf3efcfaff0. The README adds a pixel CRT wordmark, captured Home/Pokédex views, CLI artwork examples, an expandable activity gallery and a short interface tour. The sample trainer is isolated from user data and progresses through normal encounters. The captures retain actual controls, colors, artwork and collection visibility. No application code, dataset, dependency, schema or runtime benchmark changes.
 
-Release packaging retains these media under docs/media so relative README links work after extraction. The website and native distribution remain separate pre-publication work; this visual increment does not mark those stages complete.
+Release packaging retains these media under docs/media so relative README links work after extraction. Website deployment and native package verification are recorded in the dated verification section below; this visual increment records only the showcase work.
 
 ## Development history
 
@@ -1219,14 +1219,14 @@ installation, coverage, local data behavior and project licensing.
 The site reuses repository media through a dependency-free build script. A
 manual-only GitHub Pages workflow is included for free hosting from the public
 repository. Deployment is started from Actions; pushes do not trigger it.
-Syntax, asset paths, anchors and packaged source were checked. Browser layout
-and interaction QA remain pending; no browser verification is claimed. GitHub
-Pages enablement and verification of the public URL remain deployment steps.
+Syntax, asset paths, anchors and packaged source were checked. The public GitHub
+Pages deployment was subsequently completed; its run is recorded below. No
+exhaustive browser visual or interaction verification is claimed.
 Application source, assets used by the executable, dataset and dependencies are
 unchanged. Final distribution links and documentation must be complete before
 v1.0 publication.
 
-Website deployment configuration: Pages actions use current Node 24 releases, and both jobs use Ubuntu 24.04 to avoid the floating-runner migration notice. Deployment uses workflow_dispatch only. A manually started GitHub run must confirm this configuration; no warning-free execution is claimed before that run.
+Website deployment configuration: Pages actions use current Node 24 releases, and both jobs use Ubuntu 24.04 to avoid the floating-runner migration notice. Deployment uses workflow_dispatch only. Successful manual deployment is recorded below; success alone does not certify an absence of every log notice.
 
 
 ## Linux distribution preparation
@@ -1240,9 +1240,41 @@ Local verification on Ubuntu 24.04 used all three package engines in isolated
 roots. Installation, CLI operation, removal and reinstallation preserved trainer
 database and valid appearance-file bytes. These checks do not establish Fedora
 or Arch operating-system compatibility. The manual workflow adds Ubuntu 24.04,
-Debian 13, Fedora 44 and Arch Linux container verification; its successful run
-remains an acceptance step. No push trigger, signing secrets or automatic release
+Debian 13, Fedora 44 and Arch Linux container verification; the successful run
+is recorded in the dated verification section below. No push trigger, signing secrets or automatic release
 publication is configured. Application source, dataset and dependencies are unchanged.
 
 Final package files, checksums, public download links and release acceptance must
 be verified before v1.0 publication. No post-publication completion commit is planned.
+
+
+## v1.0 native distribution verification - 7 October 2026
+
+Source: `d7ff9ad474515760cf54860be112f8af22aefe8e`.
+[Package workflow](https://github.com/mayanklad/pokecrt/actions/runs/37611661201)
+completed successfully: build plus Ubuntu 24.04, Debian 13, Fedora 44 and Arch
+Linux container jobs. The build verified all 2,947 pinned inputs, ran the full
+unit suite and vet, and produced the archive and three native packages.
+Container checks verified checksums, installation, CLI operation, package removal,
+reinstallation and byte-preservation of trainer data and appearance settings.
+These are container checks, not certification of every desktop or derivative.
+
+The downloaded artifact was checked independently: all four SHA256SUMS entries
+passed; archive paths were safe; the executable was mode 0755 and 13,783,200 bytes;
+version/dataset identity matched; all 27 packaged documentation/media files matched
+the source. Historical timing and RSS figures are unchanged; no new performance
+measurement is claimed. Seven additional CLI checks passed with socket/connect blocked by the kernel,
+using isolated temporary trainer/configuration paths. The public website bytes
+matched the committed website source. Local documentation paths and the tracked
+source attribution scan passed. The downloaded copy was also verified by the distributor.
+
+[Website deployment](https://github.com/mayanklad/pokecrt/actions/runs/37611299605)
+completed from the same commit. Both workflows remain manual. Native packages are
+downloaded files; hosted package repositories are outside the publication scope.
+
+Final-source gate: after committing the documentation corrections, run the package
+workflow again on that source. Every build/verification job must pass. Use only
+that run's artifact and verify its checksums before attaching the individual files
+to v1.0. The v1.0 tag must point to the same source. Release publication activates
+the already prepared tag/asset links; no post-publication documentation commit is
+required. Public release assets are not claimed to exist before publication.

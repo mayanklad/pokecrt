@@ -66,7 +66,7 @@ Print a favorite Pokémon, add a sprite to your shell, or open the Adventure Men
 Download the **Linux amd64 archive** and **SHA256SUMS** from [v1.0](https://github.com/mayanklad/pokecrt/releases/tag/v1.0), then run from their directory:
 
 ```bash
-sha256sum -c SHA256SUMS
+sha256sum --ignore-missing -c SHA256SUMS
 tar -xzf pokecrt_v1.0_linux_amd64.tar.gz
 mkdir -p "$HOME/.local/bin"
 install -m 0755 pokecrt "$HOME/.local/bin/pokecrt"

@@ -820,7 +820,7 @@ Prepare the pinned assets and run the checks above first. From the committed rel
 
 ```bash
 sh scripts/package.sh v1.0
-(cd dist && sha256sum -c SHA256SUMS)
+(cd dist && sha256sum --ignore-missing -c SHA256SUMS)
 ```
 
 The script prepares cached assets, runs tests and vet, builds a stripped CGO-disabled Linux amd64 executable, and creates `dist/pokecrt_v1.0_linux_amd64.tar.gz` plus `dist/SHA256SUMS`. It requires the matching release notes and refuses to overwrite an existing archive. It performs no publication or Git operation.
@@ -850,13 +850,16 @@ the first deployment succeeds. Hosting enablement and public URL verification
 are deployment steps, not claims that publication has already happened.
 
 Before v1.0 publication, verify the public website, its final installation and
-download links, the source guide and release assets together. Package-manager
-installation methods are added after their packaging and hosting are verified.
+download links, the source guide and release assets together. Native Linux
+packages are distributed as downloaded files; no project package repository is required.
 
 
 ## Native Linux packages
 
-Linux x86-64 release files include Debian, RPM and Arch packages. The archive
+Linux x86-64 release files include Debian, RPM and Arch packages. Installation,
+removal and reinstallation were verified in Ubuntu 24.04, Debian 13, Fedora 44
+and Arch Linux containers. These checks preserve trainer data and appearance
+settings; they do not certify every derivative distribution. The archive
 and source installation methods above remain available. Compatibility with
 other architectures or derivative distributions is not assumed.
 
@@ -894,7 +897,10 @@ above. Package removal leaves trainer progress and appearance settings intact.
 ### Updates and removal
 
 For an update, download the new package and its matching checksum file, verify it,
-then repeat the local-file installation command with the new filename.
+then repeat the local-file installation command with the new filename. The package
+manager upgrades the existing installation; no uninstall is needed first. Updates
+are downloaded manually. The final `-1` in native package names is the package
+revision, separate from the app version (`v1.0` becomes `1.0.0` in package metadata).
 
 | Distribution | Remove the installed package, keeping saved data |
 | --- | --- |
