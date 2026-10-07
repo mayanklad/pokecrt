@@ -46,3 +46,13 @@ Public printing and catalog commands do not require trainer storage. Browsing do
 ## Licensing
 
 Original source is MIT licensed. Third-party code, metadata and artwork retain their own terms; bundled notices and coverage describe that scope. PokéCRT is an unofficial fan project. No endorsement or rights-holder permission is claimed. See [release policy](release-policy.md).
+
+
+## Linux package distribution
+
+Downloadable Linux x86-64 files include `.deb` for Ubuntu/Kubuntu and Debian,
+`.rpm` for Fedora and `.pkg.tar.zst` for Arch Linux. The
+[guide](guide.md#native-linux-packages) covers checksum verification, local-file
+installation, updates and removal. Packages install the executable and documentation;
+user-owned trainer data and appearance settings survive removal. Release preparation
+is manual and requires the cross-distribution verification workflow to pass.

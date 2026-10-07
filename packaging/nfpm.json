@@ -1,0 +1,37 @@
+{
+  "name": "pokecrt",
+  "arch": "amd64",
+  "platform": "linux",
+  "version": "${POKECRT_PACKAGE_VERSION}",
+  "release": "1",
+  "section": "games",
+  "priority": "optional",
+  "maintainer": "Mayank Lad <mayanklad12@gmail.com>",
+  "homepage": "https://mayanklad.github.io/pokecrt/",
+  "description": "Offline Pokemon terminal artwork and a local trainer adventure.\nIncludes exact sprite appearances, a searchable catalog, local encounters,\ntrainer progression and an interactive terminal interface.\n",
+  "license": "MIT (original code); bundled content terms in LICENSING.md",
+  "contents": [
+    {
+      "src": "${POKECRT_PACKAGE_ROOT}/pokecrt",
+      "dst": "/usr/bin/pokecrt",
+      "file_info": {
+        "mode": 493
+      }
+    },
+    {
+      "src": "${POKECRT_PACKAGE_ROOT}/documentation",
+      "dst": "/usr/share/doc/pokecrt",
+      "type": "tree"
+    }
+  ],
+  "rpm": {
+    "compression": "gzip:9"
+  },
+  "deb": {
+    "compression": "gzip"
+  },
+  "archlinux": {
+    "pkgbase": "pokecrt",
+    "packager": "Mayank Lad <mayanklad12@gmail.com>"
+  }
+}

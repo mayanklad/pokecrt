@@ -12,6 +12,7 @@ Full command reference, trainer rules, interactive controls and source-build ins
 - [Print](#print)
 - [Public catalog](#public-catalog)
 - [Installation](#local-installation)
+- [Native Linux packages](#native-linux-packages)
 - [Uninstall or reset](#uninstall)
 - [Trainer profiles](#trainer-profiles)
 - [Encounters](#encounters)
@@ -851,3 +852,81 @@ are deployment steps, not claims that publication has already happened.
 Before v1.0 publication, verify the public website, its final installation and
 download links, the source guide and release assets together. Package-manager
 installation methods are added after their packaging and hosting are verified.
+
+
+## Native Linux packages
+
+Linux x86-64 release files include Debian, RPM and Arch packages. The archive
+and source installation methods above remain available. Compatibility with
+other architectures or derivative distributions is not assumed.
+
+### Downloaded package files
+
+Download the matching package and `SHA256SUMS` from the same
+[v1.0 release](https://github.com/mayanklad/pokecrt/releases/tag/v1.0).
+In the download directory, verify before installation:
+
+```sh
+sha256sum --ignore-missing -c SHA256SUMS
+```
+
+The package you downloaded must appear in the output with `OK`.
+
+| Distribution | Install the downloaded file |
+| --- | --- |
+| Ubuntu/Kubuntu, Debian | `sudo apt install ./pokecrt_1.0.0-1_amd64.deb` |
+| Fedora | `sudo dnf install ./pokecrt-1.0.0-1.x86_64.rpm` |
+| Arch Linux | `sudo pacman -U ./pokecrt-1.0.0-1-x86_64.pkg.tar.zst` |
+
+These commands install local files. No project package repository or signing-key
+setup is required. Packages contain the executable at `/usr/bin/pokecrt` and
+user documentation at `/usr/share/doc/pokecrt/`. Start the app as your normal user:
+
+```sh
+pokecrt --version
+pokecrt tui
+```
+
+If a previous manually installed executable takes precedence, use `type -a pokecrt`
+to identify it. Remove that old executable using the archive uninstall instructions
+above. Package removal leaves trainer progress and appearance settings intact.
+
+### Updates and removal
+
+For an update, download the new package and its matching checksum file, verify it,
+then repeat the local-file installation command with the new filename.
+
+| Distribution | Remove the installed package, keeping saved data |
+| --- | --- |
+| Ubuntu/Kubuntu, Debian | `sudo apt remove pokecrt` |
+| Fedora | `sudo dnf remove pokecrt` |
+| Arch Linux | `sudo pacman -R pokecrt` |
+
+For complete removal of saved data and settings, follow [Uninstall](#uninstall)
+after removing the package. Custom data/configuration paths must be handled separately.
+
+### Build native packages
+
+For release preparation, install nFPM 2.47.0 and ensure it is on PATH. Python 3
+is required only to expand the packaging configuration; it is not an app dependency.
+
+```sh
+go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.47.0
+sh scripts/package.sh v1.0
+sh scripts/package-native.sh v1.0
+```
+
+The first script runs the existing release checks and creates the offline archive.
+The second wraps that archive in three packages and updates `dist/SHA256SUMS`.
+Start from a clean output directory; existing package files are not overwritten.
+
+Alternatively, run **Actions → Prepare Linux packages → Run workflow** manually.
+It builds from the selected source and verifies installation, CLI operation, removal,
+reinstallation and preservation of trainer data/settings in Ubuntu 24.04, Debian 13,
+Fedora 44 and Arch Linux containers. The `linux-packages` artifact is retained for
+30 days. Treat it as a release candidate until every verification job succeeds.
+Download it, extract it and attach its individual package/archive/checksum files
+to the GitHub release. This workflow does not publish a release or deploy the website.
+
+Complete verification, release notes, documentation and final download links before
+publishing v1.0. Publish the website separately through its manual workflow.

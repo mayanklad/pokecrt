@@ -44,18 +44,20 @@ wireTabs(document.querySelector('.showcase-tabs'), tab => {
 const source = document.getElementById('install-text').textContent;
 const archive = `# Download the archive and SHA256SUMS from one release.
 # In the directory containing those downloaded files:
-sha256sum -c SHA256SUMS
+sha256sum --ignore-missing -c SHA256SUMS
 # Keep one matching archive in this directory.
 tar -xzf pokecrt_*_linux_amd64.tar.gz
 mkdir -p "$HOME/.local/bin"
 install -m 0755 pokecrt "$HOME/.local/bin/pokecrt"
 "$HOME/.local/bin/pokecrt" --version
 "$HOME/.local/bin/pokecrt" tui`;
+const packageMethods = {"apt": {"label": "Ubuntu / Debian / downloaded x86-64 package", "text": "# Download the package and SHA256SUMS from the same release.\nsha256sum --ignore-missing -c SHA256SUMS\n# Confirm your downloaded package is listed with OK.\nsudo apt install ./pokecrt_1.0.0-1_amd64.deb\npokecrt --version\npokecrt tui", "note": "Install from the directory containing the downloaded package. No project repository setup is needed. Saved data and settings remain intact after package removal."}, "dnf": {"label": "Fedora / downloaded x86-64 package", "text": "# Download the package and SHA256SUMS from the same release.\nsha256sum --ignore-missing -c SHA256SUMS\n# Confirm your downloaded package is listed with OK.\nsudo dnf install ./pokecrt-1.0.0-1.x86_64.rpm\npokecrt --version\npokecrt tui", "note": "Install from the directory containing the downloaded package. No project repository setup is needed. Saved data and settings remain intact after package removal."}, "pacman": {"label": "Arch Linux / downloaded x86-64 package", "text": "# Download the package and SHA256SUMS from the same release.\nsha256sum --ignore-missing -c SHA256SUMS\n# Confirm your downloaded package is listed with OK.\nsudo pacman -U ./pokecrt-1.0.0-1-x86_64.pkg.tar.zst\npokecrt --version\npokecrt tui", "note": "Install from the directory containing the downloaded package. No project repository setup is needed. Saved data and settings remain intact after package removal."}};
 wireTabs(document.querySelector('.install-tabs'), tab => {
- const isSource = tab.dataset.install === 'source';
- document.getElementById('install-text').textContent = isSource ? source : archive;
- document.getElementById('install-label').textContent = isSource ? 'Build the current source / Go 1.27+' : 'Install a downloaded release / Linux amd64';
- document.getElementById('install-note').textContent = isSource ? 'Internet is needed to clone and prepare assets. Go 1.27+ is a build requirement, not a requirement for the packaged executable.' : 'Keep only one matching Linux amd64 archive in the download directory. If ~/.local/bin is not on PATH, add it to your shell configuration. Keep the extracted documentation for reference.';
+ const mode = tab.dataset.install;
+ const method = packageMethods[mode];
+ document.getElementById('install-text').textContent = method ? method.text : mode === 'source' ? source : archive;
+ document.getElementById('install-label').textContent = method ? method.label : mode === 'source' ? 'Build the current source / Go 1.27+' : 'Install a downloaded release / Linux amd64';
+ document.getElementById('install-note').textContent = method ? method.note : mode === 'source' ? 'Internet is needed to clone and prepare assets. Go 1.27+ is a build requirement, not a requirement for the packaged executable.' : 'Keep only one matching Linux amd64 archive in the download directory. If ~/.local/bin is not on PATH, add it to your shell configuration. Keep the extracted documentation for reference.';
  document.getElementById('install-panel').setAttribute('aria-labelledby',tab.id);
 });
 document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', () => copyText(button.dataset.copy,button)));

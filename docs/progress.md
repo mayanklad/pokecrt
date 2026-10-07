@@ -1227,3 +1227,22 @@ unchanged. Final distribution links and documentation must be complete before
 v1.0 publication.
 
 Website deployment configuration: Pages actions use current Node 24 releases, and both jobs use Ubuntu 24.04 to avoid the floating-runner migration notice. Deployment uses workflow_dispatch only. A manually started GitHub run must confirm this configuration; no warning-free execution is claimed before that run.
+
+
+## Linux distribution preparation
+
+Source baseline: 37d4e85afd2d3979728c1ed304f10b82e779aea9. Downloadable Debian,
+RPM and Arch packages wrap the verified offline archive using nFPM 2.47.0.
+Packages preserve documentation and licensing paths and have no install/remove
+scripts that modify user-owned data. Hosted package repositories are outside scope.
+
+Local verification on Ubuntu 24.04 used all three package engines in isolated
+roots. Installation, CLI operation, removal and reinstallation preserved trainer
+database and valid appearance-file bytes. These checks do not establish Fedora
+or Arch operating-system compatibility. The manual workflow adds Ubuntu 24.04,
+Debian 13, Fedora 44 and Arch Linux container verification; its successful run
+remains an acceptance step. No push trigger, signing secrets or automatic release
+publication is configured. Application source, dataset and dependencies are unchanged.
+
+Final package files, checksums, public download links and release acceptance must
+be verified before v1.0 publication. No post-publication completion commit is planned.

@@ -6,7 +6,7 @@
 
 Natural-size Pokémon artwork, a searchable catalog, and a local trainer adventure-one executable.
 
-[Download v1.0](https://github.com/mayanklad/pokecrt/releases/tag/v1.0) &nbsp; / &nbsp; [Install](#install-in-a-minute) &nbsp; / &nbsp; [Full guide](docs/guide.md) &nbsp; / &nbsp; [Release notes](docs/release-v1.0.md)
+[Website](https://mayanklad.github.io/pokecrt/) &nbsp; / &nbsp; [Download v1.0](https://github.com/mayanklad/pokecrt/releases/tag/v1.0) &nbsp; / &nbsp; [Install](#install-in-a-minute) &nbsp; / &nbsp; [Full guide](docs/guide.md) &nbsp; / &nbsp; [Release notes](docs/release-v1.0.md)
 
 [![Release v1.0](https://img.shields.io/badge/release-v1.0-49d5ec?style=flat-square)](https://github.com/mayanklad/pokecrt/releases/tag/v1.0)
 [![Linux amd64](https://img.shields.io/badge/platform-Linux%20amd64-76b4e2?style=flat-square)](docs/release-v1.0.md#platform-and-terminal-requirements)
@@ -74,6 +74,12 @@ install -m 0755 pokecrt "$HOME/.local/bin/pokecrt"
 ```
 
 If `~/.local/bin` is not on your PATH, add `export PATH="$HOME/.local/bin:$PATH"` to your shell configuration and open a new shell.
+
+### Download a Linux package
+
+Download a `.deb` for Ubuntu/Kubuntu or Debian, `.rpm` for Fedora, or
+`.pkg.tar.zst` for Arch Linux from the v1.0 release.
+[Package installation, updates and removal](docs/guide.md#native-linux-packages).
 
 ### Install from source
 

@@ -55,3 +55,13 @@ are preserved. Archive checksums accompany the release. Platform support and
 dataset coverage are stated explicitly.
 Profiles, credentials, raw download caches and unrelated development files are
 excluded from release archives.
+
+
+## Native packages
+
+Native packages preserve LICENSE, LICENSING.md, THIRD_PARTY_NOTICES.md and user
+documentation under `/usr/share/doc/pokecrt/`. Metadata distinguishes original
+code licensing from bundled-content terms. Release package files are accompanied
+by SHA256SUMS. Native installation/removal/reinstallation checks supplement the
+archive checks and verify saved-data preservation. Hosted package repositories
+are outside scope. Packaging does not change artwork rights or provenance.

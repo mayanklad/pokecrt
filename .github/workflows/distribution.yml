@@ -1,0 +1,92 @@
+name: Prepare Linux packages
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag used in package filenames
+        required: true
+        default: v1.0
+permissions:
+  contents: read
+concurrency:
+  group: native-packages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.1'
+      - name: Install verified packaging tool
+        run: |
+          curl -fsSLO https://github.com/goreleaser/nfpm/releases/download/v2.47.0/nfpm_2.47.0_Linux_x86_64.tar.gz
+          curl -fsSLO https://github.com/goreleaser/nfpm/releases/download/v2.47.0/checksums.txt
+          grep '  nfpm_2.47.0_Linux_x86_64.tar.gz$' checksums.txt | sha256sum -c -
+          tar -xzf nfpm_2.47.0_Linux_x86_64.tar.gz nfpm
+          sudo install -m 0755 nfpm /usr/local/bin/nfpm
+          rm nfpm nfpm_2.47.0_Linux_x86_64.tar.gz checksums.txt
+      - name: Build native packages
+        env:
+          RELEASE_TAG: ${{ inputs.release }}
+        run: |
+          go run ./tools/dataset --sources tools/dataset/sources.json --cache .cache/dataset --mappings tools/dataset/mappings.json --out . --fetch --prepare-assets --check
+          sh scripts/package.sh "$RELEASE_TAG"
+          sh scripts/package-native.sh "$RELEASE_TAG"
+      - name: Upload release files
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-packages
+          path: |
+            dist/pokecrt*
+            dist/SHA256SUMS
+          retention-days: 30
+  verify:
+    needs: build
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['ubuntu:24.04', 'debian:13', 'fedora:44', 'archlinux:base']
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: linux-packages
+          path: packages
+      - name: Test native package installation and removal
+        env:
+          IMAGE: ${{ matrix.image }}
+        shell: sh
+        run: |
+          (cd packages && sha256sum --ignore-missing -c SHA256SUMS)
+          case "$IMAGE" in
+            ubuntu:*|debian:*) apt-get update && apt-get install -y ./packages/*.deb ;;
+            fedora:*) dnf install -y ./packages/*.rpm ;;
+            archlinux:*) pacman -Syu --noconfirm && pacman -U --noconfirm ./packages/*.pkg.tar.zst ;;
+          esac
+          export POKECRT_DATA_DIR=/tmp/pokecrt-test-data
+          export POKECRT_CONFIG_DIR=/tmp/pokecrt-test-config
+          mkdir -p "$POKECRT_CONFIG_DIR"
+          printf 'version=1\nappearance=dark\n' > "$POKECRT_CONFIG_DIR/appearance.conf"
+          pokecrt --version
+          pokecrt print --name charizard --output sprite
+          pokecrt trainer create Ash
+          pokecrt trainer use Ash
+          pokecrt encounter
+          sha256sum "$POKECRT_DATA_DIR/trainers.sqlite3" "$POKECRT_CONFIG_DIR/appearance.conf" > /tmp/saved.sha256
+          case "$IMAGE" in
+            ubuntu:*|debian:*) apt-get remove -y pokecrt ;;
+            fedora:*) dnf remove -y pokecrt ;;
+            archlinux:*) pacman -R --noconfirm pokecrt ;;
+          esac
+          sha256sum -c /tmp/saved.sha256
+          test ! -e /usr/bin/pokecrt
+          case "$IMAGE" in
+            ubuntu:*|debian:*) apt-get install -y ./packages/*.deb ;;
+            fedora:*) dnf install -y ./packages/*.rpm ;;
+            archlinux:*) pacman -U --noconfirm ./packages/*.pkg.tar.zst ;;
+          esac
+          sha256sum -c /tmp/saved.sha256
+          pokecrt trainer
