@@ -347,8 +347,6 @@ Source checkout folders, `bin/`, `dist/` and `.cache/dataset/` are development f
 - [Generated coverage](../tools/dataset/coverage.md)
 - [Third-party notices](../THIRD_PARTY_NOTICES.md)
 - [Code and artwork licensing](../LICENSING.md)
-- Local project documents, including the specification, live under `docs/local/`
-  and are excluded from Git history.
 
 ## Developer variant preview
 
