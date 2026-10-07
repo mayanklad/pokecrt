@@ -825,3 +825,29 @@ sh scripts/package.sh v1.0
 The script prepares cached assets, runs tests and vet, builds a stripped CGO-disabled Linux amd64 executable, and creates `dist/pokecrt_v1.0_linux_amd64.tar.gz` plus `dist/SHA256SUMS`. It requires the matching release notes and refuses to overwrite an existing archive. It performs no publication or Git operation.
 
 The archive preserves repository paths for README, docs/guide.md, release notes and policy, progress, benchmarks, historical notes, the logo, captured CLI/TUI previews, short demo and tools/dataset/coverage.md. Code/dependency licenses and third-party notices remain at the root. Relative documentation links work after extraction. It contains no trainer data or download cache. Build/checksum verification uses the final local artifact; do not reuse a checksum from another build.
+
+
+## Product website
+
+The static website source is in `website/`. It reuses the approved media in
+`docs/media/` without adding dependencies to the application. Build its output:
+
+```bash
+sh website/build.sh
+```
+
+Open `website/dist/index.html` locally, or serve that directory with a static
+HTTP server. The generated directory is ignored by Git. The site uses relative
+asset paths so it works both at a domain root and under a project path.
+
+For free hosting from the public repository, select **Settings → Pages →
+Build and deployment → Source → GitHub Actions**. The `Publish website` workflow
+builds and deploys the website only when manually started from **Actions →
+Publish website → Run workflow**, selecting `main`. Pushing commits does not
+start this workflow. The project URL is `https://mayanklad.github.io/pokecrt/` once
+the first deployment succeeds. Hosting enablement and public URL verification
+are deployment steps, not claims that publication has already happened.
+
+Before v1.0 publication, verify the public website, its final installation and
+download links, the source guide and release assets together. Package-manager
+installation methods are added after their packaging and hosting are verified.

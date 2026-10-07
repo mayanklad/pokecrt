@@ -45,3 +45,6 @@ go.work.sum
 
 # Local project documents
 /docs/local/
+
+# Generated static website
+/website/dist/

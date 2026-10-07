@@ -1206,3 +1206,24 @@ Documentation validation: the guide retains every previous README reference para
 Repository and archive documentation preserve matching relative paths, including docs/guide.md, the Home preview, release notes and tools/dataset/coverage.md. Source-only references and downloads use web URLs. The README includes source installation, an encounter workflow and static release/platform/Go/source-license badges. The guide separates binary-only removal from complete data/settings removal and documents custom paths. Trainer examples use fictional names; repository identifiers and legitimate author credits remain unchanged. Historical benchmark provenance stays with its corresponding measurements rather than the introduction.
 
 The brand assets also include standalone transparent wordmark and monitor files. Showcase captures fill terminal block cells directly so sprite pixels have no font-rendering seams.
+
+
+## Product website
+
+Source baseline: e6f5e04f41c6a3c3a7f0f8250957e81ae99bdf6c. A responsive static
+website introduces the app with the approved logo, real CLI/TUI screenshots and
+short tour. Screenshot and installation tabs support keyboard navigation;
+commands can be copied with a manual-selection fallback. The design includes
+installation, coverage, local data behavior and project licensing.
+
+The site reuses repository media through a dependency-free build script. A
+manual-only GitHub Pages workflow is included for free hosting from the public
+repository. Deployment is started from Actions; pushes do not trigger it.
+Syntax, asset paths, anchors and packaged source were checked. Browser layout
+and interaction QA remain pending; no browser verification is claimed. GitHub
+Pages enablement and verification of the public URL remain deployment steps.
+Application source, assets used by the executable, dataset and dependencies are
+unchanged. Final distribution links and documentation must be complete before
+v1.0 publication.
+
+Website deployment configuration: Pages actions use current Node 24 releases, and both jobs use Ubuntu 24.04 to avoid the floating-runner migration notice. Deployment uses workflow_dispatch only. A manually started GitHub run must confirm this configuration; no warning-free execution is claimed before that run.
