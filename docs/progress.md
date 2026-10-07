@@ -22,6 +22,12 @@ The README is the project entry point; the guide preserves the detailed command,
 
 These checks cover the verified Linux amd64 environment and exercised terminal scenarios; they do not claim every terminal/font configuration. Historical entries retain their original measurements and release context.
 
+## Product visuals
+
+Baseline: cdf9d1a0e175124adc0bf0b71b9a0bf3efcfaff0. The README adds a pixel CRT wordmark, captured Home/Pokédex views, CLI artwork examples, an expandable activity gallery and a short interface tour. The sample trainer is isolated from user data and progresses through normal encounters. The captures retain actual controls, colors, artwork and collection visibility. No application code, dataset, dependency, schema or runtime benchmark changes.
+
+Release packaging retains these media under docs/media so relative README links work after extraction. The website and native distribution remain separate pre-publication work; this visual increment does not mark those stages complete.
+
 ## Development history
 
 ### v0.4 publication record
@@ -1198,3 +1204,5 @@ Documentation validation: the guide retains every previous README reference para
 ### D42 final documentation links and installation
 
 Repository and archive documentation preserve matching relative paths, including docs/guide.md, the Home preview, release notes and tools/dataset/coverage.md. Source-only references and downloads use web URLs. The README includes source installation, an encounter workflow and static release/platform/Go/source-license badges. The guide separates binary-only removal from complete data/settings removal and documents custom paths. Trainer examples use fictional names; repository identifiers and legitimate author credits remain unchanged. Historical benchmark provenance stays with its corresponding measurements rather than the introduction.
+
+The brand assets also include standalone transparent wordmark and monitor files. Showcase captures fill terminal block cells directly so sprite pixels have no font-rendering seams.

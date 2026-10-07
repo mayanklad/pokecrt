@@ -15,7 +15,7 @@ project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$project_root"
 
 release_notes="docs/release-${release_tag}.md"
-for required_file in "$release_notes" docs/guide.md docs/media/home.svg docs/progress.md docs/benchmarks.md docs/release-v0.1.md docs/release-v0.2.md docs/release-v0.3.md docs/release-v0.4.md LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md docs/release-policy.md; do
+for required_file in "$release_notes" docs/guide.md docs/media/home.svg docs/media/logo.png docs/media/logo-wordmark.png docs/media/logo-monitor.png docs/media/home.png docs/media/pokedex.png docs/media/cli-artwork.png docs/media/cli-forms.png docs/media/encounter.png docs/media/trainer.png docs/media/achievements.png docs/media/demo.gif docs/media/demo.mp4 docs/progress.md docs/benchmarks.md docs/release-v0.1.md docs/release-v0.2.md docs/release-v0.3.md docs/release-v0.4.md LICENSE LICENSING.md README.md THIRD_PARTY_NOTICES.md tools/dataset/coverage.md docs/release-policy.md; do
     if [ ! -s "$required_file" ]; then
         echo "package: missing required file: $required_file" >&2
         exit 1
@@ -51,7 +51,10 @@ cp tools/dataset/coverage.md "$staging_dir/tools/dataset/coverage.md"
 cp docs/guide.md docs/progress.md docs/benchmarks.md docs/release-policy.md \
     docs/release-v0.1.md docs/release-v0.2.md docs/release-v0.3.md docs/release-v0.4.md \
     "$release_notes" "$staging_dir/docs/"
-cp docs/media/home.svg "$staging_dir/docs/media/home.svg"
+cp docs/media/home.svg docs/media/logo.png docs/media/logo-wordmark.png docs/media/logo-monitor.png docs/media/home.png docs/media/pokedex.png \
+    docs/media/cli-artwork.png docs/media/cli-forms.png docs/media/encounter.png \
+    docs/media/trainer.png docs/media/achievements.png docs/media/demo.gif docs/media/demo.mp4 \
+    "$staging_dir/docs/media/"
 tar -czf "dist/$archive_name" -C "$staging_dir" \
     pokecrt README.md LICENSE LICENSING.md THIRD_PARTY_NOTICES.md docs tools/dataset/coverage.md
 # Include all local release archives so earlier checksum entries remain present.

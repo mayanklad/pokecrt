@@ -1,6 +1,6 @@
 <div align="center">
 
-# PokéCRT
+<h1><img src="docs/media/logo.png" alt="PokéCRT" width="620"></h1>
 
 **Your terminal. Your Pokémon journey. Entirely offline.**
 
@@ -17,7 +17,7 @@ Natural-size Pokémon artwork, a searchable catalog, and a local trainer adventu
 
 </div>
 
-![PokéCRT Home screen with the Town Map, trainer card and adventure menu](docs/media/home.svg)
+![PokéCRT Home screen with the Town Map, trainer card and adventure menu](docs/media/home.png)
 
 ## A little adventure, wherever you open a terminal
 
@@ -28,6 +28,38 @@ Print a favorite Pokémon, add a sprite to your shell, or open the Adventure Men
 | Print named, random or filtered Pokémon. Choose exact forms, shiny palettes and supported visual genders. | Create local trainers, record encounters, gain XP and unlock 50 achievement goals. |
 | Browse all 1,025 species across nine generations. Public catalog access is independent of saved progress. | Explore your private Pokédex, collected appearances, evolution families and encounter history. |
 | Natural-size truecolor artwork, transparent backgrounds and `NO_COLOR` support. | Responsive pages, keyboard and mouse controls, and four live appearance choices. |
+
+## See it in action
+
+**A private Pokédex that grows with your discoveries.** Browse collected appearances, explore evolution families and keep track of each encounter.
+
+![Pokédex showing Scyther artwork, the National Index and discovery details](docs/media/pokedex.png)
+
+**Exact artwork, straight from the command line.** Forms, shiny palettes and supported visual genders are first-class choices.
+
+| Shiny Mega X Charizard | Shiny female Meowstic |
+| --- | --- |
+| ![Terminal command printing shiny Mega X Charizard](docs/media/cli-artwork.png) | ![Terminal command printing shiny female Meowstic](docs/media/cli-forms.png) |
+| `pokecrt print --name charizard --form mega-x --shiny` | `pokecrt print --name meowstic --gender female --shiny` |
+
+**Every encounter adds to your journey.** Track trainer progress and work toward 50 achievement goals.
+
+<details>
+<summary>See encounters, trainer progress and achievements</summary>
+
+![Encounter result with artwork and progression details](docs/media/encounter.png)
+
+![Trainer card and generation collection progress](docs/media/trainer.png)
+
+![Earned badges and next collection goals](docs/media/achievements.png)
+
+</details>
+
+### A quick tour
+
+![Animated tour through Home, Pokédex, Encounters, Trainer, Achievements and Appearance](docs/media/demo.gif)
+
+[Watch or download the short video](docs/media/demo.mp4). Screenshots and the tour use a separate sample trainer; the interface and artwork are captured from the running app.
 
 ## Install in a minute
 
